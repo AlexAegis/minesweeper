@@ -1,2 +1,0 @@
-# svelte-sandbox
-Svelte

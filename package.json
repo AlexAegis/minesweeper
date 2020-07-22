@@ -1,0 +1,46 @@
+{
+	"name": "svelte-sandbox",
+	"displayName": "Svelte Sandbox",
+	"description": "Svelte Sandbox",
+	"version": "0.0.1",
+	"license": "mit",
+	"private": true,
+	"author": {
+		"name": "Alex Aegis",
+		"email": "alexaegis@gmail.com",
+		"url": "https://github.com/AlexAegis"
+	},
+	"homepage": "https://github.com/AlexAegis/svelte-sandbox",
+	"bugs": {
+		"email": "alexaegis@gmail.com",
+		"url": "https://github.com/AlexAegis/svelte-sandbox/issues"
+	},
+	"scripts": {
+		"ci": "svelte-check",
+		"build": "rollup -c",
+		"roll": "rollup -c -w",
+		"serve": "live-server public",
+		"start": "concurrently --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgRed.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"ROLL,HTTP\" \"npm run roll\" \"npm run serve\"",
+		"ncu": "ncu",
+		"ncu:u": "ncu -u"
+	},
+	"dependencies": {
+		"svelte": "^3.24.0"
+	},
+	"devDependencies": {
+		"@rollup/plugin-commonjs": "^14.0.0",
+		"@rollup/plugin-node-resolve": "^8.4.0",
+		"@rollup/plugin-typescript": "^5.0.2",
+		"@tsconfig/svelte": "^1.0.2",
+		"concurrently": "^5.2.0",
+		"live-server": "^1.2.1",
+		"npm-check-updates": "^7.0.2",
+		"rollup": "^2.22.1",
+		"rollup-plugin-livereload": "^1.3.0",
+		"rollup-plugin-svelte": "^5.2.3",
+		"rollup-plugin-terser": "^6.1.0",
+		"svelte-check": "^0.1.55",
+		"svelte-preprocess": "^4.0.8",
+		"typescript": "^3.9.7"
+	}
+}
