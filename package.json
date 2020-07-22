@@ -19,7 +19,7 @@
 		"ci": "svelte-check",
 		"build": "rollup -c",
 		"roll": "rollup -c -w",
-		"serve": "live-server public",
+		"serve": "live-server public --port=8989",
 		"start": "concurrently --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgRed.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"ROLL,HTTP\" \"npm run roll\" \"npm run serve\"",
 		"ncu": "ncu",
 		"ncu:u": "ncu -u"

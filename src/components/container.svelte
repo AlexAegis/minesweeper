@@ -1,0 +1,2 @@
+I contain:
+<slot />
