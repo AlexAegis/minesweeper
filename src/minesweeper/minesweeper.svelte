@@ -1,8 +1,6 @@
 <script lang="ts">
-	import Score from './score.svelte';
 	import Playfield from './playfield.svelte';
 	import { score$, startGame } from './store';
-	import { MineSweeper, Coordinate } from './minesweeper';
 
 	const x = 10;
 	const y = 10;

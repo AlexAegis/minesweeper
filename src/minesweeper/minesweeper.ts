@@ -30,7 +30,7 @@ export const directions = {
 };
 
 export type Mine = 'M';
-export class MineSweeper {
+export class MinesweeperGame {
 	mines = new Map<string, Coordinate>();
 	mineField!: (Mine | number)[][];
 

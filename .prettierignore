@@ -6,3 +6,5 @@
 CHANGELOG.md
 package-lock.json
 yarn.lock
+public/build
+node_modules

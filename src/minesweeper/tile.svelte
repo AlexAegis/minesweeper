@@ -1,8 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { score$ } from './store';
-	import { Coordinate } from './minesweeper';
-
 	export let x: number;
 	export let y: number;
 	export let hasMine: boolean = false;
@@ -11,8 +7,6 @@
 
 	let color = getColor(value);
 	let gridStyle = getGridStyle(x, y);
-
-	const dispatch = createEventDispatcher();
 
 	export const reveal = (): void => {
 		console.log('Tile reveal called!');

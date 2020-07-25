@@ -5,6 +5,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import livereload from 'rollup-plugin-livereload';
 import resolve from '@rollup/plugin-node-resolve';
+import gzipPlugin from 'rollup-plugin-gzip';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -42,6 +43,7 @@ export default {
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-		production && terser(),
+		production && terser({}),
+		production && gzipPlugin(),
 	],
 };
