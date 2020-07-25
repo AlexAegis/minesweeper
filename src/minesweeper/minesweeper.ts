@@ -94,6 +94,6 @@ export class MinesweeperGame {
 			console.log('Stepped on Mine!');
 			// throw new Error('Stepped on Mine!');
 		}
-		return [new Coordinate(1, 1)];
+		return [new Coordinate(x, y)];
 	}
 }

@@ -5,7 +5,7 @@ module.exports = {
 		'scope-enum': [
 			2,
 			'always',
-			['core', 'minecraft', 'package', 'docs', 'lint', 'changelog', 'release'],
+			['core', 'minesweeper', 'package', 'docs', 'lint', 'changelog', 'release'],
 		],
 	},
 };

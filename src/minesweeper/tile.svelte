@@ -3,36 +3,23 @@
 	export let y: number;
 	export let hasMine: boolean = false;
 	export let revealed: boolean = false;
-	export let value!: 'M' | number | undefined;
-
-	let color = getColor(value);
+	export let value!: 'M' | number;
 
 	export const reveal = (): void => {
 		revealed = true;
 	};
 
-	export function getColor(value: 'M' | number | undefined): string {
-		switch (value) {
-			case 1:
-				return '#0000ff';
-			case 2:
-				return '#008100';
-			case 3:
-				return '#ff1300';
-			case 4:
-				return '#000083';
-			case 5:
-				return '#810500';
-			case 6:
-				return '#2a9494';
-			case 7:
-				return '#000000';
-			case 8:
-				return '#808080';
-			default:
-				return 'black';
-		}
-	}
+	const colorMap: Record<any, string> = {
+		1: '#0000ff',
+		2: '#008100',
+		3: '#ff1300',
+		4: '#000083',
+		5: '#810500',
+		6: '#2a9494',
+		7: '#000000',
+		8: '#808080',
+		M: '#000000',
+	};
 </script>
 
 <style>
@@ -52,6 +39,7 @@
 	}
 
 	button {
+		z-index: 100;
 		outline: none;
 		cursor: pointer;
 		border-radius: 0px;
@@ -62,7 +50,7 @@
 </style>
 
 {#if revealed}
-	<div class="tile" style="color: {color}; grid-row: {x + 1}; grid-column: {y + 1};">
+	<div class="tile" style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if hasMine}Mine!{:else if value}{value}{/if}
 	</div>
 {:else}

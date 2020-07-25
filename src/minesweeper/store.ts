@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { MinesweeperGame, Coordinate } from './minesweeper';
+import { Coordinate, MinesweeperGame } from './minesweeper';
 
 export class SvelteSubject<T> extends BehaviorSubject<T> {
 	set(value: T): void {
@@ -10,7 +10,13 @@ export class SvelteSubject<T> extends BehaviorSubject<T> {
 export const score$ = new SvelteSubject<number>(0);
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);
 
-export function startGame(x: number, y: number, m: number): void {
-	const mineSweeper = new MinesweeperGame(x, y, m, new Coordinate(5, 5));
+export async function startGame(
+	width: number,
+	height: number,
+	m: number,
+	x: number,
+	y: number
+): Promise<void> {
+	const mineSweeper = new MinesweeperGame(width, height, m, new Coordinate(x, y));
 	game$.next(mineSweeper);
 }
