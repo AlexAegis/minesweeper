@@ -4,9 +4,9 @@
 	import Counter from './components/counter.svelte';
 	import Minesweeper from './minesweeper/minesweeper.svelte';
 
-	let name = 'world';
+	export let name = 'world';
 
-	function logName() {
+	export function logName() {
 		console.log(name);
 	}
 </script>

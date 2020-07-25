@@ -10,4 +10,7 @@ const app = new App({
 	},
 });
 
+console.log(app);
+console.log(App);
+
 export default app;

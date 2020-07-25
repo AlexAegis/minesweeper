@@ -1,23 +1,29 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+	import { score$ } from './store';
+	import { Coordinate } from './minesweeper';
+
 	export let x: number;
 	export let y: number;
-	export let hasMine: boolean;
+	export let hasMine: boolean = false;
 	export let revealed: boolean = false;
-	export let value: number = undefined;
+	export let value!: 'M' | number | undefined;
 
-	$: color = getColor(value);
+	let color = getColor(value);
 	let gridStyle = getGridStyle(x, y);
 
-	function reveal() {
+	const dispatch = createEventDispatcher();
+
+	export const reveal = (): void => {
+		console.log('Tile reveal called!');
 		revealed = true;
-		console.log('reveal');
-	}
+	};
 
 	function getGridStyle(x: number, y: number) {
 		return `grid-row: ${x + 1}; grid-column: ${y + 1};`;
 	}
 
-	function getColor(value: number) {
+	export function getColor(value: 'M' | number | undefined): string {
 		switch (value) {
 			case 1:
 				return '#0000ff';
@@ -68,9 +74,9 @@
 </style>
 
 {#if revealed}
-	<div class="tile" style="color: {color}; {gridStyle}" on:click={() => (value = value + 1)}>
+	<div class="tile" style="color: {color}; {gridStyle}">
 		{#if hasMine}Mine!{:else if value}{value}{/if}
 	</div>
 {:else}
-	<button class="tile" style={gridStyle} on:click={reveal} />
+	<button class="tile" style={gridStyle} on:click />
 {/if}

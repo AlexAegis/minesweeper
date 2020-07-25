@@ -1,6 +1,14 @@
-<script>
+<script lang="ts">
 	import Score from './score.svelte';
 	import Playfield from './playfield.svelte';
+	import { score$, startGame } from './store';
+	import { MineSweeper, Coordinate } from './minesweeper';
+
+	const x = 10;
+	const y = 10;
+	const m = 20;
+
+	startGame(x, y, m);
 </script>
 
 <style>
@@ -18,5 +26,6 @@
 
 <div>
 	<h1>MineSweeper</h1>
-	<Playfield class="pf" height={10} width={12} />
+	<span>{$score$}</span>
+	<Playfield class="pf" height={y} width={x} />
 </div>
