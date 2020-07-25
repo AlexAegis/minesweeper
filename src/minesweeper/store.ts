@@ -1,11 +1,5 @@
-import { BehaviorSubject } from 'rxjs';
+import { SvelteSubject } from '../helper';
 import { Coordinate, MinesweeperGame } from './minesweeper';
-
-export class SvelteSubject<T> extends BehaviorSubject<T> {
-	set(value: T): void {
-		super.next(value);
-	}
-}
 
 export const score$ = new SvelteSubject<number>(0);
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);
