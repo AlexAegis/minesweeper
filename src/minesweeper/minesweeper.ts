@@ -1,15 +1,15 @@
 export class Coordinate {
 	constructor(public readonly x: number, public readonly y: number) {}
 
-	static random(xMin: number, xMax: number, yMin: number, yMax: number) {
+	static random(xMin: number, xMax: number, yMin: number, yMax: number): Coordinate {
 		return new Coordinate(rand(xMin, xMax), rand(yMin, yMax));
 	}
 
-	toString() {
+	toString(): string {
 		return `${this.x},${this.y}`;
 	}
 
-	equal(other: Coordinate) {
+	equal(other: Coordinate): boolean {
 		return this.x === other.x && this.y === other.y;
 	}
 }
@@ -47,11 +47,11 @@ export class MineSweeper {
 		this.generate();
 	}
 
-	public getValueOfTile(x: number, y: number) {
+	public getValueOfTile(x: number, y: number): Mine | number {
 		return this.mineField[x][y];
 	}
 
-	private generate() {
+	private generate(): void {
 		// Preinitialize the field
 		this.mineField = [];
 		for (let x = 0; x < this.x; x++) {
@@ -73,7 +73,7 @@ export class MineSweeper {
 		}
 
 		// Add it's influence of every mine to it's surrounding fields
-		for (const [_, mineLocation] of this.mines) {
+		for (const [, mineLocation] of this.mines) {
 			for (const direction of Object.values(directions)) {
 				const x = mineLocation.x + direction.x;
 				const y = mineLocation.y + direction.y;

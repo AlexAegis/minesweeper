@@ -1,0 +1,30 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2018,
+		"sourceType": "module",
+		"project": "./tsconfig.json"
+	},
+	"env": {
+		"browser": true,
+		"amd": true,
+		"node": true
+	},
+	"ignorePatterns": ["dist", "node_modules", "typedocs", "public/build"],
+	"plugins": ["@typescript-eslint"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"prettier",
+		"prettier/@typescript-eslint"
+	],
+	"rules": {
+		"no-unused-vars": [2, { "args": "after-used", "argsIgnorePattern": "^_" }],
+		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+		"@typescript-eslint/explicit-member-accessibility": "off",
+		"@typescript-eslint/explicit-function-return-type": "off",
+		"@typescript-eslint/no-parameter-properties": "off"
+	}
+}

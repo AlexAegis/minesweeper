@@ -9,6 +9,7 @@
 	export let width: number;
 
 	let game = $game$;
+
 	let tiles: Tile[][] = [];
 	for (let x = 0; x < height; x++) {
 		tiles[x] = [];

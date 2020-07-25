@@ -1,9 +1,13 @@
 {
 	"extends": "@tsconfig/svelte/tsconfig.json",
-	"include": ["src/**/*", "src/node_modules"],
+	"include": ["src/**/*", "src/node_modules", "*.config.js"],
 	"exclude": ["node_modules/*", "__sapper__/*", "public/*"],
 	"compilerOptions": {
 		"strict": true,
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"esModuleInterop": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"rootDir": "."
 	}
 }
