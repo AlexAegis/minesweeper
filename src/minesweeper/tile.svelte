@@ -6,16 +6,10 @@
 	export let value!: 'M' | number | undefined;
 
 	let color = getColor(value);
-	let gridStyle = getGridStyle(x, y);
 
 	export const reveal = (): void => {
-		console.log('Tile reveal called!');
 		revealed = true;
 	};
-
-	function getGridStyle(x: number, y: number) {
-		return `grid-row: ${x + 1}; grid-column: ${y + 1};`;
-	}
 
 	export function getColor(value: 'M' | number | undefined): string {
 		switch (value) {
@@ -68,9 +62,9 @@
 </style>
 
 {#if revealed}
-	<div class="tile" style="color: {color}; {gridStyle}">
+	<div class="tile" style="color: {color}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if hasMine}Mine!{:else if value}{value}{/if}
 	</div>
 {:else}
-	<button class="tile" style={gridStyle} on:click />
+	<button class="tile" style="grid-row: {x + 1}; grid-column: {y + 1};" on:click />
 {/if}

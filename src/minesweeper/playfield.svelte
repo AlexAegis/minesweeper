@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { MinesweeperGame } from './minesweeper';
-	import Tile from './tile.svelte';
-	import { game$ } from './store';
 	import { filter } from 'rxjs/operators';
+	import type { MinesweeperGame } from './minesweeper';
+	import { game$ } from './store';
+	import Tile from './tile.svelte';
 
 	export let height: number;
 	export let width: number;
@@ -15,7 +15,7 @@
 		tiles[x] = [];
 	}
 
-	function reveal(x: number, y: number) {
+	function reveal(x: number, y: number): void {
 		if (game) {
 			const alsoRevealed = game.reveal(x, y);
 			for (const coord of alsoRevealed) {
@@ -41,7 +41,12 @@
 	<div class={$$props.class} style={$$props.style}>
 		{#each Array(height) as _, x}
 			{#each Array(width) as _, y}
-				<Tile bind:this={tiles[x][y]} {x} {y} value={game.getValueOfTile(x, y)} on:click={() => reveal(x, y)} />
+				<Tile
+					bind:this={tiles[x][y]}
+					{x}
+					{y}
+					value={game.getValueOfTile(x, y)}
+					on:click={() => reveal(x, y)} />
 			{/each}
 		{/each}
 	</div>
