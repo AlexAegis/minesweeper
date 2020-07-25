@@ -1,3 +1,10 @@
 {
-	"recommendations": ["svelte.svelte-vscode"]
+	"recommendations": [
+		"editorconfig.editorconfig",
+		"svelte.svelte-vscode",
+		"esbenp.prettier-vscode",
+		"msjsdiag.debugger-for-chrome",
+		"aaron-bond.better-comments",
+		"gruntfuggly.todo-tree"
+	]
 }
