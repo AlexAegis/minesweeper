@@ -1,8 +1,15 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+	import { Coordinate } from './minesweeper';
+	import type { FlaggedDetail } from './tile';
+
+	const dispatch = createEventDispatcher();
+
 	export let x: number;
 	export let y: number;
 	export let hasMine: boolean = false;
 	export let revealed: boolean = false;
+	export let disabled: boolean = false;
 	export let flagged: boolean = false;
 	export let value!: 'M' | number;
 
@@ -28,9 +35,26 @@
 		M: '#000000',
 	};
 
-	function onContextMenu(e: Event) {
+	function contextMenuHandler(e: Event): void {
 		e.preventDefault();
 		flagged = !flagged;
+	}
+
+	function clickHandler(e: Event): void {
+		if (flagged) {
+			e.preventDefault();
+			flagged = false;
+		} else {
+			dispatch('click');
+		}
+	}
+
+	// Emit it's flagged status
+	$: {
+		dispatch('flagged', {
+			flagged,
+			tile: new Coordinate(x, y),
+		} as FlaggedDetail);
 	}
 </script>
 
@@ -70,11 +94,12 @@
 	</div>
 {:else}
 	<button
+		{disabled}
 		class="tile"
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
 		aria-label="Tile{flagged ? ' flagged' : ''}"
-		on:click
-		on:contextmenu={onContextMenu}>
+		on:click={clickHandler}
+		on:contextmenu={contextMenuHandler}>
 		{#if flagged}F{/if}
 	</button>
 {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Playfield from './playfield.svelte';
-	import { score$ } from './store';
+	import { gameState$ } from './store';
 
 	const x = 10;
 	const y = 10;
@@ -21,6 +21,6 @@
 
 <div>
 	<h1>MineSweeper</h1>
-	<span>{$score$}</span>
+	<span>{$gameState$}</span>
 	<Playfield class="pf" height={y} width={x} />
 </div>

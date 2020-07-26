@@ -1,13 +1,19 @@
 <script lang="ts">
+	import { Subscription } from 'rxjs';
 	import { filter } from 'rxjs/operators';
+	import { onDestroy } from 'svelte';
 	import { makeMatrix } from '../helper';
 	import type { Coordinate, MinesweeperGame } from './minesweeper';
-	import { game$, startGame } from './store';
+	import { game$, gameState$, isGameAtEndState$, startGame } from './store';
+	import type { FlaggedEvent } from './tile';
 	import Tile from './tile.svelte';
 
 	export let height: number;
 	export let width: number;
 
+	const s = new Subscription();
+
+	// Once terser supports optional chaining this can be removed
 	let g = game$.pipe(filter((g): g is MinesweeperGame => !!g));
 
 	// Tile Component references in a matrix
@@ -38,18 +44,52 @@
 			} catch (e) {
 				if (Array.isArray(e)) {
 					revealEvery(e);
+					gameState$.next('lost');
 					setTimeout(() => {
 						game$.next(undefined);
-						forEachTile((tile) => (tile as any).hide());
 					}, 1000);
 				}
 			}
+
+			if ($g.haveWon()) {
+				forEachTile((tile) => (tile as any).reveal());
+				gameState$.next('won');
+				setTimeout(() => {
+					game$.next(undefined);
+				}, 1000);
+			}
 		} else {
-			startGame(width, height, 20, x, y);
+			gameState$.next('ongoing');
+			startGame(width, height, 2, x, y);
 			setTimeout(() => reveal(x, y), 0);
 			// Deferring reveal so the stack can empty and game can be filled
 		}
 	}
+
+	// Side effect: Hide every field on restart
+	s.add(
+		game$.pipe(filter((g) => !g)).subscribe(() => {
+			forEachTile((tile) => (tile as any)?.hide());
+			gameState$.next(undefined);
+		})
+	);
+
+	// Side effect: State logger
+	s.add(
+		gameState$
+			.pipe(filter((state) => state === 'lost' || state === 'won'))
+			.subscribe((state) => {
+				console.log(`Game ${state}!`);
+			})
+	);
+
+	function flagHandler(a: FlaggedEvent) {
+		// $g.mark(a.de)
+		console.log(a);
+	}
+
+	// Clean up subscriptions
+	onDestroy(() => s.unsubscribe());
 </script>
 
 <style>
@@ -67,7 +107,9 @@
 				bind:this={tiles[x][y]}
 				{x}
 				{y}
+				disabled={$isGameAtEndState$}
 				value={$g ? $g.getValueOfTile(x, y) : 0}
+				on:flagged={flagHandler}
 				on:click={() => reveal(x, y)} />
 		{/each}
 	{/each}

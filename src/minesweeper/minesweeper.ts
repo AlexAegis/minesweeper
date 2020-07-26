@@ -32,7 +32,9 @@ export const directions = {
 export type Mine = 'M';
 export class MinesweeperGame {
 	mines = new Map<string, Coordinate>();
+	totalRevealed = new Map<string, Coordinate>();
 	mineField!: (Mine | number)[][];
+	fieldCount = this.x * this.y;
 
 	constructor(
 		public readonly x: number,
@@ -45,6 +47,10 @@ export class MinesweeperGame {
 		}
 
 		this.generate();
+	}
+
+	public haveWon(): boolean {
+		return this.fieldCount === this.totalRevealed.size + this.mines.size;
 	}
 
 	public getValueOfTile(x: number, y: number): Mine | number {
@@ -92,15 +98,20 @@ export class MinesweeperGame {
 
 		if (field !== undefined && !revealed.has(coordStr)) {
 			revealed.add(coordStr);
-			const revealThese = [new Coordinate(x, y)];
 			if (field === 'M') {
-				throw [...revealThese, ...this.mines.values()];
+				throw [...this.mines.values()];
 			}
+			const revealThese = [new Coordinate(x, y)];
 			if (field === 0) {
 				for (const direction of Object.values(directions)) {
 					revealThese.push(...this.reveal(x + direction.x, y + direction.y, revealed));
 				}
 			}
+			// Tracking every revealed field
+			for (const r of revealThese) {
+				this.totalRevealed.set(r.toString(), r);
+			}
+
 			return revealThese;
 		} else return [];
 	}
