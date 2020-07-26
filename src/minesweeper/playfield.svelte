@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { filter } from 'rxjs/operators';
 	import { makeMatrix } from '../helper';
-	import type { MinesweeperGame } from './minesweeper';
+	import type { Coordinate, MinesweeperGame } from './minesweeper';
 	import { game$, startGame } from './store';
 	import Tile from './tile.svelte';
 
@@ -13,13 +13,35 @@
 	// Tile Component references in a matrix
 	let tiles: Tile[][] = makeMatrix(width, height);
 
+	function forEachTile(callback: (tile: Tile) => unknown): void {
+		for (const row of tiles) {
+			for (const tile of row) {
+				callback(tile);
+			}
+		}
+	}
+
+	function revealEvery(revealed: Coordinate[]): void {
+		for (const coord of revealed) {
+			const tile = tiles[coord.x][coord.y];
+			if (!(tile as any).revealed) {
+				(tile as any).reveal();
+			}
+		}
+	}
+
 	function reveal(x: number, y: number): void {
-		if ($g) {
-			const alsoRevealed = $g.reveal(x, y);
-			for (const coord of alsoRevealed) {
-				const tile = tiles[coord.x][coord.y];
-				if (!(tile as any).revealed) {
-					(tile as any).reveal();
+		if ($game$) {
+			try {
+				const alsoRevealed = $g.reveal(x, y);
+				revealEvery(alsoRevealed);
+			} catch (e) {
+				if (Array.isArray(e)) {
+					revealEvery(e);
+					setTimeout(() => {
+						game$.next(undefined);
+						forEachTile((tile) => (tile as any).hide());
+					}, 1000);
 				}
 			}
 		} else {

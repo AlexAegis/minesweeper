@@ -61,17 +61,14 @@ export class MinesweeperGame {
 			}
 			this.mineField[x] = row;
 		}
-		console.log(this.mineField);
 		// Generate mine locations until there is enough, while skipping the start location
 		while (this.mines.size < this.mineCount) {
 			const coord = Coordinate.random(0, this.x, 0, this.y);
-			console.log(coord);
 			if (!coord.equal(this.start)) {
 				this.mines.set(coord.toString(), coord);
 				this.mineField[coord.x][coord.y] = 'M';
 			}
 		}
-
 		// Add it's influence of every mine to it's surrounding fields
 		for (const [, mineLocation] of this.mines) {
 			for (const direction of Object.values(directions)) {
@@ -88,12 +85,23 @@ export class MinesweeperGame {
 		}
 	}
 
-	public reveal(x: number, y: number): Coordinate[] {
-		const field = this.mineField[x][y];
-		if (field === 'M') {
-			console.log('Stepped on Mine!');
-			// throw new Error('Stepped on Mine!');
-		}
-		return [new Coordinate(x, y)];
+	public reveal(x: number, y: number, revealed = new Set<string>()): Coordinate[] {
+		const coord = new Coordinate(x, y);
+		const coordStr = coord.toString();
+		const field = this.mineField[x]?.[y];
+
+		if (field !== undefined && !revealed.has(coordStr)) {
+			revealed.add(coordStr);
+			const revealThese = [new Coordinate(x, y)];
+			if (field === 'M') {
+				throw [...revealThese, ...this.mines.values()];
+			}
+			if (field === 0) {
+				for (const direction of Object.values(directions)) {
+					revealThese.push(...this.reveal(x + direction.x, y + direction.y, revealed));
+				}
+			}
+			return revealThese;
+		} else return [];
 	}
 }

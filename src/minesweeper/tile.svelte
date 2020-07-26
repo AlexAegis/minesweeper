@@ -9,6 +9,10 @@
 		revealed = true;
 	};
 
+	export const hide = (): void => {
+		revealed = false;
+	};
+
 	const colorMap: Record<any, string> = {
 		1: '#0000ff',
 		2: '#008100',

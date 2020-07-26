@@ -19,7 +19,7 @@
 		"build": "rollup -c",
 		"roll": "rollup -c -w",
 		"serve": "live-server public --port=8989",
-		"start": "concurrently --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgRed.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"ROLL,HTTP\" \"npm run roll\" \"npm run serve\"",
+		"start": "concurrently --kill-others-on-fail --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgRed.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"ROLL,HTTP\" \"npm run roll\" \"npm run serve\"",
 		"lint": "concurrently --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgYellow.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"SVELTE,ESLINT\" \"svelte-check\" \"eslint\"",
 		"test": "jest --passWithNoTests",
 		"lint:css": "stylelint --allow-empty-input --syntax=css ./**/*.css",
