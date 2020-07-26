@@ -3,13 +3,13 @@
 	"useTabs": true,
 	"singleQuote": true,
 	"printWidth": 100,
-	"eslintIntegration": true,
-	"jsonEnable": true,
 	"overrides": [
 		{
-			"files": "*.md",
+			"files": "*.{md,yml}",
 			"options": {
-				"tabWidth": 2
+				"tabWidth": 2,
+				"useTabs": false,
+				"printWidth": 80
 			}
 		}
 	]

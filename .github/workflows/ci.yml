@@ -1,94 +1,118 @@
 name: CI
 
 on:
-    push:
-        branches: [master, staging]
-    pull_request:
-        branches: [master, staging]
+  push:
+    branches: [master, staging]
+  pull_request:
+    branches: [master, staging]
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [12.x, 14.x]
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-              with:
-                  fetch-depth: 1
-            - name: Cache
-              id: cache-packages
-              uses: actions/cache@v1.2.0
-              with:
-                  path: node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2-beta
-              with:
-                  node-version: ${{ matrix.node-version }}
-            - name: Install packages
-              if: steps.cache-packages.outputs.cache-hit != 'true'
-              run: npm install
-            - name: Lint
-              run: npm run lint
-            - name: Lint css stylesheets
-              run: npm run lint:css
-            - name: Lint scss stylesheets
-              run: npm run lint:scss
-            - name: Lint markdown
-              run: npm run lint:md
-            - name: Lint markdown with remark
-              run: npm run lint:rmd
-            - name: Lint format
-              run: npm run lint:format
-    test:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [12.x, 14.x]
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-              with:
-                  fetch-depth: 1
-            - name: Cache
-              id: cache-packages
-              uses: actions/cache@v1.2.0
-              with:
-                  path: node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2-beta
-              with:
-                  node-version: ${{ matrix.node-version }}
-            - name: Install packages
-              if: steps.cache-packages.outputs.cache-hit != 'true'
-              run: npm install
-            - name: Test
-              run: npm run test
-    build:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [12.x, 14.x]
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-              with:
-                  fetch-depth: 1
-            - name: Cache
-              id: cache-packages
-              uses: actions/cache@v1.2.0
-              with:
-                  path: node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2-beta
-              with:
-                  node-version: ${{ matrix.node-version }}
-            - name: Install packages
-              if: steps.cache-packages.outputs.cache-hit != 'true'
-              run: npm install
-            - name: Build
-              run: npm run build
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Cache
+        id: cache-packages
+        uses: actions/cache@v1.2.0
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install packages
+        if: steps.cache-packages.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Lint
+        run: npm run lint
+      - name: Lint css stylesheets
+        run: npm run lint:css
+      - name: Lint scss stylesheets
+        run: npm run lint:scss
+      - name: Lint markdown
+        run: npm run lint:md
+      - name: Lint markdown with remark
+        run: npm run lint:rmd
+      - name: Lint format
+        run: npm run lint:format
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Cache
+        id: cache-packages
+        uses: actions/cache@v1.2.0
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install packages
+        if: steps.cache-packages.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Test
+        run: npm run test
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Cache
+        id: cache-packages
+        uses: actions/cache@v1.2.0
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install packages
+        if: steps.cache-packages.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Build
+        run: npm run build
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, lint, build]
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Cache
+        id: cache-packages
+        uses: actions/cache@v1.2.0
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Deploy
+        if: steps.cache-packages.outputs.cache-hit != 'true'
+        run: npm run deploy
