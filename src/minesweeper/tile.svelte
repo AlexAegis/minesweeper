@@ -72,6 +72,7 @@
 	<button
 		class="tile"
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
+		aria-label="Tile{flagged ? ' flagged' : ''}"
 		on:click
 		on:contextmenu={onContextMenu}>
 		{#if flagged}F{/if}
