@@ -3,14 +3,17 @@
 	export let y: number;
 	export let hasMine: boolean = false;
 	export let revealed: boolean = false;
+	export let flagged: boolean = false;
 	export let value!: 'M' | number;
 
 	export const reveal = (): void => {
 		revealed = true;
+		flagged = false;
 	};
 
 	export const hide = (): void => {
 		revealed = false;
+		flagged = false;
 	};
 
 	const colorMap: Record<any, string> = {
@@ -24,6 +27,11 @@
 		8: '#808080',
 		M: '#000000',
 	};
+
+	function onContextMenu(e: Event) {
+		e.preventDefault();
+		flagged = !flagged;
+	}
 </script>
 
 <style>
@@ -50,6 +58,9 @@
 		border-style: outset;
 		border-color: #ddd;
 		background-color: #ccc;
+		color: red;
+		font-size: 32px;
+		text-align: center;
 	}
 </style>
 
@@ -58,5 +69,11 @@
 		{#if hasMine}Mine!{:else if value}{value}{/if}
 	</div>
 {:else}
-	<button class="tile" style="grid-row: {x + 1}; grid-column: {y + 1};" on:click />
+	<button
+		class="tile"
+		style="grid-row: {x + 1}; grid-column: {y + 1};"
+		on:click
+		on:contextmenu={onContextMenu}>
+		{#if flagged}F{/if}
+	</button>
 {/if}
