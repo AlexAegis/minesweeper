@@ -115,5 +115,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Deploy
-        if: steps.cache-packages.outputs.cache-hit != 'true'
         run: npm run deploy
