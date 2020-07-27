@@ -1,16 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { padArray } from '../../helper';
 	import DigitalNumber from './digital-number.svelte';
 
 	export let value: number | undefined;
 	export let paddedLength = 3;
-
-	function padArray<T>(array: T[], to: number, padding: T): T[] {
-		while (array.length < to) {
-			array.unshift(padding);
-		}
-		return array;
-	}
 
 	$: numbers = padArray(
 		(value ?? 0)
@@ -20,10 +13,6 @@
 		paddedLength,
 		0
 	);
-
-	onMount(() => {
-		console.log(numbers);
-	});
 </script>
 
 <style>

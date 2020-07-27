@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { documentMouseUp$ } from './store';
+	import { documentMouseUp$ } from '../store';
 
 	let mousedown = false;
 

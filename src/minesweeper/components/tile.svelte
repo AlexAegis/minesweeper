@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { FieldMark } from './minesweeper';
-	import { colorMap, tileClick$ } from './store';
+	import type { FieldMark } from '../minesweeper';
+	import { assetMap, colorMap, tileClick$ } from '../store';
 
 	const dispatch = createEventDispatcher();
 
@@ -125,12 +125,10 @@
 		class:error={error && isMine}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if isMine}
-			<img aria-label="mine" src="./assets/minesweeper/mine-small.png" alt="mine" />
-		{:else if value}
-			{#if error}
-				<img aria-label="mine" src="./assets/minesweeper/mine-false-small.png" alt="mine" />
-			{:else}{value}{/if}
-		{/if}
+			<img aria-label="mine" src={assetMap.mine} alt="mine" />
+		{:else if error}
+			<img aria-label="mine" src={assetMap.mineFalse} alt="mine" />
+		{:else if value}{value}{/if}
 	</div>
 {:else}
 	<button
@@ -143,7 +141,9 @@
 		on:mousedown={() => tileClick$.next()}
 		on:contextmenu={onMark}>
 		{#if mark === 'flag'}
-			<img aria-label="flag" src="./assets/minesweeper/flag-small.png" alt="flag" />
-		{:else if mark === 'questionMark'}?{/if}
+			<img aria-label="flag" src={assetMap.flag} alt="flag" />
+		{:else if mark === 'questionMark'}
+			<img aria-label="flag" src={assetMap.questionMark} alt="flag" />
+		{/if}
 	</button>
 {/if}

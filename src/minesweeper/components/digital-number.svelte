@@ -1,6 +1,5 @@
 <script lang="ts">
 	export let value: number;
-	console.log(value);
 
 	$: lastDigit = value % 10;
 </script>

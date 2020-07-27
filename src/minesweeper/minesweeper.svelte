@@ -1,13 +1,19 @@
 <script lang="ts">
-	import DigitDisplay from './digit-display.svelte';
-	import Menu from './menu.svelte';
+	import { onMount } from 'svelte';
+	import DigitDisplay from './components/digit-display.svelte';
+	import Menu from './components/menu.svelte';
+	import Panel from './components/panel.svelte';
+	import Playfield from './components/playfield.svelte';
+	import Smiley from './components/smiley.svelte';
 	import type { Field, MinesweeperGame } from './minesweeper';
-	import Panel from './panel.svelte';
-	import Playfield from './playfield.svelte';
-	import Smiley from './smiley.svelte';
-	import { elapsedTime$, height$, remainingMines$, width$ } from './store';
+	import { assetMap, elapsedTime$, height$, remainingMines$, width$ } from './store';
 
 	let game!: MinesweeperGame<Field>;
+
+	onMount(() => {
+		// Preloading assets
+		for (const path of Object.values(assetMap)) new Image().src = path;
+	});
 </script>
 
 <style>

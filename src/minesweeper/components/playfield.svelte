@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Subscription } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
-	import { makeMatrix } from '../helper';
-	import { MinesweeperGame } from './minesweeper';
-	import { game$, isEnded$, mineCount$ } from './store';
+	import { makeMatrix } from '../../helper';
+	import { MinesweeperGame } from '../minesweeper';
+	import { game$, isEnded$, mineCount$ } from '../store';
 	import Tile from './tile.svelte';
 
 	export let width: number;

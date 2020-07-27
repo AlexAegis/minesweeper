@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { gamestate$, isTileMouseDown$ } from '../store';
 	import Button from './button.svelte';
-	import { gamestate$, isTileMouseDown$ } from './store';
 
 	$: smiley = $isTileMouseDown$ ? 'click' : $gamestate$;
 </script>

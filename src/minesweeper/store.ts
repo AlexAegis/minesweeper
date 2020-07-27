@@ -38,3 +38,14 @@ export const colorMap: Record<number, string> = {
 	7: '#000000',
 	8: '#808080',
 };
+
+export const assetMap = {
+	flag: './assets/minesweeper/flag-small.png',
+	mineFalse: './assets/minesweeper/mine-false-small.png',
+	mine: './assets/minesweeper/mine-small.png',
+	smileyClick: './assets/minesweeper/smiley-click-small.png',
+	smileyLost: './assets/minesweeper/smiley-lost-small.png',
+	smileyOngoing: './assets/minesweeper/smiley-ongoing-small.png',
+	smileyWon: './assets/minesweeper/smiley-won-small.png',
+	questionMark: './assets/minesweeper/question-mark-small.png',
+};

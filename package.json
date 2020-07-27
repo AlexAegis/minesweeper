@@ -2,7 +2,7 @@
 	"name": "svelte-sandbox",
 	"displayName": "Svelte Sandbox",
 	"description": "Svelte Sandbox",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"license": "mit",
 	"private": true,
 	"author": {
@@ -42,6 +42,7 @@
 		"@commitlint/cli": "^9.1.2",
 		"@commitlint/config-conventional": "^9.1.1",
 		"@rollup/plugin-commonjs": "^14.0.0",
+		"@rollup/plugin-json": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^8.4.0",
 		"@rollup/plugin-typescript": "^5.0.2",
 		"@tsconfig/svelte": "^1.0.3",

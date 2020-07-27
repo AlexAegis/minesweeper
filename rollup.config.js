@@ -1,11 +1,12 @@
-import svelte from 'rollup-plugin-svelte';
-import autoPreprocess from 'svelte-preprocess';
-import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
-import livereload from 'rollup-plugin-livereload';
+import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 import gzipPlugin from 'rollup-plugin-gzip';
+import livereload from 'rollup-plugin-livereload';
+import svelte from 'rollup-plugin-svelte';
+import { terser } from 'rollup-plugin-terser';
+import autoPreprocess from 'svelte-preprocess';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -35,6 +36,7 @@ export default {
 			browser: true,
 			dedupe: ['svelte'],
 		}),
+		json(),
 		commonjs(),
 
 		// Watch the `public` directory and refresh the
