@@ -1,6 +1,10 @@
 <script lang="ts">
+	import type { Field, MinesweeperGame } from './minesweeper';
 	import Playfield from './playfield.svelte';
-	import { gamestate$, height$, width$ } from './store';
+	import Smiley from './smiley.svelte';
+	import { height$, width$ } from './store';
+
+	let game!: MinesweeperGame<Field>;
 </script>
 
 <style>
@@ -18,6 +22,7 @@
 
 <div>
 	<h1>MineSweeper</h1>
-	{$gamestate$}
-	<Playfield height={$height$} width={$width$} class="pf" />
+	<Smiley on:click={() => game.reset()} />
+
+	<Playfield bind:game height={$height$} width={$width$} class="pf" />
 </div>

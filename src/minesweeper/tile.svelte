@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import type { FieldMark } from './minesweeper';
-	import { colorMap } from './store';
+	import { colorMap, tileClick$ } from './store';
 
 	const dispatch = createEventDispatcher();
 
@@ -82,6 +82,12 @@
 		height: 40px;
 		width: 40px;
 		display: block;
+		padding: 0;
+		box-sizing: border-box;
+		border-radius: 0px;
+		border-style: outset;
+		border-color: #ddd;
+		border-width: 3px;
 	}
 
 	div {
@@ -97,9 +103,6 @@
 		z-index: 100;
 		outline: none;
 		cursor: pointer;
-		border-radius: 0px;
-		border-style: outset;
-		border-color: #ddd;
 		background-color: #ccc;
 		color: red;
 		font-size: 32px;
@@ -110,6 +113,14 @@
 		background-color: red;
 		border-color: red;
 	}
+
+	img {
+		image-rendering: pixelated;
+		width: inherit;
+		height: inherit;
+		margin-top: -1px;
+		margin-left: -1px;
+	}
 </style>
 
 {#if revealed}
@@ -117,7 +128,9 @@
 		class="tile"
 		class:error
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
-		{#if isMine}X{:else if value}{value}{/if}
+		{#if isMine}
+			<img aria-label="mine" src="./assets/minesweeper/mine-small.png" alt="mine" />
+		{:else if value}{value}{/if}
 	</div>
 {:else}
 	<button
@@ -127,7 +140,10 @@
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
 		aria-label="Tile {mark}"
 		on:click={onReveal}
+		on:mousedown={() => tileClick$.next()}
 		on:contextmenu={onMark}>
-		{#if mark === 'flag'}F{:else if mark === 'questionMark'}?{/if}
+		{#if mark === 'flag'}
+			<img aria-label="flag" src="./assets/minesweeper/flag-small.png" alt="flag" />
+		{:else if mark === 'questionMark'}?{/if}
 	</button>
 {/if}

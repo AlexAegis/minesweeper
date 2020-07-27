@@ -10,7 +10,7 @@
 	export let width: number;
 	export let height: number;
 
-	let game: MinesweeperGame<any>;
+	export let game: MinesweeperGame<any>;
 	let s = new Subscription();
 
 	let mounted = false;

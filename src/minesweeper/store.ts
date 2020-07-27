@@ -1,7 +1,16 @@
-import { combineLatest, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { combineLatest, fromEvent, merge, of, Subject } from 'rxjs';
+import { map, mapTo, switchMap } from 'rxjs/operators';
 import { SvelteSubject } from '../helper';
 import type { MinesweeperGame } from './minesweeper';
+
+export const tileClick$ = new Subject<void>();
+
+export const documentMouseUp$ = fromEvent(document, 'mouseup');
+
+export const isTileMouseDown$ = merge(
+	tileClick$.pipe(mapTo(true)),
+	documentMouseUp$.pipe(mapTo(false))
+);
 
 export const width$ = new SvelteSubject<number>(10);
 export const height$ = new SvelteSubject<number>(10);
