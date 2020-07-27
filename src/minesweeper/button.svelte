@@ -6,6 +6,12 @@
 	$: if ($documentMouseUp$) mousedown = false;
 </script>
 
+<style>
+	button {
+		font-family: monospace;
+	}
+</style>
+
 <button
 	class="panel {$$props.class}"
 	aria-label={$$props['aria-label']}

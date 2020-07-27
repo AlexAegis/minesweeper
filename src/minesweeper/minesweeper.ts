@@ -105,8 +105,8 @@ export class MinesweeperGame<T extends Field = Field> {
 	);
 
 	public constructor(
-		private readonly width: number,
-		private readonly height: number = width,
+		private readonly height: number,
+		private readonly width: number = height,
 		fieldAcquier: (x: number, y: number) => T
 	) {
 		this.matrix = makeMatrix(width, height, (x, y) => ({ t: fieldAcquier(x, y) }));

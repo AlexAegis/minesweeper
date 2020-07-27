@@ -13,7 +13,7 @@ export const isTileMouseDown$ = merge(
 );
 
 export const width$ = new SvelteSubject<number>(12);
-export const height$ = new SvelteSubject<number>(12);
+export const height$ = new SvelteSubject<number>(8);
 export const mineCount$ = new SvelteSubject<number>(4);
 
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);

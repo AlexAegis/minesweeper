@@ -93,6 +93,9 @@
 		text-align: center;
 		font-size: 32px;
 		line-height: 42px;
+	}
+
+	.fontpatch {
 		padding-left: 4px;
 	}
 
@@ -118,7 +121,7 @@
 {#if revealed}
 	<div
 		class="tile"
-		class:numpad={value && !revealed}
+		class:fontpatch={!isMine && value && !error}
 		class:error={error && isMine}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if isMine}
