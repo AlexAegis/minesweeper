@@ -1,9 +1,6 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { FieldMark } from '../minesweeper';
 	import { assetMap, colorMap, tileClick$ } from '../store';
-
-	const dispatch = createEventDispatcher();
 
 	export let x: number;
 	export let y: number;
