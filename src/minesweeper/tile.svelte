@@ -1,61 +1,80 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { Coordinate } from './minesweeper';
-	import type { FlaggedDetail } from './tile';
+	import type { FieldMark } from './minesweeper';
+	import { colorMap } from './store';
 
 	const dispatch = createEventDispatcher();
 
 	export let x: number;
 	export let y: number;
-	export let hasMine: boolean = false;
-	export let revealed: boolean = false;
-	export let disabled: boolean = false;
-	export let flagged: boolean = false;
-	export let value!: 'M' | number;
+	let value: number;
+	let revealed: boolean = false;
+	let mark: FieldMark;
+	let isMine: boolean = false;
+	let error: boolean = false;
 
-	export const reveal = (): void => {
-		revealed = true;
-		flagged = false;
-	};
+	let onReveal: undefined | ((e: Event) => void);
+	let onMark: undefined | ((e: Event) => void);
 
-	export const hide = (): void => {
-		revealed = false;
-		flagged = false;
-	};
-
-	const colorMap: Record<any, string> = {
-		1: '#0000ff',
-		2: '#008100',
-		3: '#ff1300',
-		4: '#000083',
-		5: '#810500',
-		6: '#2a9494',
-		7: '#000000',
-		8: '#808080',
-		M: '#000000',
-	};
-
-	function contextMenuHandler(e: Event): void {
-		e.preventDefault();
-		flagged = !flagged;
+	export function getX(): number {
+		return x;
+	}
+	export function getY(): number {
+		return y;
+	}
+	export function getValue(): number {
+		return value;
+	}
+	export function getRevealed(): boolean {
+		return revealed;
+	}
+	export function getMark(): FieldMark {
+		return mark;
 	}
 
-	function clickHandler(e: Event): void {
-		if (flagged) {
+	export function getIsMine(): boolean {
+		return isMine;
+	}
+
+	export function getError(): boolean {
+		return error;
+	}
+
+	export function setValue(v: number): void {
+		value = v;
+	}
+
+	export function setRevealed(r: boolean): void {
+		revealed = r;
+	}
+
+	export function setMark(m: FieldMark): void {
+		mark = m;
+	}
+
+	export function setIsMine(m: boolean): void {
+		isMine = m;
+	}
+
+	export function setError(e: boolean): void {
+		error = e;
+	}
+
+	export function registerOnReveal(callback: () => void): void {
+		onReveal = (e: Event) => {
 			e.preventDefault();
-			flagged = false;
-		} else {
-			dispatch('click');
-		}
+			callback();
+		};
 	}
 
-	// Emit it's flagged status
-	$: {
-		dispatch('flagged', {
-			flagged,
-			tile: new Coordinate(x, y),
-		} as FlaggedDetail);
+	export function registerOnMark(callback: () => void): void {
+		onMark = (e: Event) => {
+			e.preventDefault();
+			callback();
+		};
 	}
+
+	let disabled: boolean = false;
 </script>
 
 <style>
@@ -86,20 +105,29 @@
 		font-size: 32px;
 		text-align: center;
 	}
+
+	.error {
+		background-color: red;
+		border-color: red;
+	}
 </style>
 
 {#if revealed}
-	<div class="tile" style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
-		{#if hasMine}Mine!{:else if value}{value}{/if}
+	<div
+		class="tile"
+		class:error
+		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
+		{#if isMine}X{:else if value}{value}{/if}
 	</div>
 {:else}
 	<button
 		{disabled}
 		class="tile"
+		class:error
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
-		aria-label="Tile{flagged ? ' flagged' : ''}"
-		on:click={clickHandler}
-		on:contextmenu={contextMenuHandler}>
-		{#if flagged}F{/if}
+		aria-label="Tile {mark}"
+		on:click={onReveal}
+		on:contextmenu={onMark}>
+		{#if mark === 'flag'}F{:else if mark === 'questionMark'}?{/if}
 	</button>
 {/if}

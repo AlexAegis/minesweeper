@@ -1,21 +1,29 @@
-import { map } from 'rxjs/operators';
+import { combineLatest, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { SvelteSubject } from '../helper';
-import { Coordinate, MinesweeperGame } from './minesweeper';
+import type { MinesweeperGame } from './minesweeper';
 
-export type GameState = 'ongoing' | 'lost' | 'won' | undefined;
+export const width$ = new SvelteSubject<number>(10);
+export const height$ = new SvelteSubject<number>(10);
 
-export const score$ = new SvelteSubject<number>(0);
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);
-export const gameState$ = new SvelteSubject<GameState>(undefined);
-export const isGameAtEndState$ = gameState$.pipe(map((gs) => gs === 'lost' || gs === 'won'));
 
-export async function startGame(
-	width: number,
-	height: number,
-	m: number,
-	x: number,
-	y: number
-): Promise<void> {
-	const mineSweeper = new MinesweeperGame(width, height, m, new Coordinate(x, y));
-	game$.next(mineSweeper);
-}
+export const gamestate$ = game$.pipe(switchMap((g) => g?.gamestate$ ?? of(undefined)));
+
+export const dimensions$ = combineLatest([width$, height$]).pipe(
+	map(([width, height]) => ({ width, height }))
+);
+
+export const mineCount$ = new SvelteSubject<number>(2);
+
+export const colorMap: Record<number, string> = {
+	0: '#000000',
+	1: '#0000ff',
+	2: '#008100',
+	3: '#ff1300',
+	4: '#000083',
+	5: '#810500',
+	6: '#2a9494',
+	7: '#000000',
+	8: '#808080',
+};
