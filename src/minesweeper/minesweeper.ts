@@ -246,6 +246,17 @@ export class MinesweeperGame<T extends Field = Field> {
 						}
 					}
 				}
+			} else if (isOriginalReveal && t.getRevealed() && t.getValue()) {
+				const surround = this.surrounding(t.getX(), t.getY());
+				const flaggedCount = surround.filter((s) => s.getMark() === 'flag').length;
+				const questionCount = surround.filter((s) => s.getMark() === 'questionMark').length;
+				if (flaggedCount === t.getValue() && questionCount === 0) {
+					for (const tile of surround) {
+						if (tile.getMark() === undefined) {
+							this.onReveals.get(tile)?.(false);
+						}
+					}
+				}
 			}
 		};
 	}
