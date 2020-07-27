@@ -88,9 +88,8 @@
 	div {
 		user-select: none;
 		font-family: 'Geo', sans-serif;
-		background-color: #aaa;
 		border-style: solid;
-		border-color: #707070;
+		border-color: #a6a6a6;
 		border-width: 1px;
 		font-size: 60px;
 		line-height: 32px;

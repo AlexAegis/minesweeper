@@ -39,9 +39,10 @@
 
 <style>
 	div {
-		background-color: white;
 		display: grid;
 		width: fit-content;
+		height: fit-content;
+		margin: auto;
 	}
 </style>
 

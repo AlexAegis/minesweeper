@@ -1,5 +1,7 @@
 <script lang="ts">
+	import DigitDisplay from './digit-display.svelte';
 	import type { Field, MinesweeperGame } from './minesweeper';
+	import Panel from './panel.svelte';
 	import Playfield from './playfield.svelte';
 	import Smiley from './smiley.svelte';
 	import { height$, width$ } from './store';
@@ -8,21 +10,24 @@
 </script>
 
 <style>
-	div {
-		background-color: #aaa;
-		height: 100%;
+	.game {
 		display: grid;
+		grid-auto-rows: 1fr;
+		grid-auto-columns: 1fr;
+		height: fit-content;
+		width: fit-content;
+		box-sizing: border-box;
 		grid-template-rows: 5em auto;
-	}
-
-	div :global(.pf) {
 		margin: auto;
 	}
 </style>
 
-<div>
-	<h1>MineSweeper</h1>
-	<Smiley on:click={() => game.reset()} />
+<div class="panel outset game padded">
+	<Panel class="panel inset padded">
+		<DigitDisplay value={21} />
+		<Smiley on:click={() => game.reset()} />
+		<DigitDisplay value={11} />
+	</Panel>
+	<Playfield class="panel inset" bind:game height={$height$} width={$width$} />
 
-	<Playfield bind:game height={$height$} width={$width$} class="pf" />
 </div>

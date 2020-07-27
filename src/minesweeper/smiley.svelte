@@ -10,9 +10,14 @@
 		width: 100%;
 		height: 100%;
 	}
+
+	button {
+		width: 60px;
+		height: 60px;
+	}
 </style>
 
-<button on:click aria-label="Restart" class="button">
+<button on:click aria-label="Restart" class="button padded">
 	<img
 		aria-label={smiley}
 		alt="{smiley} game"

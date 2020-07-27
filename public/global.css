@@ -12,32 +12,32 @@ button {
 }
 
 .button {
-	width: 60px;
-	height: 60px;
 	border: #e2e2e2;
 	border-style: outset;
 	outline-color: #c3c3c3;
 	outline-style: outset;
+	outline-width: 0;
 	border-spacing: 3px;
 	border-width: 3px;
-	padding: 3px;
 	background-color: rgb(192, 192, 192);
 }
 
 .panel {
-	width: 60px;
-	height: 60px;
+	outline-width: 0;
 	border: #eee;
 	border-style: outset;
 	border-spacing: 3px;
 	border-width: 3px;
-	padding: 3px;
 	background-color: rgb(192, 192, 192);
 }
 
 .inset {
 	border-style: inset;
 	outline-style: inset;
+}
+
+.padded {
+	padding: 3px;
 }
 
 .outset {
