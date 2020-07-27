@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DigitDisplay from './digit-display.svelte';
+	import Menu from './menu.svelte';
 	import type { Field, MinesweeperGame } from './minesweeper';
 	import Panel from './panel.svelte';
 	import Playfield from './playfield.svelte';
@@ -17,12 +18,13 @@
 		height: fit-content;
 		width: fit-content;
 		box-sizing: border-box;
-		grid-template-rows: 5em auto;
+		grid-template-rows: auto 5em auto;
 		margin: auto;
 	}
 </style>
 
 <div class="panel outset game padded">
+	<Menu />
 	<Panel class="panel inset padded">
 		<DigitDisplay value={21} />
 		<Smiley on:click={() => game.reset()} />

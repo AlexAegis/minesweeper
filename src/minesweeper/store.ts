@@ -12,8 +12,9 @@ export const isTileMouseDown$ = merge(
 	documentMouseUp$.pipe(mapTo(false))
 );
 
-export const width$ = new SvelteSubject<number>(10);
-export const height$ = new SvelteSubject<number>(10);
+export const width$ = new SvelteSubject<number>(12);
+export const height$ = new SvelteSubject<number>(12);
+export const mineCount$ = new SvelteSubject<number>(4);
 
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);
 
@@ -26,8 +27,6 @@ export const isEnded$ = gamestate$.pipe(
 export const dimensions$ = combineLatest([width$, height$]).pipe(
 	map(([width, height]) => ({ width, height }))
 );
-
-export const mineCount$ = new SvelteSubject<number>(2);
 
 export const colorMap: Record<number, string> = {
 	0: '#000000',

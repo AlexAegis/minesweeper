@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from './button.svelte';
 	import { gamestate$, isTileMouseDown$ } from './store';
 
 	$: smiley = $isTileMouseDown$ ? 'click' : $gamestate$;
@@ -10,16 +11,11 @@
 		width: 100%;
 		height: 100%;
 	}
-
-	button {
-		width: 60px;
-		height: 60px;
-	}
 </style>
 
-<button on:click aria-label="Restart" class="button padded">
+<Button on:click aria-label="Restart" class="button padded" style="width: 60px; height: 60px;">
 	<img
 		aria-label={smiley}
 		alt="{smiley} game"
 		src="./assets/minesweeper/smiley-{smiley}-small.png" />
-</button>
+</Button>

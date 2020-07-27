@@ -81,26 +81,25 @@
 		height: 40px;
 		width: 40px;
 		display: block;
-		padding: 0;
 		box-sizing: border-box;
 	}
 
 	div {
 		user-select: none;
-		font-family: 'Geo', sans-serif;
+		font-family: 'Press Start 2P', cursive;
 		border-style: solid;
 		border-color: #a6a6a6;
 		border-width: 1px;
-		font-size: 60px;
-		line-height: 32px;
 		text-align: center;
-
-		padding: 2px;
+		font-size: 32px;
+		line-height: 42px;
+		padding-left: 4px;
 	}
 
 	button {
 		font-size: 32px;
 		text-align: center;
+		padding: 0;
 	}
 
 	.error {
@@ -119,6 +118,7 @@
 {#if revealed}
 	<div
 		class="tile"
+		class:numpad={value && !revealed}
 		class:error={error && isMine}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if isMine}
