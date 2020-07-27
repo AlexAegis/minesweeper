@@ -5,7 +5,7 @@
 	import Panel from './panel.svelte';
 	import Playfield from './playfield.svelte';
 	import Smiley from './smiley.svelte';
-	import { height$, width$ } from './store';
+	import { elapsedTime$, height$, remainingMines$, width$ } from './store';
 
 	let game!: MinesweeperGame<Field>;
 </script>
@@ -26,9 +26,9 @@
 <div class="panel outset game padded">
 	<Menu />
 	<Panel class="panel inset padded">
-		<DigitDisplay value={21} />
+		<DigitDisplay value={$remainingMines$} paddedLength={3} />
 		<Smiley on:click={() => game.reset()} />
-		<DigitDisplay value={11} />
+		<DigitDisplay value={$elapsedTime$} paddedLength={3} />
 	</Panel>
 	<Playfield class="panel inset" bind:game height={$height$} width={$width$} />
 

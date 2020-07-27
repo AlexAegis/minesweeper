@@ -1,5 +1,13 @@
-import { BehaviorSubject, combineLatest, identity, merge } from 'rxjs';
-import { filter, map, mapTo } from 'rxjs/operators';
+import { BehaviorSubject, identity, merge, of, Subject, timer } from 'rxjs';
+import {
+	distinctUntilChanged,
+	filter,
+	map,
+	mapTo,
+	skip,
+	switchMap,
+	takeUntil,
+} from 'rxjs/operators';
 import { makeMatrix } from '../helper';
 import { Coordinate } from './coordinate.class';
 
@@ -79,29 +87,43 @@ export class MinesweeperGame<T extends Field = Field> {
 	private mines = new Map<string, Coordinate>();
 	private mineCount = 10;
 
+	private clickCount$ = new BehaviorSubject<number>(0);
 	private revealed$ = new BehaviorSubject<number>(0);
 	private correctlyMarked$ = new BehaviorSubject<number>(0);
+	private marked$ = new BehaviorSubject<number>(0);
+	public resetNotification$ = new Subject<void>();
 	private isBlown$ = new BehaviorSubject<FieldHolder<T> | undefined>(undefined);
 
 	public isWon$ = this.revealed$.pipe(
 		map((revealedCount) => revealedCount + this.mineCount === this.tileCount)
 	);
 
-	public isOnGoing$ = combineLatest([this.isWon$, this.isBlown$]).pipe(
-		map(([isWon, isBlown]) => !isWon && !isBlown)
+	public isOnGoing$ = this.clickCount$.pipe(
+		map((c) => c > 0),
+		distinctUntilChanged()
 	);
 
-	public isEnded$ = combineLatest([this.isWon$, this.isBlown$]).pipe(
-		map(([isWon, isBlown]) => isWon || isBlown)
-	);
+	public remainingMines$ = this.marked$.pipe(map((marked) => this.mineCount - marked));
 
 	public gamestate$ = merge(
-		this.isWon$.pipe(filter(identity), mapTo('won')),
+		this.isWon$.pipe(filter(identity), distinctUntilChanged(), mapTo('won')),
 		this.isBlown$.pipe(
 			filter((isBlown) => !!isBlown),
+			distinctUntilChanged(),
 			mapTo('lost')
 		),
-		this.isOnGoing$.pipe(filter(identity), mapTo('ongoing'))
+		this.isOnGoing$.pipe(distinctUntilChanged(), mapTo('ongoing'))
+	).pipe(distinctUntilChanged());
+
+	public isEnded$ = this.gamestate$.pipe(
+		map((state) => state === 'won' || state === 'lost'),
+		distinctUntilChanged()
+	);
+
+	public elapsedTime$ = this.isOnGoing$.pipe(
+		switchMap((isOngoing) =>
+			isOngoing ? timer(0, 1000).pipe(takeUntil(this.isEnded$.pipe(skip(1)))) : of(0)
+		)
 	);
 
 	public constructor(
@@ -140,6 +162,8 @@ export class MinesweeperGame<T extends Field = Field> {
 		this.isBlown$.next(undefined);
 		this.revealed$.next(0);
 		this.correctlyMarked$.next(0);
+		this.marked$.next(0);
+		this.clickCount$.next(0);
 		this.mines.clear();
 		this.forEach((t, th) => {
 			t.setValue(0);
@@ -149,23 +173,31 @@ export class MinesweeperGame<T extends Field = Field> {
 			t.setRevealed(false);
 			t.registerOnReveal(() => {
 				this.start(t.getX(), t.getY());
+				this.increaseClicks();
 				th.onReveal?.(false);
 			});
 		});
+		this.resetNotification$.next();
 	}
 
+	private increaseClicks(): void {
+		this.clickCount$.next(this.clickCount$.value + 1);
+	}
 	/**
 	 * Track the count of mine marks, and set the state of the mark
 	 */
 	private makeMarkLogic(t: T): () => void {
 		return () => {
+			this.increaseClicks();
 			if (t.getMark() === 'questionMark') {
 				t.setMark(undefined);
 			} else if (t.getMark() === 'flag') {
 				t.setMark('questionMark');
+				this.marked$.next(this.marked$.value - 1);
 				if (t.getIsMine()) this.correctlyMarked$.next(this.correctlyMarked$.value - 1);
 			} else if (t.getMark() === undefined) {
 				t.setMark('flag');
+				this.marked$.next(this.marked$.value + 1);
 				if (t.getIsMine()) this.correctlyMarked$.next(this.correctlyMarked$.value + 1);
 			}
 		};
@@ -173,6 +205,8 @@ export class MinesweeperGame<T extends Field = Field> {
 
 	private makeMineRevealLogic(t: T, th: FieldHolder<T>): (isOriginalReveal?: boolean) => void {
 		return (isOriginalReveal = true) => {
+			if (isOriginalReveal) this.increaseClicks();
+
 			if (isOriginalReveal && t.getMark() !== undefined) {
 				t.setMark(undefined);
 			} else {
@@ -197,6 +231,8 @@ export class MinesweeperGame<T extends Field = Field> {
 	 */
 	private makeTileRevealLogic(t: T): (isOriginalReveal?: boolean) => void {
 		return (isOriginalReveal = true) => {
+			if (isOriginalReveal) this.increaseClicks();
+
 			if (isOriginalReveal && t.getMark() !== undefined) {
 				t.setMark(undefined);
 			} else if (!t.getRevealed() && t.getMark() === undefined) {
