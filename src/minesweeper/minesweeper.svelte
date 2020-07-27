@@ -31,5 +31,4 @@
 		<DigitDisplay value={$elapsedTime$} paddedLength={3} />
 	</Panel>
 	<Playfield class="panel inset" bind:game height={$height$} width={$width$} />
-
 </div>
