@@ -121,6 +121,7 @@
 		class:fontpatch={!isMine && value && !error}
 		class:error={error && isMine}
 		on:click={onReveal}
+		on:contextmenu={onReveal}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if isMine}
 			<img aria-label="mine" src={assetMap.mine} alt="mine" />
