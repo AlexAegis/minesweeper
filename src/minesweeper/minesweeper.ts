@@ -8,11 +8,11 @@ import {
 	switchMap,
 	takeUntil,
 } from 'rxjs/operators';
-import { makeMatrix } from '../helper';
+import { shuffle } from '../helper';
 import { Coordinate } from './coordinate.class';
 
 export type FieldMark = 'flag' | 'questionMark' | undefined;
-
+export type Revealer = (isFlood?: boolean) => void;
 export interface Field {
 	/**
 	 * Implement only simple get logic
@@ -67,35 +67,28 @@ export interface Field {
 	 *
 	 * @param callback call this on left click
 	 */
-	registerOnReveal(callback: (isFlood?: boolean) => void): void;
+	registerOnReveal(callback: Revealer): void;
 	/**
 	 *
 	 * @param callback call this on right click
 	 */
-	registerOnMark(callback: (isFlood?: boolean) => void): void;
+	registerOnMark(callback: Revealer): void;
 }
 
-type FieldHolder<T> = {
-	t: T;
-	onReveal?: (isFlood?: boolean) => void;
-};
-
 export class MinesweeperGame<T extends Field = Field> {
-	private matrix: FieldHolder<T>[][];
 	private tileCount = this.width * this.height;
 
-	private mines = new Map<string, Coordinate>();
-	private mineCount = 10;
+	private onReveals = new Map<T, Revealer>();
 
 	private clickCount$ = new BehaviorSubject<number>(0);
 	private revealed$ = new BehaviorSubject<number>(0);
 	private correctlyMarked$ = new BehaviorSubject<number>(0);
 	private marked$ = new BehaviorSubject<number>(0);
 	public resetNotification$ = new Subject<void>();
-	private isBlown$ = new BehaviorSubject<FieldHolder<T> | undefined>(undefined);
+	private isBlown$ = new BehaviorSubject<T | undefined>(undefined);
 
 	public isWon$ = this.revealed$.pipe(
-		map((revealedCount) => revealedCount + this.mineCount === this.tileCount)
+		map((revealedCount) => revealedCount + this.mineCount >= this.tileCount)
 	);
 
 	public isOnGoing$ = this.clickCount$.pipe(
@@ -106,7 +99,7 @@ export class MinesweeperGame<T extends Field = Field> {
 	public remainingMines$ = this.marked$.pipe(map((marked) => this.mineCount - marked));
 
 	public gamestate$ = merge(
-		this.isWon$.pipe(filter(identity), distinctUntilChanged(), mapTo('won')),
+		this.isWon$.pipe(filter(identity), mapTo('won')),
 		this.isBlown$.pipe(
 			filter((isBlown) => !!isBlown),
 			distinctUntilChanged(),
@@ -128,34 +121,35 @@ export class MinesweeperGame<T extends Field = Field> {
 
 	public constructor(
 		private readonly height: number,
-		private readonly width: number = height,
-		fieldAcquier: (x: number, y: number) => T
+		private readonly width: number,
+		private mineCount: number,
+		private readonly tileGetter: (x: number, y: number) => T
 	) {
-		this.matrix = makeMatrix(width, height, (x, y) => ({ t: fieldAcquier(x, y) }));
-
+		if (mineCount >= height * width - 1) {
+			mineCount = height * width - 1;
+		}
 		this.reset();
 	}
 
-	public setMineCount(mineCount: number): void {
-		this.mineCount = mineCount;
-	}
-
 	private isOutOfBounds(x: number, y: number): boolean {
-		return x > this.width || y > this.height || x < 0 || y < 0;
+		return x > this.height || y > this.width || x < 0 || y < 0;
 	}
 
-	private forEach(callback: (t: T, th: FieldHolder<T>) => void) {
-		for (const row of this.matrix) {
-			for (const th of row) {
-				callback(th.t, th);
+	private forEach(callback: (t: T) => void) {
+		for (let x = 0; x < this.height; x++) {
+			for (let y = 0; y < this.width; y++) {
+				const tile = this.tileGetter(x, y);
+				if (tile) {
+					callback(tile);
+				}
 			}
 		}
 	}
 
-	private surrounding(x: number, y: number): FieldHolder<T>[] {
+	private surrounding(x: number, y: number): T[] {
 		return Object.values(Coordinate.directions)
-			.map((direction) => this.matrix[x + direction.x]?.[y + direction.y])
-			.filter((th) => !!th);
+			.map((direction) => this.tileGetter(x + direction.x, y + direction.y))
+			.filter((t) => !!t);
 	}
 
 	public reset(): void {
@@ -164,18 +158,15 @@ export class MinesweeperGame<T extends Field = Field> {
 		this.correctlyMarked$.next(0);
 		this.marked$.next(0);
 		this.clickCount$.next(0);
-		this.mines.clear();
-		this.forEach((t, th) => {
+		this.forEach((t) => {
 			t.setValue(0);
 			t.setIsMine(false);
 			t.setMark(undefined);
 			t.setError(false);
 			t.setRevealed(false);
-			t.registerOnReveal(() => {
-				this.start(t.getX(), t.getY());
-				this.increaseClicks();
-				th.onReveal?.(false);
-			});
+			const onReveal = this.makeInitialOnReveal(t);
+			this.onReveals.set(t, onReveal);
+			t.registerOnReveal(onReveal);
 		});
 		this.resetNotification$.next();
 	}
@@ -183,6 +174,15 @@ export class MinesweeperGame<T extends Field = Field> {
 	private increaseClicks(): void {
 		this.clickCount$.next(this.clickCount$.value + 1);
 	}
+
+	private makeInitialOnReveal(t: T): () => void {
+		return () => {
+			this.start(t.getX(), t.getY());
+			this.increaseClicks();
+			this.onReveals.get(t)?.(false);
+		};
+	}
+
 	/**
 	 * Track the count of mine marks, and set the state of the mark
 	 */
@@ -203,7 +203,7 @@ export class MinesweeperGame<T extends Field = Field> {
 		};
 	}
 
-	private makeMineRevealLogic(t: T, th: FieldHolder<T>): (isOriginalReveal?: boolean) => void {
+	private makeMineRevealLogic(t: T): (isOriginalReveal?: boolean) => void {
 		return (isOriginalReveal = true) => {
 			if (isOriginalReveal) this.increaseClicks();
 
@@ -211,7 +211,7 @@ export class MinesweeperGame<T extends Field = Field> {
 				t.setMark(undefined);
 			} else {
 				t.setError(true);
-				this.isBlown$.next(th);
+				this.isBlown$.next(t);
 				this.forEach((tile) => {
 					if (tile.getIsMine() && tile.getMark() !== 'flag') {
 						tile.setRevealed(true);
@@ -240,9 +240,9 @@ export class MinesweeperGame<T extends Field = Field> {
 				this.revealed$.next(this.revealed$.value + 1);
 
 				if (!t.getValue()) {
-					for (const tileHolder of this.surrounding(t.getX(), t.getY())) {
-						if (tileHolder.t.getMark() === undefined) {
-							tileHolder.onReveal?.(false);
+					for (const tile of this.surrounding(t.getX(), t.getY())) {
+						if (tile.getMark() === undefined) {
+							this.onReveals.get(tile)?.(false);
 						}
 					}
 				}
@@ -258,34 +258,44 @@ export class MinesweeperGame<T extends Field = Field> {
 		// Reset the game
 		this.reset();
 
+		const startIndex = startY + this.width * startX;
 		// Generate minefield
-		while (this.mines.size < this.mineCount) {
-			const coord = Coordinate.random(0, this.width, 0, this.height);
-			if (!coord.equal(startX, startY)) {
-				const th = this.matrix[coord.x][coord.y];
-				th.t.setIsMine(true);
-				this.mines.set(coord.toString(), coord);
-			}
+		let a: number[] = [];
+		for (let i = 0; i < this.tileCount; i++) {
+			a[i] = i;
+		}
+		shuffle(a);
+		a = a.filter((i) => startIndex !== i);
+		a.splice(this.mineCount);
+		const mines: { x: number; y: number }[] = [];
+		for (const n of a) {
+			const y = n % this.width;
+			const x = ~~(n / this.width);
+			const tile = this.tileGetter(x, y);
+			mines.push({ x, y });
+			tile?.setIsMine(true);
 		}
 
 		// Set values of the numbered tiles
-		for (const [, mine] of this.mines) {
-			for (const tileHolder of this.surrounding(mine.x, mine.y)) {
-				if (tileHolder && !tileHolder.t.getIsMine()) {
-					tileHolder.t.setValue(tileHolder.t.getValue() + 1);
+		for (const { x, y } of mines) {
+			for (const tile of this.surrounding(x, y)) {
+				if (tile && !tile.getIsMine()) {
+					tile.setValue(tile.getValue() + 1);
 				}
 			}
 		}
 
 		// Register logic
-		this.forEach((t, th) => {
-			t.registerOnMark(this.makeMarkLogic(t));
-			if (t.getIsMine()) {
-				th.onReveal = this.makeMineRevealLogic(t, th);
+		this.forEach((tile) => {
+			tile.registerOnMark(this.makeMarkLogic(tile));
+			let onReveal: Revealer;
+			if (tile.getIsMine()) {
+				onReveal = this.makeMineRevealLogic(tile);
 			} else {
-				th.onReveal = this.makeTileRevealLogic(t);
+				onReveal = this.makeTileRevealLogic(tile);
 			}
-			t.registerOnReveal(th.onReveal);
+			this.onReveals.set(tile, onReveal);
+			tile.registerOnReveal(onReveal);
 		});
 	}
 }

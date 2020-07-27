@@ -6,7 +6,7 @@
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
 	import type { Field, MinesweeperGame } from './minesweeper';
-	import { assetMap, elapsedTime$, height$, remainingMines$, width$ } from './store';
+	import { assetMap, elapsedTime$, height$, mineCount$, remainingMines$, width$ } from './store';
 
 	let game!: MinesweeperGame<Field>;
 
@@ -36,5 +36,10 @@
 		<Smiley on:click={() => game.reset()} />
 		<DigitDisplay value={$elapsedTime$} paddedLength={3} />
 	</Panel>
-	<Playfield class="panel inset" bind:game height={$height$} width={$width$} />
+	<Playfield
+		class="panel inset"
+		bind:game
+		height={$height$}
+		width={$width$}
+		mineCount={$mineCount$} />
 </div>

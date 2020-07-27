@@ -17,5 +17,5 @@
 	<img
 		aria-label={smiley}
 		alt="{smiley} game"
-		src="./assets/minesweeper/smiley-{smiley}-small.png" />
+		src="./assets/minesweeper/smiley-{smiley ?? 'ongoing'}-small.png" />
 </Button>
