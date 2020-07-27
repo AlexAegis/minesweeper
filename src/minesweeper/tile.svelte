@@ -12,6 +12,7 @@
 	let mark: FieldMark;
 	let isMine: boolean = false;
 	let error: boolean = false;
+	export let disabled: boolean = false;
 
 	let onReveal: undefined | ((e: Event) => void);
 	let onMark: undefined | ((e: Event) => void);
@@ -73,8 +74,6 @@
 			callback();
 		};
 	}
-
-	let disabled: boolean = false;
 </script>
 
 <style>
@@ -84,34 +83,29 @@
 		display: block;
 		padding: 0;
 		box-sizing: border-box;
-		border-radius: 0px;
-		border-style: outset;
-		border-color: #ddd;
-		border-width: 3px;
 	}
 
 	div {
 		user-select: none;
 		font-family: 'Geo', sans-serif;
 		background-color: #aaa;
+		border-style: solid;
+		border-color: #707070;
+		border-width: 1px;
 		font-size: 60px;
 		line-height: 32px;
 		text-align: center;
+
+		padding: 2px;
 	}
 
 	button {
-		z-index: 100;
-		outline: none;
-		cursor: pointer;
-		background-color: #ccc;
-		color: red;
 		font-size: 32px;
 		text-align: center;
 	}
 
 	.error {
 		background-color: red;
-		border-color: red;
 	}
 
 	img {
@@ -126,16 +120,20 @@
 {#if revealed}
 	<div
 		class="tile"
-		class:error
+		class:error={error && isMine}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if isMine}
 			<img aria-label="mine" src="./assets/minesweeper/mine-small.png" alt="mine" />
-		{:else if value}{value}{/if}
+		{:else if value}
+			{#if error}
+				<img aria-label="mine" src="./assets/minesweeper/mine-false-small.png" alt="mine" />
+			{:else}{value}{/if}
+		{/if}
 	</div>
 {:else}
 	<button
 		{disabled}
-		class="tile"
+		class="tile button"
 		class:error
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
 		aria-label="Tile {mark}"

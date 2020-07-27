@@ -5,18 +5,6 @@
 </script>
 
 <style>
-	button {
-		width: 60px;
-		height: 60px;
-		border: #eee;
-		border-style: outset;
-		outline-color: #c3c3c3;
-		outline-style: outset;
-		border-spacing: 3px;
-		border-width: 3px;
-		padding: 3px;
-		background-color: rgb(192, 192, 192);
-	}
 	img {
 		image-rendering: pixelated;
 		width: 100%;
@@ -24,7 +12,7 @@
 	}
 </style>
 
-<button on:click aria-label="Restart">
+<button on:click aria-label="Restart" class="button">
 	<img
 		aria-label={smiley}
 		alt="{smiley} game"

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { Subscription } from 'rxjs';
-	import { delay, filter, tap } from 'rxjs/operators';
 	import { onDestroy, onMount } from 'svelte';
 	import { makeMatrix } from '../helper';
 	import { MinesweeperGame } from './minesweeper';
-	import { game$, mineCount$ } from './store';
+	import { game$, isEnded$, mineCount$ } from './store';
 	import Tile from './tile.svelte';
 
 	export let width: number;
@@ -20,15 +19,6 @@
 			game = new MinesweeperGame<Tile>(width, height, tileGetter);
 			game.setMineCount($mineCount$);
 			game$.next(game);
-			s.add(
-				game.isEnded$
-					.pipe(
-						filter((isEnded) => !!isEnded),
-						delay(500),
-						tap(() => game.reset())
-					)
-					.subscribe()
-			);
 		}
 	}
 
@@ -58,7 +48,7 @@
 <div class={$$props.class} style={$$props.style}>
 	{#each Array(height) as _, x}
 		{#each Array(width) as _, y}
-			<Tile bind:this={tiles[x][y]} {x} {y} />
+			<Tile bind:this={tiles[x][y]} {x} {y} disabled={$isEnded$} />
 		{/each}
 	{/each}
 </div>

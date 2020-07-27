@@ -184,6 +184,7 @@ export class MinesweeperGame<T extends Field = Field> {
 					}
 
 					if (!tile.getIsMine() && tile.getMark() === 'flag') {
+						tile.setRevealed(true);
 						tile.setError(true);
 					}
 				});
