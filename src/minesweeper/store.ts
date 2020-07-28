@@ -1,5 +1,5 @@
-import { combineLatest, fromEvent, merge, Subject } from 'rxjs';
-import { filter, map, mapTo, switchMap } from 'rxjs/operators';
+import { combineLatest, fromEvent, identity, merge, Subject } from 'rxjs';
+import { filter, map, mapTo, switchMap, withLatestFrom } from 'rxjs/operators';
 import { SvelteSubject } from '../helper';
 import type { MinesweeperGame } from './minesweeper';
 
@@ -17,7 +17,14 @@ export const gameOn$ = game$.pipe(filter((g): g is MinesweeperGame => !!g));
 export const gamestate$ = gameOn$.pipe(switchMap((g) => g.gamestate$));
 export const elapsedTime$ = gameOn$.pipe(switchMap((g) => g.elapsedTime$));
 export const isEnded$ = gameOn$.pipe(switchMap((g) => g.isEnded$));
+export const isWon$ = gameOn$.pipe(switchMap((g) => g.isWon$));
 export const remainingMines$ = gameOn$.pipe(switchMap((g) => g.remainingMines$));
+
+export const won$ = isWon$.pipe(
+	filter(identity),
+	withLatestFrom(elapsedTime$, width$, height$, mineCount$),
+	map(([, time, width, height, mineCount]) => ({ time, width, height, mineCount }))
+);
 
 export const dimensions$ = combineLatest([width$, height$]).pipe(
 	map(([width, height]) => ({ width, height }))
