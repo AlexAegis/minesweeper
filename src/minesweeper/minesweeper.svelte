@@ -7,14 +7,7 @@
 	import Smiley from './components/smiley.svelte';
 	import TitleBar from './components/title-bar.svelte';
 	import type { Field, MinesweeperGame } from './minesweeper';
-	import {
-		elapsedTime$,
-		height$,
-		mineCount$,
-		remainingMines$,
-		width$,
-		winHistory$,
-	} from './store';
+	import { elapsedTime$, gamePreset$, remainingMines$, winHistory$ } from './store';
 
 	let game!: MinesweeperGame<Field>;
 
@@ -50,11 +43,6 @@
 			<Smiley on:click={() => game.reset()} />
 			<DigitDisplay value={$elapsedTime$} paddedLength={3} />
 		</Panel>
-		<Playfield
-			class="panel inset"
-			bind:game
-			height={$height$}
-			width={$width$}
-			mineCount={$mineCount$} />
+		<Playfield class="panel inset" bind:game gamePreset={$gamePreset$} />
 	</div>
 </div>

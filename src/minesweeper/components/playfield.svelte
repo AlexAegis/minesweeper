@@ -2,12 +2,10 @@
 	import { Subscription } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { MinesweeperGame } from '../minesweeper';
-	import { game$, isEnded$ } from '../store';
+	import { game$, GamePreset, isEnded$ } from '../store';
 	import Tile from './tile.svelte';
 
-	export let width: number;
-	export let height: number;
-	export let mineCount: number;
+	export let gamePreset: GamePreset;
 
 	export let game: MinesweeperGame<any> | undefined;
 	let s = new Subscription();
@@ -19,19 +17,25 @@
 		mounted = true;
 	});
 
-	const tiles: Tile[] = [];
+	let tiles: Tile[] = [];
 
 	function tileGetter(x: number, y: number) {
 		// A plus one size of "seam" is required to prevent detecting neighbours
 		// on the next or previous line from the edges
-		return tiles[y + (width + 1) * x];
+		return tiles[y + (gamePreset.width + 1) * x];
 	}
 
-	$: game =
-		mounted && tiles
-			? new MinesweeperGame<Tile>(height, width, mineCount, tileGetter)
-			: undefined;
-	$: game$.next(game);
+	$: {
+		if (mounted) {
+			game = new MinesweeperGame<Tile>(
+				gamePreset.height,
+				gamePreset.width,
+				gamePreset.mineCount,
+				tileGetter
+			);
+			game$.next(game);
+		}
+	}
 
 	onDestroy(() => {
 		mounted = false;
@@ -49,9 +53,9 @@
 </style>
 
 <div class={$$props.class} style={$$props.style}>
-	{#each Array(height) as _, x}
-		{#each Array(width) as _, y}
-			<Tile bind:this={tiles[y + (width + 1) * x]} {x} {y} disabled={$isEnded$} />
+	{#each Array(gamePreset.height) as _, x}
+		{#each Array(gamePreset.width) as _, y}
+			<Tile bind:this={tiles[y + (gamePreset.width + 1) * x]} {x} {y} disabled={$isEnded$} />
 		{/each}
 	{/each}
 </div>

@@ -1,4 +1,12 @@
-import { combineLatest, fromEvent, identity, merge, Observable, Subject } from 'rxjs';
+import {
+	asyncScheduler,
+	combineLatest,
+	fromEvent,
+	identity,
+	merge,
+	Observable,
+	Subject,
+} from 'rxjs';
 import {
 	filter,
 	map,
@@ -7,6 +15,7 @@ import {
 	shareReplay,
 	startWith,
 	switchMap,
+	throttleTime,
 	withLatestFrom,
 } from 'rxjs/operators';
 import { SvelteSubject } from '../helper';
@@ -21,6 +30,15 @@ export const width$ = new SvelteSubject<number>(10);
 export const height$ = new SvelteSubject<number>(10);
 export const mineCount$ = new SvelteSubject<number>(2);
 
+export const gamePreset$: Observable<GamePreset> = combineLatest([
+	width$,
+	height$,
+	mineCount$,
+]).pipe(
+	throttleTime(50, asyncScheduler, { leading: true, trailing: true }),
+	map(([width, height, mineCount]) => ({ width, height, mineCount }))
+);
+
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);
 export const gameOn$ = game$.pipe(filter((g): g is MinesweeperGame => !!g));
 export const gamestate$ = gameOn$.pipe(switchMap((g) => g.gamestate$));
@@ -28,12 +46,7 @@ export const elapsedTime$ = gameOn$.pipe(switchMap((g) => g.elapsedTime$));
 export const isEnded$ = gameOn$.pipe(switchMap((g) => g.isEnded$));
 export const isWon$ = gameOn$.pipe(switchMap((g) => g.isWon$));
 export const remainingMines$ = gameOn$.pipe(switchMap((g) => g.remainingMines$));
-export type WinData = {
-	time: number;
-	width: number;
-	height: number;
-	mineCount: number;
-};
+
 export const winHistory$: Observable<WinData[]> = isWon$.pipe(
 	filter(identity),
 	withLatestFrom(elapsedTime$, width$, height$, mineCount$),
@@ -72,3 +85,36 @@ export const assetMap = {
 	wonSmiley: './assets/minesweeper/smiley-won-small.png',
 	questionMark: './assets/minesweeper/question-mark-small.png',
 };
+
+export type GamePreset = {
+	width: number;
+	height: number;
+	mineCount: number;
+};
+
+export type WinData = {
+	time: number;
+} & GamePreset;
+
+export type PresetKeys = 'beginner' | 'intermediate' | 'expert';
+export const presets: Record<PresetKeys, GamePreset> = {
+	beginner: {
+		width: 9,
+		height: 9,
+		mineCount: 10,
+	},
+	intermediate: {
+		width: 16,
+		height: 16,
+		mineCount: 40,
+	},
+	expert: {
+		width: 30,
+		height: 16,
+		mineCount: 99,
+	},
+};
+
+export function isTheSamePreset(a: GamePreset, b: GamePreset): boolean {
+	return a && b && a.height === b.height && a.width === b.width && a.mineCount === b.mineCount;
+}
