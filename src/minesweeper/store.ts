@@ -50,9 +50,10 @@ export const remainingMines$ = gameOn$.pipe(switchMap((g) => g.remainingMines$))
 export const winHistory$: Observable<WinData[]> = isWon$.pipe(
 	filter(identity),
 	withLatestFrom(elapsedTime$, width$, height$, mineCount$),
-	map(([, time, width, height, mineCount]) => ({ time, width, height, mineCount })),
+	map(([, time, width, height, mineCount], id) => ({ time, width, height, mineCount, id })),
 	scan((a, n) => {
 		a.push(n);
+		a.sort((a, b) => a.time - b.time);
 		return a;
 	}, [] as WinData[]),
 	startWith([] as WinData[]),
@@ -93,6 +94,7 @@ export type GamePreset = {
 };
 
 export type WinData = {
+	id: number;
 	time: number;
 } & GamePreset;
 
