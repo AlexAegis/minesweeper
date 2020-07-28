@@ -1,21 +1,12 @@
 <script lang="ts">
-	import { gamestate$, isTileMouseDown$ } from '../store';
+	import { assetMap, gamestate$, tileMouseDown$ } from '../store';
 	import Button from './button.svelte';
+	import Image from './image.svelte';
 
-	$: smiley = $isTileMouseDown$ ? 'click' : $gamestate$;
+	$: smiley = $tileMouseDown$ ? 'click' : $gamestate$;
+	$: src = assetMap[`${smiley ?? 'ongoing'}Smiley`];
 </script>
 
-<style>
-	img {
-		image-rendering: pixelated;
-		width: 100%;
-		height: 100%;
-	}
-</style>
-
 <Button on:click aria-label="Restart" class="button padded" style="width: 60px; height: 60px;">
-	<img
-		aria-label={smiley}
-		alt="{smiley} game"
-		src="./assets/minesweeper/smiley-{smiley ?? 'ongoing'}-small.png" />
+	<Image style="width: 100%; height: 100%;" alt="{smiley} game" bind:src />
 </Button>

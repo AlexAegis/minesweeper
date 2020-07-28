@@ -5,7 +5,8 @@
 	import Button from './button.svelte';
 	import Modal from './modal.svelte';
 
-	let modal: Modal;
+	let settingsModal: Modal;
+	let highScoreModal: Modal;
 </script>
 
 <style>
@@ -23,11 +24,16 @@
 </style>
 
 <div>
-	<Button style="margin: 4px" on:click={() => modal.open()}>settings</Button>
+	<Button style="margin: 4px" on:click={() => settingsModal.open()}>settings</Button>
+	<Button style="margin: 4px" on:click={() => highScoreModal.open()}>high score</Button>
 	<Button style="margin: 4px" on:click={() => window.open(homepage, '_blank')}>github</Button>
 	<span>v{version}</span>
 </div>
 
-<Modal bind:this={modal}>
+<Modal bind:this={settingsModal}>
 	<Settings bind:width={$width$} bind:height={$height$} bind:mineCount={$mineCount$} />
+</Modal>
+
+<Modal bind:this={highScoreModal}>
+	<div />
 </Modal>

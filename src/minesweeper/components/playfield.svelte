@@ -22,7 +22,7 @@
 	const tiles: Tile[] = [];
 
 	function tileGetter(x: number, y: number) {
-		return tiles[x * 1000 + y];
+		return tiles[MinesweeperGame.toLinear(width, x, y)];
 	}
 
 	$: game =
@@ -49,7 +49,7 @@
 <div class={$$props.class} style={$$props.style}>
 	{#each Array(height) as _, x}
 		{#each Array(width) as _, y}
-			<Tile bind:this={tiles[x * 1000 + y]} {x} {y} disabled={$isEnded$} />
+			<Tile bind:this={tiles[y + width * x]} {x} {y} disabled={$isEnded$} />
 		{/each}
 	{/each}
 </div>

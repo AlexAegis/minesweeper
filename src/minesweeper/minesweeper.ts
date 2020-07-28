@@ -209,7 +209,7 @@ export class MinesweeperGame<T extends Field = Field> {
 
 			if (isOriginalReveal && t.getMark() !== undefined) {
 				t.setMark(undefined);
-			} else {
+			} else if (t.getRevealed() === false) {
 				t.setError(true);
 				this.isBlown$.next(t);
 				this.forEach((tile) => {
@@ -261,6 +261,28 @@ export class MinesweeperGame<T extends Field = Field> {
 		};
 	}
 
+	static isNeighbour(x, y, ox, oy): boolean {
+		return ox >= x - 1 && ox <= x + 1 && oy >= y - 1 && oy <= y + 1;
+	}
+
+	static toLinear(width: number, x: number, y: number): number {
+		return y + width * x;
+	}
+
+	static fromLinear(width: number, n: number): [number, number] {
+		const y = n % width;
+		const x = ~~(n / width);
+		return [x, y];
+	}
+
+	private toLinear(x: number, y: number): number {
+		return MinesweeperGame.toLinear(this.width, x, y);
+	}
+
+	private fromLinear(n: number): [number, number] {
+		return MinesweeperGame.fromLinear(this.width, n);
+	}
+
 	private start(startX: number, startY: number): void {
 		if (this.isOutOfBounds(startX, startY)) {
 			throw new Error('Start tile out of field');
@@ -269,7 +291,7 @@ export class MinesweeperGame<T extends Field = Field> {
 		// Reset the game
 		this.reset();
 
-		const startIndex = startY + this.width * startX;
+		const startIndex = this.toLinear(startX, startY);
 		// Generate minefield
 		let a: number[] = [];
 		for (let i = 0; i < this.tileCount; i++) {
@@ -280,11 +302,10 @@ export class MinesweeperGame<T extends Field = Field> {
 		a.splice(this.mineCount);
 		const mines: { x: number; y: number }[] = [];
 		for (const n of a) {
-			const y = n % this.width;
-			const x = ~~(n / this.width);
+			const [x, y] = this.fromLinear(n);
 			const tile = this.tileGetter(x, y);
-			mines.push({ x, y });
 			tile?.setIsMine(true);
+			mines.push({ x, y });
 		}
 
 		// Set values of the numbered tiles

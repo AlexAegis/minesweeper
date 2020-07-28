@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { MinesweeperGame } from '../minesweeper';
 	import type { FieldMark } from '../minesweeper';
-	import { assetMap, colorMap, tileClick$ } from '../store';
+	import { assetMap, colorMap, tileClick$, tileMouseDown$, width$ } from '../store';
+	import Button from './button.svelte';
+	import Image from './image.svelte';
 
 	export let x: number;
 	export let y: number;
@@ -13,6 +16,21 @@
 
 	let onReveal: undefined | ((e: Event) => void);
 	let onMark: undefined | ((e: Event) => void);
+
+	let isANeighbourPressed = false;
+
+	$: pressedTile = $tileMouseDown$;
+
+	$: width = $width$;
+
+	$: if (pressedTile !== undefined) {
+		if (pressedTile[1]) {
+			const [ox, oy] = MinesweeperGame.fromLinear(width, pressedTile[0]);
+			isANeighbourPressed = MinesweeperGame.isNeighbour(x, y, ox, oy);
+		}
+	} else {
+		isANeighbourPressed = false;
+	}
 
 	export function getX(): number {
 		return x;
@@ -74,11 +92,21 @@
 </script>
 
 <style>
-	.tile {
+	:global(.ms-tile) {
 		height: 40px;
 		width: 40px;
 		display: block;
 		box-sizing: border-box;
+	}
+
+	:global(.ms-tile-font) {
+		font-size: 32px;
+		text-align: center;
+		padding: 0;
+	}
+
+	:global(.ms-tile-error) {
+		background-color: red;
 	}
 
 	div {
@@ -96,20 +124,7 @@
 		padding-left: 4px;
 	}
 
-	button {
-		font-size: 32px;
-		text-align: center;
-		padding: 0;
-	}
-
-	.error {
-		background-color: red;
-	}
-
-	img {
-		image-rendering: pixelated;
-		width: inherit;
-		height: inherit;
+	:global(.tile-img) {
 		margin-top: -1px;
 		margin-left: -1px;
 	}
@@ -117,32 +132,33 @@
 
 {#if revealed}
 	<div
-		class="tile"
+		class="ms-tile"
 		class:fontpatch={!isMine && value && !error}
-		class:error={error && isMine}
+		class:ms-tile-error={error && isMine}
 		on:click={onReveal}
 		on:contextmenu={onReveal}
+		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), true])}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
 		{#if isMine}
-			<img aria-label="mine" src={assetMap.mine} alt="mine" />
+			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
 		{:else if error}
-			<img aria-label="mine" src={assetMap.mineFalse} alt="mine" />
+			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
 		{:else if value}{value}{/if}
 	</div>
 {:else}
-	<button
+	<Button
+		mousedown={isANeighbourPressed && !mark}
 		{disabled}
-		class="tile button"
-		class:error
+		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), false])}
+		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
-		aria-label="Tile {mark}"
-		on:click={onReveal}
-		on:mousedown={() => tileClick$.next()}
-		on:contextmenu={onMark}>
+		aria-label="Tile {mark ? 'mark' : 'unrevealed'}"
+		on:click={(e) => onReveal?.(e)}
+		on:contextmenu={(e) => onMark?.(e)}>
 		{#if mark === 'flag'}
-			<img aria-label="flag" src={assetMap.flag} alt="flag" />
+			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
 		{:else if mark === 'questionMark'}
-			<img aria-label="flag" src={assetMap.questionMark} alt="flag" />
+			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
 		{/if}
-	</button>
+	</Button>
 {/if}

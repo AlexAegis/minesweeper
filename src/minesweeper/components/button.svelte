@@ -1,9 +1,18 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import { documentMouseUp$ } from '../store';
 
-	let mousedown = false;
+	const dispatch = createEventDispatcher();
+	export let mousedown: boolean | undefined = false;
 
 	$: if ($documentMouseUp$) mousedown = false;
+
+	function onMouseDown(e: MouseEvent): void {
+		dispatch('mousedown');
+		if (e.button === 0) {
+			mousedown = true;
+		}
+	}
 </script>
 
 <style>
@@ -13,11 +22,13 @@
 </style>
 
 <button
-	class="panel {$$props.class}"
+	class="button {$$props.class}"
 	aria-label={$$props['aria-label']}
 	style={$$props.style}
-	class:inset={mousedown}
-	on:mousedown={() => (mousedown = true)}
+	disabled={$$props.disabled}
+	class:inset={mousedown === true}
+	on:mousedown={onMouseDown}
+	on:contextmenu
 	on:click>
 	<slot />
 </button>
