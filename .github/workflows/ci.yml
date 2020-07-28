@@ -29,7 +29,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install packages
         if: steps.cache-packages.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
       - name: Lint
         run: npm run lint
       - name: Lint css stylesheets
@@ -64,7 +64,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install packages
         if: steps.cache-packages.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
       - name: Test
         run: npm run test
   build:
@@ -89,7 +89,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install packages
         if: steps.cache-packages.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
       - name: Build
         run: npm run build
   deploy:
