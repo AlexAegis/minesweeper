@@ -26,9 +26,27 @@ export const tileClick$ = new Subject<[number, boolean]>();
 export const documentMouseUp$ = fromEvent(document, 'mouseup');
 export const tileMouseDown$ = merge(tileClick$, documentMouseUp$.pipe(mapTo(undefined)));
 
-export const width$ = new SvelteSubject<number>(10);
-export const height$ = new SvelteSubject<number>(10);
-export const mineCount$ = new SvelteSubject<number>(2);
+export const presets: Record<PresetKeys, GamePreset> = {
+	beginner: {
+		width: 9,
+		height: 9,
+		mineCount: 10,
+	},
+	intermediate: {
+		width: 16,
+		height: 16,
+		mineCount: 40,
+	},
+	expert: {
+		width: 30,
+		height: 16,
+		mineCount: 99,
+	},
+};
+
+export const width$ = new SvelteSubject<number>(presets.beginner.width);
+export const height$ = new SvelteSubject<number>(presets.beginner.height);
+export const mineCount$ = new SvelteSubject<number>(presets.beginner.mineCount);
 
 export const gamePreset$: Observable<GamePreset> = combineLatest([
 	width$,
@@ -99,23 +117,6 @@ export type WinData = {
 } & GamePreset;
 
 export type PresetKeys = 'beginner' | 'intermediate' | 'expert';
-export const presets: Record<PresetKeys, GamePreset> = {
-	beginner: {
-		width: 9,
-		height: 9,
-		mineCount: 10,
-	},
-	intermediate: {
-		width: 16,
-		height: 16,
-		mineCount: 40,
-	},
-	expert: {
-		width: 30,
-		height: 16,
-		mineCount: 99,
-	},
-};
 
 export function isTheSamePreset(a: GamePreset, b: GamePreset): boolean {
 	return a && b && a.height === b.height && a.width === b.width && a.mineCount === b.mineCount;

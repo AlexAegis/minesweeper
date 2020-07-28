@@ -12,7 +12,6 @@
 
 	let mounted = false;
 
-	// game$.pipe(delay(200)).subscribe((g) => g?.reset());
 	onMount(() => {
 		mounted = true;
 	});

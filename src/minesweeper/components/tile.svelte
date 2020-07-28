@@ -15,8 +15,8 @@
 	let error: boolean = false;
 	export let disabled: boolean = false;
 
-	let onReveal: undefined | ((e: Event) => void);
-	let onMark: undefined | ((e: Event) => void);
+	let onReveal: (e: Event) => void;
+	let onMark: (e: Event) => void;
 
 	let isANeighbourPressed = false;
 
@@ -154,8 +154,8 @@
 		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
 		aria-label="Tile {mark ? 'mark' : 'unrevealed'}"
-		on:click={(e) => onReveal?.(e)}
-		on:contextmenu={(e) => onMark?.(e)}>
+		on:click={(e) => onReveal(e)}
+		on:contextmenu={(e) => onMark(e)}>
 		{#if mark === 'flag'}
 			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
 		{:else if mark === 'questionMark'}
