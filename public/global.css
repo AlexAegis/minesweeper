@@ -13,6 +13,7 @@ button {
 
 .button,
 .panel {
+	display: block;
 	border: #eee;
 	border-style: outset;
 	border-spacing: 3px;

@@ -34,7 +34,7 @@ export type WinData = {
 	height: number;
 	mineCount: number;
 };
-export const won$: Observable<WinData[]> = isWon$.pipe(
+export const winHistory$: Observable<WinData[]> = isWon$.pipe(
 	filter(identity),
 	withLatestFrom(elapsedTime$, width$, height$, mineCount$),
 	map(([, time, width, height, mineCount]) => ({ time, width, height, mineCount })),
@@ -43,7 +43,7 @@ export const won$: Observable<WinData[]> = isWon$.pipe(
 		return a;
 	}, [] as WinData[]),
 	startWith([] as WinData[]),
-	shareReplay(1)
+	shareReplay({ refCount: true, bufferSize: 1 })
 );
 
 export const dimensions$ = combineLatest([width$, height$]).pipe(

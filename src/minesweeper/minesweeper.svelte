@@ -5,9 +5,18 @@
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
 	import type { Field, MinesweeperGame } from './minesweeper';
-	import { elapsedTime$, height$, mineCount$, remainingMines$, width$ } from './store';
+	import {
+		elapsedTime$,
+		height$,
+		mineCount$,
+		remainingMines$,
+		width$,
+		winHistory$,
+	} from './store';
 
 	let game!: MinesweeperGame<Field>;
+
+	$winHistory$; // keep a subscription alive on game level to keep the refCount
 </script>
 
 <style>

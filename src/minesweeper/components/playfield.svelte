@@ -22,7 +22,9 @@
 	const tiles: Tile[] = [];
 
 	function tileGetter(x: number, y: number) {
-		return tiles[MinesweeperGame.toLinear(width, x, y)];
+		// A plus one size of "seam" is required to prevent detecting neighbours
+		// on the next or previous line from the edges
+		return tiles[y + (width + 1) * x];
 	}
 
 	$: game =
@@ -49,7 +51,7 @@
 <div class={$$props.class} style={$$props.style}>
 	{#each Array(height) as _, x}
 		{#each Array(width) as _, y}
-			<Tile bind:this={tiles[y + width * x]} {x} {y} disabled={$isEnded$} />
+			<Tile bind:this={tiles[y + (width + 1) * x]} {x} {y} disabled={$isEnded$} />
 		{/each}
 	{/each}
 </div>

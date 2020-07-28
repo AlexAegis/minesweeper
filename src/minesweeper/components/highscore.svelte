@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { won$ } from '../store';
-
-	$: wins = $won$;
+	import { winHistory$ } from '../store';
 </script>
 
 <ol>
-	{#each $won$ as win}
-		<li>{win?.height} * {win?.width}: {win?.time}</li>
+	{#each $winHistory$ as win}
+		<li>Custom: {win?.mineCount}, {win?.height} * {win?.width} in {win?.time}s</li>
 	{:else}No games played yet!{/each}
 </ol>

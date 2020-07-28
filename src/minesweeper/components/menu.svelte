@@ -35,6 +35,6 @@
 	<Settings bind:width={$width$} bind:height={$height$} bind:mineCount={$mineCount$} />
 </Modal>
 
-<Modal bind:this={highScoreModal}>
+<Modal style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
 	<Highscore />
 </Modal>

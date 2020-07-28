@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Button from './button.svelte';
+
 	export let isOpen: boolean = false;
 
 	export function open() {
@@ -35,7 +37,10 @@
 </style>
 
 {#if isOpen}
-	<div class="panel">
+	<div style={$$props.style} class="panel {$$props.class}">
+		<Button on:click={close} style="margin-left: auto;" class="button" aria-label="Close">
+			X
+		</Button>
 		<slot />
 	</div>
 
