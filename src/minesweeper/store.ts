@@ -1,5 +1,14 @@
-import { combineLatest, fromEvent, identity, merge, Subject } from 'rxjs';
-import { filter, map, mapTo, switchMap, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, fromEvent, identity, merge, Observable, Subject } from 'rxjs';
+import {
+	filter,
+	map,
+	mapTo,
+	scan,
+	shareReplay,
+	startWith,
+	switchMap,
+	withLatestFrom,
+} from 'rxjs/operators';
 import { SvelteSubject } from '../helper';
 import type { MinesweeperGame } from './minesweeper';
 
@@ -10,7 +19,7 @@ export const tileMouseDown$ = merge(tileClick$, documentMouseUp$.pipe(mapTo(unde
 
 export const width$ = new SvelteSubject<number>(10);
 export const height$ = new SvelteSubject<number>(10);
-export const mineCount$ = new SvelteSubject<number>(15);
+export const mineCount$ = new SvelteSubject<number>(2);
 
 export const game$ = new SvelteSubject<MinesweeperGame | undefined>(undefined);
 export const gameOn$ = game$.pipe(filter((g): g is MinesweeperGame => !!g));
@@ -19,11 +28,22 @@ export const elapsedTime$ = gameOn$.pipe(switchMap((g) => g.elapsedTime$));
 export const isEnded$ = gameOn$.pipe(switchMap((g) => g.isEnded$));
 export const isWon$ = gameOn$.pipe(switchMap((g) => g.isWon$));
 export const remainingMines$ = gameOn$.pipe(switchMap((g) => g.remainingMines$));
-
-export const won$ = isWon$.pipe(
+export type WinData = {
+	time: number;
+	width: number;
+	height: number;
+	mineCount: number;
+};
+export const won$: Observable<WinData[]> = isWon$.pipe(
 	filter(identity),
 	withLatestFrom(elapsedTime$, width$, height$, mineCount$),
-	map(([, time, width, height, mineCount]) => ({ time, width, height, mineCount }))
+	map(([, time, width, height, mineCount]) => ({ time, width, height, mineCount })),
+	scan((a, n) => {
+		a.push(n);
+		return a;
+	}, [] as WinData[]),
+	startWith([] as WinData[]),
+	shareReplay(1)
 );
 
 export const dimensions$ = combineLatest([width$, height$]).pipe(

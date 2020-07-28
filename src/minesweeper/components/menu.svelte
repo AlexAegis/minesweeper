@@ -3,6 +3,7 @@
 	import Settings from '../forms/settings.form.svelte';
 	import { height$, mineCount$, width$ } from '../store';
 	import Button from './button.svelte';
+	import Highscore from './highscore.svelte';
 	import Modal from './modal.svelte';
 
 	let settingsModal: Modal;
@@ -35,5 +36,5 @@
 </Modal>
 
 <Modal bind:this={highScoreModal}>
-	<div />
+	<Highscore />
 </Modal>
