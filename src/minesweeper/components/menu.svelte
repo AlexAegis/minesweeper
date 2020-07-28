@@ -25,9 +25,17 @@
 </style>
 
 <div>
-	<Button style="margin: 4px" on:click={() => settingsModal.open()}>settings</Button>
-	<Button style="margin: 4px" on:click={() => highScoreModal.open()}>high score</Button>
-	<Button style="margin: 4px" on:click={() => window.open(homepage, '_blank')}>github</Button>
+	<Button style="margin: 1px; border-style: none;" on:click={() => settingsModal.open()}>
+		settings
+	</Button>
+	<Button style="margin: 1px; border-style: none;" on:click={() => highScoreModal.open()}>
+		highscore
+	</Button>
+	<Button
+		style="margin: 1px; border-style: none;"
+		on:click={() => window.open(homepage, '_blank')}>
+		github
+	</Button>
 	<span>v{version}</span>
 </div>
 

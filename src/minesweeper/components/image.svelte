@@ -6,8 +6,9 @@
 <style>
 	img {
 		image-rendering: pixelated;
-		width: inherit;
+		width: auto;
 		height: inherit;
+		background: none;
 	}
 </style>
 

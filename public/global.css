@@ -15,13 +15,14 @@ button {
 .panel {
 	display: block;
 	border: #eee;
-	border-style: outset;
+	border-style: none;
 	border-spacing: 3px;
 	border-width: 3px;
 	background-color: rgb(192, 192, 192);
 }
 
 .button {
+	border-style: outset;
 	outline-color: #c3c3c3;
 	outline-style: outset;
 	outline-width: 0;

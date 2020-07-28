@@ -37,7 +37,7 @@
 </style>
 
 {#if isOpen}
-	<div style={$$props.style} class="panel {$$props.class}">
+	<div style={$$props.style} class="panel outset {$$props.class}">
 		<Button on:click={close} style="margin-left: auto;" class="button" aria-label="Close">
 			X
 		</Button>
