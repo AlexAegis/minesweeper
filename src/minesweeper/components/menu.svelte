@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { homepage, version } from '../../../package.json';
+	import { homepage } from '../../../package.json';
 	import Settings from '../forms/settings.form.svelte';
 	import { height$, mineCount$, width$ } from '../store';
 	import Button from './button.svelte';
@@ -32,17 +32,20 @@
 		highscore
 	</Button>
 	<Button
-		style="margin: 1px; border-style: none;"
+		style="margin-left:auto; border-style: none;"
 		on:click={() => window.open(homepage, '_blank')}>
 		github
 	</Button>
-	<span>v{version}</span>
 </div>
 
-<Modal bind:this={settingsModal}>
-	<Settings bind:width={$width$} bind:height={$height$} bind:mineCount={$mineCount$} />
+<Modal title="Settings" bind:this={settingsModal}>
+	<Settings
+		bind:width={$width$}
+		bind:height={$height$}
+		bind:mineCount={$mineCount$}
+		on:done={() => settingsModal.close()} />
 </Modal>
 
-<Modal style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
+<Modal title="Highscore" style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
 	<Highscore />
 </Modal>

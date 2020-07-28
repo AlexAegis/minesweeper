@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from './button.svelte';
 
+	export let title: string | undefined;
 	export let isOpen: boolean = false;
 
 	export function open() {
@@ -20,7 +21,7 @@
 		top: 50%;
 		transform: translateX(-50%) translateY(-50%);
 		width: 200px;
-		height: 200px;
+
 		padding: 8px;
 		font-family: monospace;
 	}
@@ -34,13 +35,21 @@
 		width: 100vw;
 		background-color: rgba(0, 0, 0, 0.37);
 	}
+	.top {
+		display: flex;
+		align-items: center;
+	}
 </style>
 
 {#if isOpen}
 	<div style={$$props.style} class="panel outset {$$props.class}">
-		<Button on:click={close} style="margin-left: auto;" class="button" aria-label="Close">
-			X
-		</Button>
+		<div class="top">
+			<span>{title}</span>
+			<Button on:click={close} style="margin-left: auto;" class="button" aria-label="Close">
+				X
+			</Button>
+		</div>
+
 		<slot />
 	</div>
 

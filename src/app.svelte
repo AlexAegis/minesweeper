@@ -5,7 +5,7 @@
 <style>
 	:global(body) {
 		display: grid;
-		background-color: #c7c7c7;
+		background-color: rgb(59, 110, 165);
 		height: 100vh;
 	}
 </style>

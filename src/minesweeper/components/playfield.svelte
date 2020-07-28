@@ -20,9 +20,7 @@
 	let tiles: Tile[] = [];
 
 	function tileGetter(x: number, y: number) {
-		// A plus one size of "seam" is required to prevent detecting neighbours
-		// on the next or previous line from the edges
-		return tiles[y + (gamePreset.width + 1) * x];
+		return tiles[y + 1000 * x];
 	}
 
 	$: {
@@ -55,7 +53,7 @@
 <div class={$$props.class} style={$$props.style}>
 	{#each Array(gamePreset.height) as _, x}
 		{#each Array(gamePreset.width) as _, y}
-			<Tile bind:this={tiles[y + (gamePreset.width + 1) * x]} {x} {y} disabled={$isEnded$} />
+			<Tile bind:this={tiles[y + 1000 * x]} {x} {y} disabled={$isEnded$} />
 		{/each}
 	{/each}
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { version } from '../../package.json';
 	import { assetMap } from './assets';
 	import DigitDisplay from './components/digit-display.svelte';
 	import Menu from './components/menu.svelte';
@@ -35,7 +36,7 @@
 </style>
 
 <div class="panel outer outset">
-	<TitleBar title="Minesweeper" icon={assetMap.mine} />
+	<TitleBar title="Minesweeper v{version}" icon={assetMap.mine} />
 	<div class="panel game padded">
 		<Menu />
 		<Panel class="panel inset padded">
