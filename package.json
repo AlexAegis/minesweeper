@@ -29,6 +29,7 @@
 		"lint:format": "prettier --check .",
 		"ci": "concurrently --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgRed.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"LINT,LINT:CSS,LINT:SCSS,LINT:MD,LINT:RMD,LINT:FORMAT,TEST,BUILD\" \"npm run lint\" \"npm run lint:css\" \"npm run lint:scss\" \"npm run lint:md\" \"npm run lint:rmd\" \"npm run lint:format\" \"npm run test\" \"npm run build\"",
 		"ncu": "ncu -u",
+		"format": "prettier --write .",
 		"predeploy": "npm run build",
 		"deploy": "gh-pages -d public"
 	},
