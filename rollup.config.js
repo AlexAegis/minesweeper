@@ -21,9 +21,7 @@ export default {
 	plugins: [
 		svelte({
 			preprocess: autoPreprocess({ typescript: {} }),
-			css: (css) => {
-				css.write('public/build/bundle.css');
-			},
+			css: (css) => css.write('bundle.css'),
 		}),
 		typescript({ sourceMap: !production }),
 
