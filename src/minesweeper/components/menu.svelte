@@ -15,13 +15,6 @@
 		display: flex;
 		height: max-content;
 	}
-
-	span {
-		font-family: monospace;
-		align-self: center;
-		margin-left: auto;
-		margin-right: 4px;
-	}
 </style>
 
 <div>

@@ -22,6 +22,7 @@
 		width: fit-content;
 		margin: auto;
 		grid-template-rows: auto auto;
+		user-select: none;
 	}
 
 	.game {

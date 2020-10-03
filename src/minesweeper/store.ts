@@ -105,18 +105,22 @@ export const assetMap = {
 	questionMark: './assets/minesweeper/question-mark-small.png',
 };
 
-export type GamePreset = {
+export interface GamePreset {
 	width: number;
 	height: number;
 	mineCount: number;
-};
+}
 
-export type WinData = {
+export interface WinData extends GamePreset {
 	id: number;
 	time: number;
-} & GamePreset;
+}
 
-export type PresetKeys = 'beginner' | 'intermediate' | 'expert';
+export enum PresetKeys {
+	BEGINNER = 'beginner',
+	INTERMEDIATE = 'intermediate',
+	EXPERT = 'expert',
+}
 
 export function isTheSamePreset(a: GamePreset, b: GamePreset): boolean {
 	return a && b && a.height === b.height && a.width === b.width && a.mineCount === b.mineCount;

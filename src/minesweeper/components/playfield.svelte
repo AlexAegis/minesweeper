@@ -1,26 +1,21 @@
 <script lang="ts">
-	import { Subscription } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { MinesweeperGame } from '../minesweeper';
-	import { game$, GamePreset, isEnded$ } from '../store';
+	import type { GamePreset } from '../store';
+	import { game$, isEnded$ } from '../store';
 	import Tile from './tile.svelte';
 
 	export let gamePreset: GamePreset;
 
 	export let game: MinesweeperGame<any> | undefined;
-	let s = new Subscription();
 
 	let mounted = false;
 
-	onMount(() => {
-		mounted = true;
-	});
-
 	let tiles: Tile[] = [];
 
-	function tileGetter(x: number, y: number) {
+	const tileGetter = (x: number, y: number): Tile => {
 		return tiles[y + 1000 * x];
-	}
+	};
 
 	$: {
 		if (mounted) {
@@ -34,10 +29,8 @@
 		}
 	}
 
-	onDestroy(() => {
-		mounted = false;
-		s.unsubscribe();
-	});
+	onMount(() => (mounted = true));
+	onDestroy(() => (mounted = false));
 </script>
 
 <style>

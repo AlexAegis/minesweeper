@@ -1,6 +1,3 @@
-<script lang="ts">
-</script>
-
 <style>
 	div {
 		width: 100%;

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Button from '../components/button.svelte';
-	import { GamePreset, presets } from '../store';
+	import type { GamePreset } from '../store';
+	import { presets } from '../store';
 
 	const dispatch = createEventDispatcher();
 

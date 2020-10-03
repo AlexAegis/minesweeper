@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { assetMap } from '../assets';
-	import type { FieldMark } from '../minesweeper';
-	import { MinesweeperGame } from '../minesweeper';
+	import { FieldMark, MinesweeperGame } from '../minesweeper';
 	import { colorMap, tileClick$, tileMouseDown$, width$ } from '../store';
 	import Button from './button.svelte';
 	import Image from './image.svelte';
@@ -11,7 +10,7 @@
 	let value: number;
 	let revealed: boolean = false;
 	let mark: FieldMark;
-	let isMine: boolean = false;
+	let mine: boolean = false;
 	let error: boolean = false;
 	export let disabled: boolean = false;
 
@@ -42,15 +41,15 @@
 	export function getValue(): number {
 		return value;
 	}
-	export function getRevealed(): boolean {
+	export function isRevealed(): boolean {
 		return revealed;
 	}
 	export function getMark(): FieldMark {
 		return mark;
 	}
 
-	export function getIsMine(): boolean {
-		return isMine;
+	export function isMine(): boolean {
+		return mine;
 	}
 
 	export function getError(): boolean {
@@ -69,8 +68,8 @@
 		mark = m;
 	}
 
-	export function setIsMine(m: boolean): void {
-		isMine = m;
+	export function setMine(m: boolean): void {
+		mine = m;
 	}
 
 	export function setError(e: boolean): void {
@@ -134,13 +133,13 @@
 {#if revealed}
 	<div
 		class="ms-tile"
-		class:fontpatch={!isMine && value && !error}
-		class:ms-tile-error={error && isMine}
+		class:fontpatch={!mine && value && !error}
+		class:ms-tile-error={error && mine}
 		on:click={onReveal}
 		on:contextmenu={onReveal}
 		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), true])}
 		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
-		{#if isMine}
+		{#if mine}
 			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
 		{:else if error}
 			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
@@ -153,12 +152,12 @@
 		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), false])}
 		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
-		aria-label="Tile {mark ? 'mark' : 'unrevealed'}"
+		aria-label="Tile {mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
 		on:click={(e) => onReveal(e)}
 		on:contextmenu={(e) => onMark(e)}>
-		{#if mark === 'flag'}
+		{#if mark === FieldMark.FLAG}
 			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
-		{:else if mark === 'questionMark'}
+		{:else if mark === FieldMark.QUESTION}
 			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
 		{/if}
 	</Button>

@@ -1,4 +1,4 @@
-import { rand } from '../helper';
+import { random } from '../helper';
 
 export interface CoordinateLike {
 	readonly x: number;
@@ -6,13 +6,13 @@ export interface CoordinateLike {
 }
 
 export class Coordinate implements CoordinateLike {
-	readonly x: number;
-	readonly y: number;
+	public readonly x: number;
+	public readonly y: number;
 
-	constructor(x: Coordinate);
-	constructor(x: number, y: number);
-	constructor(x: number | Coordinate, y?: number);
-	constructor(x: number | Coordinate, y?: number) {
+	public constructor(x: Coordinate);
+	public constructor(x: number, y: number);
+	public constructor(x: number | Coordinate, y?: number);
+	public constructor(x: number | Coordinate, y?: number) {
 		if (typeof x === 'number') {
 			this.x = x;
 			this.y = y!;
@@ -22,11 +22,11 @@ export class Coordinate implements CoordinateLike {
 		}
 	}
 
-	static random(xMin: number, xMax: number, yMin: number, yMax: number): Coordinate {
-		return new Coordinate(rand(xMin, xMax), rand(yMin, yMax));
+	public static random(xMin: number, xMax: number, yMin: number, yMax: number): Coordinate {
+		return new Coordinate(random(xMin, xMax), random(yMin, yMax));
 	}
 
-	static directions = {
+	public static directions = {
 		NORTH: new Coordinate(0, 1),
 		NORTHEAST: new Coordinate(1, 1),
 		EAST: new Coordinate(1, 0),
@@ -37,11 +37,11 @@ export class Coordinate implements CoordinateLike {
 		NORTHWEST: new Coordinate(-1, 1),
 	};
 
-	toString(): string {
+	public toString(): string {
 		return `${this.x},${this.y}`;
 	}
 
-	static toString(x: number, y: number): string {
+	public static toString(x: number, y: number): string {
 		return `${x},${y}`;
 	}
 

@@ -11,8 +11,14 @@ import {
 import { shuffle } from '../helper';
 import { Coordinate } from './coordinate.class';
 
-export type FieldMark = 'flag' | 'questionMark' | undefined;
+export enum FieldMark {
+	EMTPY = 0,
+	FLAG = 1,
+	QUESTION = 2,
+}
+
 export type Revealer = (isFlood?: boolean) => void;
+
 export interface Field {
 	/**
 	 * Implement only simple get logic
@@ -29,7 +35,7 @@ export interface Field {
 	/**
 	 * Implement only simple get logic
 	 */
-	getRevealed(): boolean;
+	isRevealed(): boolean;
 	/**
 	 * Implement only simple get logic
 	 */
@@ -37,7 +43,7 @@ export interface Field {
 	/**
 	 * Implement only simple get logic
 	 */
-	getIsMine(): boolean;
+	isMine(): boolean;
 	/**
 	 * Implement only simple get logic
 	 */
@@ -57,7 +63,7 @@ export interface Field {
 	/**
 	 * Implement only simple set logic
 	 */
-	setIsMine(isMine: boolean): void;
+	setMine(isMine: boolean): void;
 	/**
 	 * Implement only simple set logic
 	 */
@@ -75,7 +81,11 @@ export interface Field {
 	registerOnMark(callback: Revealer): void;
 }
 
-export class MinesweeperGame<T extends Field = Field> {
+const isNotFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.EMTPY;
+const isFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.FLAG;
+const isQuestioned = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.QUESTION;
+
+export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 	private tileCount = this.width * this.height;
 
 	private onReveals = new Map<T, Revealer>();
@@ -131,19 +141,17 @@ export class MinesweeperGame<T extends Field = Field> {
 		this.reset();
 	}
 
-	private isOutOfBounds(x: number, y: number): boolean {
-		return x > this.height || y > this.width || x < 0 || y < 0;
-	}
-
-	private forEach(callback: (t: T) => void) {
+	public *[Symbol.iterator](): IterableIterator<T> {
 		for (let x = 0; x < this.height; x++) {
 			for (let y = 0; y < this.width; y++) {
 				const tile = this.tileGetter(x, y);
-				if (tile) {
-					callback(tile);
-				}
+				if (tile) yield tile;
 			}
 		}
+	}
+
+	private isOutOfBounds(x: number, y: number): boolean {
+		return x > this.height || y > this.width || x < 0 || y < 0;
 	}
 
 	private surrounding(x: number, y: number): T[] {
@@ -158,16 +166,17 @@ export class MinesweeperGame<T extends Field = Field> {
 		this.correctlyMarked$.next(0);
 		this.marked$.next(0);
 		this.clickCount$.next(0);
-		this.forEach((t) => {
-			t.setValue(0);
-			t.setIsMine(false);
-			t.setMark(undefined);
-			t.setError(false);
-			t.setRevealed(false);
-			const onReveal = this.makeInitialOnReveal(t);
-			this.onReveals.set(t, onReveal);
-			t.registerOnReveal(onReveal);
-		});
+		for (const tile of this) {
+			tile.setValue(0);
+			tile.setMine(false);
+			tile.setMark(FieldMark.EMTPY);
+			tile.setError(false);
+			tile.setRevealed(false);
+			const onReveal = this.makeInitialOnReveal(tile);
+			this.onReveals.set(tile, onReveal);
+			tile.registerOnReveal(onReveal);
+		}
+
 		this.resetNotification$.next();
 	}
 
@@ -175,85 +184,94 @@ export class MinesweeperGame<T extends Field = Field> {
 		this.clickCount$.next(this.clickCount$.value + 1);
 	}
 
-	private makeInitialOnReveal(t: T): () => void {
+	private makeInitialOnReveal(tile: T): () => void {
 		return () => {
-			this.start(t.getX(), t.getY());
+			this.start(tile.getX(), tile.getY());
 			this.increaseClicks();
-			this.onReveals.get(t)?.(false);
+			this.onReveals.get(tile)?.(false);
 		};
 	}
 
 	/**
 	 * Track the count of mine marks, and set the state of the mark
 	 */
-	private makeMarkLogic(t: T): () => void {
+	private makeMarkLogic(tile: T): () => void {
 		return () => {
 			this.increaseClicks();
-			if (t.getMark() === 'questionMark') {
-				t.setMark(undefined);
-			} else if (t.getMark() === 'flag') {
-				t.setMark('questionMark');
-				this.marked$.next(this.marked$.value - 1);
-				if (t.getIsMine()) this.correctlyMarked$.next(this.correctlyMarked$.value - 1);
-			} else if (t.getMark() === undefined) {
-				t.setMark('flag');
-				this.marked$.next(this.marked$.value + 1);
-				if (t.getIsMine()) this.correctlyMarked$.next(this.correctlyMarked$.value + 1);
+			if (isQuestioned(tile)) tile.setMark(FieldMark.EMTPY);
+			else if (isFlagged(tile)) tile.setMark(FieldMark.QUESTION);
+			else if (isNotFlagged(tile)) tile.setMark(FieldMark.FLAG);
+			this.refreshFlagCounts();
+		};
+	}
+
+	private refreshFlagCounts(): void {
+		const { correctFlags, totalFlags } = this.countFlags();
+		this.marked$.next(totalFlags);
+		this.correctlyMarked$.next(correctFlags);
+	}
+
+	private countFlags(): { totalFlags: number; correctFlags: number } {
+		const flaggedTiles = [...this].filter(isFlagged);
+		const correctlyFlaggedTiles = flaggedTiles.filter((t) => t.isMine());
+		return { totalFlags: flaggedTiles.length, correctFlags: correctlyFlaggedTiles.length };
+	}
+
+	private makeMineRevealLogic(revealingTile: T): (isOriginalReveal?: boolean) => void {
+		return (isOriginalReveal = true) => {
+			if (isOriginalReveal) this.increaseClicks();
+
+			if (isOriginalReveal && !isNotFlagged(revealingTile)) {
+				revealingTile.setMark(FieldMark.EMTPY);
+			} else if (!revealingTile.isRevealed()) {
+				this.blowUp(revealingTile);
 			}
 		};
 	}
 
-	private makeMineRevealLogic(t: T): (isOriginalReveal?: boolean) => void {
-		return (isOriginalReveal = true) => {
-			if (isOriginalReveal) this.increaseClicks();
-
-			if (isOriginalReveal && t.getMark() !== undefined) {
-				t.setMark(undefined);
-			} else if (t.getRevealed() === false) {
-				t.setError(true);
-				this.isBlown$.next(t);
-				this.forEach((tile) => {
-					if (tile.getIsMine() && tile.getMark() !== 'flag') {
-						tile.setRevealed(true);
-					}
-
-					if (!tile.getIsMine() && tile.getMark() === 'flag') {
-						tile.setRevealed(true);
-						tile.setError(true);
-					}
-				});
+	private blowUp(triggeringTile: T): void {
+		triggeringTile.setError(true);
+		this.isBlown$.next(triggeringTile);
+		for (const tile of this) {
+			if (tile.isMine() && !isFlagged(tile)) {
+				tile.setRevealed(true);
 			}
-		};
+
+			if (!tile.isMine() && isFlagged(tile)) {
+				tile.setRevealed(true);
+				tile.setError(true);
+			}
+		}
 	}
 
 	/**
 	 * Reveal the tile if not and count it
 	 */
-	private makeTileRevealLogic(t: T): (isOriginalReveal?: boolean) => void {
+	private makeTileRevealLogic(tile: T): (isOriginalReveal?: boolean) => void {
 		return (isOriginalReveal = true) => {
 			if (isOriginalReveal) this.increaseClicks();
 
-			if (isOriginalReveal && t.getMark() !== undefined) {
-				t.setMark(undefined);
-			} else if (!t.getRevealed() && t.getMark() === undefined) {
-				t.setRevealed(true);
+			if (isOriginalReveal && !isNotFlagged(tile)) {
+				tile.setMark(FieldMark.EMTPY);
+			} else if (!tile.isRevealed() && isNotFlagged(tile)) {
+				tile.setRevealed(true);
 				this.revealed$.next(this.revealed$.value + 1);
 
-				if (!t.getValue()) {
-					for (const tile of this.surrounding(t.getX(), t.getY())) {
-						if (tile.getMark() === undefined) {
-							this.onReveals.get(tile)?.(false);
+				if (!tile.getValue()) {
+					for (const surroundingTile of this.surrounding(tile.getX(), tile.getY())) {
+						if (isNotFlagged(surroundingTile)) {
+							this.onReveals.get(surroundingTile)?.(false);
 						}
 					}
 				}
-			} else if (isOriginalReveal && t.getRevealed() && t.getValue()) {
-				const surround = this.surrounding(t.getX(), t.getY());
-				const flaggedCount = surround.filter((s) => s.getMark() === 'flag').length;
-				const questionCount = surround.filter((s) => s.getMark() === 'questionMark').length;
-				if (flaggedCount === t.getValue() && questionCount === 0) {
-					for (const tile of surround) {
-						if (tile.getMark() === undefined) {
-							this.onReveals.get(tile)?.(false);
+			} else if (isOriginalReveal && tile.isRevealed() && tile.getValue()) {
+				const surround = this.surrounding(tile.getX(), tile.getY());
+				const flaggedCount = surround.filter(isFlagged).length;
+				const questionCount = surround.filter(isQuestioned).length;
+				if (flaggedCount === tile.getValue() && questionCount === 0) {
+					for (const surroundingTile of surround) {
+						if (isNotFlagged(surroundingTile)) {
+							this.onReveals.get(surroundingTile)?.(false);
 						}
 					}
 				}
@@ -261,15 +279,15 @@ export class MinesweeperGame<T extends Field = Field> {
 		};
 	}
 
-	static isNeighbour(x, y, ox, oy): boolean {
+	public static isNeighbour(x: number, y: number, ox: number, oy: number): boolean {
 		return ox >= x - 1 && ox <= x + 1 && oy >= y - 1 && oy <= y + 1;
 	}
 
-	static toLinear(width: number, x: number, y: number): number {
+	public static toLinear(width: number, x: number, y: number): number {
 		return y + width * x;
 	}
 
-	static fromLinear(width: number, n: number): [number, number] {
+	public static fromLinear(width: number, n: number): [number, number] {
 		const y = n % width;
 		const x = ~~(n / width);
 		return [x, y];
@@ -304,30 +322,30 @@ export class MinesweeperGame<T extends Field = Field> {
 		for (const n of a) {
 			const [x, y] = this.fromLinear(n);
 			const tile = this.tileGetter(x, y);
-			tile?.setIsMine(true);
+			tile?.setMine(true);
 			mines.push({ x, y });
 		}
 
 		// Set values of the numbered tiles
 		for (const { x, y } of mines) {
 			for (const tile of this.surrounding(x, y)) {
-				if (tile && !tile.getIsMine()) {
+				if (tile && !tile.isMine()) {
 					tile.setValue(tile.getValue() + 1);
 				}
 			}
 		}
 
 		// Register logic
-		this.forEach((tile) => {
+		for (const tile of this) {
 			tile.registerOnMark(this.makeMarkLogic(tile));
 			let onReveal: Revealer;
-			if (tile.getIsMine()) {
+			if (tile.isMine()) {
 				onReveal = this.makeMineRevealLogic(tile);
 			} else {
 				onReveal = this.makeTileRevealLogic(tile);
 			}
 			this.onReveals.set(tile, onReveal);
 			tile.registerOnReveal(onReveal);
-		});
+		}
 	}
 }

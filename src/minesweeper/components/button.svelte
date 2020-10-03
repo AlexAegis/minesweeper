@@ -1,11 +1,15 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onDestroy } from 'svelte';
 	import { documentMouseUp$ } from '../store';
 
 	const dispatch = createEventDispatcher();
 	export let mousedown: boolean | undefined = false;
 
-	$: if ($documentMouseUp$) mousedown = false;
+	const s = documentMouseUp$.subscribe((documentMouseUp) => {
+		if (documentMouseUp) {
+			mousedown = false;
+		}
+	});
 
 	function onMouseDown(e: MouseEvent): void {
 		dispatch('mousedown');
@@ -13,6 +17,8 @@
 			mousedown = true;
 		}
 	}
+
+	onDestroy(() => s.unsubscribe());
 </script>
 
 <style>
