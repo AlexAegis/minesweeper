@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-[![CI](https://github.com/AlexAegis/svelte-minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/svelte-minesweeper/actions?query=workflow%3ALint) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3f3b484c74f24c84a9a67ce2bf9653c2)](https://www.codacy.com/manual/AlexAegis/svelte-minesweeper?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/svelte-minesweeper&utm_campaign=Badge_Grade) [![Svelte](https://img.shields.io/badge/made%20with-svelte-orange)](https://github.com/sveltejs/svelte) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![CI](https://github.com/AlexAegis/svelte-minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/svelte-minesweeper/actions?query=workflow%3ACI) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3f3b484c74f24c84a9a67ce2bf9653c2)](https://www.codacy.com/manual/AlexAegis/svelte-minesweeper?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/svelte-minesweeper&utm_campaign=Badge_Grade) [![Svelte](https://img.shields.io/badge/made%20with-svelte-orange)](https://github.com/sveltejs/svelte) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 <!-- markdownlint-enable MD013 -->
 
