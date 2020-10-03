@@ -13,9 +13,6 @@ technologies such as Svelte and RxJS.
 
 > Click on the image to try out!
 
-## Development
+## Angular version
 
-```sh
-npm install
-npm start
-```
+Check out the Angular implementation here: <https://github.com/alexaegis/angular-minesweeper>

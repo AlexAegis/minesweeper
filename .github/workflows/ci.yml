@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 1
       - name: Cache
         id: cache-packages
-        uses: actions/cache@v1.2.0
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 1
       - name: Cache
         id: cache-packages
-        uses: actions/cache@v1.2.0
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
@@ -79,7 +79,7 @@ jobs:
           fetch-depth: 1
       - name: Cache
         id: cache-packages
-        uses: actions/cache@v1.2.0
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
@@ -106,7 +106,7 @@ jobs:
           fetch-depth: 1
       - name: Cache
         id: cache-packages
-        uses: actions/cache@v1.2.0
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}

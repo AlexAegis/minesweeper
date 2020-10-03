@@ -1,7 +1,7 @@
 {
 	"name": "svelte-sandbox",
-	"displayName": "Svelte Sandbox",
-	"description": "Svelte Sandbox",
+	"displayName": "Svelte Minesweeper",
+	"description": "Svelte Minesweeper",
 	"version": "1.0.0",
 	"license": "mit",
 	"private": true,
@@ -10,10 +10,10 @@
 		"email": "alexaegis@gmail.com",
 		"url": "https://github.com/AlexAegis"
 	},
-	"homepage": "https://github.com/AlexAegis/svelte-sandbox",
+	"homepage": "https://github.com/AlexAegis/svelte-minesweeper",
 	"bugs": {
 		"email": "alexaegis@gmail.com",
-		"url": "https://github.com/AlexAegis/svelte-sandbox/issues"
+		"url": "https://github.com/AlexAegis/svelte-minesweeper/issues"
 	},
 	"scripts": {
 		"build": "rollup -c",
@@ -63,6 +63,7 @@
 		"mocha": "^8.1.3",
 		"npm-check-updates": "^9.0.3",
 		"nyc": "^15.1.0",
+		"prettier": "^2.1.2",
 		"remark": "^12.0.1",
 		"remark-cli": "^8.0.1",
 		"remark-lint": "^7.0.1",
