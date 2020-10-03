@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { MinesweeperGame } from '../minesweeper';
+	import { MinesweeperGame } from '../core/minesweeper.class';
 	import type { GamePreset } from '../store';
 	import { game$, isEnded$ } from '../store';
 	import Tile from './tile.svelte';

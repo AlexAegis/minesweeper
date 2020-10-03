@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { assetMap } from '../assets';
+	import { assetMap } from '../core';
 	import { gamestate$, tileMouseDown$ } from '../store';
 	import Button from './button.svelte';
 	import Image from './image.svelte';

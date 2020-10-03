@@ -19,7 +19,7 @@ import {
 	withLatestFrom,
 } from 'rxjs/operators';
 import { SvelteSubject } from '../helper';
-import type { MinesweeperGame } from './minesweeper';
+import type { MinesweeperGame } from './core';
 
 export const tileClick$ = new Subject<[number, boolean]>();
 

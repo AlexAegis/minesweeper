@@ -8,14 +8,9 @@ import {
 	switchMap,
 	takeUntil,
 } from 'rxjs/operators';
-import { shuffle } from '../helper';
+import { shuffle } from '../../helper';
 import { Coordinate } from './coordinate.class';
-
-export enum FieldMark {
-	EMTPY = 0,
-	FLAG = 1,
-	QUESTION = 2,
-}
+import { FieldMark } from './field-mark.enum';
 
 export type Revealer = (isFlood?: boolean) => void;
 

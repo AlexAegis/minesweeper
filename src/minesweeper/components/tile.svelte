@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { assetMap } from '../assets';
-	import { FieldMark, MinesweeperGame } from '../minesweeper';
+	import { assetMap, FieldMark, MinesweeperGame } from '../core';
 	import { colorMap, tileClick$, tileMouseDown$, width$ } from '../store';
 	import Button from './button.svelte';
 	import Image from './image.svelte';

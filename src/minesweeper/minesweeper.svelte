@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { version } from '../../package.json';
-	import { assetMap } from './assets';
 	import DigitDisplay from './components/digit-display.svelte';
 	import Menu from './components/menu.svelte';
 	import Panel from './components/panel.svelte';
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
 	import TitleBar from './components/title-bar.svelte';
-	import type { Field, MinesweeperGame } from './minesweeper';
+	import type { Field, MinesweeperGame } from './core';
+	import { assetMap } from './core';
 	import { elapsedTime$, gamePreset$, remainingMines$, winHistory$ } from './store';
 
 	let game!: MinesweeperGame<Field>;
