@@ -37,7 +37,7 @@
 </style>
 
 <div class="panel outer outset">
-	<TitleBar title="Minesweeper v{version}" icon={assetMap.mine} />
+	<TitleBar title="Svelte Minesweeper v{version}" icon={assetMap.mine} />
 	<div class="panel game padded">
 		<Menu />
 		<Panel class="panel inset padded">

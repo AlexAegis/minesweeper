@@ -1,4 +1,4 @@
-import { random } from '../../helper';
+import { random } from '../helper';
 
 export interface CoordinateLike {
 	readonly x: number;

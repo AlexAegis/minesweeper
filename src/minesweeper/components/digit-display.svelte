@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { padArray } from '../../helper';
+	import { padArray } from '../helper';
 	import DigitalNumber from './digital-number.svelte';
 
 	export let value: number | undefined;

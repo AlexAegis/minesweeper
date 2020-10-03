@@ -8,7 +8,7 @@ import {
 	switchMap,
 	takeUntil,
 } from 'rxjs/operators';
-import { shuffle } from '../../helper';
+import { shuffle } from '../helper';
 import { Coordinate } from './coordinate.class';
 import { FieldMark } from './field-mark.enum';
 
