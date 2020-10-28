@@ -146,7 +146,7 @@
 	</div>
 {:else}
 	<Button
-		mousedown={isANeighbourPressed && !mark}
+		mousedown={isANeighbourPressed && mark === FieldMark.EMTPY}
 		{disabled}
 		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), false])}
 		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
