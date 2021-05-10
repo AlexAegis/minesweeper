@@ -88,7 +88,43 @@
 			callback();
 		};
 	}
+
 </script>
+
+{#if revealed}
+	<div
+		class="ms-tile"
+		class:fontpatch={!mine && value && !error}
+		class:ms-tile-error={error && mine}
+		on:click={onReveal}
+		on:contextmenu={onReveal}
+		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), true])}
+		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};"
+	>
+		{#if mine}
+			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
+		{:else if error}
+			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
+		{:else if value}{value}{/if}
+	</div>
+{:else}
+	<Button
+		mousedown={isANeighbourPressed && mark === FieldMark.EMTPY}
+		{disabled}
+		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), false])}
+		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
+		style="grid-row: {x + 1}; grid-column: {y + 1};"
+		aria-label="Tile {mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
+		on:click={(e) => onReveal(e)}
+		on:contextmenu={(e) => onMark(e)}
+	>
+		{#if mark === FieldMark.FLAG}
+			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
+		{:else if mark === FieldMark.QUESTION}
+			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
+		{/if}
+	</Button>
+{/if}
 
 <style>
 	:global(.ms-tile) {
@@ -127,37 +163,5 @@
 		margin-top: -1px;
 		margin-left: -1px;
 	}
-</style>
 
-{#if revealed}
-	<div
-		class="ms-tile"
-		class:fontpatch={!mine && value && !error}
-		class:ms-tile-error={error && mine}
-		on:click={onReveal}
-		on:contextmenu={onReveal}
-		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), true])}
-		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};">
-		{#if mine}
-			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
-		{:else if error}
-			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
-		{:else if value}{value}{/if}
-	</div>
-{:else}
-	<Button
-		mousedown={isANeighbourPressed && mark === FieldMark.EMTPY}
-		{disabled}
-		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), false])}
-		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
-		style="grid-row: {x + 1}; grid-column: {y + 1};"
-		aria-label="Tile {mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
-		on:click={(e) => onReveal(e)}
-		on:contextmenu={(e) => onMark(e)}>
-		{#if mark === FieldMark.FLAG}
-			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
-		{:else if mark === FieldMark.QUESTION}
-			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
-		{/if}
-	</Button>
-{/if}
+</style>

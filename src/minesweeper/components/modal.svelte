@@ -11,7 +11,23 @@
 	export function close() {
 		isOpen = false;
 	}
+
 </script>
+
+{#if isOpen}
+	<div style={$$props.style} class="panel outset {$$props.class}">
+		<div class="top">
+			<span>{title}</span>
+			<Button on:click={close} style="margin-left: auto;" class="button" aria-label="Close">
+				X
+			</Button>
+		</div>
+
+		<slot />
+	</div>
+
+	<div class="backdrop" on:click={close} />
+{/if}
 
 <style>
 	.panel {
@@ -39,19 +55,5 @@
 		display: flex;
 		align-items: center;
 	}
+
 </style>
-
-{#if isOpen}
-	<div style={$$props.style} class="panel outset {$$props.class}">
-		<div class="top">
-			<span>{title}</span>
-			<Button on:click={close} style="margin-left: auto;" class="button" aria-label="Close">
-				X
-			</Button>
-		</div>
-
-		<slot />
-	</div>
-
-	<div class="backdrop" on:click={close} />
-{/if}

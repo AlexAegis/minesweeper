@@ -15,6 +15,7 @@ export class Coordinate implements CoordinateLike {
 	public constructor(x: number | Coordinate, y?: number) {
 		if (typeof x === 'number') {
 			this.x = x;
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			this.y = y!;
 		} else {
 			this.x = x.x;

@@ -13,7 +13,21 @@
 	let game!: MinesweeperGame<Field>;
 
 	$winHistory$; // keep a subscription alive on game level to keep the refCount
+
 </script>
+
+<div class="panel outer outset">
+	<TitleBar title="Svelte Minesweeper v{version}" icon={assetMap.mine} />
+	<div class="panel game padded">
+		<Menu />
+		<Panel class="panel inset padded">
+			<DigitDisplay value={$remainingMines$} paddedLength={3} />
+			<Smiley on:click={() => game.reset()} />
+			<DigitDisplay value={$elapsedTime$} paddedLength={3} />
+		</Panel>
+		<Playfield class="panel inset" bind:game gamePreset={$gamePreset$} />
+	</div>
+</div>
 
 <style>
 	.outer {
@@ -34,17 +48,5 @@
 		box-sizing: border-box;
 		grid-template-rows: auto 5em auto;
 	}
-</style>
 
-<div class="panel outer outset">
-	<TitleBar title="Svelte Minesweeper v{version}" icon={assetMap.mine} />
-	<div class="panel game padded">
-		<Menu />
-		<Panel class="panel inset padded">
-			<DigitDisplay value={$remainingMines$} paddedLength={3} />
-			<Smiley on:click={() => game.reset()} />
-			<DigitDisplay value={$elapsedTime$} paddedLength={3} />
-		</Panel>
-		<Playfield class="panel inset" bind:game gamePreset={$gamePreset$} />
-	</div>
-</div>
+</style>

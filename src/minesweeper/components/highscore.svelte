@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { isTheSamePreset, presets, winHistory$ } from '../store';
+
 </script>
 
 <ol>

@@ -8,14 +8,8 @@
 
 	let settingsModal: Modal;
 	let highScoreModal: Modal;
-</script>
 
-<style>
-	div {
-		display: flex;
-		height: max-content;
-	}
-</style>
+</script>
 
 <div>
 	<Button style="margin: 1px; border-style: none;" on:click={() => settingsModal.open()}>
@@ -26,7 +20,8 @@
 	</Button>
 	<Button
 		style="margin-left:auto; border-style: none;"
-		on:click={() => window.open(homepage, '_blank')}>
+		on:click={() => window.open(homepage, '_blank')}
+	>
 		github
 	</Button>
 </div>
@@ -36,9 +31,18 @@
 		bind:width={$width$}
 		bind:height={$height$}
 		bind:mineCount={$mineCount$}
-		on:done={() => settingsModal.close()} />
+		on:done={() => settingsModal.close()}
+	/>
 </Modal>
 
 <Modal title="Highscore" style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
 	<Highscore />
 </Modal>
+
+<style>
+	div {
+		display: flex;
+		height: max-content;
+	}
+
+</style>

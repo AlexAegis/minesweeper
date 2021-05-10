@@ -1,3 +1,7 @@
+<div class={$$props.class} style={$$props.style}>
+	<slot />
+</div>
+
 <style>
 	div {
 		width: 100%;
@@ -8,8 +12,5 @@
 		box-sizing: border-box;
 		padding: 8px;
 	}
-</style>
 
-<div class={$$props.class} style={$$props.style}>
-	<slot />
-</div>
+</style>

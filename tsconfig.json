@@ -10,6 +10,11 @@
 		"experimentalDecorators": true,
 		"resolveJsonModule": true,
 		"downlevelIteration": true,
+		"target": "es2017",
+		"module": "esnext",
+		"lib": ["es2017", "dom"],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
 		"rootDir": "."
 	}
 }

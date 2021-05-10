@@ -6,6 +6,7 @@
 
 	$: smiley = $tileMouseDown$ ? 'click' : $gamestate$;
 	$: src = assetMap[`${smiley ?? 'ongoing'}Smiley`];
+
 </script>
 
 <Button on:click aria-label="Restart" class="button padded" style="width: 60px; height: 60px;">

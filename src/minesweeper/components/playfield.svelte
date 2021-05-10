@@ -31,16 +31,8 @@
 
 	onMount(() => (mounted = true));
 	onDestroy(() => (mounted = false));
-</script>
 
-<style>
-	div {
-		display: grid;
-		width: fit-content;
-		height: fit-content;
-		margin: auto;
-	}
-</style>
+</script>
 
 <div class={$$props.class} style={$$props.style}>
 	{#each Array(gamePreset.height) as _, x}
@@ -49,3 +41,13 @@
 		{/each}
 	{/each}
 </div>
+
+<style>
+	div {
+		display: grid;
+		width: fit-content;
+		height: fit-content;
+		margin: auto;
+	}
+
+</style>

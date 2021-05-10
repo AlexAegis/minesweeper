@@ -19,13 +19,8 @@
 	}
 
 	onDestroy(() => s.unsubscribe());
-</script>
 
-<style>
-	button {
-		font-family: monospace;
-	}
-</style>
+</script>
 
 <button
 	class="button {$$props.class}"
@@ -35,6 +30,14 @@
 	class:inset={mousedown === true}
 	on:mousedown={onMouseDown}
 	on:contextmenu
-	on:click>
+	on:click
+>
 	<slot />
 </button>
+
+<style>
+	button {
+		font-family: monospace;
+	}
+
+</style>

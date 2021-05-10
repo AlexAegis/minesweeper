@@ -22,15 +22,8 @@
 			mineCount = width * height - 1;
 		}
 	}
-</script>
 
-<style>
-	div {
-		display: grid;
-		gap: 4px;
-		padding: 4px;
-	}
-</style>
+</script>
 
 <div>
 	{#each Object.entries(presets) as [key, data]}
@@ -44,3 +37,12 @@
 	<label for="mineCount">Mine count:</label>
 	<input name="mineCount" type="number" bind:value={mineCount} max={width * height - 1} min="1" />
 </div>
+
+<style>
+	div {
+		display: grid;
+		gap: 4px;
+		padding: 4px;
+	}
+
+</style>

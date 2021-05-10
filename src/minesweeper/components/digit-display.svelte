@@ -13,7 +13,14 @@
 		paddedLength,
 		0
 	);
+
 </script>
+
+<div class="panel inset">
+	{#each numbers as number}
+		<DigitalNumber value={number} />
+	{/each}
+</div>
 
 <style>
 	div {
@@ -21,10 +28,5 @@
 		padding: 1px;
 		background-color: black;
 	}
-</style>
 
-<div class="panel inset">
-	{#each numbers as number}
-		<DigitalNumber value={number} />
-	{/each}
-</div>
+</style>
