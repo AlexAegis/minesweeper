@@ -2,11 +2,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
+import css from 'rollup-plugin-css-only';
 import gzipPlugin from 'rollup-plugin-gzip';
 import livereload from 'rollup-plugin-livereload';
 import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
-import autoPreprocess from 'svelte-preprocess';
+import sveltePreprocess from 'svelte-preprocess';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -18,11 +19,18 @@ export default {
 		name: 'app',
 		file: 'public/build/bundle.js',
 	},
+	watch: {
+		clearScreen: false,
+	},
 	plugins: [
 		svelte({
-			preprocess: autoPreprocess({ typescript: {} }),
-			css: (css) => css.write('bundle.css'),
+			preprocess: sveltePreprocess({ typescript: {} }),
+			compilerOptions: {
+				// enable run-time checks when not in production
+				dev: !production,
+			},
 		}),
+		css({ output: 'bundle.css' }),
 		typescript({ sourceMap: !production }),
 
 		// If you have external dependencies installed from
