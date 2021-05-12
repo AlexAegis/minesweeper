@@ -27,6 +27,7 @@
 		"lint:md": "markdownlint --ignore 'CHANGELOG.md' --ignore-path '.gitignore' .",
 		"lint:rmd": "remark .",
 		"lint:format": "prettier --check .",
+		"nuke": "rimraf ./node_modules ./package-lock.json",
 		"ci": "concurrently --timestamp-format \"HH:mm:ss.SSS\" --prefix-colors \"bgRed.black.dim,bgCyan.black.dim\" --prefix \"{name} {time} {pid}\" --names \"LINT,LINT:CSS,LINT:SCSS,LINT:MD,LINT:RMD,LINT:FORMAT,TEST,BUILD\" \"npm run lint\" \"npm run lint:css\" \"npm run lint:scss\" \"npm run lint:md\" \"npm run lint:rmd\" \"npm run lint:format\" \"npm run test\" \"npm run build\"",
 		"ncu": "ncu -u",
 		"format": "prettier --write .",
@@ -37,13 +38,13 @@
 		"deploy": "gh-pages -d public"
 	},
 	"dependencies": {
-		"rxjs": "^7.0.0",
+		"rxjs": "^7.0.1",
 		"svelte": "^3.38.2",
 		"svelte-observable": "^0.4.0"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^12.1.1",
-		"@commitlint/config-conventional": "^12.1.1",
+		"@commitlint/cli": "^12.1.3",
+		"@commitlint/config-conventional": "^12.1.3",
 		"@rollup/plugin-commonjs": "^19.0.0",
 		"@rollup/plugin-json": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^13.0.0",
@@ -80,7 +81,7 @@
 		"stylelint": "^13.13.1",
 		"stylelint-config-prettier": "^8.0.2",
 		"stylelint-prettier": "^1.2.0",
-		"svelte-check": "^1.5.2",
+		"svelte-check": "^1.5.3",
 		"svelte-preprocess": "^4.7.3",
 		"terser": "^5.7.0",
 		"ts-jest": "^26.5.6",
