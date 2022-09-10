@@ -11,5 +11,4 @@
 		background-color: rgb(59, 110, 165);
 		height: 100vh;
 	}
-
 </style>
