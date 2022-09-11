@@ -30,8 +30,10 @@ jobs:
       - name: Install packages
         if: steps.cache-packages.outputs.cache-hit != 'true'
         run: npm ci
-      - name: Lint
-        run: npm run lint
+      - name: Lint with eslint
+        run: npm run lint:es
+      - name: Lint with svelte-check
+        run: npm run lint:svelte
       - name: Lint css stylesheets
         run: npm run lint:css
       - name: Lint scss stylesheets

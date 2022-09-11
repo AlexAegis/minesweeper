@@ -1,7 +1,5 @@
 {
 	"extends": ["stylelint-config-prettier"],
 	"rules": {},
-	"ignoreFiles": [
-        "coverage/**/*"
-    ]
+	"ignoreFiles": ["coverage/**/*"]
 }

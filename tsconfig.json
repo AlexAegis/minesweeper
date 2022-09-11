@@ -1,20 +1,34 @@
 {
 	"extends": "@tsconfig/svelte/tsconfig.json",
-	"include": ["src/**/*", "src/node_modules", "*.config.js"],
-	"exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+	"include": [
+		"src/**/*.d.ts",
+		"src/**/*.ts",
+		"src/**/*.js",
+		"src/**/*.svelte",
+		"*.config.js",
+		"*.config.ts"
+	],
+	"exclude": ["node_modules/*", "__sapper__/*", "public/*", "package-lock.json"],
+	"references": [{ "path": "./tsconfig.node.json" }],
 	"compilerOptions": {
+		"target": "esnext",
+		"useDefineForClassFields": true,
+		"module": "esnext",
+		"resolveJsonModule": true,
+		"baseUrl": ".",
+		"rootDir": ".",
+		"allowJs": true,
+		"checkJs": true,
+		"isolatedModules": true,
 		"strict": true,
 		"noImplicitAny": false,
 		"esModuleInterop": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"resolveJsonModule": true,
+		"moduleResolution": "node",
 		"downlevelIteration": true,
-		"target": "es2017",
-		"module": "esnext",
-		"lib": ["es2017", "dom"],
+		"lib": ["esnext", "dom"],
 		"skipLibCheck": true,
-		"skipDefaultLibCheck": true,
-		"rootDir": "."
+		"skipDefaultLibCheck": true
 	}
 }
