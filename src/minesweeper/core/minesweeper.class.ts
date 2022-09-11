@@ -1,13 +1,5 @@
 import { BehaviorSubject, identity, merge, of, Subject, timer } from 'rxjs';
-import {
-	distinctUntilChanged,
-	filter,
-	map,
-	mapTo,
-	skip,
-	switchMap,
-	takeUntil,
-} from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, skip, switchMap, takeUntil } from 'rxjs/operators';
 import { shuffle } from '../helper';
 import { Coordinate } from './coordinate.class';
 import { FieldMark } from './field-mark.enum';
@@ -81,7 +73,7 @@ const isFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === Field
 const isQuestioned = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.QUESTION;
 
 export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
-	private tileCount = this.width * this.height;
+	private tileCount: number;
 
 	private onReveals = new Map<T, Revealer>();
 
@@ -104,13 +96,19 @@ export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 	public remainingMines$ = this.marked$.pipe(map((marked) => this.mineCount - marked));
 
 	public gamestate$ = merge(
-		this.isWon$.pipe(filter(identity), mapTo('won')),
+		this.isWon$.pipe(
+			filter(identity),
+			map(() => 'won')
+		),
 		this.isBlown$.pipe(
 			filter((isBlown) => !!isBlown),
 			distinctUntilChanged(),
-			mapTo('lost')
+			map(() => 'lost')
 		),
-		this.isOnGoing$.pipe(distinctUntilChanged(), mapTo('ongoing'))
+		this.isOnGoing$.pipe(
+			distinctUntilChanged(),
+			map(() => 'ongoing')
+		)
 	).pipe(distinctUntilChanged());
 
 	public isEnded$ = this.gamestate$.pipe(
@@ -133,6 +131,7 @@ export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 		if (mineCount >= height * width - 1) {
 			mineCount = height * width - 1;
 		}
+		this.tileCount = height * width;
 		this.reset();
 	}
 

@@ -10,7 +10,6 @@ import {
 import {
 	filter,
 	map,
-	mapTo,
 	scan,
 	shareReplay,
 	startWith,
@@ -24,7 +23,7 @@ import { SvelteSubject } from './helper';
 export const tileClick$ = new Subject<[number, boolean]>();
 
 export const documentMouseUp$ = fromEvent(document, 'mouseup');
-export const tileMouseDown$ = merge(tileClick$, documentMouseUp$.pipe(mapTo(undefined)));
+export const tileMouseDown$ = merge(tileClick$, documentMouseUp$.pipe(map(() => undefined)));
 
 export const presets: Record<PresetKeys, GamePreset> = {
 	beginner: {
