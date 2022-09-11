@@ -1,2 +1,5 @@
 package-lock.json
 node_modules
+jest.config.js
+lint-staged.config.js
+svelte.config.js
