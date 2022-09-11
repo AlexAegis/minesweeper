@@ -1,8 +1,8 @@
 {
-	"tslint.alwaysShowRuleFailuresAsWarnings": true,
 	"editor.formatOnSave": true,
 	"editor.autoIndent": "full",
 	"editor.tabCompletion": "off",
+	"liveServer.settings.root": "dist/",
 	"editor.rulers": [
 		{
 			"color": "#bdbdbd11",

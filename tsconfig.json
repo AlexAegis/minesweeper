@@ -8,7 +8,15 @@
 		"*.config.js",
 		"*.config.ts"
 	],
-	"exclude": ["node_modules/*", "__sapper__/*", "public/*", "package-lock.json"],
+	"exclude": [
+		"node_modules/*",
+		"__sapper__/*",
+		"public/*",
+		"package-lock.json",
+		"./jest.config.js",
+		"./lint-staged.config.js",
+		"./svelte.config.js"
+	],
 	"references": [{ "path": "./tsconfig.node.json" }],
 	"compilerOptions": {
 		"target": "esnext",
