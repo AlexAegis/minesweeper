@@ -8,12 +8,14 @@
 	import TitleBar from './components/title-bar.svelte';
 	import type { Field, MinesweeperGame } from './core';
 	import { assetMap } from './core';
+	import { store$ } from './root-store';
 	import { elapsedTime$, gamePreset$, remainingMines$, winHistory$ } from './store';
 
 	let game!: MinesweeperGame<Field>;
+	const rootStore = store$.pipe();
 
+	rootStore.subscribe((a) => console.log(a));
 	$winHistory$; // keep a subscription alive on game level to keep the refCount
-
 </script>
 
 <div class="panel outer outset">
@@ -48,5 +50,4 @@
 		box-sizing: border-box;
 		grid-template-rows: auto 5em auto;
 	}
-
 </style>
