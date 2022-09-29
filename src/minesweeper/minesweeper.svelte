@@ -6,16 +6,8 @@
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
 	import TitleBar from './components/title-bar.svelte';
-	import type { Field, MinesweeperGame } from './core';
-	import { assetMap } from './core';
-	import { store$ } from './root-store';
-	import { elapsedTime$, gamePreset$, remainingMines$, winHistory$ } from './store';
-
-	let game!: MinesweeperGame<Field>;
-	const rootStore = store$.pipe();
-
-	rootStore.subscribe((a) => console.log(a));
-	$winHistory$; // keep a subscription alive on game level to keep the refCount
+	import { assetMap } from './consts/asset-urls.const';
+	import { elapsedTime$, minesweeperActions, remainingMines$ } from './store/game.store';
 </script>
 
 <div class="panel outer outset">
@@ -24,10 +16,10 @@
 		<Menu />
 		<Panel class="panel inset padded">
 			<DigitDisplay value={$remainingMines$} paddedLength={3} />
-			<Smiley on:click={() => game.reset()} />
+			<Smiley on:click={() => minesweeperActions.restartGameInstance.next()} />
 			<DigitDisplay value={$elapsedTime$} paddedLength={3} />
 		</Panel>
-		<Playfield class="panel inset" bind:game gamePreset={$gamePreset$} />
+		<Playfield class="panel inset" />
 	</div>
 </div>
 

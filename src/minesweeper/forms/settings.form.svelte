@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Button from '../components/button.svelte';
-	import type { GamePreset } from '../store';
-	import { presets } from '../store';
+	import { GAME_PRESETS, type GamePreset } from '../consts/game-presets.conts';
 
 	const dispatch = createEventDispatcher();
 
@@ -22,11 +21,10 @@
 			mineCount = width * height - 1;
 		}
 	}
-
 </script>
 
 <div>
-	{#each Object.entries(presets) as [key, data]}
+	{#each Object.entries(GAME_PRESETS) as [key, data]}
 		<Button on:click={() => setTo(data)}>{key}</Button>
 	{/each}
 
@@ -44,5 +42,4 @@
 		gap: 4px;
 		padding: 4px;
 	}
-
 </style>

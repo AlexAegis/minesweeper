@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { documentMouseUp$ } from '../store';
+	import { documentMouseUp$ } from '../store/root.store';
 
 	const dispatch = createEventDispatcher();
 	export let mousedown: boolean | undefined = false;
 
-	const s = documentMouseUp$.subscribe((documentMouseUp) => {
+	const subscription = documentMouseUp$.subscribe((documentMouseUp) => {
 		if (documentMouseUp) {
 			mousedown = false;
 		}
@@ -18,8 +18,7 @@
 		}
 	}
 
-	onDestroy(() => s.unsubscribe());
-
+	onDestroy(subscription.unsubscribe);
 </script>
 
 <button
@@ -39,5 +38,4 @@
 	button {
 		font-family: monospace;
 	}
-
 </style>

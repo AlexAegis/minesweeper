@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { homepage } from '../../../package.json';
 	import Settings from '../forms/settings.form.svelte';
-	import { height$, mineCount$, width$ } from '../store';
+
 	import Button from './button.svelte';
 	import Highscore from './highscore.svelte';
 	import Modal from './modal.svelte';
@@ -9,6 +9,9 @@
 	let settingsModal: Modal;
 	let highScoreModal: Modal;
 
+	let width: number;
+	let height: number;
+	let mineCount: number;
 </script>
 
 <div>
@@ -27,12 +30,7 @@
 </div>
 
 <Modal title="Settings" bind:this={settingsModal}>
-	<Settings
-		bind:width={$width$}
-		bind:height={$height$}
-		bind:mineCount={$mineCount$}
-		on:done={() => settingsModal.close()}
-	/>
+	<Settings bind:width bind:height bind:mineCount on:done={() => settingsModal.close()} />
 </Modal>
 
 <Modal title="Highscore" style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
@@ -44,5 +42,4 @@
 		display: flex;
 		height: max-content;
 	}
-
 </style>

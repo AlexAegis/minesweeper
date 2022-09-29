@@ -1,126 +1,88 @@
 <script lang="ts">
-	import { assetMap, FieldMark, MinesweeperGame } from '../core';
-	import { colorMap, tileClick$, tileMouseDown$, width$ } from '../store';
+	import { getGameTileState, type TileInstance } from '../store/game.store';
+
+	import { createEventDispatcher } from 'svelte';
+	import { assetMap } from '../consts/asset-urls.const';
+	import { colorMap } from '../consts/colors.const';
+	import { FieldMark } from '../core/field-mark.enum';
+
+	import { Observable, Subscription } from 'rxjs';
+	import { onDestroy } from 'svelte';
 	import Button from './button.svelte';
 	import Image from './image.svelte';
 
+	const dispatch = createEventDispatcher();
+
 	export let x: number;
 	export let y: number;
-	let value: number;
-	let revealed: boolean = false;
-	let mark: FieldMark;
-	let mine: boolean = false;
-	let error: boolean = false;
+
+	$: {
+		console.log('resub!', x, y, tile);
+		let tile$ = getGameTileState(x, y);
+	}
+
+	let sink = new Subscription();
+	let tile$: Observable<TileInstance>;
+	let tile: TileInstance = $tile$;
+	console.log('tile!', x, y, tile);
+
 	export let disabled: boolean = false;
+	export let neighbourPressed: boolean = false;
 
-	let onReveal: (e: Event) => void;
-	let onMark: (e: Event) => void;
-
-	let isANeighbourPressed = false;
-
-	$: pressedTile = $tileMouseDown$;
-
-	$: width = $width$;
-
-	$: if (pressedTile !== undefined) {
-		if (pressedTile[1]) {
-			const [ox, oy] = MinesweeperGame.fromLinear(width, pressedTile[0]);
-			isANeighbourPressed = MinesweeperGame.isNeighbour(x, y, ox, oy);
-		}
-	} else {
-		isANeighbourPressed = false;
+	function mouseup() {
+		dispatch('mouseup', {
+			x,
+			y,
+		});
 	}
 
-	export function getX(): number {
-		return x;
-	}
-	export function getY(): number {
-		return y;
-	}
-	export function getValue(): number {
-		return value;
-	}
-	export function isRevealed(): boolean {
-		return revealed;
-	}
-	export function getMark(): FieldMark {
-		return mark;
+	function mousedown() {
+		dispatch('mousedown', {
+			x,
+			y,
+		});
 	}
 
-	export function isMine(): boolean {
-		return mine;
+	function contextmenu() {
+		dispatch('contextmenu', {
+			x,
+			y,
+		});
 	}
 
-	export function getError(): boolean {
-		return error;
-	}
-
-	export function setValue(v: number): void {
-		value = v;
-	}
-
-	export function setRevealed(r: boolean): void {
-		revealed = r;
-	}
-
-	export function setMark(m: FieldMark): void {
-		mark = m;
-	}
-
-	export function setMine(m: boolean): void {
-		mine = m;
-	}
-
-	export function setError(e: boolean): void {
-		error = e;
-	}
-
-	export function registerOnReveal(callback: () => void): void {
-		onReveal = (e: Event) => {
-			e.preventDefault();
-			callback();
-		};
-	}
-
-	export function registerOnMark(callback: () => void): void {
-		onMark = (e: Event) => {
-			e.preventDefault();
-			callback();
-		};
-	}
-
+	onDestroy(sink.unsubscribe);
 </script>
 
-{#if revealed}
+{#if tile.revealed}
 	<div
 		class="ms-tile"
-		class:fontpatch={!mine && value && !error}
-		class:ms-tile-error={error && mine}
-		on:click={onReveal}
-		on:contextmenu={onReveal}
-		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), true])}
-		style="color: {colorMap[value]}; grid-row: {x + 1}; grid-column: {y + 1};"
+		class:fontpatch={!tile.isMine && tile.value && !tile.error}
+		class:ms-tile-error={tile.error && tile.isMine}
+		on:click={mouseup}
+		on:contextmenu={contextmenu}
+		on:mousedown={mousedown}
+		style="color: {colorMap[tile.value]}; grid-row: {x + 1}; grid-column: {y + 1};"
 	>
-		{#if mine}
+		{#if tile.isMine}
 			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
-		{:else if error}
+		{:else if tile.error}
 			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
-		{:else if value}{value}{/if}
+		{:else if tile.value}{tile.value}{/if}
 	</div>
 {:else}
 	<Button
-		mousedown={isANeighbourPressed && mark === FieldMark.EMTPY}
+		mousedown={neighbourPressed && tile.mark === FieldMark.EMTPY}
 		{disabled}
-		on:mousedown={() => tileClick$.next([MinesweeperGame.toLinear($width$, x, y), false])}
-		class="button ms-tile ms-tile-font{error ? ' ms-tile-error' : ''}"
+		on:mousedown={mousedown}
+		class="button ms-tile ms-tile-font{tile.error ? ' ms-tile-error' : ''}"
 		style="grid-row: {x + 1}; grid-column: {y + 1};"
-		aria-label="Tile {mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
-		on:click={(e) => onReveal(e)}
-		on:contextmenu={(e) => onMark(e)}
+		aria-label="Tile {tile.mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
+		on:click={mouseup}
+		on:contextmenu={contextmenu}
 	>
-		{#if mark === FieldMark.FLAG}
+		{#if tile.mark === FieldMark.FLAG}
 			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
-		{:else if mark === FieldMark.QUESTION}
+		{:else if tile.mark === FieldMark.QUESTION}
 			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
 		{/if}
 	</Button>
@@ -163,5 +125,4 @@
 		margin-top: -1px;
 		margin-left: -1px;
 	}
-
 </style>
