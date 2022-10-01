@@ -1,23 +1,12 @@
 <script lang="ts">
-	import Tile from './tile.svelte';
-
-	import {
-		gameEnded$,
-		gameHeightArray$,
-		gameWidthArray$,
-		minesweeperActions,
-	} from '../store/game.store';
+	import { gameHeightArray$, gameWidthArray$ } from '../store/game.store';
+	import TileWrapper from './tile-wrapper.svelte';
 </script>
 
 <div class={$$props.class} style={$$props.style}>
 	{#each $gameWidthArray$ as x}
 		{#each $gameHeightArray$ as y}
-			<Tile
-				{x}
-				{y}
-				disabled={$gameEnded$}
-				on:mousedown={(event) => minesweeperActions.leftclickDown.next(event.detail)}
-			/>
+			<TileWrapper {x} {y} />
 		{/each}
 	{/each}
 </div>

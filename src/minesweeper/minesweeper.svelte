@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { version } from '../../package.json';
-	import DigitDisplay from './components/digit-display.svelte';
 	import Menu from './components/menu.svelte';
-	import Panel from './components/panel.svelte';
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
-	import TitleBar from './components/title-bar.svelte';
 	import { assetMap } from './consts/asset-urls.const';
 	import { elapsedTime$, minesweeperActions, remainingMines$ } from './store/game.store';
+	import DigitDisplay from './ui/digit-display.svelte';
+	import Panel from './ui/panel.svelte';
+	import TitleBar from './ui/title-bar.svelte';
 </script>
 
 <div class="panel outer outset">

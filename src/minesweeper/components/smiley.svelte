@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { assetMap } from '../consts/asset-urls.const';
 	import { smileyState$ } from '../store/game.store';
-	import Button from './button.svelte';
-	import Image from './image.svelte';
+	import Button from '../ui/button.svelte';
+	import Image from '../ui/image.svelte';
 
 	$: src = assetMap[$smileyState$];
 </script>

@@ -6,7 +6,8 @@
 		"src/**/*.js",
 		"src/**/*.svelte",
 		"*.config.js",
-		"*.config.ts"
+		"*.config.ts",
+		"commitlint.config.cjs"
 	],
 	"exclude": [
 		"node_modules/*",
@@ -15,7 +16,8 @@
 		"package-lock.json",
 		"./jest.config.js",
 		"./lint-staged.config.js",
-		"./svelte.config.js"
+		"./svelte.config.js",
+		"commitlint.config.js"
 	],
 	"references": [{ "path": "./tsconfig.node.json" }],
 	"compilerOptions": {

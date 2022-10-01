@@ -1,20 +1,25 @@
+import { entitySliceReducer, entitySliceReducerWithPrecompute } from '@tinyslice/core';
 import {
 	asyncScheduler,
 	combineLatest,
+	distinctUntilChanged,
 	filter,
+	fromEvent,
 	map,
 	merge,
+	Observable,
 	throttleTime,
 	withLatestFrom,
 } from 'rxjs';
 import { GAME_PRESETS, type GamePreset, type WinData } from '../consts/game-presets.conts';
-import { FieldMark, type CoordinateLike } from '../core';
+import { Coordinate, FieldMark, type CoordinateLike } from '../core';
+
 import { rootSlice$ } from './root.store';
 import { MINESWEEPER_ACTION_PREFIX, scope } from './scope';
 
 export interface Game {
 	preset: GamePreset;
-	instance: GameInstance | undefined;
+	instance: GameInstance;
 	history: WinData[];
 }
 
@@ -50,12 +55,21 @@ export enum SmileyState {
 }
 
 export interface TileInstance {
+	x: number;
+	y: number;
 	value: number;
 	isMine: boolean;
 	mark: FieldMark;
-	error: boolean;
+	guessedWrong: boolean;
 	revealed: boolean;
-	isPressed: boolean;
+	/**
+	 * Whether or not the tile should appear as pressed
+	 */
+	pressed: boolean;
+	/**
+	 * Tiles are disabled when the game is ended
+	 */
+	disabled: boolean;
 }
 
 export interface GameInstance {
@@ -76,6 +90,7 @@ export const minesweeperActions = {
 		`${MINESWEEPER_ACTION_PREFIX} reset game instance`
 	),
 	revealTile: scope.createAction(`${MINESWEEPER_ACTION_PREFIX} reveal tile`),
+	mouseUp: scope.createAction(`${MINESWEEPER_ACTION_PREFIX} mouse up`),
 	leftclickDown: scope.createAction<CoordinateLike>(
 		`${MINESWEEPER_ACTION_PREFIX} leftclick down`
 	),
@@ -84,6 +99,7 @@ export const minesweeperActions = {
 	addGameToHistory: scope.createAction<WinData>(
 		`${MINESWEEPER_ACTION_PREFIX} add game to history`
 	),
+	endGame: scope.createAction<GameState>(`${MINESWEEPER_ACTION_PREFIX} end game`),
 };
 
 const generateGameInstance = (preset: GamePreset): GameInstance => {
@@ -97,12 +113,15 @@ const generateGameInstance = (preset: GamePreset): GameInstance => {
 	for (let x = 0; x < preset.width; x++) {
 		for (let y = 0; y < preset.height; y++) {
 			gameInstanceInitialState.tiles[getCoordinateKey(x, y)] = {
-				error: false,
+				x,
+				y,
+				guessedWrong: false,
 				isMine: false,
 				mark: FieldMark.EMTPY,
 				revealed: false,
 				value: 0,
-				isPressed: false,
+				pressed: false,
+				disabled: false,
 			};
 		}
 	}
@@ -112,7 +131,7 @@ const generateGameInstance = (preset: GamePreset): GameInstance => {
 
 export const game$ = rootSlice$.addSlice<Game>('game', {
 	preset: GAME_PRESETS.beginner,
-	instance: undefined,
+	instance: generateGameInstance(GAME_PRESETS.beginner),
 	history: [],
 });
 
@@ -134,26 +153,80 @@ export const winHistory$ = game$.slice('history', [
 
 export const gameState$ = gameInstance$.slice('gameState');
 
-export const gameWon$ = gameState$.pipe(map((gameState) => gameState === GameState.WON));
+export const isGameWon$ = gameState$.pipe(map((gameState) => gameState === GameState.WON));
+export const gameWon$ = isGameWon$.pipe(distinctUntilChanged());
 
 export const gameLost$ = gameState$.pipe(map((gameState) => gameState === GameState.LOST));
-export const gameEnded$ = merge(gameWon$, gameLost$);
+export const gameEnded$ = merge(gameWon$.pipe(distinctUntilChanged()), gameLost$);
 
 export const elapsedTime$ = gameInstance$.slice('elapsedTime');
-export const gameTiles$ = gameInstance$.sliceSelect(
-	(slice) => slice?.tiles,
-	(slice, subSlice) => ({ ...slice, tiles: subSlice })
-);
+const getNeighbouringCoordinates = (coordinate: CoordinateLike): CoordinateLike[] =>
+	Object.values(Coordinate.directions).map((direction) => ({
+		x: coordinate.x + direction.x,
+		y: coordinate.y + direction.y,
+	}));
 
-export const getGameTileState = (x: number, y: number) =>
+const getNeighbouringCoordinateKeys = (coordinate: CoordinateLike): string[] =>
+	getNeighbouringCoordinates(coordinate).map(({ x, y }) => getCoordinateKey(x, y));
+
+export const gameTiles$ = gameInstance$.slice('tiles', [
+	minesweeperActions.endGame.reduce((state) =>
+		Object.entries(state).reduce((acc, [key, tile]) => {
+			acc[key] = { ...tile, disabled: true };
+			return acc;
+		}, {} as Record<string, TileInstance>)
+	),
+	minesweeperActions.leftclickDown.reduce(
+		entitySliceReducerWithPrecompute(
+			(_state, payload) => getNeighbouringCoordinateKeys(payload),
+			(key, tile, payload, neighbours) => {
+				const isSameTile = getCoordinateKey(payload.x, payload.y) === key;
+				if (tile.revealed) {
+					if ((isSameTile || neighbours.includes(key)) && !tile.pressed) {
+						return { ...tile, pressed: true };
+					}
+				} else if (isSameTile) {
+					return { ...tile, pressed: true };
+				}
+			}
+		)
+	),
+	minesweeperActions.mouseUp.reduce(
+		entitySliceReducer((_key, tile, _payload) => {
+			if (tile.pressed) {
+				return { ...tile, pressed: false };
+			}
+		})
+	),
+]);
+
+export const getGameTileState = (x: number, y: number): Observable<TileInstance> =>
 	gameTiles$.pipe(map((tiles) => tiles[getCoordinateKey(x, y)]));
+
+export const neighbouringTiles = (x: number, y: number): Observable<TileInstance[]> =>
+	combineLatest(
+		getNeighbouringCoordinates({ x, y }).map((neighbourCoordinate) =>
+			getGameTileState(neighbourCoordinate.x, neighbourCoordinate.y)
+		)
+	).pipe(
+		map((neighbouringTiles) =>
+			neighbouringTiles.filter((neighbouringTile) => !!neighbouringTile)
+		)
+	);
+
+export const isANeighbourPressed = (x: number, y: number): Observable<boolean> =>
+	neighbouringTiles(x, y).pipe(
+		map((neighbouringTiles) =>
+			neighbouringTiles.some((neighbouringTile) => neighbouringTile.pressed)
+		)
+	);
 
 export const tilesFlagged$ = gameTiles$.pipe(
 	map((tiles) => Object.values(tiles).filter((tile) => tile.mark === FieldMark.FLAG).length)
 );
-
+// TODO: dont emit if empty
 export const isATilePressed$ = gameTiles$.pipe(
-	map((tiles) => Object.values(tiles).filter((tile) => tile.isPressed).length > 0)
+	map((tiles) => Object.values(tiles).filter((tile) => tile.pressed).length > 0)
 );
 
 export const tileCount$ = gameTiles$.pipe(map((tiles) => Object.values(tiles).length));
@@ -186,6 +259,13 @@ export const smileyState$ = combineLatest([gameState$, isATilePressed$]).pipe(
 	})
 );
 
+export const documentMouseUp$ = fromEvent(document, 'mouseup');
+documentMouseUp$.subscribe(() => minesweeperActions.mouseUp.next());
+/**
+ * Unpress all buttons if the mouse releases
+ */
+// TODO: scope.createEffect(documentMouseUp$.pipe(map(() => minesweeperActions.mouseUp.makePacket())));
+
 /**
  * If try start is valid, reset the game
  */
@@ -207,8 +287,12 @@ scope.createEffect(
 	)
 );
 
+/**
+ * Add won game to the gamehistory
+ */
 scope.createEffect(
-	gameWon$.pipe(
+	gameEnded$.pipe(
+		filter((won) => won),
 		withLatestFrom(elapsedTime$, gamePreset$),
 		map(([, time, preset], id) => ({ preset, time, id } as WinData)),
 		map((winData) => minesweeperActions.addGameToHistory.makePacket(winData))

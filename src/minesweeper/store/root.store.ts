@@ -1,19 +1,23 @@
-import { fromEvent } from 'rxjs';
-import { mouseUpAction$, tileClickAction$ } from './actions';
+import { TinySliceDevtoolPlugin } from '@tinyslice/devtools-plugin';
+import packageJson from '../../../package.json';
 import { scope } from './scope';
 
 export interface RootState {
-	mouseDown: boolean;
+	hey: boolean;
 }
 
 export const rootSlice$ = scope.createRootSlice<RootState>(
 	{
-		mouseDown: false,
+		hey: false,
 	},
-	[
-		tileClickAction$.reduce((state) => ({ ...state, mouseDown: true })),
-		mouseUpAction$.reduce((state) => ({ ...state, mouseDown: false })),
-	]
+	[],
+	{
+		plugins: [
+			new TinySliceDevtoolPlugin({
+				name: `${packageJson.displayName} (${packageJson.version})`,
+			}),
+		],
+		metaReducers: [],
+		useDefaultLogger: true,
+	}
 );
-
-export const documentMouseUp$ = fromEvent(document, 'mouseup');

@@ -1,84 +1,58 @@
 <script lang="ts">
-	import { getGameTileState, type TileInstance } from '../store/game.store';
-
 	import { createEventDispatcher } from 'svelte';
 	import { assetMap } from '../consts/asset-urls.const';
 	import { colorMap } from '../consts/colors.const';
 	import { FieldMark } from '../core/field-mark.enum';
+	import type { TileInstance } from '../store/game.store';
 
-	import { Observable, Subscription } from 'rxjs';
-	import { onDestroy } from 'svelte';
-	import Button from './button.svelte';
-	import Image from './image.svelte';
+	import Button from '../ui/button.svelte';
+	import Image from '../ui/image.svelte';
 
 	const dispatch = createEventDispatcher();
 
-	export let x: number;
-	export let y: number;
+	export let tile: TileInstance;
 
-	$: {
-		console.log('resub!', x, y, tile);
-		let tile$ = getGameTileState(x, y);
+	function mouseup(_event: Event) {
+		dispatch('leftclickUp', tile);
 	}
 
-	let sink = new Subscription();
-	let tile$: Observable<TileInstance>;
-	let tile: TileInstance = $tile$;
-	console.log('tile!', x, y, tile);
-
-	export let disabled: boolean = false;
-	export let neighbourPressed: boolean = false;
-
-	function mouseup() {
-		dispatch('mouseup', {
-			x,
-			y,
-		});
+	function mousedown(_event: Event) {
+		dispatch('leftclickDown', tile);
 	}
 
-	function mousedown() {
-		dispatch('mousedown', {
-			x,
-			y,
-		});
+	function contextmenu(event: Event) {
+		event.preventDefault();
+		dispatch('rightclickUp', tile);
 	}
-
-	function contextmenu() {
-		dispatch('contextmenu', {
-			x,
-			y,
-		});
-	}
-
-	onDestroy(sink.unsubscribe);
 </script>
 
 {#if tile.revealed}
 	<div
 		class="ms-tile"
-		class:fontpatch={!tile.isMine && tile.value && !tile.error}
-		class:ms-tile-error={tile.error && tile.isMine}
+		class:fontpatch={!tile.isMine && tile.value && !tile.guessedWrong}
+		class:ms-tile-error={tile.guessedWrong && tile.isMine}
 		on:click={mouseup}
+		on:pointerdown={mousedown}
 		on:contextmenu={contextmenu}
-		on:mousedown={mousedown}
-		style="color: {colorMap[tile.value]}; grid-row: {x + 1}; grid-column: {y + 1};"
+		style="color: {colorMap[tile.value]}; grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 	>
 		{#if tile.isMine}
 			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
-		{:else if tile.error}
+		{:else if tile.guessedWrong}
 			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
 		{:else if tile.value}{tile.value}{/if}
 	</div>
 {:else}
 	<Button
-		mousedown={neighbourPressed && tile.mark === FieldMark.EMTPY}
-		{disabled}
-		on:mousedown={mousedown}
-		class="button ms-tile ms-tile-font{tile.error ? ' ms-tile-error' : ''}"
-		style="grid-row: {x + 1}; grid-column: {y + 1};"
-		aria-label="Tile {tile.mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
+		mousedown={tile.pressed && tile.mark === FieldMark.EMTPY}
+		disabled={tile.disabled}
+		disableSelfInset={true}
 		on:click={mouseup}
+		on:pointerdown={mousedown}
 		on:contextmenu={contextmenu}
+		class="button ms-tile ms-tile-font{tile.guessedWrong ? ' ms-tile-error' : ''}"
+		style="grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
+		aria-label="Tile {tile.mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
 	>
 		{#if tile.mark === FieldMark.FLAG}
 			<Image class="tile-img" src={assetMap.flag} alt="Flag" />

@@ -2,9 +2,9 @@
 	import { homepage } from '../../../package.json';
 	import Settings from '../forms/settings.form.svelte';
 
-	import Button from './button.svelte';
+	import Button from '../ui/button.svelte';
+	import Modal from '../ui/modal.svelte';
 	import Highscore from './highscore.svelte';
-	import Modal from './modal.svelte';
 
 	let settingsModal: Modal;
 	let highScoreModal: Modal;

@@ -11,7 +11,6 @@
 	export function close() {
 		isOpen = false;
 	}
-
 </script>
 
 {#if isOpen}
@@ -55,5 +54,4 @@
 		display: flex;
 		align-items: center;
 	}
-
 </style>
