@@ -13,7 +13,7 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
-import { GAME_PRESETS, type GamePreset, type WinData } from '../consts/game-presets.conts';
+import { isTheSamePreset, type GamePreset, type WinData } from '../consts/game-presets.conts';
 import {
 	Coordinate,
 	getNextTileMark,
@@ -32,11 +32,11 @@ import {
 	isGameWon,
 } from '../core/game-state.enum';
 import { shuffle } from '../helper';
-
-import { rootSlice$ } from './root.store';
+import { debug$, rootSlice$ } from './root.store';
 import { MS_TAG, scope } from './scope';
 
 export interface Game {
+	presets: Record<string, GamePreset>;
 	instance: GameInstance;
 	history: WinData[];
 }
@@ -99,6 +99,7 @@ export const minesweeperActions = {
 	startGame: scope.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
 		`${MS_TAG} start game`
 	),
+	setPreset: scope.createAction<{ name: string; preset: GamePreset }>(`${MS_TAG} set preset`),
 	addGameToHistory: scope.createAction<WinData>(`${MS_TAG} add game to history`),
 	incrementTimer: scope.createAction<number>(`${MS_TAG} increment timer`),
 	tileActions: {
@@ -174,10 +175,54 @@ const generateGameInstance = (settings: GamePreset): GameInstance => {
 	return gameInstanceInitialState;
 };
 
+const CLASSIC_GAME_PRESETS = {
+	beginner: {
+		width: 9,
+		height: 9,
+		mineCount: 10,
+	},
+	intermediate: {
+		width: 16,
+		height: 16,
+		mineCount: 40,
+	},
+	expert: {
+		width: 30,
+		height: 16,
+		mineCount: 99,
+	},
+};
+
 export const game$ = rootSlice$.addSlice<Game>('game', {
-	instance: generateGameInstance(GAME_PRESETS.beginner),
+	instance: generateGameInstance(CLASSIC_GAME_PRESETS.beginner),
 	history: [],
+	presets: CLASSIC_GAME_PRESETS,
 });
+
+export const presets$ = game$.slice('presets', [
+	minesweeperActions.setPreset.reduce((state, { name, preset }) => ({
+		...state,
+		[name]: preset,
+	})),
+	debug$.setAction.reduce((state, debug) => {
+		if (debug) {
+			return {
+				...state,
+				debug: {
+					width: 2,
+					height: 2,
+					mineCount: 2,
+				},
+			};
+		} else if ('debug' in state) {
+			const nextState = { ...state };
+			delete nextState.debug;
+			return nextState;
+		} else {
+			return state;
+		}
+	}),
+]);
 
 /**
  * Take all tiles, shuffle them, take the first n amount, those will be the mines
@@ -247,24 +292,62 @@ export const gameHeightArray$ = gameSettings$.pipe(
 );
 
 export const winHistory$ = game$.slice('history', [
-	minesweeperActions.addGameToHistory.reduce((state, payload) =>
-		[...state, payload].sort((a, b) => a.time - b.time).map((win, i) => ({ ...win, id: i }))
-	),
+	minesweeperActions.addGameToHistory.reduce((state, payload) => [...state, payload]),
 ]);
+
+export interface HighscoreEntry {
+	title: string;
+	description: string;
+	timeStamp: string;
+	time: number;
+}
+
+export const highscoreEntries$: Observable<HighscoreEntry[]> = winHistory$.pipe(
+	withLatestFrom(presets$),
+	map(([winHistory, presets]) =>
+		winHistory
+			.map((winEntry) => {
+				const presetName = Object.entries(presets).find(([, preset]) =>
+					isTheSamePreset(preset, winEntry.preset)
+				)?.[0];
+
+				const minutes = Math.floor(winEntry.time / 60);
+				const remainingSeconds = winEntry.time % 60;
+				const timeStamp = `${minutes ? minutes + 'm ' : ''}${remainingSeconds}s`;
+				return {
+					title: presetName ?? 'Custom',
+					description: `${winEntry.preset.height}×${winEntry.preset.width} mines: ${winEntry.preset.mineCount}`,
+					timeStamp,
+					time: winEntry.time,
+				} as HighscoreEntry;
+			})
+			.sort((a, b) => a.time - b.time)
+	)
+);
 
 export const gameState$ = gameInstance$.slice('gameState');
 
 export const isGameWon$ = gameState$.pipe(map(isGameWon));
-export const gameWon$ = isGameWon$.pipe(distinctUntilChanged());
+export const gameWon$ = isGameWon$.pipe(
+	distinctUntilChanged(),
+	filter((won) => won)
+);
 
 export const isGameLost$ = gameState$.pipe(map(isGameLost));
-export const gameLost$ = isGameLost$.pipe(distinctUntilChanged());
+export const gameLost$ = isGameLost$.pipe(
+	distinctUntilChanged(),
+	filter((lost) => lost)
+);
+
 export const isGameEnded$ = gameState$.pipe(
 	map((gameState) => isGameWon(gameState) || isGameLost(gameState))
 );
 export const gameEnded$ = merge(gameWon$, gameLost$);
 export const isGameOngoing$ = gameState$.pipe(map(isGameOngoing));
-export const gameStarted$ = isGameOngoing$.pipe(distinctUntilChanged());
+export const gameStarted$ = isGameOngoing$.pipe(
+	distinctUntilChanged(),
+	filter((ongoing) => ongoing)
+);
 
 export const elapsedTime$ = gameInstance$.slice('elapsedTime', [
 	minesweeperActions.incrementTimer.reduce((state) => state + 1),
@@ -512,8 +595,7 @@ scope.createEffect(
  * Add won game to the gamehistory
  */
 scope.createEffect(
-	gameEnded$.pipe(
-		filter((won) => won),
+	gameWon$.pipe(
 		withLatestFrom(elapsedTime$, gameInstance$),
 		map(([, time, gameInstance]) => ({ preset: gameInstance.settings, time } as WinData)),
 		map((winData) => minesweeperActions.addGameToHistory.makePacket(winData))

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { GAME_PRESETS, type GamePreset } from '../consts/game-presets.conts';
+	import type { GamePreset } from '../consts/game-presets.conts';
+	import { presets$ } from '../store/game.store';
+	import { debug$ } from '../store/root.store';
 	import Button from '../ui/button.svelte';
 
 	const dispatch = createEventDispatcher();
@@ -19,7 +21,7 @@
 </script>
 
 <div>
-	{#each Object.entries(GAME_PRESETS) as [key, data]}
+	{#each Object.entries($presets$) as [key, data]}
 		<Button on:click={() => (preset = data)}>{key}</Button>
 	{/each}
 
@@ -37,6 +39,16 @@
 	/>
 
 	<Button on:click={() => ok()}>Ok</Button>
+
+	{#await $debug$}
+		loading...
+	{:then debug}
+		{#if !debug}
+			<Button on:click={() => debug$.set(true)}>Enable Debug</Button>
+		{:else}
+			<Button on:click={() => debug$.set(false)}>Disable Debug</Button>
+		{/if}
+	{/await}
 </div>
 
 <style>

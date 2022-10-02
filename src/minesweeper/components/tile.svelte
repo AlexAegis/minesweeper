@@ -13,7 +13,7 @@
 
 	export let tile: TileState;
 
-	export let debug = true;
+	export let debug = false;
 
 	function asCoordinate(tile: TileState): CoordinateLike {
 		return { x: tile.x, y: tile.y };
@@ -38,9 +38,13 @@
 			dispatch('leftclickUp', coord);
 		} else if (event.button === 1) {
 			dispatch('middleclickUp', coord);
-		} else if (event.button === 2) {
-			dispatch('rightclickUp', coord);
 		}
+	}
+
+	function contextmenu(event: Event) {
+		event.preventDefault();
+		const coord = asCoordinate(tile);
+		dispatch('rightclickUp', coord);
 	}
 </script>
 
@@ -67,9 +71,9 @@
 		mousedown={tile.pressed && isEmptyTileMark(tile.mark)}
 		disabled={tile.disabled}
 		disableSelfInset={true}
-		on:pointerup={pointerup}
 		on:pointerdown={pointerdown}
-		on:contextmenu={(event) => event.preventDefault()}
+		on:pointerup={pointerup}
+		on:contextmenu={contextmenu}
 		style="grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 		aria-label="Tile {isEmptyTileMark(tile.mark) ? 'unrevealed' : 'mark'}"
 	>

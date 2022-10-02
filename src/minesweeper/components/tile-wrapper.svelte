@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getGameTileState, minesweeperActions } from '../store/game.store';
+	import { debug$ } from '../store/root.store';
 
 	import Tile from './tile.svelte';
 
@@ -13,6 +14,7 @@
 {:then tile}
 	{#if tile}
 		<Tile
+			debug={$debug$}
 			{tile}
 			on:leftclickDown={(event) =>
 				minesweeperActions.clickActions.leftclickDown.next(event.detail)}

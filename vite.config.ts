@@ -8,6 +8,11 @@ export default defineConfig({
 		svelte(),
 		chunkSplitPlugin({
 			strategy: 'single-vendor',
+			customSplitting: {
+				rxjs: ['rxjs'],
+				'@tinyslice/core': ['@tinyslice/core'],
+				'@tinyslice/devtools-plugin': ['@tinyslice/devtools-plugin'],
+			},
 		}),
 	],
 	appType: 'spa',

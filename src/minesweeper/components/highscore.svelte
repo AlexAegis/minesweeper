@@ -1,21 +1,25 @@
 <script lang="ts">
-	import { GAME_PRESETS, isTheSamePreset } from '../consts/game-presets.conts';
-	import { winHistory$ } from '../store/game.store';
+	import { highscoreEntries$ } from '../store/game.store';
 </script>
 
-<ol>
-	{#each $winHistory$ as win (win.id)}
-		{#if isTheSamePreset(win.preset, GAME_PRESETS.beginner)}
-			<li>Beginner: {win.time}s</li>
-		{:else if isTheSamePreset(win.preset, GAME_PRESETS.intermediate)}
-			<li>Intermediate: {win.time}s</li>
-		{:else if isTheSamePreset(win.preset, GAME_PRESETS.expert)}
-			<li>Expert: {win.time}s</li>
-		{:else}
-			<li>
-				Custom: {win.time}s ({win.preset.height} * {win.preset.width}, {win.preset
-					.mineCount} mines)
-			</li>
-		{/if}
+<div>
+	{#each $highscoreEntries$ as highscoreEntry}
+		<span class="title">{highscoreEntry.title}</span>
+		<span class="time">{highscoreEntry.time}</span>
+		<span class="description">({highscoreEntry.description})</span>
 	{:else}No games played yet!{/each}
-</ol>
+</div>
+
+<style>
+	.description {
+		color: grey;
+		margin-left: auto;
+	}
+
+	div {
+		margin-top: 1em;
+		display: grid;
+		grid-template-columns: 4em 3em auto;
+		gap: 0.5em;
+	}
+</style>

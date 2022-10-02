@@ -1,30 +1,3 @@
-export const GAME_PRESETS: Record<PresetKeys, GamePreset> = {
-	beginner: {
-		width: 9,
-		height: 9,
-		mineCount: 4,
-	},
-	intermediate: {
-		width: 16,
-		height: 16,
-		mineCount: 40,
-	},
-	expert: {
-		width: 30,
-		height: 16,
-		mineCount: 99,
-	},
-};
-
-const debug = true;
-if (debug) {
-	GAME_PRESETS['debug'] = {
-		width: 2,
-		height: 2,
-		mineCount: 2,
-	} as GamePreset;
-}
-
 export interface GamePreset {
 	width: number;
 	height: number;
@@ -32,7 +5,6 @@ export interface GamePreset {
 }
 
 export interface WinData {
-	id: number;
 	time: number;
 	preset: GamePreset;
 }
