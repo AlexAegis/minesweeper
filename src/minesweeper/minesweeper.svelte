@@ -4,7 +4,7 @@
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
 	import { assetMap } from './consts/asset-urls.const';
-	import { elapsedTime$, minesweeperActions, remainingMines$ } from './store/game.store';
+	import { elapsedSeconds$, minesweeperActions, remainingMines$ } from './store/game.store';
 	import DigitDisplay from './ui/digit-display.svelte';
 	import Panel from './ui/panel.svelte';
 	import TitleBar from './ui/title-bar.svelte';
@@ -17,7 +17,7 @@
 		<Panel class="panel inset padded">
 			<DigitDisplay value={$remainingMines$} paddedLength={3} />
 			<Smiley on:click={() => minesweeperActions.resetGame.next()} />
-			<DigitDisplay value={$elapsedTime$} paddedLength={3} />
+			<DigitDisplay value={$elapsedSeconds$} paddedLength={3} />
 		</Panel>
 		<Playfield class="panel inset" />
 	</div>

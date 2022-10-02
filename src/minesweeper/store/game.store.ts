@@ -8,8 +8,10 @@ import {
 	map,
 	merge,
 	Observable,
-	skip,
+	shareReplay,
+	startWith,
 	switchMap,
+	take,
 	takeUntil,
 	timer,
 	withLatestFrom,
@@ -102,7 +104,7 @@ export const minesweeperActions = {
 	),
 	setPreset: scope.createAction<{ name: string; preset: GamePreset }>(`${MS_TAG} set preset`),
 	addGameToHistory: scope.createAction<WinData>(`${MS_TAG} add game to history`),
-	incrementTimer: scope.createAction<number>(`${MS_TAG} increment timer`),
+	incrementTimer: scope.createAction<number>(`${MS_TAG} increment timer ms`),
 	tileActions: {
 		depressTile: scope.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} depress`),
 		revealTile: scope.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} reveal`),
@@ -353,8 +355,12 @@ export const gameStarted$ = isGameOngoing$.pipe(
 );
 
 export const elapsedTime$ = gameInstance$.slice('elapsedTime', [
-	minesweeperActions.incrementTimer.reduce((state) => state + 1),
+	minesweeperActions.incrementTimer.reduce((state, elapsed) => state + elapsed),
 ]);
+
+export const elapsedSeconds$ = elapsedTime$.pipe(
+	map((elapsedTime) => Math.floor(elapsedTime / 1000))
+);
 
 const getNeighbouringCoordinates = (coordinate: CoordinateLike): CoordinateLike[] =>
 	Object.values(Coordinate.directions).map((direction) => ({
@@ -583,14 +589,32 @@ scope.createEffect(
 	)
 );
 
+const TIME_TICKRATE_MS = 1000;
+
+/**
+ * Serving the first ticks time through a little anti cheat measure
+ * If the first time increase would always start after X amount of time
+ * if you'd refresh the page faster than that you could keep the timer at 0.
+ * This will make the timer always jump ahead a second if you refresh as
+ * without a mousedown event the initial time to tick is 0.
+ */
+const initialTickrate$ = fromEvent(document, 'mousedown').pipe(
+	take(1),
+	map(() => TIME_TICKRATE_MS),
+	startWith(0),
+	shareReplay(1)
+);
 /**
  * Elapse time
  */
 scope.createEffect(
 	gameStarted$.pipe(
 		filter((isOngoing) => isOngoing),
-		switchMap(() => timer(0, 1000).pipe(takeUntil(isGameEnded$.pipe(skip(1))))),
-		map((_elapsed) => minesweeperActions.incrementTimer.makePacket(1))
+		withLatestFrom(initialTickrate$),
+		switchMap(([, initialTickrate]) =>
+			timer(initialTickrate, TIME_TICKRATE_MS).pipe(takeUntil(gameEnded$))
+		),
+		map((_elapsed) => minesweeperActions.incrementTimer.makePacket(TIME_TICKRATE_MS))
 	)
 );
 
