@@ -12,6 +12,7 @@ export default defineConfig({
 				rxjs: ['rxjs'],
 				'@tinyslice/core': ['@tinyslice/core'],
 				'@tinyslice/devtools-plugin': ['@tinyslice/devtools-plugin'],
+				'@tinyslice/hydration-plugin': ['@tinyslice/hydration-plugin'],
 			},
 		}),
 	],

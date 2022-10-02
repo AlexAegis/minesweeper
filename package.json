@@ -38,6 +38,7 @@
 	},
 	"dependencies": {
 		"@tinyslice/core": "^0.2.7",
+		"@tinyslice/hydration-plugin": "^0.2.7",
 		"rxjs": "^7.5.7"
 	},
 	"devDependencies": {

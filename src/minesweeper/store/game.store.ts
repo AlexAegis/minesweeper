@@ -1,4 +1,5 @@
 import { entitySliceReducer, entitySliceReducerWithPrecompute } from '@tinyslice/core';
+import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -198,6 +199,8 @@ export const game$ = rootSlice$.addSlice<Game>('game', {
 	history: [],
 	presets: CLASSIC_GAME_PRESETS,
 });
+
+game$.addPlugin(new TinySliceHydrationPlugin('tinysliceGameSlice'));
 
 export const presets$ = game$.slice('presets', [
 	minesweeperActions.setPreset.reduce((state, { name, preset }) => ({
