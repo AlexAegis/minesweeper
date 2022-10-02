@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { assetMap } from '../consts/asset-urls.const';
 	import { colorMap } from '../consts/colors.const';
+	import type { CoordinateLike } from '../core';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
 	import type { TileState } from '../store/game.store';
 
@@ -14,25 +15,31 @@
 
 	export let debug = true;
 
+	function asCoordinate(tile: TileState): CoordinateLike {
+		return { x: tile.x, y: tile.y };
+	}
+
 	function pointerdown(event: PointerEvent) {
 		event.preventDefault();
+		const coord = asCoordinate(tile);
 		if (event.button === 0) {
-			dispatch('leftclickDown', tile);
+			dispatch('leftclickDown', coord);
 		} else if (event.button === 1) {
-			dispatch('middleclickDown', tile);
+			dispatch('middleclickDown', coord);
 		} else if (event.button === 2) {
-			dispatch('rightclickDown', tile);
+			dispatch('rightclickDown', coord);
 		}
 	}
 
 	function pointerup(event: PointerEvent) {
 		event.preventDefault();
+		const coord = asCoordinate(tile);
 		if (event.button === 0) {
-			dispatch('leftclickUp', tile);
+			dispatch('leftclickUp', coord);
 		} else if (event.button === 1) {
-			dispatch('middleclickUp', tile);
+			dispatch('middleclickUp', coord);
 		} else if (event.button === 2) {
-			dispatch('rightclickUp', tile);
+			dispatch('rightclickUp', coord);
 		}
 	}
 </script>

@@ -17,7 +17,9 @@ import { GAME_PRESETS, type GamePreset, type WinData } from '../consts/game-pres
 import {
 	Coordinate,
 	getNextTileMark,
+	isEmptyTileMark,
 	isFlagTileMark,
+	isQuestionTileMark,
 	TileMark,
 	type CoordinateKey,
 	type CoordinateLike,
@@ -116,7 +118,7 @@ export const minesweeperActions = {
 };
 
 const isAWinState = (tiles: TileState[]): boolean =>
-	tiles.every((tile) => tile.isMine || tile.revealed);
+	tiles.every((tile) => (tile.isMine && !tile.revealed) || (!tile.isMine && tile.revealed));
 const isALoseState = (tiles: TileState[]): boolean =>
 	tiles.some((tile) => tile.isMine && tile.revealed);
 const revealEndStateReducer = (
@@ -158,12 +160,12 @@ const generateGameInstance = (settings: GamePreset): GameInstance => {
 			gameInstanceInitialState.tiles[Coordinate.keyOf(x, y)] = {
 				x,
 				y,
-				guessedWrong: false,
-				isMine: false,
-				mark: TileMark.EMTPY,
+				pressed: false,
 				revealed: false,
 				value: 0,
-				pressed: false,
+				isMine: false,
+				mark: TileMark.EMTPY,
+				guessedWrong: false,
 				disabled: false,
 			};
 		}
@@ -215,8 +217,8 @@ export const gameInstance$ = game$.slice('instance', [
 		}
 		return { ...state, gameState: GameState.ONGOING, tiles };
 	}),
-	minesweeperActions.tileActions.revealTile.reduce((state, tileCoordinate) => {
-		const revealedTileKey = Coordinate.keyOf(tileCoordinate);
+	minesweeperActions.tileActions.revealTile.reduce((state, revealedTile) => {
+		const revealedTileKey = Coordinate.keyOf(revealedTile);
 		const tiles = Object.values(state.tiles);
 		const didJustWin = isAWinState(tiles);
 		const didJustLose = isALoseState(tiles);
@@ -282,6 +284,11 @@ const getNeighbouringCoordinateKeys = (
 		.map(Coordinate.keyOf)
 		.filter((neighbourKey) => Object.hasOwn(tiles, neighbourKey));
 
+const getNeighbouringTiles = (
+	tiles: Record<CoordinateKey, TileState>,
+	coordinate: CoordinateLike
+): TileState[] => getNeighbouringCoordinateKeys(tiles, coordinate).map((tileKey) => tiles[tileKey]);
+
 /**
  * Collects all tiles that either have no neighbouring mines or a neighbour of such tile
  */
@@ -337,10 +344,44 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 	),
 	minesweeperActions.tileActions.revealTile.reduce(
 		entitySliceReducerWithPrecompute(
-			(state, payload) => spillOnSafeTiles(state, Coordinate.keyOf(payload)),
-			(key, tile, payload, spill) => {
-				if (Coordinate.keyOf(payload) === key || spill.includes(key)) {
+			(state, revealedTile) => {
+				const revealedTileKey = Coordinate.keyOf(revealedTile);
+				const neighbourKeys = getNeighbouringCoordinateKeys(state, revealedTile);
+				const neighbours = getNeighbouringTiles(state, revealedTile);
+				// const neighbourCount = neighbours.length;
+				const neighbouringMines = neighbours.filter((neighbour) => neighbour.isMine).length;
+				const flaggedNeighbours = neighbours.filter((neighbour) =>
+					isFlagTileMark(neighbour.mark)
+				).length;
+				const uncertainNeighbours = neighbours.filter((neighbour) =>
+					isQuestionTileMark(neighbour.mark)
+				).length;
+				const canRevealNeighbours =
+					neighbouringMines === flaggedNeighbours && uncertainNeighbours === 0;
+
+				return {
+					spill: spillOnSafeTiles(state, revealedTileKey),
+					canRevealNeighbours,
+					neighbourKeys,
+					revealedTileKey,
+				};
+			},
+			(
+				key,
+				tile,
+				_revealedTile,
+				{ spill, canRevealNeighbours, revealedTileKey, neighbourKeys }
+			) => {
+				if ((!tile.revealed && revealedTileKey === key) || spill.includes(key)) {
 					return { ...tile, revealed: true, pressed: false, mark: TileMark.EMTPY };
+				} else if (
+					canRevealNeighbours &&
+					neighbourKeys.includes(key) &&
+					isEmptyTileMark(tile.mark)
+				) {
+					return { ...tile, revealed: true, pressed: false };
+				} else if (tile.pressed) {
+					return { ...tile, pressed: false };
 				}
 			}
 		)

@@ -16,6 +16,15 @@ export const GAME_PRESETS: Record<PresetKeys, GamePreset> = {
 	},
 };
 
+const debug = true;
+if (debug) {
+	GAME_PRESETS['debug'] = {
+		width: 2,
+		height: 2,
+		mineCount: 2,
+	} as GamePreset;
+}
+
 export interface GamePreset {
 	width: number;
 	height: number;
