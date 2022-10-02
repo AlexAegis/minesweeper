@@ -460,8 +460,16 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 					uncertainNeighbours === 0 &&
 					isEmptyTileMark(revealedTile.mark);
 
+				const checked = new Set<CoordinateKey>();
+				const spill = spillOnSafeTiles(state, revealedTileKey, checked);
+				if (canRevealNeighbours) {
+					for (const neighbourKey of neighbourKeys) {
+						spill.push(...spillOnSafeTiles(state, neighbourKey, checked));
+					}
+				}
+
 				return {
-					spill: spillOnSafeTiles(state, revealedTileKey),
+					spill,
 					canRevealNeighbours,
 					neighbourKeys,
 					revealedTileKey,
