@@ -1,25 +1,32 @@
 <script lang="ts">
+	import { fromEvent, Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { documentMouseUp$ } from '../store';
 
 	const dispatch = createEventDispatcher();
 	export let mousedown: boolean | undefined = false;
 
-	const s = documentMouseUp$.subscribe((documentMouseUp) => {
-		if (documentMouseUp) {
-			mousedown = false;
-		}
-	});
+	export let disableSelfInset = false;
+
+	let mouseUpListener: Subscription | undefined;
+
+	if (!disableSelfInset) {
+		mouseUpListener = fromEvent(document, 'mouseup').subscribe(() => (mousedown = false));
+	}
 
 	function onMouseDown(e: MouseEvent): void {
 		dispatch('mousedown');
 		if (e.button === 0) {
-			mousedown = true;
+			if (!disableSelfInset) {
+				mousedown = true;
+			}
 		}
 	}
 
-	onDestroy(() => s.unsubscribe());
-
+	onDestroy(() => {
+		if (mouseUpListener) {
+			mouseUpListener.unsubscribe();
+		}
+	});
 </script>
 
 <button
@@ -28,9 +35,15 @@
 	style={$$props.style}
 	disabled={$$props.disabled}
 	class:inset={mousedown === true}
+	on:click
+	on:mouseup
 	on:mousedown={onMouseDown}
 	on:contextmenu
-	on:click
+	on:pointerup
+	on:pointerdown
+	on:pointercancel
+	on:pointerout
+	on:pointerenter
 >
 	<slot />
 </button>
@@ -39,5 +52,4 @@
 	button {
 		font-family: monospace;
 	}
-
 </style>

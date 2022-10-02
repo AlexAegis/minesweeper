@@ -1,41 +1,42 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import Button from '../components/button.svelte';
-	import type { GamePreset } from '../store';
-	import { presets } from '../store';
+	import { GAME_PRESETS, type GamePreset } from '../consts/game-presets.conts';
+	import Button from '../ui/button.svelte';
 
 	const dispatch = createEventDispatcher();
 
-	export let width: number;
-	export let height: number;
-	export let mineCount: number;
+	export let preset: GamePreset;
 
-	function setTo(gamePreset: GamePreset) {
-		width = gamePreset.width;
-		height = gamePreset.height;
-		mineCount = gamePreset.mineCount;
-		dispatch('done');
+	function ok() {
+		dispatch('ok', preset);
 	}
 
 	$: {
-		if (mineCount > width * height - 1) {
-			mineCount = width * height - 1;
+		if (preset.mineCount > preset.width * preset.height - 1) {
+			preset.mineCount = preset.width * preset.height - 1;
 		}
 	}
-
 </script>
 
 <div>
-	{#each Object.entries(presets) as [key, data]}
-		<Button on:click={() => setTo(data)}>{key}</Button>
+	{#each Object.entries(GAME_PRESETS) as [key, data]}
+		<Button on:click={() => (preset = data)}>{key}</Button>
 	{/each}
 
 	<label for="width">Width:</label>
-	<input name="width" type="number" bind:value={width} max="999" min="2" />
+	<input name="width" type="number" bind:value={preset.width} max="999" min="2" />
 	<label for="height">Height:</label>
-	<input name="height" type="number" bind:value={height} max="999" min="2" />
+	<input name="height" type="number" bind:value={preset.height} max="999" min="2" />
 	<label for="mineCount">Mine count:</label>
-	<input name="mineCount" type="number" bind:value={mineCount} max={width * height - 1} min="1" />
+	<input
+		name="mineCount"
+		type="number"
+		bind:value={preset.mineCount}
+		max={preset.width * preset.height - 1}
+		min="1"
+	/>
+
+	<Button on:click={() => ok()}>Ok</Button>
 </div>
 
 <style>
@@ -44,5 +45,4 @@
 		gap: 4px;
 		padding: 4px;
 	}
-
 </style>

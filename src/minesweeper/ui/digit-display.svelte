@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { padArray } from '../helper';
-	import DigitalNumber from './digital-number.svelte';
+	import DigitalNumber from '../ui/digital-number.svelte';
 
 	export let value: number | undefined;
 	export let paddedLength = 3;
@@ -13,7 +13,6 @@
 		paddedLength,
 		0
 	);
-
 </script>
 
 <div class="panel inset">
@@ -28,5 +27,4 @@
 		padding: 1px;
 		background-color: black;
 	}
-
 </style>
