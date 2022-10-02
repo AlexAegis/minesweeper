@@ -10,6 +10,5 @@
 		image-rendering: pixelated;
 		width: auto;
 		height: inherit;
-		background: none;
 	}
 </style>

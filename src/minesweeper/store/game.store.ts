@@ -1,6 +1,5 @@
 import { entitySliceReducer, entitySliceReducerWithPrecompute } from '@tinyslice/core';
 import {
-	asyncScheduler,
 	combineLatest,
 	distinctUntilChanged,
 	filter,
@@ -11,7 +10,6 @@ import {
 	skip,
 	switchMap,
 	takeUntil,
-	throttleTime,
 	timer,
 	withLatestFrom,
 } from 'rxjs';
@@ -37,7 +35,6 @@ import { rootSlice$ } from './root.store';
 import { MS_TAG, scope } from './scope';
 
 export interface Game {
-	preset: GamePreset;
 	instance: GameInstance;
 	history: WinData[];
 }
@@ -96,7 +93,7 @@ const TILE_TAG = '[tile]';
 const CLICK_TAG = '[click]';
 
 export const minesweeperActions = {
-	resetGame: scope.createAction(`${MS_TAG} reset`),
+	resetGame: scope.createAction<GamePreset | void>(`${MS_TAG} reset`),
 	startGame: scope.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
 		`${MS_TAG} start game`
 	),
@@ -176,14 +173,9 @@ const generateGameInstance = (settings: GamePreset): GameInstance => {
 };
 
 export const game$ = rootSlice$.addSlice<Game>('game', {
-	preset: GAME_PRESETS.beginner,
 	instance: generateGameInstance(GAME_PRESETS.beginner),
 	history: [],
 });
-
-export const gamePreset$ = game$.slice('preset');
-export const gameWidthArray$ = gamePreset$.pipe(map((preset) => [...Array(preset.width).keys()]));
-export const gameHeightArray$ = gamePreset$.pipe(map((preset) => [...Array(preset.height).keys()]));
 
 /**
  * Take all tiles, shuffle them, take the first n amount, those will be the mines
@@ -201,8 +193,8 @@ const selectNRandomTiles = (
 };
 
 export const gameInstance$ = game$.slice('instance', [
-	minesweeperActions.resetGame.reduce((state) => ({
-		...generateGameInstance(state.settings),
+	minesweeperActions.resetGame.reduce((state, payload) => ({
+		...generateGameInstance(payload ?? state.settings),
 	})),
 	minesweeperActions.startGame.reduce((state, { safeCoordinate, mineCount }) => {
 		const mines = selectNRandomTiles(Object.values(state.tiles), safeCoordinate, mineCount);
@@ -242,9 +234,19 @@ export const gameInstance$ = game$.slice('instance', [
 		clickCount: state.clickCount + 1,
 	})),
 ]);
+
+export const gameSettings$ = gameInstance$.slice('settings');
+
+export const gameWidthArray$ = gameSettings$.pipe(
+	map((settings) => [...Array(settings.width).keys()])
+);
+export const gameHeightArray$ = gameSettings$.pipe(
+	map((settings) => [...Array(settings.height).keys()])
+);
+
 export const winHistory$ = game$.slice('history', [
 	minesweeperActions.addGameToHistory.reduce((state, payload) =>
-		[...state, payload].sort((a, b) => a.time - b.time)
+		[...state, payload].sort((a, b) => a.time - b.time).map((win, i) => ({ ...win, id: i }))
 	),
 ]);
 
@@ -361,32 +363,13 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 
 export const getGameTileState = (x: number, y: number): Observable<TileState> =>
 	gameTilesSlice$.pipe(map((tiles) => tiles[Coordinate.keyOf(x, y)]));
-/*
-export const neighbouringTiles = (x: number, y: number): Observable<TileState[]> =>
-	combineLatest(
-		getNeighbouringCoordinates({ x, y }).map((neighbourCoordinate) =>
-			getGameTileState(neighbourCoordinate.x, neighbourCoordinate.y)
-		)
-	).pipe(
-		map((neighbouringTiles) =>
-			neighbouringTiles.filter((neighbouringTile) => !!neighbouringTile)
-		)
-	);
 
-export const isANeighbourPressed = (x: number, y: number): Observable<boolean> =>
-	neighbouringTiles(x, y).pipe(
-		map((neighbouringTiles) =>
-			neighbouringTiles.some((neighbouringTile) => neighbouringTile.pressed)
-		)
-	);
-*/
 const tiles$ = gameTilesSlice$.pipe(map((tiles) => Object.values(tiles)));
 export const tilesFlagged$ = tiles$.pipe(
 	map((tiles) => tiles.filter((tile) => isFlagTileMark(tile.mark)).length)
 );
 export const tilesPressed$ = tiles$.pipe(map((tiles) => tiles.filter((tile) => tile.pressed)));
 
-tilesPressed$.subscribe((ti) => console.log(ti));
 export const isATilePressed$ = tilesPressed$.pipe(map((tilesPressed) => tilesPressed.length > 0));
 
 export const tileCount$ = tiles$.pipe(map((tiles) => tiles.length));
@@ -394,10 +377,6 @@ export const mineCount$ = gameInstance$.pipe(map((instance) => instance.settings
 
 export const remainingMines$ = combineLatest([mineCount$, tilesFlagged$]).pipe(
 	map(([mineCount, tilesFlagged]) => mineCount - tilesFlagged)
-);
-
-export const gamePresetThrottled$ = gamePreset$.pipe(
-	throttleTime(50, asyncScheduler, { leading: true, trailing: true })
 );
 
 export const smileyState$ = combineLatest([gameState$, isATilePressed$]).pipe(
@@ -434,11 +413,11 @@ scope.createEffect(
 		withLatestFrom(gameState$),
 		filter(([, gameState]) => isGameReadyToStart(gameState)),
 		map(([tile]) => tile),
-		withLatestFrom(gamePreset$),
+		withLatestFrom(gameInstance$),
 		map(([tile, preset]) =>
 			minesweeperActions.startGame.makePacket({
 				safeCoordinate: { x: tile.x, y: tile.y },
-				mineCount: preset.mineCount,
+				mineCount: preset.settings.mineCount,
 			})
 		)
 	)
@@ -494,8 +473,8 @@ scope.createEffect(
 scope.createEffect(
 	gameEnded$.pipe(
 		filter((won) => won),
-		withLatestFrom(elapsedTime$, gamePreset$),
-		map(([, time, preset], id) => ({ preset, time, id } as WinData)),
+		withLatestFrom(elapsedTime$, gameInstance$),
+		map(([, time, gameInstance]) => ({ preset: gameInstance.settings, time } as WinData)),
 		map((winData) => minesweeperActions.addGameToHistory.makePacket(winData))
 	)
 );

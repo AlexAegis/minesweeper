@@ -47,9 +47,9 @@
 		style="color: {colorMap[tile.value]}; grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 	>
 		{#if tile.isMine}
-			<Image class="tile-img" src={assetMap.mine} alt="Mine" />
+			<Image class="ms-div-tile-img" src={assetMap.mine} alt="Mine" />
 		{:else if tile.guessedWrong}
-			<Image class="tile-img" src={assetMap.mineFalse} alt="False mine" />
+			<Image class="ms-div-tile-img" src={assetMap.mineFalse} alt="False mine" />
 		{:else if tile.value}{tile.value}{/if}
 	</div>
 {:else}
@@ -67,9 +67,9 @@
 		aria-label="Tile {isEmptyTileMark(tile.mark) ? 'unrevealed' : 'mark'}"
 	>
 		{#if isFlagTileMark(tile.mark)}
-			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
+			<Image class="ms-button-tile-img" src={assetMap.flag} alt="Flag" />
 		{:else if isQuestionTileMark(tile.mark)}
-			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
+			<Image class="ms-button-tile-img" src={assetMap.questionMark} alt="Question mark" />
 		{:else if debug}
 			{tile.isMine ? '×' : tile.value}
 		{/if}
@@ -115,8 +115,13 @@
 		color: #a6a6a6;
 	}
 
-	:global(.tile-img) {
+	:global(.ms-button-tile-img) {
 		margin-top: -4px;
 		margin-left: -3px;
+	}
+
+	:global(.ms-div-tile-img) {
+		margin-top: -1px;
+		margin-left: -0.5px;
 	}
 </style>

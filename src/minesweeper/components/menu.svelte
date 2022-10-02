@@ -9,9 +9,16 @@
 	let settingsModal: Modal;
 	let highScoreModal: Modal;
 
-	let width: number;
-	let height: number;
-	let mineCount: number;
+	import { map } from 'rxjs';
+	import type { GamePreset } from '../consts/game-presets.conts';
+	import { gameSettings$, minesweeperActions } from '../store/game.store';
+
+	const preset$ = gameSettings$.pipe(map((settings) => ({ ...settings })));
+
+	function settingsOkListener(event: CustomEvent<GamePreset>): void {
+		minesweeperActions.resetGame.next(event.detail);
+		settingsModal.close();
+	}
 </script>
 
 <div>
@@ -30,7 +37,7 @@
 </div>
 
 <Modal title="Settings" bind:this={settingsModal}>
-	<Settings bind:width bind:height bind:mineCount on:done={() => settingsModal.close()} />
+	<Settings preset={$preset$} on:ok={settingsOkListener} />
 </Modal>
 
 <Modal title="Highscore" style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
