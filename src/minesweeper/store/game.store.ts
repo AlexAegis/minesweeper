@@ -436,10 +436,11 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 	),
 	minesweeperActions.tileActions.revealTile.reduce(
 		entitySliceReducerWithPrecompute(
-			(state, revealedTile) => {
-				const revealedTileKey = Coordinate.keyOf(revealedTile);
-				const neighbourKeys = getNeighbouringCoordinateKeys(state, revealedTile);
-				const neighbours = getNeighbouringTiles(state, revealedTile);
+			(state, revealedTileCoord) => {
+				const revealedTileKey = Coordinate.keyOf(revealedTileCoord);
+				const revealedTile = state[revealedTileKey];
+				const neighbourKeys = getNeighbouringCoordinateKeys(state, revealedTileCoord);
+				const neighbours = getNeighbouringTiles(state, revealedTileCoord);
 				// const neighbourCount = neighbours.length;
 				const neighbouringMines = neighbours.filter((neighbour) => neighbour.isMine).length;
 				const flaggedNeighbours = neighbours.filter((neighbour) =>
@@ -449,7 +450,9 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 					isQuestionTileMark(neighbour.mark)
 				).length;
 				const canRevealNeighbours =
-					neighbouringMines === flaggedNeighbours && uncertainNeighbours === 0;
+					neighbouringMines === flaggedNeighbours &&
+					uncertainNeighbours === 0 &&
+					isEmptyTileMark(revealedTile.mark);
 
 				return {
 					spill: spillOnSafeTiles(state, revealedTileKey),
@@ -464,8 +467,12 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 				_revealedTile,
 				{ spill, canRevealNeighbours, revealedTileKey, neighbourKeys }
 			) => {
-				if ((!tile.revealed && revealedTileKey === key) || spill.includes(key)) {
-					return { ...tile, revealed: true, pressed: false, mark: TileMark.EMTPY };
+				if (!tile.revealed && (revealedTileKey === key || spill.includes(key))) {
+					if (isEmptyTileMark(tile.mark)) {
+						return { ...tile, revealed: true, pressed: false };
+					} else {
+						return { ...tile, mark: TileMark.EMTPY, pressed: false };
+					}
 				} else if (
 					canRevealNeighbours &&
 					neighbourKeys.includes(key) &&
