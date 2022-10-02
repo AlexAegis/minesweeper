@@ -31,14 +31,10 @@
 		}
 	}
 
-	function pointerup(event: PointerEvent) {
+	function click(event: Event) {
 		event.preventDefault();
 		const coord = asCoordinate(tile);
-		if (event.button === 0) {
-			dispatch('leftclickUp', coord);
-		} else if (event.button === 1) {
-			dispatch('middleclickUp', coord);
-		}
+		dispatch('leftclickUp', coord);
 	}
 
 	function contextmenu(event: Event) {
@@ -53,8 +49,9 @@
 		class="ms-tile ms-tile-font"
 		class:ms-fontpatch-div={!tile.isMine && !tile.guessedWrong}
 		class:ms-tile-error={tile.guessedWrong && tile.isMine}
-		on:pointerup={pointerup}
 		on:pointerdown={pointerdown}
+		on:click={click}
+		on:contextmenu={contextmenu}
 		style="color: {colorMap[tile.value]}; grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 	>
 		{#if tile.isMine}
@@ -72,7 +69,7 @@
 		disabled={tile.disabled}
 		disableSelfInset={true}
 		on:pointerdown={pointerdown}
-		on:pointerup={pointerup}
+		on:click={click}
 		on:contextmenu={contextmenu}
 		style="grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 		aria-label="Tile {isEmptyTileMark(tile.mark) ? 'unrevealed' : 'mark'}"
