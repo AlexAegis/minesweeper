@@ -8,6 +8,7 @@ import {
 	map,
 	merge,
 	Observable,
+	of,
 	shareReplay,
 	startWith,
 	switchMap,
@@ -350,9 +351,7 @@ export const gameLost$ = isGameLost$.pipe(
 	filter((lost) => lost)
 );
 
-export const isGameEnded$ = gameState$.pipe(
-	map((gameState) => isGameWon(gameState) || isGameLost(gameState))
-);
+export const isGameEnded$ = merge(isGameWon$, isGameLost$);
 export const gameEnded$ = merge(gameWon$, gameLost$);
 export const isGameOngoing$ = gameState$.pipe(map(isGameOngoing));
 export const gameStarted$ = isGameOngoing$.pipe(
@@ -625,17 +624,26 @@ const initialTickrate$ = fromEvent(document, 'mousedown').pipe(
 	startWith(0),
 	shareReplay(1)
 );
+
 /**
  * Elapse time
  */
 scope.createEffect(
-	gameStarted$.pipe(
-		filter((isOngoing) => isOngoing),
+	gameState$.pipe(
 		withLatestFrom(initialTickrate$),
-		switchMap(([, initialTickrate]) =>
-			timer(initialTickrate, TIME_TICKRATE_MS).pipe(takeUntil(gameEnded$))
+		switchMap(([gameState, initialTickrate]) =>
+			isGameOngoing(gameState)
+				? timer(initialTickrate, TIME_TICKRATE_MS).pipe(
+						takeUntil(gameEnded$),
+						map(() => true)
+				  )
+				: of(false)
 		),
-		map((_elapsed) => minesweeperActions.incrementTimer.makePacket(TIME_TICKRATE_MS))
+		map((running) =>
+			running
+				? minesweeperActions.incrementTimer.makePacket(TIME_TICKRATE_MS)
+				: scope.internalActionVoid.makePacket()
+		)
 	)
 );
 
