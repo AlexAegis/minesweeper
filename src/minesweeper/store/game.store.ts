@@ -91,6 +91,7 @@ export interface GameInstance {
 	elapsedTime: number;
 	clickCount: number;
 	gameState: GameState;
+	enteredDebugMode: boolean;
 	tiles: Record<CoordinateKey, TileState>;
 }
 
@@ -157,6 +158,7 @@ const generateGameInstance = (settings: GamePreset): GameInstance => {
 		clickCount: 0,
 		gameState: GameState.READY_TO_START,
 		tiles: {},
+		enteredDebugMode: false,
 	};
 
 	for (let x = 0; x < settings.width; x++) {
@@ -287,6 +289,7 @@ export const gameInstance$ = game$.slice('instance', [
 	})),
 ]);
 
+export const enteredDebugMode$ = gameInstance$.slice('enteredDebugMode');
 export const gameSettings$ = gameInstance$.slice('settings');
 
 export const gameWidthArray$ = gameSettings$.pipe(
@@ -316,12 +319,15 @@ export const highscoreEntries$: Observable<HighscoreEntry[]> = winHistory$.pipe(
 					isTheSamePreset(preset, winEntry.preset)
 				)?.[0];
 
-				const minutes = Math.floor(winEntry.time / 60);
-				const remainingSeconds = winEntry.time % 60;
+				const seconds = winEntry.time / 1000;
+				const minutes = Math.floor(seconds / 60);
+				const remainingSeconds = seconds % 60;
 				const timeStamp = `${minutes ? minutes + 'm ' : ''}${remainingSeconds}s`;
 				return {
 					title: presetName ?? 'Custom',
-					description: `${winEntry.preset.height}×${winEntry.preset.width} mines: ${winEntry.preset.mineCount}`,
+					description: `${winEntry.enteredDebugMode ? 'Debug ' : ''}${
+						winEntry.preset.height
+					}×${winEntry.preset.width} mines: ${winEntry.preset.mineCount}`,
 					timeStamp,
 					time: winEntry.time,
 				} as HighscoreEntry;
@@ -631,7 +637,21 @@ scope.createEffect(
 scope.createEffect(
 	gameWon$.pipe(
 		withLatestFrom(elapsedTime$, gameInstance$),
-		map(([, time, gameInstance]) => ({ preset: gameInstance.settings, time } as WinData)),
+		map(
+			([, time, gameInstance]) =>
+				({
+					preset: gameInstance.settings,
+					time,
+					enteredDebugMode: gameInstance.enteredDebugMode,
+				} as WinData)
+		),
 		map((winData) => minesweeperActions.addGameToHistory.makePacket(winData))
+	)
+);
+
+scope.createEffect(
+	debug$.pipe(
+		filter((debug) => debug),
+		map(() => enteredDebugMode$.setAction.makePacket(true))
 	)
 );

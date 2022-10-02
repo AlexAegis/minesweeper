@@ -5,7 +5,7 @@
 <div>
 	{#each $highscoreEntries$ as highscoreEntry}
 		<span class="title">{highscoreEntry.title}</span>
-		<span class="time">{highscoreEntry.time}</span>
+		<span class="time">{highscoreEntry.timeStamp}</span>
 		<span class="description">({highscoreEntry.description})</span>
 	{:else}No games played yet!{/each}
 </div>

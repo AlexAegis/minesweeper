@@ -19,8 +19,6 @@ export const debug$ = rootSlice$.slice('debug');
 
 scope.createEffect(
 	debug$.pipe(
-		// filter((debug) => debug),
-		// take(1),
 		switchMap((debug) => {
 			if (debug) {
 				return import('@tinyslice/devtools-plugin');
@@ -45,8 +43,6 @@ scope.createEffect(
 
 scope.createEffect(
 	debug$.pipe(
-		// filter((debug) => debug),
-		// take(1),
 		tap((debug) =>
 			rootSlice$.setMetaReducers(debug ? [createLoggingMetaReducer<RootState>()] : [])
 		),
