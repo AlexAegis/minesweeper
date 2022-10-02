@@ -7,9 +7,7 @@ export default defineConfig({
 	plugins: [
 		svelte(),
 		chunkSplitPlugin({
-			customSplitting: {
-				tinyslice: ['@tinyslice/core'],
-			},
+			strategy: 'single-vendor',
 		}),
 	],
 	appType: 'spa',
