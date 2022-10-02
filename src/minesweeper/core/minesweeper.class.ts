@@ -2,7 +2,7 @@ import { BehaviorSubject, identity, merge, of, Subject, timer } from 'rxjs';
 import { distinctUntilChanged, filter, map, skip, switchMap, takeUntil } from 'rxjs/operators';
 import { shuffle } from '../helper';
 import { Coordinate } from './coordinate.class';
-import { FieldMark } from './field-mark.enum';
+import { TileMark } from './tile-mark.enum';
 
 export type Revealer = (isFlood?: boolean) => void;
 
@@ -26,7 +26,7 @@ export interface Field {
 	/**
 	 * Implement only simple get logic
 	 */
-	getMark(): FieldMark;
+	getMark(): TileMark;
 	/**
 	 * Implement only simple get logic
 	 */
@@ -46,7 +46,7 @@ export interface Field {
 	/**
 	 * Implement only simple set logic
 	 */
-	setMark(mark: FieldMark): void;
+	setMark(mark: TileMark): void;
 	/**
 	 * Implement only simple set logic
 	 */
@@ -68,9 +68,9 @@ export interface Field {
 	registerOnMark(callback: Revealer): void;
 }
 
-const isNotFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.EMTPY;
-const isFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.FLAG;
-const isQuestioned = <T extends Field = Field>(tile: T) => tile.getMark() === FieldMark.QUESTION;
+const isNotFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === TileMark.EMTPY;
+const isFlagged = <T extends Field = Field>(tile: T) => tile.getMark() === TileMark.FLAG;
+const isQuestioned = <T extends Field = Field>(tile: T) => tile.getMark() === TileMark.QUESTION;
 
 export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 	private tileCount: number;
@@ -163,7 +163,7 @@ export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 		for (const tile of this) {
 			tile.setValue(0);
 			tile.setMine(false);
-			tile.setMark(FieldMark.EMTPY);
+			tile.setMark(TileMark.EMTPY);
 			tile.setError(false);
 			tile.setRevealed(false);
 			const onReveal = this.makeInitialOnReveal(tile);
@@ -192,9 +192,9 @@ export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 	private makeMarkLogic(tile: T): () => void {
 		return () => {
 			this.increaseClicks();
-			if (isQuestioned(tile)) tile.setMark(FieldMark.EMTPY);
-			else if (isFlagged(tile)) tile.setMark(FieldMark.QUESTION);
-			else if (isNotFlagged(tile)) tile.setMark(FieldMark.FLAG);
+			if (isQuestioned(tile)) tile.setMark(TileMark.EMTPY);
+			else if (isFlagged(tile)) tile.setMark(TileMark.QUESTION);
+			else if (isNotFlagged(tile)) tile.setMark(TileMark.FLAG);
 			this.refreshFlagCounts();
 		};
 	}
@@ -216,7 +216,7 @@ export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 			if (isOriginalReveal) this.increaseClicks();
 
 			if (isOriginalReveal && !isNotFlagged(revealingTile)) {
-				revealingTile.setMark(FieldMark.EMTPY);
+				revealingTile.setMark(TileMark.EMTPY);
 			} else if (!revealingTile.isRevealed()) {
 				this.blowUp(revealingTile);
 			}
@@ -246,7 +246,7 @@ export class MinesweeperGame<T extends Field = Field> implements Iterable<T> {
 			if (isOriginalReveal) this.increaseClicks();
 
 			if (isOriginalReveal && !isNotFlagged(tile)) {
-				tile.setMark(FieldMark.EMTPY);
+				tile.setMark(TileMark.EMTPY);
 			} else if (!tile.isRevealed() && isNotFlagged(tile)) {
 				tile.setRevealed(true);
 				this.revealed$.next(this.revealed$.value + 1);

@@ -16,7 +16,7 @@
 		<Menu />
 		<Panel class="panel inset padded">
 			<DigitDisplay value={$remainingMines$} paddedLength={3} />
-			<Smiley on:click={() => minesweeperActions.restartGameInstance.next()} />
+			<Smiley on:click={() => minesweeperActions.resetGame.next()} />
 			<DigitDisplay value={$elapsedTime$} paddedLength={3} />
 		</Panel>
 		<Playfield class="panel inset" />

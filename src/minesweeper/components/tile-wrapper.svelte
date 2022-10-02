@@ -10,7 +10,7 @@
 
 <Tile
 	tile={$tile$}
-	on:leftclickDown={(event) => minesweeperActions.leftclickDown.next(event.detail)}
-	on:leftclickUp={(event) => minesweeperActions.leftclickUp.next(event.detail)}
-	on:rightclickUp={(event) => minesweeperActions.rightclickUp.next(event.detail)}
+	on:leftclickDown={(event) => minesweeperActions.clickActions.leftclickDown.next(event.detail)}
+	on:leftclickUp={(event) => minesweeperActions.clickActions.leftclickUp.next(event.detail)}
+	on:rightclickUp={(event) => minesweeperActions.clickActions.rightclickUp.next(event.detail)}
 />

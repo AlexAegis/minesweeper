@@ -7,10 +7,10 @@
 
 	export let disableSelfInset = false;
 
-	const sink = new Subscription();
+	let mouseUpListener: Subscription | undefined;
 
 	if (!disableSelfInset) {
-		sink.add(fromEvent(document, 'mouseup').subscribe(() => (mousedown = false)));
+		mouseUpListener = fromEvent(document, 'mouseup').subscribe(() => (mousedown = false));
 	}
 
 	function onMouseDown(e: MouseEvent): void {
@@ -22,7 +22,11 @@
 		}
 	}
 
-	onDestroy(sink.unsubscribe);
+	onDestroy(() => {
+		if (mouseUpListener) {
+			mouseUpListener.unsubscribe();
+		}
+	});
 </script>
 
 <button

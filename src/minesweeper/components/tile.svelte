@@ -2,38 +2,48 @@
 	import { createEventDispatcher } from 'svelte';
 	import { assetMap } from '../consts/asset-urls.const';
 	import { colorMap } from '../consts/colors.const';
-	import { FieldMark } from '../core/field-mark.enum';
-	import type { TileInstance } from '../store/game.store';
+	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
+	import type { TileState } from '../store/game.store';
 
 	import Button from '../ui/button.svelte';
 	import Image from '../ui/image.svelte';
 
 	const dispatch = createEventDispatcher();
 
-	export let tile: TileInstance;
+	export let tile: TileState;
 
-	function mouseup(_event: Event) {
-		dispatch('leftclickUp', tile);
-	}
+	export let debug = true;
 
-	function mousedown(_event: Event) {
-		dispatch('leftclickDown', tile);
-	}
-
-	function contextmenu(event: Event) {
+	function pointerdown(event: PointerEvent) {
 		event.preventDefault();
-		dispatch('rightclickUp', tile);
+		if (event.button === 0) {
+			dispatch('leftclickDown', tile);
+		} else if (event.button === 1) {
+			dispatch('middleclickDown', tile);
+		} else if (event.button === 2) {
+			dispatch('rightclickDown', tile);
+		}
+	}
+
+	function pointerup(event: PointerEvent) {
+		event.preventDefault();
+		if (event.button === 0) {
+			dispatch('leftclickUp', tile);
+		} else if (event.button === 1) {
+			dispatch('middleclickUp', tile);
+		} else if (event.button === 2) {
+			dispatch('rightclickUp', tile);
+		}
 	}
 </script>
 
 {#if tile.revealed}
 	<div
-		class="ms-tile"
-		class:fontpatch={!tile.isMine && tile.value && !tile.guessedWrong}
+		class="ms-tile ms-tile-font"
+		class:ms-fontpatch-div={!tile.isMine && !tile.guessedWrong}
 		class:ms-tile-error={tile.guessedWrong && tile.isMine}
-		on:click={mouseup}
-		on:pointerdown={mousedown}
-		on:contextmenu={contextmenu}
+		on:pointerup={pointerup}
+		on:pointerdown={pointerdown}
 		style="color: {colorMap[tile.value]}; grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 	>
 		{#if tile.isMine}
@@ -44,20 +54,24 @@
 	</div>
 {:else}
 	<Button
-		mousedown={tile.pressed && tile.mark === FieldMark.EMTPY}
+		class="button ms-tile ms-tile-font ms-fontpatch-button{tile.guessedWrong
+			? ' ms-tile-error'
+			: ''}"
+		mousedown={tile.pressed && isEmptyTileMark(tile.mark)}
 		disabled={tile.disabled}
 		disableSelfInset={true}
-		on:click={mouseup}
-		on:pointerdown={mousedown}
-		on:contextmenu={contextmenu}
-		class="button ms-tile ms-tile-font{tile.guessedWrong ? ' ms-tile-error' : ''}"
+		on:pointerup={pointerup}
+		on:pointerdown={pointerdown}
+		on:contextmenu={(event) => event.preventDefault()}
 		style="grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
-		aria-label="Tile {tile.mark !== FieldMark.EMTPY ? 'mark' : 'unrevealed'}"
+		aria-label="Tile {isEmptyTileMark(tile.mark) ? 'unrevealed' : 'mark'}"
 	>
-		{#if tile.mark === FieldMark.FLAG}
+		{#if isFlagTileMark(tile.mark)}
 			<Image class="tile-img" src={assetMap.flag} alt="Flag" />
-		{:else if tile.mark === FieldMark.QUESTION}
+		{:else if isQuestionTileMark(tile.mark)}
 			<Image class="tile-img" src={assetMap.questionMark} alt="Question mark" />
+		{:else if debug}
+			{tile.isMine ? '×' : tile.value}
 		{/if}
 	</Button>
 {/if}
@@ -71,6 +85,7 @@
 	}
 
 	:global(.ms-tile-font) {
+		font-family: 'Press Start 2P', cursive !important;
 		font-size: 32px;
 		text-align: center;
 		padding: 0;
@@ -82,7 +97,6 @@
 
 	div {
 		user-select: none;
-		font-family: 'Press Start 2P', cursive;
 		border-style: solid;
 		border-color: #a6a6a6;
 		border-width: 1px;
@@ -91,12 +105,18 @@
 		line-height: 42px;
 	}
 
-	.fontpatch {
+	:global(.ms-fontpatch-div) {
 		padding-left: 4px;
 	}
 
+	:global(.ms-fontpatch-button) {
+		padding-top: 3px;
+		padding-left: 2px;
+		color: #a6a6a6;
+	}
+
 	:global(.tile-img) {
-		margin-top: -1px;
-		margin-left: -1px;
+		margin-top: -4px;
+		margin-left: -3px;
 	}
 </style>

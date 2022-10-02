@@ -1,5 +1,7 @@
 import { random } from '../helper';
 
+export type CoordinateKey = `${number},${number}`;
+
 export interface CoordinateLike {
 	readonly x: number;
 	readonly y: number;
@@ -9,10 +11,10 @@ export class Coordinate implements CoordinateLike {
 	public readonly x: number;
 	public readonly y: number;
 
-	public constructor(x: Coordinate);
+	public constructor(x: CoordinateLike);
 	public constructor(x: number, y: number);
-	public constructor(x: number | Coordinate, y?: number);
-	public constructor(x: number | Coordinate, y?: number) {
+	public constructor(x: number | CoordinateLike, y?: number);
+	public constructor(x: number | CoordinateLike, y?: number) {
 		if (typeof x === 'number') {
 			this.x = x;
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -20,6 +22,16 @@ export class Coordinate implements CoordinateLike {
 		} else {
 			this.x = x.x;
 			this.y = x.y;
+		}
+	}
+
+	public static keyOf(coordinateLike: CoordinateLike): CoordinateKey;
+	public static keyOf(x: number, y: number): CoordinateKey;
+	public static keyOf(x: number | CoordinateLike, y?: number): CoordinateKey {
+		if (typeof x === 'number') {
+			return `${x},${y ?? 0}`;
+		} else {
+			return `${x.x},${x.y}`;
 		}
 	}
 
@@ -38,11 +50,11 @@ export class Coordinate implements CoordinateLike {
 		NORTHWEST: new Coordinate(-1, 1),
 	};
 
-	public toString(): string {
+	public toString(): CoordinateKey {
 		return `${this.x},${this.y}`;
 	}
 
-	public static toString(x: number, y: number): string {
+	public static toString(x: number, y: number): CoordinateKey {
 		return `${x},${y}`;
 	}
 

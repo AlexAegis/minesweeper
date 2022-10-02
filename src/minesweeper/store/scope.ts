@@ -1,6 +1,6 @@
 import { Scope } from '@tinyslice/core';
 
-export const MINESWEEPER_ACTION_PREFIX = '[minesweeper]';
-export const BROWSER_ACTION_PREFIX = '[browser]';
+export const MS_TAG = '[minesweeper]';
+export const BROWSER_TAG = '[browser]';
 
 export const scope = new Scope();
