@@ -13,6 +13,7 @@ import {
 } from 'rxjs';
 import { GAME_PRESETS, type GamePreset, type WinData } from '../consts/game-presets.conts';
 import { Coordinate, FieldMark, type CoordinateLike } from '../core';
+import { shuffle } from '../helper';
 
 import { rootSlice$ } from './root.store';
 import { MINESWEEPER_ACTION_PREFIX, scope } from './scope';
@@ -82,12 +83,9 @@ export interface GameInstance {
 export const getCoordinateKey = (x: number, y: number) => `${x},${y}`;
 
 export const minesweeperActions = {
-	tryStartGame: scope.createAction<CoordinateLike>(`${MINESWEEPER_ACTION_PREFIX} try start`),
-	restartGameInstance: scope.createAction<void>(
-		`${MINESWEEPER_ACTION_PREFIX} restart game instance`
-	),
-	resetGameInstance: scope.createAction<GamePreset>(
-		`${MINESWEEPER_ACTION_PREFIX} reset game instance`
+	resetGame: scope.createAction<GamePreset>(`${MINESWEEPER_ACTION_PREFIX} reset`),
+	startGame: scope.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
+		`${MINESWEEPER_ACTION_PREFIX} start game`
 	),
 	revealTile: scope.createAction(`${MINESWEEPER_ACTION_PREFIX} reveal tile`),
 	mouseUp: scope.createAction(`${MINESWEEPER_ACTION_PREFIX} mouse up`),
@@ -139,10 +137,39 @@ export const gamePreset$ = game$.slice('preset');
 export const gameWidthArray$ = gamePreset$.pipe(map((preset) => [...Array(preset.width).keys()]));
 export const gameHeightArray$ = gamePreset$.pipe(map((preset) => [...Array(preset.height).keys()]));
 
+const getRandomizedMineKeys = (
+	tiles: TileInstance[],
+	safeCoordinate: CoordinateLike,
+	mineCount: number
+): CoordinateLike[] => {
+	const tilesCopy = [
+		...tiles.filter((tile) => tile.x !== safeCoordinate.x || tile.y !== safeCoordinate.y),
+	];
+	shuffle(tilesCopy);
+	return tilesCopy.splice(mineCount).map((tile) => ({ x: tile.x, y: tile.y } as CoordinateLike));
+};
+
 export const gameInstance$ = game$.slice('instance', [
-	minesweeperActions.resetGameInstance.reduce((_state, preset) => ({
+	minesweeperActions.resetGame.reduce((_state, preset) => ({
 		...generateGameInstance(preset),
 	})),
+	minesweeperActions.startGame.reduce((state, { safeCoordinate, mineCount }) => {
+		const mines = getRandomizedMineKeys(Object.values(state.tiles), safeCoordinate, mineCount);
+		const tiles: Record<string, TileInstance> = { ...state.tiles };
+
+		for (const mineCoordinate of mines) {
+			for (const mineNeighbour of getNeighbouringCoordinates(mineCoordinate)) {
+				const key = getCoordinateKey(mineNeighbour.x, mineCoordinate.y);
+				const tile = tiles[key];
+				if (tile) {
+					if (!tile.isMine) {
+						tiles[key] = { ...tile, value: tile.value + 1 };
+					}
+				}
+			}
+		}
+		return { ...state, gameState: GameState.ONGOING, tiles };
+	}),
 ]);
 
 export const winHistory$ = game$.slice('history', [
@@ -265,27 +292,32 @@ documentMouseUp$.subscribe(() => minesweeperActions.mouseUp.next());
  * Unpress all buttons if the mouse releases
  */
 // TODO: scope.createEffect(documentMouseUp$.pipe(map(() => minesweeperActions.mouseUp.makePacket())));
+scope.createEffect(
+	minesweeperActions.leftclickUp.pipe(
+		withLatestFrom(gameState$),
+		filter(([, gameState]) => gameState === GameState.READY_TO_START),
+		map(([tile]) => tile),
+		withLatestFrom(gamePreset$),
+		map(([tile, preset]) =>
+			minesweeperActions.startGame.makePacket({
+				safeCoordinate: { x: tile.x, y: tile.y },
+				mineCount: preset.mineCount,
+			})
+		)
+	)
+);
 
 /**
  * If try start is valid, reset the game
  */
+/*
 scope.createEffect(
 	minesweeperActions.tryStartGame.pipe(
 		withLatestFrom(gamePreset$),
 		filter(([{ x, y }, preset]) => x > 0 && y > 0 && x <= preset.width && y <= preset.height),
 		map(([, preset]) => minesweeperActions.resetGameInstance.makePacket(preset))
 	)
-);
-
-/**
- * If try start is valid, reset the game
- */
-scope.createEffect(
-	minesweeperActions.restartGameInstance.pipe(
-		withLatestFrom(gamePreset$),
-		map(([, preset]) => minesweeperActions.resetGameInstance.makePacket(preset))
-	)
-);
+);*/
 
 /**
  * Add won game to the gamehistory
