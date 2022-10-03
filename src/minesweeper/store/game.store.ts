@@ -14,6 +14,7 @@ import {
 	switchMap,
 	take,
 	takeUntil,
+	tap,
 	timer,
 	withLatestFrom,
 } from 'rxjs';
@@ -40,6 +41,7 @@ import { debug$, rootSlice$ } from './root.store';
 import { MS_TAG, scope } from './scope';
 
 export interface Game {
+	inactive: boolean;
 	presets: Record<string, GamePreset>;
 	instance: GameInstance;
 	history: WinData[];
@@ -113,6 +115,7 @@ export const minesweeperActions = {
 		markTile: scope.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} mark`),
 	},
 	clickActions: {
+		cancelClick: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
 		globalMouseUp: scope.createAction(`${MS_TAG} ${CLICK_TAG} global up`),
 		leftclickDown: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left down`),
 		leftclickUp: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left up`),
@@ -200,12 +203,15 @@ const CLASSIC_GAME_PRESETS = {
 };
 
 export const game$ = rootSlice$.addSlice<Game>('game', {
+	inactive: false,
 	instance: generateGameInstance(CLASSIC_GAME_PRESETS.beginner),
 	history: [],
 	presets: CLASSIC_GAME_PRESETS,
 });
 
 game$.addPlugin(new TinySliceHydrationPlugin('tinysliceGameSlice'));
+
+export const inactive$ = game$.slice('inactive');
 
 export const presets$ = game$.slice('presets', [
 	minesweeperActions.setPreset.reduce((state, { name, preset }) => ({
@@ -439,6 +445,15 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 			}
 		)
 	),
+	minesweeperActions.clickActions.cancelClick.reduce(
+		entitySliceReducer((key, tile, payload) => {
+			const isSameTile = Coordinate.keyOf(payload) === key;
+
+			if (isSameTile && tile.pressed) {
+				return { ...tile, pressed: false };
+			}
+		})
+	),
 	minesweeperActions.tileActions.revealTile.reduce(
 		entitySliceReducerWithPrecompute(
 			(state, revealedTileCoord) => {
@@ -671,5 +686,12 @@ scope.createEffect(
 	debug$.pipe(
 		filter((debug) => debug),
 		map(() => enteredDebugMode$.setAction.makePacket(true))
+	)
+);
+
+scope.createEffect(
+	fromEvent(document.getElementsByClassName('minesweeper'), 'mouseover').pipe(
+		tap((event) => event.stopPropagation()),
+		map(() => inactive$.setAction.makePacket(true))
 	)
 );

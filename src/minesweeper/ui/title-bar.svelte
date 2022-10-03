@@ -1,31 +1,52 @@
 <script lang="ts">
 	import Image from './image.svelte';
-	import Panel from './panel.svelte';
+
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let title: string;
-	export let icon: string;
+	export let icon: string | undefined = undefined;
+	export let inactive: boolean = false;
+
+	function minimize() {
+		dispatch('minimize');
+	}
+
+	function maximize() {
+		dispatch('maximize');
+	}
+
+	function close() {
+		dispatch('close');
+	}
 </script>
 
-<Panel style="padding: 3px; justify-content: flex-start;" class="ms-title-bar-panel">
-	<Image class="ms-title-bar-icon" src={icon} alt={title} />
-	{title}
-	<slot />
-</Panel>
+<div class="title-bar">
+	<div aria-label="title" class="title-bar-text" class:inactive>
+		{#if icon}
+			<Image class="ms-title-bar-icon" src={icon} alt={title} />
+		{/if}
+		{title}
+		<slot />
+	</div>
+
+	<div class="title-bar-controls">
+		<button aria-label="Minimize" on:click={minimize} />
+		<button aria-label="Maximize" on:click={maximize} />
+		<button aria-label="Close" on:click={close} />
+	</div>
+</div>
 
 <style>
 	:global(.ms-title-bar-icon) {
 		filter: drop-shadow(0px 0px 8px rgba(180, 180, 255, 0.8));
+		max-height: 13px;
 	}
 
-	:global(.ms-title-bar-panel) {
-		height: 20px;
-		padding: 3px;
-		font-family: monospace;
-
+	.title-bar-text {
+		display: flex;
+		gap: 2px;
 		align-items: center;
-
-		color: white;
-		background: rgb(0, 20, 87);
-		background: linear-gradient(90deg, rgba(0, 20, 87, 1) 0%, rgba(0, 171, 255, 1) 100%);
 	}
 </style>

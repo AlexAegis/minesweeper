@@ -22,6 +22,8 @@
 				minesweeperActions.clickActions.leftclickUp.next(event.detail)}
 			on:rightclickUp={(event) =>
 				minesweeperActions.clickActions.rightclickUp.next(event.detail)}
+			on:mouseleave={(event) =>
+				minesweeperActions.clickActions.cancelClick.next(event.detail)}
 		/>
 	{:else}
 		<div class="fake-tile" />

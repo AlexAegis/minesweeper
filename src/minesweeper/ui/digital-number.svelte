@@ -1,47 +1,43 @@
 <script lang="ts">
-	export let value: number;
+	export let value: number | string;
 
-	$: lastDigit = value % 10;
-
+	$: last = typeof value === 'number' ? value % 10 : value[value.length - 1];
 </script>
 
 <div>
 	<span
 		style="grid-column: 2; grid-row: 1;"
-		class:on={lastDigit === 0 || lastDigit === 2 || lastDigit === 3 || lastDigit >= 5}
+		class:on={last === 0 || last === 2 || last === 3 || last >= 5}
 		class="segment-horizontal segment-top off"
 	/>
 	<span
 		style="grid-column: 1; grid-row: 2;"
-		class:on={lastDigit === 0 ||
-			(lastDigit >= 4 && lastDigit <= 6) ||
-			lastDigit >= 8 ||
-			lastDigit === 9}
+		class:on={last === 0 || (last >= 4 && last <= 6) || last >= 8 || last === 9}
 		class="segment-vertical segment-left off"
 	/>
 	<span
 		style="grid-column: 3; grid-row: 2;"
-		class:on={lastDigit <= 4 || lastDigit >= 7}
+		class:on={last <= 4 || last >= 7}
 		class="segment-vertical segment-right off"
 	/>
 	<span
 		style="grid-column: 2; grid-row: 3;"
-		class:on={isNaN(lastDigit) || (lastDigit >= 2 && lastDigit <= 6) || lastDigit >= 8}
+		class:on={last === '-' || (last >= 2 && last <= 6) || last >= 8}
 		class="segment-horizontal segment-center off"
 	/>
 	<span
 		style="grid-column: 1; grid-row: 4;"
-		class:on={lastDigit === 0 || lastDigit === 2 || lastDigit === 6 || lastDigit === 8}
+		class:on={last === 0 || last === 2 || last === 6 || last === 8}
 		class="segment-vertical segment-left off"
 	/>
 	<span
 		style="grid-column: 3; grid-row: 4;"
-		class:on={lastDigit <= 1 || lastDigit >= 3}
+		class:on={last <= 1 || last >= 3}
 		class="segment-vertical segment-right off"
 	/>
 	<span
 		style="grid-column: 2; grid-row: 5;"
-		class:on={!isNaN(lastDigit) && lastDigit !== 1 && lastDigit !== 4 && lastDigit !== 7}
+		class:on={last !== '-' && last !== 1 && last !== 4 && last !== 7}
 		class="segment-horizontal segment-bottom off"
 	/>
 </div>
@@ -114,5 +110,4 @@
 	span {
 		z-index: 10;
 	}
-
 </style>

@@ -5,6 +5,7 @@
 	import type { CoordinateLike } from '../core';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
 	import type { TileState } from '../store/game.store';
+	import { ButtonLook } from '../ui/button-look.enum';
 
 	import Button from '../ui/button.svelte';
 	import Image from '../ui/image.svelte';
@@ -14,6 +15,8 @@
 	export let tile: TileState;
 
 	export let debug = false;
+
+	let pressed = false;
 
 	function asCoordinate(tile: TileState): CoordinateLike {
 		return { x: tile.x, y: tile.y };
@@ -29,18 +32,30 @@
 		} else if (event.button === 2) {
 			dispatch('rightclickDown', coord);
 		}
+		pressed = true;
+	}
+
+	function mouseleave(_event: Event) {
+		if (pressed) {
+			const coord = asCoordinate(tile);
+
+			dispatch('mouseleave', coord);
+			pressed = false;
+		}
 	}
 
 	function click(event: Event) {
 		event.preventDefault();
 		const coord = asCoordinate(tile);
 		dispatch('leftclickUp', coord);
+		pressed = false;
 	}
 
 	function contextmenu(event: Event) {
 		event.preventDefault();
 		const coord = asCoordinate(tile);
 		dispatch('rightclickUp', coord);
+		pressed = false;
 	}
 </script>
 
@@ -68,9 +83,11 @@
 		mousedown={tile.pressed && isEmptyTileMark(tile.mark)}
 		disabled={tile.disabled}
 		disableSelfInset={true}
+		customLook={ButtonLook.THICK_PRESSED_THIN}
 		on:pointerdown={pointerdown}
 		on:click={click}
 		on:contextmenu={contextmenu}
+		on:mouseleave={mouseleave}
 		style="grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
 		aria-label="Tile {isEmptyTileMark(tile.mark) ? 'unrevealed' : 'mark'}"
 	>
@@ -93,7 +110,7 @@
 	}
 
 	:global(.ms-tile-font) {
-		font-family: 'Press Start 2P', cursive !important;
+		font-family: 'Press Start 2P', 'Pixelate', Tahoma, Geneva, Verdana, sans-serif !important;
 		font-size: 32px;
 		text-align: center;
 		padding: 0;

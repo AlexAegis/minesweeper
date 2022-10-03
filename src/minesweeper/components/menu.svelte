@@ -12,6 +12,8 @@
 	import { map } from 'rxjs';
 	import type { GamePreset } from '../consts/game-presets.conts';
 	import { gameSettings$, minesweeperActions } from '../store/game.store';
+	import { ButtonLook } from '../ui/button-look.enum';
+	import Dropdown from '../ui/dropdown.svelte';
 
 	const preset$ = gameSettings$.pipe(map((settings) => ({ ...settings })));
 
@@ -21,17 +23,15 @@
 	}
 </script>
 
-<div>
-	<Button style="margin: 1px; border-style: none;" on:click={() => settingsModal.open()}>
+<div class="ms-menu">
+	<Button customLook={ButtonLook.MENU_ITEM} on:click={() => settingsModal.open()}>
 		settings
 	</Button>
-	<Button style="margin: 1px; border-style: none;" on:click={() => highScoreModal.open()}>
+	<Dropdown title={'Game'} />
+	<Button customLook={ButtonLook.MENU_ITEM} on:click={() => highScoreModal.open()}>
 		highscore
 	</Button>
-	<Button
-		style="margin-left:auto; border-style: none;"
-		on:click={() => window.open(homepage, '_blank')}
-	>
+	<Button customLook={ButtonLook.MENU_ITEM} on:click={() => window.open(homepage, '_blank')}>
 		github
 	</Button>
 </div>
@@ -45,8 +45,14 @@
 </Modal>
 
 <style>
-	div {
+	.ms-menu {
 		display: flex;
 		height: max-content;
+		margin-bottom: 3px;
+		margin-top: 1px;
+	}
+
+	.ms-menu :global(button:first-letter) {
+		text-decoration: underline;
 	}
 </style>

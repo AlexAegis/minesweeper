@@ -38,7 +38,6 @@
 		width: 200px;
 
 		padding: 8px;
-		font-family: monospace;
 	}
 
 	.backdrop {

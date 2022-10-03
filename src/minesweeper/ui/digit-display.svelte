@@ -5,14 +5,21 @@
 	export let value: number | undefined;
 	export let paddedLength = 3;
 
-	$: numbers = padArray(
-		(value ?? 0)
-			.toString()
-			.split('')
-			.map((s) => parseInt(s, 10)),
-		paddedLength,
-		0
-	);
+	let numbers: (number | string)[];
+
+	$: {
+		numbers = padArray(
+			Math.abs(value ?? 0)
+				.toString()
+				.split('')
+				.map((s) => parseInt(s, 10)),
+			paddedLength,
+			0
+		);
+		if ((value ?? 0) < 0) {
+			numbers[0] = '-';
+		}
+	}
 </script>
 
 <div class="panel inset">

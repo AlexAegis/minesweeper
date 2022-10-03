@@ -39,6 +39,7 @@
 	"dependencies": {
 		"@tinyslice/core": "^0.2.7",
 		"@tinyslice/hydration-plugin": "^0.2.7",
+		"98.css": "^0.1.18",
 		"rxjs": "^7.5.7"
 	},
 	"devDependencies": {
@@ -47,8 +48,8 @@
 		"@sveltejs/vite-plugin-svelte": "^1.0.8",
 		"@tinyslice/devtools-plugin": "^0.2.7",
 		"@tsconfig/svelte": "^3.0.0",
-		"@typescript-eslint/eslint-plugin": "^5.38.1",
-		"@typescript-eslint/parser": "^5.38.1",
+		"@typescript-eslint/eslint-plugin": "^5.39.0",
+		"@typescript-eslint/parser": "^5.39.0",
 		"concurrently": "^7.4.0",
 		"eslint": "^8.24.0",
 		"eslint-config-prettier": "^8.5.0",
