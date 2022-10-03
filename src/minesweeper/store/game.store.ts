@@ -483,8 +483,10 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 				if (!tile.revealed && (revealedTileKey === key || spill.includes(key))) {
 					if (isEmptyTileMark(tile.mark)) {
 						return { ...tile, revealed: true, pressed: false };
-					} else {
+					} else if (revealedTileKey === key) {
 						return { ...tile, mark: TileMark.EMTPY, pressed: false };
+					} else {
+						return { ...tile, pressed: false };
 					}
 				} else if (
 					canRevealNeighbours &&
@@ -618,7 +620,7 @@ const TIME_TICKRATE_MS = 1000;
  * This will make the timer always jump ahead a second if you refresh as
  * without a mousedown event the initial time to tick is 0.
  */
-const initialTickrate$ = fromEvent(document, 'mousedown').pipe(
+const timeElapseTickrate$ = fromEvent(document, 'mousedown').pipe(
 	take(1),
 	map(() => TIME_TICKRATE_MS),
 	startWith(0),
@@ -630,10 +632,10 @@ const initialTickrate$ = fromEvent(document, 'mousedown').pipe(
  */
 scope.createEffect(
 	gameState$.pipe(
-		withLatestFrom(initialTickrate$),
-		switchMap(([gameState, initialTickrate]) =>
+		withLatestFrom(timeElapseTickrate$),
+		switchMap(([gameState, timeElapseTickrate]) =>
 			isGameOngoing(gameState)
-				? timer(initialTickrate, TIME_TICKRATE_MS).pipe(
+				? timer(timeElapseTickrate, TIME_TICKRATE_MS).pipe(
 						takeUntil(gameEnded$),
 						map(() => true)
 				  )
