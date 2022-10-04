@@ -62,10 +62,10 @@
 		clip-path: polygon(
 			var(--low-angle) 0,
 			var(--high-angle) 0,
-			100% 50%,
+			93% 50%,
 			var(--high-angle) 100%,
 			var(--low-angle) 100%,
-			0% 50%
+			7% 50%
 		);
 	}
 

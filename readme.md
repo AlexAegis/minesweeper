@@ -2,7 +2,10 @@
 
 <!-- markdownlint-disable MD013 -->
 
-[![CI](https://github.com/AlexAegis/svelte-minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/svelte-minesweeper/actions?query=workflow%3ACI) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3f3b484c74f24c84a9a67ce2bf9653c2)](https://www.codacy.com/manual/AlexAegis/svelte-minesweeper?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/svelte-minesweeper&utm_campaign=Badge_Grade) [![Svelte](https://img.shields.io/badge/made%20with-svelte-orange)](https://github.com/sveltejs/svelte) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![CI](https://github.com/AlexAegis/svelte-minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/svelte-minesweeper/actions?query=workflow%3ACI)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cdc716a23e1d4528a62c19998dab35d4)](https://www.codacy.com/gh/AlexAegis/svelte-minesweeper/dashboard?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/svelte-minesweeper&utm_campaign=Badge_Grade)
+[![Svelte](https://img.shields.io/badge/made%20with-svelte-orange)](https://github.com/sveltejs/svelte)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 <!-- markdownlint-enable MD013 -->
 
@@ -13,6 +16,7 @@ technologies such as Svelte and RxJS.
 
 > Click on the image to try out!
 
-## Angular version
+## Styles
 
-Check out the Angular implementation here: <https://github.com/alexaegis/angular-minesweeper>
+[98.css](https://jdan.github.io/98.css/#intro)
+[XP.css](https://botoxparty.github.io/XP.css/#intro)

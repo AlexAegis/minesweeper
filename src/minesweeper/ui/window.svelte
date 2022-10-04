@@ -8,26 +8,38 @@
 	export let icon: string | undefined = undefined;
 	export let inactive: boolean = false;
 	export let tight: boolean = false;
+	export let maximized: boolean = false;
+	export let resizable: boolean = true;
 
 	function minimize() {
 		dispatch('minimize');
 	}
 
+	function restore() {
+		dispatch('restore');
+		maximized = false;
+	}
+
 	function maximize() {
-		dispatch('minimize');
+		dispatch('maximize');
+		maximized = true;
+		console.log('max');
 	}
 
 	function close() {
-		dispatch('minimize');
+		dispatch('close');
 	}
 </script>
 
-<div class="window {$$props.class}">
+<div class="ms-window window {$$props.class}" class:maximized>
 	<TitleBar
 		{title}
 		{icon}
 		{inactive}
+		{maximized}
+		{resizable}
 		on:minimize={minimize}
+		on:restore={restore}
 		on:maximize={maximize}
 		on:close={close}
 	/>
@@ -43,9 +55,14 @@
 </div>
 
 <style>
-	.window {
+	.window:not(.maximized) {
 		height: fit-content;
 		width: fit-content;
+	}
+
+	.window.maximized {
+		height: 100%;
+		width: 100%;
 	}
 
 	.tight {

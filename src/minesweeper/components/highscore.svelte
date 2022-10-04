@@ -3,6 +3,11 @@
 </script>
 
 <div>
+	<span class="title">Title</span>
+	<span class="time">Time</span>
+	<span class="description">Description</span>
+</div>
+<div class="highscore-entires">
 	{#each $highscoreEntries$ as highscoreEntry}
 		<span class="title">{highscoreEntry.title}</span>
 		<span class="time">{highscoreEntry.timeStamp}</span>
@@ -11,6 +16,10 @@
 </div>
 
 <style>
+	.highscore-entires {
+		overflow-y: scroll;
+	}
+
 	.description {
 		color: grey;
 		margin-left: auto;

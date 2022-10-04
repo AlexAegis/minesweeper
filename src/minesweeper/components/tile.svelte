@@ -38,7 +38,6 @@
 	function mouseleave(_event: Event) {
 		if (pressed) {
 			const coord = asCoordinate(tile);
-
 			dispatch('mouseleave', coord);
 			pressed = false;
 		}
@@ -67,7 +66,8 @@
 		on:pointerdown={pointerdown}
 		on:click={click}
 		on:contextmenu={contextmenu}
-		style="color: {colorMap[tile.value]}; grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
+		on:mouseleave={mouseleave}
+		style="color: {colorMap[tile.value]}; grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 	>
 		{#if tile.isMine}
 			<Image class="ms-div-tile-img" src={assetMap.mine} alt="Mine" />
@@ -88,7 +88,7 @@
 		on:click={click}
 		on:contextmenu={contextmenu}
 		on:mouseleave={mouseleave}
-		style="grid-row: {tile.x + 1}; grid-column: {tile.y + 1};"
+		style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 		aria-label="Tile {isEmptyTileMark(tile.mark) ? 'unrevealed' : 'mark'}"
 	>
 		{#if isFlagTileMark(tile.mark)}

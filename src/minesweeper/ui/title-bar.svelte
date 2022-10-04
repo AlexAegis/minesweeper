@@ -8,6 +8,8 @@
 	export let title: string;
 	export let icon: string | undefined = undefined;
 	export let inactive: boolean = false;
+	export let maximized: boolean = false;
+	export let resizable: boolean = true;
 
 	function minimize() {
 		dispatch('minimize');
@@ -15,6 +17,10 @@
 
 	function maximize() {
 		dispatch('maximize');
+	}
+
+	function restore() {
+		dispatch('restore');
 	}
 
 	function close() {
@@ -33,7 +39,13 @@
 
 	<div class="title-bar-controls">
 		<button aria-label="Minimize" on:click={minimize} />
-		<button aria-label="Maximize" on:click={maximize} />
+
+		{#if maximized}
+			<button aria-label="Restore" on:click={restore} disabled={!resizable} />
+		{:else}
+			<button aria-label="Maximize" on:click={maximize} disabled={!resizable} />
+		{/if}
+
 		<button aria-label="Close" on:click={close} />
 	</div>
 </div>

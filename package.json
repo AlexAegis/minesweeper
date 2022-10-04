@@ -40,7 +40,8 @@
 		"@tinyslice/core": "^0.2.7",
 		"@tinyslice/hydration-plugin": "^0.2.7",
 		"98.css": "^0.1.18",
-		"rxjs": "^7.5.7"
+		"rxjs": "^7.5.7",
+		"xp.css": "^0.3.0"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^17.1.2",
@@ -59,7 +60,7 @@
 		"lint-staged": "^13.0.3",
 		"markdownlint": "^0.26.2",
 		"markdownlint-cli": "^0.32.2",
-		"npm-check-updates": "^16.3.7",
+		"npm-check-updates": "^16.3.8",
 		"nyc": "^15.1.0",
 		"prettier": "^2.7.1",
 		"remark": "^14.0.2",

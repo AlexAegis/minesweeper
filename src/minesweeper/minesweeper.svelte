@@ -10,7 +10,13 @@
 	import Window from './ui/window.svelte';
 </script>
 
-<Window title="Svelte Minesweeper v{version}" icon={assetMap.mine} class="minesweeper" tight={true}>
+<Window
+	title="Svelte Minesweeper v{version}"
+	icon={assetMap.mine}
+	class="minesweeper"
+	tight={true}
+	resizable={false}
+>
 	<Menu />
 	<div class="game panel outset">
 		<Panel class="game panel inset padded">

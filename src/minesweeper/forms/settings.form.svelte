@@ -25,18 +25,26 @@
 		<Button on:click={() => (preset = data)}>{key}</Button>
 	{/each}
 
-	<label for="width">Width:</label>
-	<input name="width" type="number" bind:value={preset.width} max="999" min="2" />
-	<label for="height">Height:</label>
-	<input name="height" type="number" bind:value={preset.height} max="999" min="2" />
-	<label for="mineCount">Mine count:</label>
-	<input
-		name="mineCount"
-		type="number"
-		bind:value={preset.mineCount}
-		max={preset.width * preset.height - 1}
-		min="1"
-	/>
+	<div class="field-row">
+		<label for="width">Width:</label>
+		<input name="width" type="number" bind:value={preset.width} max="999" min="2" />
+	</div>
+
+	<div class="field-row">
+		<label for="height">Height:</label>
+		<input name="height" type="number" bind:value={preset.height} max="999" min="2" />
+	</div>
+
+	<div class="field-row">
+		<label for="mineCount">Mine count:</label>
+		<input
+			name="mineCount"
+			type="number"
+			bind:value={preset.mineCount}
+			max={preset.width * preset.height - 1}
+			min="1"
+		/>
+	</div>
 
 	<Button on:click={() => ok()}>Ok</Button>
 

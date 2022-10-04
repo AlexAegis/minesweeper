@@ -332,9 +332,9 @@ export const highscoreEntries$: Observable<HighscoreEntry[]> = winHistory$.pipe(
 				const timeStamp = `${minutes ? minutes + 'm ' : ''}${remainingSeconds}s`;
 				return {
 					title: presetName ?? 'Custom',
-					description: `${winEntry.enteredDebugMode ? 'Debug ' : ''}${
+					description: `${winEntry.enteredDebugMode ? 'Debug ' : ''}size: ${
 						winEntry.preset.height
-					}×${winEntry.preset.width} mines: ${winEntry.preset.mineCount}`,
+					}*${winEntry.preset.width}, mines: ${winEntry.preset.mineCount}`,
 					timeStamp,
 					time: winEntry.time,
 				} as HighscoreEntry;
@@ -446,13 +446,22 @@ export const gameTilesSlice$ = gameInstance$.slice('tiles', [
 		)
 	),
 	minesweeperActions.clickActions.cancelClick.reduce(
-		entitySliceReducer((key, tile, payload) => {
-			const isSameTile = Coordinate.keyOf(payload) === key;
-
-			if (isSameTile && tile.pressed) {
-				return { ...tile, pressed: false };
+		entitySliceReducerWithPrecompute(
+			(state, revealedTileCoord) => ({
+				revealedTileCoordKey: Coordinate.keyOf(revealedTileCoord),
+				pressedNeighbourkeys: getNeighbouringTiles(state, revealedTileCoord)
+					.filter((neighbour) => neighbour.pressed)
+					.map((coord) => Coordinate.keyOf(coord)),
+			}),
+			(key, tile, _payload, { revealedTileCoordKey, pressedNeighbourkeys }) => {
+				if (
+					(revealedTileCoordKey === key && tile.pressed) ||
+					pressedNeighbourkeys.includes(key)
+				) {
+					return { ...tile, pressed: false };
+				}
 			}
-		})
+		)
 	),
 	minesweeperActions.tileActions.revealTile.reduce(
 		entitySliceReducerWithPrecompute(
