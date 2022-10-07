@@ -10,20 +10,26 @@
 	export let tight: boolean = false;
 	export let maximized: boolean = false;
 	export let resizable: boolean = true;
+	export let x: number = 12;
+	export let y: number = 20;
+
+	function drag(dragEvent: CustomEvent<{ x: number; y: number }>) {
+		x = dragEvent.detail.x;
+		y = dragEvent.detail.y;
+	}
 
 	function minimize() {
 		dispatch('minimize');
 	}
 
 	function restore() {
-		dispatch('restore');
 		maximized = false;
+		dispatch('restore');
 	}
 
 	function maximize() {
-		dispatch('maximize');
 		maximized = true;
-		console.log('max');
+		dispatch('maximize');
 	}
 
 	function close() {
@@ -31,7 +37,7 @@
 	}
 </script>
 
-<div class="ms-window window {$$props.class}" class:maximized>
+<div class="ms-window window {$$props.class}" class:maximized style={`top: ${y}px; left: ${x}px`}>
 	<TitleBar
 		{title}
 		{icon}
@@ -42,6 +48,7 @@
 		on:restore={restore}
 		on:maximize={maximize}
 		on:close={close}
+		on:drag={drag}
 	/>
 	<div class="window-body" class:tight>
 		<slot />
@@ -54,18 +61,24 @@
 	{/if}
 </div>
 
-<style>
-	.window:not(.maximized) {
-		height: fit-content;
-		width: fit-content;
-	}
+<style lang="scss">
+	.ms-window {
+		position: relative;
+		box-sizing: border-box;
 
-	.window.maximized {
-		height: 100%;
-		width: 100%;
-	}
+		&.maximized {
+			height: 100%;
+			width: 100%;
+			top: 0 !important;
+			left: 0 !important;
+		}
+		&:not(.maximized) {
+			height: fit-content;
+			width: fit-content;
+		}
 
-	.tight {
-		margin: 0;
+		.tight {
+			margin: 0;
+		}
 	}
 </style>

@@ -36,6 +36,7 @@
 	style={$$props.style}
 	disabled={$$props.disabled}
 	class:pressed={mousedown}
+	class:type-none={type === undefined}
 	class:type-any={type !== undefined}
 	class:type-thick={type === ButtonType.THICK}
 	class:type-thick-but-pressed-thin={type === ButtonType.THICK_PRESSED_THIN}
@@ -56,7 +57,7 @@
 	<slot />
 </button>
 
-<style>
+<style lang="scss">
 	button {
 		font-size: 18px;
 	}

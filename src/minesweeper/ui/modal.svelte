@@ -8,40 +8,38 @@
 		isOpen = true;
 	}
 
-	export function close() {
-		isOpen = false;
+	export function close(event?: MouseEvent) {
+		event?.preventDefault();
+		console.log(event);
+		if ((event?.target as Element)?.className.includes('ms-modal') ?? true) {
+			isOpen = false;
+		}
 	}
 </script>
 
 {#if isOpen}
-	<div class="ms-modal" style={$$props.style}>
-		<Window {title} on:close={close}>
+	<div class="ms-modal" style={$$props.style} on:click={close}>
+		<Window {title} on:close={() => close()}>
 			<slot />
 		</Window>
-
-		<div class="backdrop" on:click={close} />
 	</div>
 {/if}
 
-<style>
-	.ms-modal :global(.ms-window) {
+<style lang="scss">
+	.ms-modal {
+		position: absolute;
 		position: fixed;
-		left: 50%;
-		top: 50%;
-		transform: translateX(-50%) translateY(-50%);
-		width: 200px;
-
-		padding: 8px;
-		z-index: 1000;
-	}
-
-	.backdrop {
-		position: fixed;
+		height: 100%;
+		width: 100%;
 		left: 0;
 		top: 0;
 		z-index: 900;
-		height: 100vh;
-		width: 100vw;
+
 		background-color: rgba(0, 0, 0, 0.37);
+
+		:global(.ms-window) {
+			position: relative;
+			z-index: 1000;
+		}
 	}
 </style>

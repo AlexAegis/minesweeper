@@ -47,7 +47,7 @@
 	<Settings preset={$preset$} on:ok={settingsOkListener} />
 </Modal>
 
-<Modal title="Highscore" style=" width: 300px; height: 400px;" bind:this={highScoreModal}>
+<Modal title="Highscore" bind:this={highScoreModal}>
 	<Highscore />
 </Modal>
 

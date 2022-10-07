@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { version } from '../../package.json';
+	import { displayName, version } from '../../package.json';
 	import Menu from './components/menu.svelte';
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
@@ -10,13 +10,7 @@
 	import Window from './ui/window.svelte';
 </script>
 
-<Window
-	title="Svelte Minesweeper v{version}"
-	icon={assetMap.mine}
-	class="minesweeper"
-	tight={true}
-	resizable={false}
->
+<Window title="{displayName} v{version}" icon={assetMap.mine} tight={true} resizable={true}>
 	<Menu />
 	<div class="game panel outset">
 		<Panel class="game panel inset padded">
@@ -29,10 +23,6 @@
 </Window>
 
 <style>
-	:global(.minesweeper) {
-		margin: auto; /* center window */
-	}
-
 	.game {
 		display: flex;
 		flex-direction: column;
