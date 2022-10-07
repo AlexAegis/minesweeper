@@ -2,13 +2,12 @@
 	"configurations": [
 		{
 			"type": "chrome",
-
 			"request": "launch",
-			"name": "Launch App",
-			"url": "http://localhost:8989",
+			"name": "Launch",
+			"url": "http://localhost:5173",
 			"webRoot": "${workspaceFolder}",
 			"cwd": "${workspaceFolder}",
-			"preLaunchTask": "start:app"
+			"preLaunchTask": "start"
 		},
 		{
 			"name": "Current TS File",
@@ -28,7 +27,6 @@
 				"--max-old-space-size=8192"
 			],
 			"cwd": "${workspaceRoot}",
-			"protocol": "inspector",
 			"internalConsoleOptions": "openOnSessionStart"
 		}
 	]

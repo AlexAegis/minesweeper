@@ -1,9 +1,8 @@
 {
 	"version": "2.0.0",
-
 	"tasks": [
 		{
-			"label": "start:app",
+			"label": "start",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -11,26 +10,24 @@
 			"type": "npm",
 			"script": "start",
 			"isBackground": true,
+			"runOptions": { "reevaluateOnRerun": true },
 			"options": { "env": { "NODE_OPTIONS": "--max_old_space_size=8192 " } },
-			"problemMatcher": [
-				"$tsc-watch",
-				{
-					"owner": "typescript",
-					"pattern": {
-						"regexp": "^.*Serving.*$",
-						"file": 1,
-						"location": 2,
-						"severity": 3,
-						"code": 4,
-						"message": 5
-					},
-					"background": {
-						"activeOnStart": true,
-						"beginsPattern": "^.*$",
-						"endsPattern": "^.*Serving.*$"
-					}
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": {
+				"base": "$tsc",
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*$",
+					"endsPattern": "^.*$"
 				}
-			]
+			}
 		}
 	]
 }
