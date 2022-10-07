@@ -12,10 +12,12 @@
 	import { map } from 'rxjs';
 	import type { GamePreset } from '../consts/game-presets.conts';
 	import { gameSettings$, minesweeperActions } from '../store/game.store';
-	import { ButtonLook } from '../ui/button-look.enum';
+	import { ButtonType } from '../ui/button-type.enum';
 	import Dropdown from '../ui/dropdown.svelte';
 
 	const preset$ = gameSettings$.pipe(map((settings) => ({ ...settings })));
+
+	let contextHasOpenDropdown = false;
 
 	function settingsOkListener(event: CustomEvent<GamePreset>): void {
 		minesweeperActions.resetGame.next(event.detail);
@@ -24,14 +26,19 @@
 </script>
 
 <div class="ms-menu">
-	<Button customLook={ButtonLook.MENU_ITEM} on:click={() => settingsModal.open()}>
-		settings
-	</Button>
-	<Dropdown title={'Game'} />
-	<Button customLook={ButtonLook.MENU_ITEM} on:click={() => highScoreModal.open()}>
+	<Dropdown title={'Game'} bind:contextHasOpenDropdown>
+		<Button type={ButtonType.CONTEXT_MENU_ITEM} on:click={() => settingsModal.open()}>
+			File
+		</Button>
+		<hr />
+		<Button type={ButtonType.CONTEXT_MENU_ITEM} on:click={() => settingsModal.open()}>
+			Settings
+		</Button>
+	</Dropdown>
+	<Button type={ButtonType.TITLE_BAR_MENU_ITEM} on:click={() => highScoreModal.open()}>
 		highscore
 	</Button>
-	<Button customLook={ButtonLook.MENU_ITEM} on:click={() => window.open(homepage, '_blank')}>
+	<Button type={ButtonType.TITLE_BAR_MENU_ITEM} on:click={() => window.open(homepage, '_blank')}>
 		github
 	</Button>
 </div>
@@ -46,6 +53,7 @@
 
 <style>
 	.ms-menu {
+		height: 16px;
 		display: flex;
 		height: max-content;
 		margin-bottom: 3px;

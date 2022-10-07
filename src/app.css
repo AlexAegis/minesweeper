@@ -7,6 +7,14 @@ body {
 button {
 	cursor: pointer;
 }
+
+hr {
+	width: 90%;
+
+	align-self: center;
+	margin-bottom: 3px;
+}
+
 .panel {
 	display: block;
 	border: #eee;

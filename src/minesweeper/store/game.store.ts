@@ -36,7 +36,7 @@ import {
 	isGameReadyToStart,
 	isGameWon,
 } from '../core/game-state.enum';
-import { shuffle } from '../helper';
+import { ifLatestFrom, shuffle } from '../helper';
 import { debug$, rootSlice$ } from './root.store';
 import { MS_TAG, scope } from './scope';
 
@@ -357,8 +357,14 @@ export const gameLost$ = isGameLost$.pipe(
 	filter((lost) => lost)
 );
 
-export const isGameEnded$ = merge(isGameWon$, isGameLost$);
-export const gameEnded$ = merge(gameWon$, gameLost$);
+export const isGameEnded$ = gameState$.pipe(
+	map((gameState) => isGameLost(gameState) || isGameWon(gameState))
+);
+export const gameEnded$ = isGameLost$.pipe(
+	distinctUntilChanged(),
+	filter((ended) => ended)
+);
+
 export const isGameOngoing$ = gameState$.pipe(map(isGameOngoing));
 export const gameStarted$ = isGameOngoing$.pipe(
 	distinctUntilChanged(),
@@ -589,9 +595,7 @@ scope.createEffect(
  */
 scope.createEffect(
 	minesweeperActions.clickActions.leftclickUp.pipe(
-		withLatestFrom(gameState$),
-		filter(([, gameState]) => isGameReadyToStart(gameState)),
-		map(([tile]) => tile),
+		ifLatestFrom(gameState$, isGameReadyToStart),
 		withLatestFrom(gameInstance$),
 		map(([tile, preset]) =>
 			minesweeperActions.startGame.makePacket({
@@ -607,9 +611,8 @@ scope.createEffect(
  */
 scope.createEffect(
 	minesweeperActions.clickActions.leftclickDown.pipe(
-		withLatestFrom(isGameEnded$),
-		filter(([, isGameEnded]) => !isGameEnded),
-		map(([click]) => minesweeperActions.tileActions.depressTile.makePacket(click))
+		ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
+		map((click) => minesweeperActions.tileActions.depressTile.makePacket(click))
 	)
 );
 
@@ -618,9 +621,8 @@ scope.createEffect(
  */
 scope.createEffect(
 	minesweeperActions.clickActions.leftclickUp.pipe(
-		withLatestFrom(isGameEnded$),
-		filter(([, isGameEnded]) => !isGameEnded),
-		map(([click]) => minesweeperActions.tileActions.revealTile.makePacket(click))
+		ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
+		map((click) => minesweeperActions.tileActions.revealTile.makePacket(click))
 	)
 );
 
@@ -629,9 +631,8 @@ scope.createEffect(
  */
 scope.createEffect(
 	minesweeperActions.clickActions.rightclickUp.pipe(
-		withLatestFrom(isGameEnded$),
-		filter(([, isGameEnded]) => !isGameEnded),
-		map(([click]) => minesweeperActions.tileActions.markTile.makePacket(click))
+		ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
+		map((click) => minesweeperActions.tileActions.markTile.makePacket(click))
 	)
 );
 

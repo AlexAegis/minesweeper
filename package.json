@@ -41,6 +41,7 @@
 		"@tinyslice/hydration-plugin": "^0.2.7",
 		"98.css": "^0.1.18",
 		"rxjs": "^7.5.7",
+		"svelte-rxjs-observer": "^0.2.1",
 		"xp.css": "^0.3.0"
 	},
 	"devDependencies": {
