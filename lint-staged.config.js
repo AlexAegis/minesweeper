@@ -3,7 +3,8 @@ export default {
 	'*.ts': ['eslint', 'prettier --check'],
 	'*.js': ['eslint', 'prettier --check'],
 	'*.svelte': ['svelte-check', 'prettier --check'],
-	'*.(css|scss)': ['stylelint', 'prettier --check'],
+	'*.css': ['stylelint', 'prettier --check'],
+	'*.scss': ['stylelint --customSyntax=postcss-scss', 'prettier --check'],
 	'(*.config.json|.eslintrc|.prettierrc|.markdownlintrc)': [
 		'eslint --max-warnings=0',
 		'prettier --check',

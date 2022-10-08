@@ -1,0 +1,122 @@
+div.ms-tile {
+	user-select: none;
+
+	border-left-style: solid;
+	border-top-style: solid;
+
+	border-color: #a6a6a6;
+	border-width: 1px;
+	text-align: center;
+	font-size: 32px;
+	line-height: 42px;
+
+	&.mine {
+		background-position: 1px 1px;
+	}
+}
+
+button.ms-tile {
+	background-position: 1px 1px;
+
+	&:active {
+		padding: 0;
+	}
+
+	&.mine {
+		background-size: 12px;
+		&.pressed {
+			background-position: 1px 1px;
+		}
+
+		&:not(.pressed) {
+			background-position: 0px 0px;
+		}
+	}
+}
+
+.ms-tile {
+	height: 16px;
+	width: 16px;
+	display: block;
+	box-sizing: border-box;
+	padding: 0;
+	image-rendering: pixelated;
+	background-repeat: no-repeat;
+	background-position: 2px 2px;
+
+	user-select: none;
+
+	&.wrong:not(.flag) {
+		background-color: red;
+	}
+
+	&.flag {
+		&.revealed,
+		&:not(.debug):not(.wrong) {
+			background-image: url('assets/minesweeper/flag.png');
+		}
+		&.debug:not(.revealed):not(.wrong) {
+			background-image: linear-gradient(rgba(192, 192, 192, 0.8), rgba(192, 192, 192, 0.8)),
+				url('assets/minesweeper/flag.png');
+		}
+
+		&.wrong {
+			&.revealed,
+			&:not(.debug) {
+				background-position: 1px 1px;
+				background-image: url('assets/minesweeper/not-mine.png');
+			}
+			&.debug:not(.revealed) {
+				background-position: 1px 1px;
+				background-image: linear-gradient(
+						rgba(192, 192, 192, 0.8),
+						rgba(192, 192, 192, 0.8)
+					),
+					url('assets/minesweeper/not-mine.png');
+			}
+		}
+	}
+
+	&.question-mark {
+		&.revealed,
+		&:not(.debug) {
+			background-image: url('assets/minesweeper/question-mark.png');
+		}
+		&.debug:not(.revealed) {
+			background-image: linear-gradient(rgba(192, 192, 192, 0.8), rgba(192, 192, 192, 0.8)),
+				url('assets/minesweeper/question-mark.png');
+		}
+	}
+
+	&.mine {
+		&.revealed,
+		&:not(.debug) {
+			background-image: url('assets/minesweeper/mine.png');
+		}
+		&.debug:not(.revealed) {
+			background-image: linear-gradient(rgba(192, 192, 192, 0.8), rgba(192, 192, 192, 0.8)),
+				url('assets/minesweeper/mine.png');
+		}
+	}
+
+	$tile-colors: #a0a0a0, #0000ff, #008100, #ff1300, #000083, #810500, #2a9494, #000000, #808080,
+		#2a9494;
+
+	@for $i from 2 through 10 {
+		&-#{$i - 1} {
+			color: nth($tile-colors, $i);
+
+			&.revealed,
+			&:not(.debug) {
+				background-image: url('assets/minesweeper/#{$i - 1}.png');
+			}
+			&.debug:not(.revealed) {
+				background-image: linear-gradient(
+						rgba(192, 192, 192, 0.8),
+						rgba(192, 192, 192, 0.8)
+					),
+					url('assets/minesweeper/#{$i - 1}.png');
+			}
+		}
+	}
+}

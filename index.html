@@ -2,16 +2,12 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Svelte Minesweeper</title>
+		<meta name="viewport" content="width=device-width,initial-scale=2" />
+		<title>Minesweeper</title>
 		<meta name="Description" content="Svelte Minesweeper" />
 		<link rel="stylesheet" href="https://unpkg.com/98.css" />
-		<!--
-			<link rel="stylesheet" href="https://unpkg.com/98.css" />
-		-->
-		<!--
-		<link rel="stylesheet" href="https://unpkg.com/xp.css" />
-				-->
+		<!-- <link rel="stylesheet" href="https://unpkg.com/98.css" /> -->
+		<!-- <link rel="stylesheet" href="https://unpkg.com/xp.css" /> -->
 		<link
 			rel="preload"
 			href="assets/fonts/tahoma-8px-regular.woff"
@@ -20,33 +16,26 @@
 			crossorigin
 		/>
 
+		<link rel="preload" href="assets/minesweeper/0.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/1.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/2.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/3.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/4.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/5.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/6.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/7.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/8.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/9.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/flag.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/not-mine.png" as="image" type="image/png" />
+		<link rel="preload" href="assets/minesweeper/mine.png" as="image" type="image/png" />
 		<link
 			rel="preload"
-			href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-			as="stylesheet"
-			type="text/css"
-			crossorigin
-		/>
-		<link
-			rel="stylesheet"
-			type="text/css"
-			href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+			href="assets/minesweeper/question-mark.png"
+			as="image"
+			type="image/png"
 		/>
 
-		<link rel="preload" href="assets/minesweeper/flag-small.png" as="image" type="image/png" />
-		<link
-			rel="preload"
-			href="assets/minesweeper/mine-false-small.png"
-			as="image"
-			type="image/png"
-		/>
-		<link rel="preload" href="assets/minesweeper/mine-small.png" as="image" type="image/png" />
-		<link
-			rel="preload"
-			href="assets/minesweeper/question-mark-small.png"
-			as="image"
-			type="image/png"
-		/>
 		<link
 			rel="preload"
 			href="assets/minesweeper/smiley-click-small.png"

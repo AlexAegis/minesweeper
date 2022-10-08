@@ -10,8 +10,8 @@
 	export let tight: boolean = false;
 	export let maximized: boolean = false;
 	export let resizable: boolean = true;
-	export let x: number = 12;
-	export let y: number = 20;
+	export let x: number = 122;
+	export let y: number = 202;
 
 	function drag(dragEvent: CustomEvent<{ x: number; y: number }>) {
 		x = dragEvent.detail.x;
