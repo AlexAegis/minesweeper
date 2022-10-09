@@ -31,7 +31,7 @@
 <style>
 	.segment-display {
 		display: flex;
-		padding: 1px;
+
 		background-color: black;
 
 		border-style: inset;

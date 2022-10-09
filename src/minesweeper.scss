@@ -5,7 +5,8 @@
 	--border-color-dark-og: #888;
 	--panel-border-color: #eee;
 	--tile-border-color: #a6a6a6;
-	--tile-grid-color: #c0c0c0; // 192
+	--tile-grid-color-triplet: 192, 192, 192; // 192
+	--tile-grid-color: rgb(192, 192, 192); // #c0c0c0
 
 	--tile-0-color: #a0a0a0;
 	--tile-1-color: #0000ff;
@@ -100,8 +101,8 @@ button.ms-tile {
 		}
 		&.debug:not(.revealed):not(.wrong) {
 			background-image: linear-gradient(
-					rgba(var(--tile-grid-color), 0.8),
-					rgba(var(--tile-grid-color), 0.8)
+					rgba(var(--tile-grid-color-triplet), 0.8),
+					rgba(var(--tile-grid-color-triplet), 0.8)
 				),
 				url('assets/minesweeper/flag.png');
 		}
@@ -115,8 +116,8 @@ button.ms-tile {
 			&.debug:not(.revealed) {
 				background-position: 1px 1px;
 				background-image: linear-gradient(
-						rgba(var(--tile-grid-color), 0.8),
-						rgba(var(--tile-grid-color), 0.8)
+						rgba(var(--tile-grid-color-triplet), 0.8),
+						rgba(var(--tile-grid-color-triplet), 0.8)
 					),
 					url('assets/minesweeper/not-mine.png');
 			}
@@ -130,8 +131,8 @@ button.ms-tile {
 		}
 		&.debug:not(.revealed) {
 			background-image: linear-gradient(
-					rgba(var(--tile-grid-color), 0.8),
-					rgba(var(--tile-grid-color), 0.8)
+					rgba(var(--tile-grid-color-triplet), 0.8),
+					rgba(var(--tile-grid-color-triplet), 0.8)
 				),
 				url('assets/minesweeper/question-mark.png');
 		}
@@ -144,8 +145,8 @@ button.ms-tile {
 		}
 		&.debug:not(.revealed) {
 			background-image: linear-gradient(
-					rgba(var(--tile-grid-color), 0.8),
-					rgba(var(--tile-grid-color), 0.8)
+					rgba(var(--tile-grid-color-triplet), 0.8),
+					rgba(var(--tile-grid-color-triplet), 0.8)
 				),
 				url('assets/minesweeper/mine.png');
 		}
@@ -165,8 +166,8 @@ button.ms-tile {
 			}
 			&.debug:not(.revealed) {
 				background-image: linear-gradient(
-						rgba(var(--tile-grid-color), 0.8),
-						rgba(var(--tile-grid-color), 0.8)
+						rgba(var(--tile-grid-color-triplet), 0.8),
+						rgba(var(--tile-grid-color-triplet), 0.8)
 					),
 					url('assets/minesweeper/#{$i - 1}.png');
 			}

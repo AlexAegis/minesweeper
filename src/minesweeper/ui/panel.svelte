@@ -10,7 +10,6 @@
 		align-items: center;
 		justify-content: space-between;
 		box-sizing: border-box;
-		padding: 8px;
+		padding: 5px;
 	}
-
 </style>
