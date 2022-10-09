@@ -184,7 +184,7 @@ const generateGameInstance = (settings: GamePreset): GameInstance => {
 	return gameInstanceInitialState;
 };
 
-const CLASSIC_GAME_PRESETS = {
+export const CLASSIC_GAME_PRESETS = {
 	beginner: {
 		width: 9,
 		height: 9,
@@ -209,7 +209,14 @@ export const game$ = rootSlice$.addSlice<Game>('game', {
 	presets: CLASSIC_GAME_PRESETS,
 });
 
-game$.addPlugin(new TinySliceHydrationPlugin('tinysliceGameSlice'));
+game$.addPlugin(
+	new TinySliceHydrationPlugin('tinysliceGameSlice', {
+		trimmer: (state) => {
+			// everything except presets
+			return { ...state, presets: CLASSIC_GAME_PRESETS };
+		},
+	})
+);
 
 export const inactive$ = game$.slice('inactive');
 
@@ -298,6 +305,16 @@ export const gameInstance$ = game$.slice('instance', [
 
 export const enteredDebugMode$ = gameInstance$.slice('enteredDebugMode');
 export const gameSettings$ = gameInstance$.slice('settings');
+
+export const isGameSettingsAPreset$ = (preset: GamePreset) =>
+	gameSettings$.pipe(map((settings) => isTheSamePreset(preset, settings)));
+
+export const isGameSettingsNotAPreset$ = combineLatest([gameSettings$, presets$]).pipe(
+	map(
+		([settings, presets]) =>
+			!Object.values(presets).some((preset) => isTheSamePreset(preset, settings))
+	)
+);
 
 export const gameWidthArray$ = gameSettings$.pipe(
 	map((settings) => [...Array(settings.width).keys()])

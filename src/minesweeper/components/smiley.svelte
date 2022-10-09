@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { assetMap } from '../consts/asset-urls.const';
 	import { smileyState$ } from '../store/game.store';
-	import { ButtonType } from '../ui/button-type.enum';
+	import { ButtonLook } from '../ui/button-type.enum';
 	import Button from '../ui/button.svelte';
 	import Image from '../ui/image.svelte';
 
@@ -9,7 +9,7 @@
 </script>
 
 <div class="ms-smiley">
-	<Button on:click aria-label="Restart" type={ButtonType.THICK} class="ms-smiley">
+	<Button on:click aria-label="Restart" look={ButtonLook.THICK} class="ms-smiley">
 		<Image style="width: 100%; height: 100%;" alt={src} bind:src />
 	</Button>
 </div>

@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { fromEvent, Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { ButtonType } from './button-type.enum';
+	import { ButtonLook } from './button-type.enum';
 
 	const dispatch = createEventDispatcher();
 	export let mousedown = false;
-	export let type: ButtonType | undefined = undefined;
+	export let type: 'button' | 'menu' | 'submit' | 'reset' = 'button';
+	export let look: ButtonLook | undefined = undefined;
+
 	export let disableSelfInset = false;
+	export let hotkeyLetter: string | undefined = undefined;
+	export let toggled: boolean | undefined = undefined;
+	export let contextHasToggleable: boolean = false;
 
 	let mouseUpListener: Subscription | undefined;
 
@@ -31,17 +36,21 @@
 </script>
 
 <button
+	{type}
 	class="ms-button {$$props.class}"
 	aria-label={$$props['aria-label']}
 	style={$$props.style}
 	disabled={$$props.disabled}
+	class:hotkey-letter={!!hotkeyLetter}
 	class:pressed={mousedown}
-	class:type-none={type === undefined}
-	class:type-any={type !== undefined}
-	class:type-thick={type === ButtonType.THICK}
-	class:type-thick-but-pressed-thin={type === ButtonType.THICK_PRESSED_THIN}
-	class:type-title-bar-menu-bar-item={type === ButtonType.TITLE_BAR_MENU_ITEM}
-	class:type-context-menu-item={type === ButtonType.CONTEXT_MENU_ITEM}
+	class:toggleable={toggled !== undefined}
+	class:toggleable-context={contextHasToggleable}
+	class:type-none={look === undefined}
+	class:type-any={look !== undefined}
+	class:type-thick={look === ButtonLook.THICK}
+	class:type-thick-but-pressed-thin={look === ButtonLook.THICK_PRESSED_THIN}
+	class:type-title-bar-menu-bar-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
+	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
 	on:click
 	on:mouseup
 	on:mousedown={onMouseDown}
@@ -54,18 +63,55 @@
 	on:pointerout
 	on:pointerenter
 >
-	<slot />
+	{#if contextHasToggleable}
+		<span class="icon" class:checkmark={toggled} />
+		<span>
+			<slot />
+		</span>
+	{:else}
+		<slot />
+	{/if}
 </button>
 
 <style lang="scss">
 	button {
 		font-size: 18px;
-	}
 
-	.type-context-menu-item {
-		width: 130px;
-		height: 19px;
-		text-align: left;
+		&.toggleable-context {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
+
+		.icon {
+			width: 7px;
+			height: 7px;
+
+			&.checkmark {
+				background-image: url('assets/minesweeper/checkmark.png');
+				background-repeat: no-repeat;
+			}
+		}
+
+		&.hotkey-letter {
+			&:first-letter {
+				text-decoration: underline !important;
+			}
+		}
+
+		&:first-letter {
+			text-transform: uppercase;
+		}
+
+		:first-letter {
+			text-transform: uppercase;
+		}
+
+		&.type-context-menu-item {
+			width: 130px;
+			height: 19px;
+			text-align: left;
+		}
 	}
 
 	.type-context-menu-item:hover {

@@ -1,24 +1,54 @@
 <script lang="ts">
+	import { interval, map, merge, of, startWith, Subject, switchMap, take } from 'rxjs';
+	import { onDestroy } from 'svelte';
 	import Window from './window.svelte';
 
 	export let title: string;
 	export let isOpen: boolean = false;
+
+	let errorNotification = new Subject<void>();
+
+	let error$ = errorNotification.pipe(
+		switchMap(() =>
+			merge(
+				of(true),
+				interval(60).pipe(
+					take(6),
+					map((_, i) => i % 2 === 0)
+				)
+			)
+		),
+		startWith(false)
+	);
 
 	export function open() {
 		isOpen = true;
 	}
 
 	export function close(event?: MouseEvent) {
-		event?.preventDefault();
-		console.log(event);
 		if ((event?.target as Element)?.className.includes('ms-modal') ?? true) {
 			isOpen = false;
 		}
 	}
+
+	export function backdropClick() {
+		if ((event?.target as Element)?.className.includes('ms-modal')) {
+			errorNotification.next();
+		}
+	}
+
+	onDestroy(() => {
+		errorNotification.complete();
+	});
 </script>
 
 {#if isOpen}
-	<div class="ms-modal" style={$$props.style} on:click={close}>
+	<div
+		class="ms-modal"
+		class:error={$error$}
+		style={$$props.style}
+		on:click|preventDefault={backdropClick}
+	>
 		<Window {title} on:close={() => close()}>
 			<slot />
 		</Window>
@@ -35,7 +65,15 @@
 		top: 0;
 		z-index: 900;
 
-		background-color: rgba(0, 0, 0, 0.37);
+		background-color: rgba(0, 0, 0, 0.05);
+
+		&.error {
+			:global(.ms-window) {
+				:global(.title-bar) {
+					filter: brightness(1.2);
+				}
+			}
+		}
 
 		:global(.ms-window) {
 			position: relative;

@@ -3,7 +3,7 @@
 	import type { CoordinateLike } from '../core';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
 	import type { TileState } from '../store/game.store';
-	import { ButtonType } from '../ui/button-type.enum';
+	import { ButtonLook } from '../ui/button-type.enum';
 
 	import Button from '../ui/button.svelte';
 
@@ -109,7 +109,7 @@
 		mousedown={tile.pressed && isEmptyTileMark(tile.mark)}
 		disabled={tile.disabled}
 		disableSelfInset={true}
-		type={ButtonType.THICK_PRESSED_THIN}
+		look={ButtonLook.THICK_PRESSED_THIN}
 		on:pointerdown={pointerdown}
 		on:click={click}
 		on:contextmenu={contextmenu}

@@ -1,21 +1,24 @@
 <script lang="ts">
-	import { ButtonType } from './button-type.enum';
+	import { ButtonLook } from './button-type.enum';
 	import Button from './button.svelte';
 
 	export let open = false;
 	export let title: string;
 	export let contextHasOpenDropdown: boolean = false;
+	export let hotkeyLetter: string | undefined = undefined;
 
 	function itemClick(event: MouseEvent) {
-		console.log(event);
-		if ((event.target as Element)?.nodeName === 'BUTTON') {
+		if (
+			(event.target as Element)?.nodeName !== 'HR' &&
+			(event.target as Element)?.nodeName !== 'DIV'
+		) {
 			open = false;
 		}
 	}
 </script>
 
 <Button
-	type={ButtonType.TITLE_BAR_MENU_ITEM}
+	look={ButtonLook.TITLE_BAR_MENU_ITEM}
 	on:hover={() => {
 		if (contextHasOpenDropdown) {
 			open = true;
@@ -25,15 +28,12 @@
 		open = true;
 		contextHasOpenDropdown = true;
 	}}
+	{hotkeyLetter}
 >
 	{title}
 </Button>
 {#if open}
-	<div
-		class="dropdown window"
-		on:mouseleave={() => (open = false)}
-		on:click={(e) => itemClick(e)}
-	>
+	<div class="dropdown window" on:mouseleave={() => (open = false)} on:click={itemClick}>
 		<slot />
 	</div>
 {/if}
