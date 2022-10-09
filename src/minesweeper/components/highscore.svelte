@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { highscoreEntries$ } from '../store/game.store';
+	import { highscoreEntries$ } from '../store';
 </script>
 
 <div class="header column-layout">

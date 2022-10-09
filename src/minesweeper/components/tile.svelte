@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { CoordinateLike } from '../core';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
-	import type { TileState } from '../store/game.store';
+	import type { TileState } from '../store';
 	import { ButtonLook } from '../ui/button-look.enum';
 
 	import Button from '../ui/button.svelte';
@@ -22,14 +22,21 @@
 	function pointerdown(event: PointerEvent) {
 		event.preventDefault();
 		const coord = asCoordinate(tile);
-		if (event.button === 0) {
+		if (event.button === 0 || (event.button === 1 && tile.revealed)) {
 			dispatch('leftclickDown', coord);
-		} else if (event.button === 1) {
-			dispatch('middleclickDown', coord);
 		} else if (event.button === 2) {
 			dispatch('rightclickDown', coord);
 		}
 		pressed = true;
+	}
+
+	function pointerup(event: PointerEvent) {
+		event.preventDefault();
+		const coord = asCoordinate(tile);
+		if (event.button === 1 && tile.revealed) {
+			dispatch('leftclickUp', coord);
+		}
+		pressed = false;
 	}
 
 	function mouseleave(_event: Event) {
@@ -97,6 +104,7 @@
 	<div
 		class="ms-tile {tileClass}"
 		on:pointerdown|preventDefault={pointerdown}
+		on:pointerup|preventDefault={pointerup}
 		on:click|preventDefault={click}
 		on:contextmenu|preventDefault={contextmenu}
 		on:mouseleave|preventDefault={mouseleave}
@@ -111,6 +119,7 @@
 		disableSelfInset={true}
 		look={ButtonLook.THICK_PRESSED_THIN}
 		on:pointerdown={pointerdown}
+		on:pointerup={pointerup}
 		on:click={click}
 		on:contextmenu={contextmenu}
 		on:mouseleave={mouseleave}

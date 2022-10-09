@@ -10,7 +10,7 @@ export interface RootState {
 export const PACKAGE_NAME_AND_VERSION = `${packageJson.displayName} (${packageJson.version})`;
 export const rootSlice$ = scope.createRootSlice<RootState>(
 	{
-		debug: false,
+		debug: true,
 	},
 	[]
 );

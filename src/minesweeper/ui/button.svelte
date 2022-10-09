@@ -21,8 +21,8 @@
 
 	function onMouseDown(e: MouseEvent): void {
 		dispatch('mousedown');
-		if (e.button === 0) {
-			if (!disableSelfInset) {
+		if (!disableSelfInset) {
+			if (e.button === 0 || e.button === 1) {
 				mousedown = true;
 			}
 		}
@@ -57,6 +57,7 @@
 	on:mouseup
 	on:mousedown={onMouseDown}
 	on:mouseenter
+	on:dblclick
 	on:mouseleave
 	on:contextmenu
 	on:pointerup
@@ -178,10 +179,5 @@
 		min-width: 1px !important;
 		min-height: 1px !important;
 		outline: none;
-	}
-
-	.type-context-menu-item:active,
-	.type-title-bar-menu-bar-item:active {
-		padding: 1px 11px 0px 13px;
 	}
 </style>

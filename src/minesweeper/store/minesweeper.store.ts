@@ -1,5 +1,4 @@
 import { entitySliceReducer, entitySliceReducerWithPrecompute } from '@tinyslice/core';
-import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -208,15 +207,6 @@ export const game$ = rootSlice$.addSlice<Game>('game', {
 	history: [],
 	presets: CLASSIC_GAME_PRESETS,
 });
-
-game$.addPlugin(
-	new TinySliceHydrationPlugin('tinysliceGameSlice', {
-		trimmer: (state) => {
-			// everything except presets
-			return { ...state, presets: CLASSIC_GAME_PRESETS };
-		},
-	})
-);
 
 export const inactive$ = game$.slice('inactive');
 

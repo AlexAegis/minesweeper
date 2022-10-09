@@ -1,9 +1,26 @@
 <script lang="ts">
 	import { interval, map, merge, of, startWith, Subject, switchMap, take } from 'rxjs';
 	import { onDestroy } from 'svelte';
+	import type { WindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
 	export let title: string;
+
+	export let windowState: WindowState = {
+		programId: -1,
+		active: true,
+		height: 400,
+		icon: undefined,
+		maximized: false,
+		resizable: true,
+		tight: true,
+		title,
+		x: 200,
+		y: 200,
+		width: 200,
+		program: undefined,
+	};
+
 	export let isOpen: boolean = false;
 
 	let errorNotification = new Subject<void>();
@@ -49,7 +66,7 @@
 		style={$$props.style}
 		on:click|preventDefault={backdropClick}
 	>
-		<Window {title} on:close={() => close()}>
+		<Window {windowState} on:close={() => close()}>
 			<slot />
 		</Window>
 	</div>

@@ -18,7 +18,7 @@
 		isGameSettingsAPreset$,
 		isGameSettingsNotAPreset$,
 		minesweeperActions,
-	} from '../store/game.store';
+	} from '../store';
 	import { debug$ } from '../store/root.store';
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Dropdown from '../ui/dropdown.svelte';

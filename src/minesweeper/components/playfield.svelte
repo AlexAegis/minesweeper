@@ -5,7 +5,7 @@
 		gameWidthArray$,
 		getGameTileState,
 		minesweeperActions,
-	} from '../store/game.store';
+	} from '../store';
 	import { debug$ } from '../store/root.store';
 	import Tile from './tile.svelte';
 </script>

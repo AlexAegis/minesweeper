@@ -1,22 +1,18 @@
 <script lang="ts">
-	import { displayName } from '../../package.json';
-	import Menu from './components/menu.svelte';
-	import Playfield from './components/playfield.svelte';
-	import Smiley from './components/smiley.svelte';
+	import Menu from './menu.svelte';
+	import Playfield from './playfield.svelte';
+	import Smiley from './smiley.svelte';
 
-	import { elapsedSeconds$, minesweeperActions, remainingMines$ } from './store/game.store';
-	import Panel from './ui/panel.svelte';
-	import SegmentDisplayPanel from './ui/segment-display-panel.svelte';
-	import Window from './ui/window.svelte';
+	import { elapsedSeconds$, minesweeperActions, remainingMines$ } from '../store';
+	import Panel from '../ui/panel.svelte';
+	import SegmentDisplayPanel from '../ui/segment-display-panel.svelte';
+	import type { WindowState } from '../ui/window-state.interface';
+	import Window from '../ui/window.svelte';
+
+	export let windowState: WindowState;
 </script>
 
-<Window
-	title={displayName}
-	icon="./assets/minesweeper/mine.png"
-	tight={true}
-	resizable={true}
-	class="minesweeper"
->
+<Window {windowState} class="minesweeper">
 	<Menu />
 	<div class="game">
 		<Panel class="game panel inset padded">
@@ -39,7 +35,7 @@
 		border-top-style: outset;
 		border-left-style: outset;
 
-		// the original does not have borders on the bottom and the right here
+		// These borders are not present on the XP version
 		border-right-style: outset;
 		border-bottom-style: outset;
 	}

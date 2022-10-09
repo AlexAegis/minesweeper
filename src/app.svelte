@@ -1,5 +1,12 @@
 <script lang="ts">
-	import Minesweeper from './minesweeper/minesweeper.svelte';
+	import { desktopActions, DesktopProgram } from './minesweeper/store/desktop.store';
+	import DesktopIcon from './minesweeper/ui/desktop-icon.svelte';
+	import Desktop from './minesweeper/ui/desktop.svelte';
 </script>
 
-<Minesweeper />
+<Desktop>
+	<DesktopIcon
+		title="Minesweeper"
+		on:dblclick={() => desktopActions.spawn.next(DesktopProgram.MINESWEEPER)}
+	/>
+</Desktop>

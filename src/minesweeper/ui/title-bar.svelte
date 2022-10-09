@@ -8,7 +8,7 @@
 
 	export let title: string;
 	export let icon: string | undefined = undefined;
-	export let inactive: boolean = false;
+	export let active: boolean = true;
 	export let maximized: boolean = false;
 	export let resizable: boolean = true;
 	let dragging: { x: number; y: number } | undefined;
@@ -79,7 +79,7 @@
 </script>
 
 <div class="title-bar" on:mousedown={startDrag} bind:this={titleBar} on:dblclick={maximize}>
-	<div aria-label="title" class="title-bar-text" class:inactive>
+	<div aria-label="title" class="title-bar-text" class:active>
 		{#if icon}
 			<Image class="ms-title-bar-icon" src={icon} alt={title} />
 		{/if}

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { smileyState$ } from '../store/game.store';
+	import { smileyState$ } from '../store';
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Button from '../ui/button.svelte';
 </script>
 
 <div class="ms-smiley {$smileyState$}">
-	<Button on:click aria-label="Restart" look={ButtonLook.THICK_PRESSED_THIN} />
+	<Button on:click aria-label="Restart" look={ButtonLook.THICK} />
 </div>
 
 <style lang="scss">
@@ -51,10 +51,6 @@
 
 			width: 100%;
 			height: 100%;
-
-			&.pressed {
-				background-position: 3px 3px;
-			}
 		}
 	}
 </style>

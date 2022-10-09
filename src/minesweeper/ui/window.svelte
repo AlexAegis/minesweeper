@@ -1,21 +1,14 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import TitleBar from './title-bar.svelte';
+	import type { WindowState } from './window-state.interface';
 
 	const dispatch = createEventDispatcher();
 
-	export let title: string;
-	export let icon: string | undefined = undefined;
-	export let inactive: boolean = false;
-	export let tight: boolean = false;
-	export let maximized: boolean = false;
-	export let resizable: boolean = true;
-	export let x: number = 122;
-	export let y: number = 202;
+	export let windowState: WindowState;
 
-	function drag(dragEvent: CustomEvent<{ x: number; y: number }>) {
-		x = dragEvent.detail.x;
-		y = dragEvent.detail.y;
+	function move(dragEvent: CustomEvent<{ x: number; y: number }>) {
+		dispatch('move', { x: dragEvent.detail.x, y: dragEvent.detail.y });
 	}
 
 	function minimize() {
@@ -23,12 +16,10 @@
 	}
 
 	function restore() {
-		maximized = false;
 		dispatch('restore');
 	}
 
 	function maximize() {
-		maximized = true;
 		dispatch('maximize');
 	}
 
@@ -37,20 +28,27 @@
 	}
 </script>
 
-<div class="ms-window window {$$props.class}" class:maximized style={`top: ${y}px; left: ${x}px`}>
+<div
+	class="ms-window window pid{windowState.programId} {$$props.class}"
+	class:maximized={windowState.maximized}
+	style:top={`${windowState.y}px`}
+	style:left={`${windowState.x}px`}
+	style:height={`${windowState.height}px`}
+	style:width={`${windowState.width}px`}
+>
 	<TitleBar
-		{title}
-		{icon}
-		{inactive}
-		{maximized}
-		{resizable}
+		title={windowState.title}
+		icon={windowState.icon}
+		active={windowState.active}
+		maximized={windowState.maximized}
+		resizable={windowState.resizable}
 		on:minimize={minimize}
 		on:restore={restore}
 		on:maximize={maximize}
 		on:close={close}
-		on:drag={drag}
+		on:drag={move}
 	/>
-	<div class="window-body" class:tight>
+	<div class="window-body" class:tight={windowState.tight}>
 		<slot />
 	</div>
 
@@ -67,14 +65,17 @@
 		box-sizing: border-box;
 
 		&.maximized {
-			height: 100%;
-			width: 100%;
+			height: 100% !important;
+			width: 100% !important;
 			top: 0 !important;
 			left: 0 !important;
 		}
 		&:not(.maximized) {
 			height: fit-content;
 			width: fit-content;
+
+			min-width: fit-content;
+			min-height: fit-content;
 		}
 
 		.tight {
