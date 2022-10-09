@@ -19,6 +19,25 @@
 	--tile-8-color: #808080;
 	--tile-9-color: #ffd22e;
 
+	--tile-debug-veil: linear-gradient(
+		rgba(var(--tile-grid-color-triplet), 0.8),
+		rgba(var(--tile-grid-color-triplet), 0.8)
+	);
+
+	--asset-smiley-click: url('../public/assets/minesweeper/smiley-click-small.png');
+	--asset-smiley-lost: url('../public/assets/minesweeper/smiley-lost-small.png');
+	--asset-smiley-ongoing: url('../public/assets/minesweeper/smiley-ongoing-small.png');
+	--asset-smiley-won: url('../public/assets/minesweeper/smiley-won-small.png');
+	--asset-flag: url('../public/assets/minesweeper/flag.png');
+	--asset-not-mine: url('../public/assets/minesweeper/not-mine.png');
+	--asset-question-mark: url('../public/assets/minesweeper/question-mark.png');
+	--asset-mine: url('../public/assets/minesweeper/mine.png');
+	--asset-checkmark: url('../public/assets/minesweeper/checkmark.png');
+
+	@for $i from 0 through 10 {
+		--asset-number-#{$i - 1}: url('../public/assets/minesweeper/#{$i - 1}.png');
+	}
+
 	// These dimensions were taken from the Windows XP SP3 version of Minesweeper
 	--game-area-border-width: 3px; // The outermost border, there is no right and bottom border
 	--game-area-padding: 6px; // the game area holds both the 7 segment displays and the tile grid
@@ -97,29 +116,21 @@ button.ms-tile {
 	&.flag {
 		&.revealed,
 		&:not(.debug):not(.wrong) {
-			background-image: url('./assets/minesweeper/flag.png');
+			background-image: var(--asset-flag);
 		}
 		&.debug:not(.revealed):not(.wrong) {
-			background-image: linear-gradient(
-					rgba(var(--tile-grid-color-triplet), 0.8),
-					rgba(var(--tile-grid-color-triplet), 0.8)
-				),
-				url('./assets/minesweeper/flag.png');
+			background-image: var(--tile-debug-veil), var(--asset-flag);
 		}
 
 		&.wrong {
 			&.revealed,
 			&:not(.debug) {
 				background-position: 1px 1px;
-				background-image: url('./assets/minesweeper/not-mine.png');
+				background-image: var(--asset-not-mine);
 			}
 			&.debug:not(.revealed) {
 				background-position: 1px 1px;
-				background-image: linear-gradient(
-						rgba(var(--tile-grid-color-triplet), 0.8),
-						rgba(var(--tile-grid-color-triplet), 0.8)
-					),
-					url('./assets/minesweeper/not-mine.png');
+				background-image: var(--tile-debug-veil), var(--asset-not-mine);
 			}
 		}
 	}
@@ -127,28 +138,20 @@ button.ms-tile {
 	&.question-mark {
 		&.revealed,
 		&:not(.debug) {
-			background-image: url('./assets/minesweeper/question-mark.png');
+			background-image: var(--asset-question-mark);
 		}
 		&.debug:not(.revealed) {
-			background-image: linear-gradient(
-					rgba(var(--tile-grid-color-triplet), 0.8),
-					rgba(var(--tile-grid-color-triplet), 0.8)
-				),
-				url('./assets/minesweeper/question-mark.png');
+			background-image: var(--tile-debug-veil), var(--asset-question-mark);
 		}
 	}
 
 	&.mine {
 		&.revealed,
 		&:not(.debug) {
-			background-image: url('./assets/minesweeper/mine.png');
+			background-image: var(--asset-mine);
 		}
 		&.debug:not(.revealed) {
-			background-image: linear-gradient(
-					rgba(var(--tile-grid-color-triplet), 0.8),
-					rgba(var(--tile-grid-color-triplet), 0.8)
-				),
-				url('./assets/minesweeper/mine.png');
+			background-image: var(--tile-debug-veil), var(--asset-mine);
 		}
 	}
 
@@ -162,14 +165,10 @@ button.ms-tile {
 
 			&.revealed,
 			&:not(.debug) {
-				background-image: url('./assets/minesweeper/#{$i - 1}.png');
+				background-image: var(--asset-number-#{$i - 1});
 			}
 			&.debug:not(.revealed) {
-				background-image: linear-gradient(
-						rgba(var(--tile-grid-color-triplet), 0.8),
-						rgba(var(--tile-grid-color-triplet), 0.8)
-					),
-					url('./assets/minesweeper/#{$i - 1}.png');
+				background-image: var(--tile-debug-veil), var(--asset-number-#{$i - 1});
 			}
 		}
 	}

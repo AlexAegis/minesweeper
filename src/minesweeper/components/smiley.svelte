@@ -2,34 +2,40 @@
 	import { smileyState$ } from '../store/game.store';
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Button from '../ui/button.svelte';
-	import Image from '../ui/image.svelte';
-
-	export const assetMap = {
-		clickSmiley: './assets/minesweeper/smiley-click-small.png',
-		lostSmiley: './assets/minesweeper/smiley-lost-small.png',
-		ongoingSmiley: './assets/minesweeper/smiley-ongoing-small.png',
-		wonSmiley: './assets/minesweeper/smiley-won-small.png',
-	};
-
-	$: src = assetMap[$smileyState$];
 </script>
 
-<div class="ms-smiley">
-	<Button on:click aria-label="Restart" look={ButtonLook.THICK} class="ms-smiley">
-		<Image style="width: 100%; height: 100%;" alt={src} bind:src />
-	</Button>
+<div class="ms-smiley {$smileyState$}">
+	<Button on:click aria-label="Restart" look={ButtonLook.THICK_PRESSED_THIN} />
 </div>
 
 <style lang="scss">
+	:global(.click).ms-smiley :global(button) {
+		background-image: var(--asset-smiley-click);
+	}
+
+	:global(.lost).ms-smiley :global(button) {
+		background-image: var(--asset-smiley-lost);
+	}
+
+	:global(.ongoing).ms-smiley :global(button) {
+		background-image: var(--asset-smiley-ongoing);
+	}
+
+	:global(.won).ms-smiley :global(button) {
+		background-image: var(--asset-smiley-won);
+	}
+
 	.ms-smiley {
-		width: 26px;
-		height: 26px;
+		width: 25px;
+		height: 25px;
 
 		background-color: var(--tile-border-color);
 
 		border-color: var(--tile-border-color);
 		border-style: solid;
 		border-width: 1px;
+
+		--background-image-positon: 2px;
 
 		:global(button) {
 			padding: 2px 1px 1px 2px;
@@ -38,13 +44,16 @@
 			height: 100%;
 
 			// seamless color
-			outline-color: var(--tile-border-color);
-			outline-style: solid;
-			outline-width: 1px;
-			outline-offset: 0px; // 98css sets this to -4px
+			outline-offset: 0px;
+			outline-color: var(--tile-border-color) !important;
+			outline-width: 1px !important;
+			outline-style: solid !important;
+
+			width: 100%;
+			height: 100%;
 
 			&.pressed {
-				padding: 2px 1px 1px 2px;
+				background-position: 3px 3px;
 			}
 		}
 	}

@@ -11,6 +11,7 @@
 	export let disableSelfInset = false;
 	export let hotkeyLetter: string | undefined = undefined;
 	export let toggled: boolean | undefined = undefined;
+	export let active: boolean | undefined = undefined;
 
 	let mouseUpListener: Subscription | undefined;
 
@@ -41,6 +42,8 @@
 	style={$$props.style}
 	disabled={$$props.disabled}
 	class:hotkey-letter={!!hotkeyLetter}
+	class:active
+	class:disableSelfInset
 	class:pressed={mousedown}
 	class:toggleable={toggled !== undefined}
 	class:toggleable-context={look === ButtonLook.CONTEXT_MENU_ITEM}
@@ -78,6 +81,17 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 
+		image-rendering: pixelated;
+		background-repeat: no-repeat;
+
+		background-position-x: var(--background-image-positon, 1px);
+		background-position-y: var(--background-image-positon, 1px);
+
+		&.pressed:not(.disableSelfInset) {
+			background-position-x: calc(var(--background-image-positon, 1px) + 1px);
+			background-position-y: calc(var(--background-image-positon, 1px) + 1px);
+		}
+
 		&.toggleable-context {
 			display: flex;
 			gap: 8px;
@@ -89,7 +103,8 @@
 			height: 7px;
 
 			&.checkmark {
-				background-image: url('assets/minesweeper/checkmark.png');
+				background-image: var(--asset-checkmark);
+				image-rendering: pixelated;
 				background-repeat: no-repeat;
 			}
 		}
@@ -113,15 +128,17 @@
 			height: 20px;
 			text-align: left;
 		}
-	}
 
-	.type-title-bar-menu-bar-item {
-		padding: 0px 12px 1px 12px;
-	}
+		&.type-title-bar-menu-bar-item {
+			padding: 2px 12px 4px 12px;
+		}
 
-	.type-context-menu-item:hover {
-		background-color: #000084;
-		color: white;
+		&.active,
+		&.type-title-bar-menu-bar-item:hover,
+		&.type-context-menu-item:hover {
+			background-color: #000084;
+			color: white;
+		}
 	}
 
 	.type-thick-but-pressed-thin,

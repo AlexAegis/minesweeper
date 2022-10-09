@@ -56,19 +56,19 @@ export enum SmileyState {
 	/**
 	 * Normally
 	 */
-	SMILING = 'ongoingSmiley',
+	SMILING = 'ongoing',
 	/**
 	 * While mousedown
 	 */
-	SURPRISED = 'clickSmiley',
+	SURPRISED = 'click',
 	/**
 	 * If won
 	 */
-	COOL = 'wonSmiley',
+	COOL = 'won',
 	/**
 	 * If lost...
 	 */
-	DEAD = 'lostSmiley',
+	DEAD = 'lost',
 }
 
 export interface TileState {

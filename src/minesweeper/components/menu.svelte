@@ -118,8 +118,6 @@
 		height: 16px;
 		display: flex;
 		height: max-content;
-		margin-bottom: 3px;
-		margin-top: 1px;
 
 		:global(button:first-letter) {
 			text-transform: uppercase;
