@@ -72,6 +72,9 @@
 		--high-angle-center: calc(100% - var(--low-angle-center));
 
 		span {
+			--unit-gap: 1px;
+			--inner-gap: calc(var(--unit-gap) * 3);
+
 			&:not(.on) {
 				--off-fg: rgba(255, 0, 0, 0.35);
 				--off-bg: rgba(255, 0, 0, 0.1);
@@ -89,34 +92,48 @@
 				justify-self: center;
 
 				&:not(.center) {
-					width: calc(var(--seven-segment-display-horizontal-bar-width) + 1px);
+					width: var(--seven-segment-display-digit-only-width);
 					height: var(--seven-segment-display-horizontal-bar-height);
 				}
 
 				&.center {
-					width: calc(var(--seven-segment-display-horizontal-center-bar-width) + 3px);
+					width: calc(var(--seven-segment-display-horizontal-center-bar-width) + 2px);
 					// height: var(--seven-segment-display-horizontal-bar-height);
 					height: calc(var(--seven-segment-display-horizontal-center-bar-height) + 0px);
+
 					clip-path: polygon(
-						var(--low-angle-center) 0,
-						var(--high-angle-center) 0,
-						93% 50%,
-						var(--high-angle-center) 100%,
-						var(--low-angle-center) 100%,
-						7% 50%
+						var(--unit-gap) 0%,
+						calc(100% - var(--unit-gap)) 0%,
+						calc(100%) var(--unit-gap),
+						calc(100%) calc(100% - var(--unit-gap)),
+						calc(100% - var(--unit-gap)) 100%,
+						calc(var(--unit-gap)) 100%,
+						0 calc(100% - var(--unit-gap)),
+						0 var(--unit-gap)
 					);
 
 					align-self: center;
 				}
 
+				&.top,
+				&.bottom {
+					clip-path: polygon(
+						var(--unit-gap) 0,
+						var(--unit-gap) var(--unit-gap),
+						var(--inner-gap) 100%,
+						calc(100% - var(--inner-gap)) 100%,
+						calc(100% - var(--unit-gap)) var(--unit-gap),
+						calc(100% - var(--unit-gap)) 0
+					);
+				}
+
 				&.top {
-					clip-path: polygon(0 0, 100% 0, var(--high-angle) 100%, var(--low-angle) 100%);
 					align-self: start;
 				}
 
 				&.bottom {
-					clip-path: polygon(var(--low-angle) 0, var(--high-angle) 0, 100% 100%, 0% 100%);
 					align-self: end;
+					transform: rotate(180deg);
 				}
 			}
 
@@ -124,16 +141,28 @@
 				align-self: center;
 
 				width: var(--seven-segment-display-vertical-bar-width);
-				height: calc(var(--seven-segment-display-vertical-bar-height) + 0px);
+				height: calc(var(--seven-segment-display-vertical-bar-height) + 2px);
+
+				&.left,
+				&.right {
+					justify-self: start;
+					clip-path: polygon(
+						0% var(--unit-gap),
+						25% var(--unit-gap),
+						92% var(--inner-gap),
+						92% calc(100% - var(--inner-gap)),
+						var(--unit-gap) calc(100% - var(--unit-gap)),
+						0% calc(100% - var(--unit-gap))
+					);
+				}
 
 				&.left {
-					clip-path: polygon(0 0, 100% var(--low-angle), 100% var(--high-angle), 0% 100%);
 					justify-self: start;
 				}
 
 				&.right {
-					clip-path: polygon(0 var(--low-angle), 100% 0, 100% 100%, 0 var(--high-angle));
 					justify-self: end;
+					transform: rotate(180deg);
 				}
 			}
 		}
