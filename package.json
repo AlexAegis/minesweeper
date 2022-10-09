@@ -24,7 +24,7 @@
 		"lint:es": "eslint --max-warnings=0 .",
 		"lint:svelte": "svelte-check --tsconfig ./tsconfig.json",
 		"lint:css": "stylelint --allow-empty-input ./**/*.css",
-		"lint:scss": "stylelint --allow-empty-input ./**/*.scss",
+		"lint:scss": "stylelint --customSyntax=postcss-scss --allow-empty-input ./**/*.scss",
 		"lint:md": "markdownlint --ignore 'CHANGELOG.md' --ignore-path '.gitignore' .",
 		"lint:rmd": "remark .",
 		"lint:format": "prettier --check .",
