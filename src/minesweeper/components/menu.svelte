@@ -34,13 +34,18 @@
 		<Button type={ButtonType.CONTEXT_MENU_ITEM} on:click={() => settingsModal.open()}>
 			Settings
 		</Button>
+		<Button type={ButtonType.TITLE_BAR_MENU_ITEM} on:click={() => highScoreModal.open()}>
+			highscore
+		</Button>
 	</Dropdown>
-	<Button type={ButtonType.TITLE_BAR_MENU_ITEM} on:click={() => highScoreModal.open()}>
-		highscore
-	</Button>
-	<Button type={ButtonType.TITLE_BAR_MENU_ITEM} on:click={() => window.open(homepage, '_blank')}>
-		github
-	</Button>
+	<Dropdown title={'Help'} bind:contextHasOpenDropdown>
+		<Button
+			type={ButtonType.CONTEXT_MENU_ITEM}
+			on:click={() => window.open(homepage, '_blank')}
+		>
+			github
+		</Button>
+	</Dropdown>
 </div>
 
 <Modal title="Settings" bind:this={settingsModal}>

@@ -1,4 +1,6 @@
 .minesweeper {
+	--unit: 1px;
+
 	--border-color-light-og: #fff;
 	--border-color-dark-og: #888;
 	--panel-border-color: #eee;
@@ -15,6 +17,27 @@
 	--tile-7-color: #000000;
 	--tile-8-color: #808080;
 	--tile-9-color: #ffd22e;
+
+	// These dimensions were taken from the Windows XP SP3 version of Minesweeper
+	--game-area-border-width: 3px; // The outermost border, there is no right and bottom border
+	--game-area-padding: 6px; // the game area holds both the 7 segment displays and the tile grid
+	// Smiley total size: 28px
+	--smiley-icon-size: 17px;
+	--smiley-outline-width: 1px;
+	--smiley-border-width: 3px;
+	--smiley-top-left-padding: 2px;
+	--smiley-bottom-right-padding: 1px;
+
+	--seven-segment-display-gap: 1px;
+	--seven-segment-display-vertical-bar-height: 9px;
+	--seven-segment-display-vertical-bar-width: 3px;
+	--seven-segment-display-horizontal-center-bar-height: 3px;
+	--seven-segment-display-horizontal-center-bar-width: 7px;
+	--seven-segment-display-horizontal-bar-height: 3px;
+	--seven-segment-display-horizontal-bar-width: 9px;
+	// the distance between the top of the top segment and the bottom of the bottom segment, no padding
+	--seven-segment-display-digit-only-height: 21px; // 2 vertical bars, 1px gaps at center, start and end.
+	--seven-segment-display-digit-only-width: 11px;
 }
 
 div.ms-tile {

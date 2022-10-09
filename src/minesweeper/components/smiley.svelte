@@ -35,6 +35,7 @@
 			outline-color: var(--tile-border-color);
 			outline-style: solid;
 			outline-width: 1px;
+			outline-offset: 0px; // 98css sets this to -4px
 
 			&.pressed {
 				padding: 2px 1px 1px 2px;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { padArray } from '../helper';
-	import DigitalNumber from '../ui/digital-number.svelte';
+	import SegmentDisplay from './seven-segment-display.svelte';
 
 	export let value: number | undefined;
 	export let paddedLength = 3;
@@ -22,16 +22,18 @@
 	}
 </script>
 
-<div class="panel inset">
+<div class="segment-display">
 	{#each numbers as number}
-		<DigitalNumber value={number} />
+		<SegmentDisplay value={number} />
 	{/each}
 </div>
 
 <style>
-	div {
+	.segment-display {
 		display: flex;
 		padding: 1px;
 		background-color: black;
+
+		border-style: inset;
 	}
 </style>
