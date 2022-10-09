@@ -80,7 +80,7 @@
 		border-left-style: solid;
 		border-top-style: solid;
 
-		border-color: #eee;
+		border-color: var(--panel-border-color);
 	}
 
 	.type-thick:active {
@@ -99,7 +99,7 @@
 	.type-thick-but-pressed-thin.pressed {
 		border-left-style: solid;
 		border-top-style: solid;
-		border-color: #a6a6a6;
+		border-color: var(--tile-border-color);
 		border-width: 1px;
 		background-position-x: 2px;
 		background-position-y: 2px;

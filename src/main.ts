@@ -1,5 +1,5 @@
 // import '../node_modules/98.css/style.css';
-import './app.css';
+import './app.scss';
 import App from './app.svelte';
 import './minesweeper.scss';
 

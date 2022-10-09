@@ -1,10 +1,30 @@
+.minesweeper {
+	--border-color-light-og: #fff;
+	--border-color-dark-og: #888;
+	--panel-border-color: #eee;
+	--tile-border-color: #a6a6a6;
+	--tile-grid-color: #c0c0c0; // 192
+
+	--tile-0-color: #a0a0a0;
+	--tile-1-color: #0000ff;
+	--tile-2-color: #008100;
+	--tile-3-color: #ff1300;
+	--tile-4-color: #000083;
+	--tile-5-color: #810500;
+	--tile-6-color: #2a9494;
+	--tile-7-color: #000000;
+	--tile-8-color: #808080;
+	--tile-9-color: #ffd22e;
+}
+
 div.ms-tile {
 	user-select: none;
 
 	border-left-style: solid;
 	border-top-style: solid;
 
-	border-color: #a6a6a6;
+	background-color: var(--tile-grid-color);
+	border-color: var(--tile-border-color);
 	border-width: 1px;
 	text-align: center;
 	font-size: 32px;
@@ -56,7 +76,10 @@ button.ms-tile {
 			background-image: url('assets/minesweeper/flag.png');
 		}
 		&.debug:not(.revealed):not(.wrong) {
-			background-image: linear-gradient(rgba(192, 192, 192, 0.8), rgba(192, 192, 192, 0.8)),
+			background-image: linear-gradient(
+					rgba(var(--tile-grid-color), 0.8),
+					rgba(var(--tile-grid-color), 0.8)
+				),
 				url('assets/minesweeper/flag.png');
 		}
 
@@ -69,8 +92,8 @@ button.ms-tile {
 			&.debug:not(.revealed) {
 				background-position: 1px 1px;
 				background-image: linear-gradient(
-						rgba(192, 192, 192, 0.8),
-						rgba(192, 192, 192, 0.8)
+						rgba(var(--tile-grid-color), 0.8),
+						rgba(var(--tile-grid-color), 0.8)
 					),
 					url('assets/minesweeper/not-mine.png');
 			}
@@ -83,7 +106,10 @@ button.ms-tile {
 			background-image: url('assets/minesweeper/question-mark.png');
 		}
 		&.debug:not(.revealed) {
-			background-image: linear-gradient(rgba(192, 192, 192, 0.8), rgba(192, 192, 192, 0.8)),
+			background-image: linear-gradient(
+					rgba(var(--tile-grid-color), 0.8),
+					rgba(var(--tile-grid-color), 0.8)
+				),
 				url('assets/minesweeper/question-mark.png');
 		}
 	}
@@ -94,13 +120,17 @@ button.ms-tile {
 			background-image: url('assets/minesweeper/mine.png');
 		}
 		&.debug:not(.revealed) {
-			background-image: linear-gradient(rgba(192, 192, 192, 0.8), rgba(192, 192, 192, 0.8)),
+			background-image: linear-gradient(
+					rgba(var(--tile-grid-color), 0.8),
+					rgba(var(--tile-grid-color), 0.8)
+				),
 				url('assets/minesweeper/mine.png');
 		}
 	}
 
-	$tile-colors: #a0a0a0, #0000ff, #008100, #ff1300, #000083, #810500, #2a9494, #000000, #808080,
-		#2a9494;
+	$tile-colors: var(--tile-0-color), var(--tile-1-color), var(--tile-2-color), var(--tile-3-color),
+		var(--tile-4-color), var(--tile-5-color), var(--tile-6-color), var(--tile-7-color),
+		var(--tile-8-color), var(--tile-9-color);
 
 	@for $i from 2 through 10 {
 		&-#{$i - 1} {
@@ -112,8 +142,8 @@ button.ms-tile {
 			}
 			&.debug:not(.revealed) {
 				background-image: linear-gradient(
-						rgba(192, 192, 192, 0.8),
-						rgba(192, 192, 192, 0.8)
+						rgba(var(--tile-grid-color), 0.8),
+						rgba(var(--tile-grid-color), 0.8)
 					),
 					url('assets/minesweeper/#{$i - 1}.png');
 			}

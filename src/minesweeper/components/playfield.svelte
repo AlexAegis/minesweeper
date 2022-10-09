@@ -10,7 +10,7 @@
 	import Tile from './tile.svelte';
 </script>
 
-<div class={$$props.class} style={$$props.style}>
+<div class="playfield {$$props.class}" style={$$props.style}>
 	{#each $gameHeightArray$ as y}
 		{#each $gameWidthArray$ as x}
 			<Observer observable={getGameTileState(x, y)} let:next>
@@ -31,11 +31,13 @@
 	{/each}
 </div>
 
-<style>
-	div {
+<style lang="scss">
+	.playfield {
 		display: grid;
 		width: fit-content;
 		height: fit-content;
 		margin: auto;
+
+		background-color: #a6a6a6; // same as border color to avoid color bleed
 	}
 </style>
