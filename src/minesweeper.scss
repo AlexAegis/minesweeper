@@ -97,21 +97,21 @@ button.ms-tile {
 	&.flag {
 		&.revealed,
 		&:not(.debug):not(.wrong) {
-			background-image: url('assets/minesweeper/flag.png');
+			background-image: url('./assets/minesweeper/flag.png');
 		}
 		&.debug:not(.revealed):not(.wrong) {
 			background-image: linear-gradient(
 					rgba(var(--tile-grid-color-triplet), 0.8),
 					rgba(var(--tile-grid-color-triplet), 0.8)
 				),
-				url('assets/minesweeper/flag.png');
+				url('./assets/minesweeper/flag.png');
 		}
 
 		&.wrong {
 			&.revealed,
 			&:not(.debug) {
 				background-position: 1px 1px;
-				background-image: url('assets/minesweeper/not-mine.png');
+				background-image: url('./assets/minesweeper/not-mine.png');
 			}
 			&.debug:not(.revealed) {
 				background-position: 1px 1px;
@@ -119,7 +119,7 @@ button.ms-tile {
 						rgba(var(--tile-grid-color-triplet), 0.8),
 						rgba(var(--tile-grid-color-triplet), 0.8)
 					),
-					url('assets/minesweeper/not-mine.png');
+					url('./assets/minesweeper/not-mine.png');
 			}
 		}
 	}
@@ -127,28 +127,28 @@ button.ms-tile {
 	&.question-mark {
 		&.revealed,
 		&:not(.debug) {
-			background-image: url('assets/minesweeper/question-mark.png');
+			background-image: url('./assets/minesweeper/question-mark.png');
 		}
 		&.debug:not(.revealed) {
 			background-image: linear-gradient(
 					rgba(var(--tile-grid-color-triplet), 0.8),
 					rgba(var(--tile-grid-color-triplet), 0.8)
 				),
-				url('assets/minesweeper/question-mark.png');
+				url('./assets/minesweeper/question-mark.png');
 		}
 	}
 
 	&.mine {
 		&.revealed,
 		&:not(.debug) {
-			background-image: url('assets/minesweeper/mine.png');
+			background-image: url('./assets/minesweeper/mine.png');
 		}
 		&.debug:not(.revealed) {
 			background-image: linear-gradient(
 					rgba(var(--tile-grid-color-triplet), 0.8),
 					rgba(var(--tile-grid-color-triplet), 0.8)
 				),
-				url('assets/minesweeper/mine.png');
+				url('./assets/minesweeper/mine.png');
 		}
 	}
 
@@ -162,14 +162,14 @@ button.ms-tile {
 
 			&.revealed,
 			&:not(.debug) {
-				background-image: url('assets/minesweeper/#{$i - 1}.png');
+				background-image: url('./assets/minesweeper/#{$i - 1}.png');
 			}
 			&.debug:not(.revealed) {
 				background-image: linear-gradient(
 						rgba(var(--tile-grid-color-triplet), 0.8),
 						rgba(var(--tile-grid-color-triplet), 0.8)
 					),
-					url('assets/minesweeper/#{$i - 1}.png');
+					url('./assets/minesweeper/#{$i - 1}.png');
 			}
 		}
 	}

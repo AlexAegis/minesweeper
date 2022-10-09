@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fromEvent, Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { ButtonLook } from './button-type.enum';
+	import { ButtonLook } from './button-look.enum';
 
 	const dispatch = createEventDispatcher();
 	export let mousedown = false;
@@ -11,7 +11,6 @@
 	export let disableSelfInset = false;
 	export let hotkeyLetter: string | undefined = undefined;
 	export let toggled: boolean | undefined = undefined;
-	export let contextHasToggleable: boolean = false;
 
 	let mouseUpListener: Subscription | undefined;
 
@@ -44,7 +43,7 @@
 	class:hotkey-letter={!!hotkeyLetter}
 	class:pressed={mousedown}
 	class:toggleable={toggled !== undefined}
-	class:toggleable-context={contextHasToggleable}
+	class:toggleable-context={look === ButtonLook.CONTEXT_MENU_ITEM}
 	class:type-none={look === undefined}
 	class:type-any={look !== undefined}
 	class:type-thick={look === ButtonLook.THICK}
@@ -63,7 +62,7 @@
 	on:pointerout
 	on:pointerenter
 >
-	{#if contextHasToggleable}
+	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
 		<span class="icon" class:checkmark={toggled} />
 		<span>
 			<slot />
@@ -76,6 +75,8 @@
 <style lang="scss">
 	button {
 		font-size: 18px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 
 		&.toggleable-context {
 			display: flex;
@@ -108,10 +109,14 @@
 		}
 
 		&.type-context-menu-item {
-			width: 130px;
-			height: 19px;
+			width: 100%;
+			height: 20px;
 			text-align: left;
 		}
+	}
+
+	.type-title-bar-menu-bar-item {
+		padding: 0px 12px 1px 12px;
 	}
 
 	.type-context-menu-item:hover {
@@ -156,10 +161,6 @@
 		min-width: 1px !important;
 		min-height: 1px !important;
 		outline: none;
-	}
-
-	.type-title-bar-menu-bar-item {
-		padding: 0px 12px 1px 12px;
 	}
 
 	.type-context-menu-item:active,

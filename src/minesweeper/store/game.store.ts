@@ -18,7 +18,6 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
-import { isTheSamePreset, type GamePreset, type WinData } from '../consts/game-presets.conts';
 import {
 	Coordinate,
 	getNextTileMark,
@@ -29,6 +28,7 @@ import {
 	type CoordinateKey,
 	type CoordinateLike,
 } from '../core';
+import { isTheSamePreset, type GamePreset, type WinData } from '../core/game-preset.interface';
 import {
 	GameState,
 	isGameLost,

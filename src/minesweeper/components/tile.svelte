@@ -3,7 +3,7 @@
 	import type { CoordinateLike } from '../core';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
 	import type { TileState } from '../store/game.store';
-	import { ButtonLook } from '../ui/button-type.enum';
+	import { ButtonLook } from '../ui/button-look.enum';
 
 	import Button from '../ui/button.svelte';
 
@@ -96,10 +96,10 @@
 {#if tile.revealed}
 	<div
 		class="ms-tile {tileClass}"
-		on:pointerdown={pointerdown}
-		on:click={click}
-		on:contextmenu={contextmenu}
-		on:mouseleave={mouseleave}
+		on:pointerdown|preventDefault={pointerdown}
+		on:click|preventDefault={click}
+		on:contextmenu|preventDefault={contextmenu}
+		on:mouseleave|preventDefault={mouseleave}
 		style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 		aria-label={tile.value.toString()}
 	/>

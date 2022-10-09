@@ -11,7 +11,7 @@
 
 	import { map } from 'rxjs';
 	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
-	import type { GamePreset } from '../consts/game-presets.conts';
+	import type { GamePreset } from '../core';
 	import {
 		CLASSIC_GAME_PRESETS,
 		gameSettings$,
@@ -20,12 +20,12 @@
 		minesweeperActions,
 	} from '../store/game.store';
 	import { debug$ } from '../store/root.store';
-	import { ButtonLook } from '../ui/button-type.enum';
+	import { ButtonLook } from '../ui/button-look.enum';
 	import Dropdown from '../ui/dropdown.svelte';
 
 	const preset$ = gameSettings$.pipe(map((settings) => ({ ...settings })));
 
-	let contextHasOpenDropdown = false;
+	let active: string | undefined;
 
 	function settingsOkListener(event: CustomEvent<GamePreset>): void {
 		minesweeperActions.resetGame.next(event.detail);
@@ -34,7 +34,7 @@
 </script>
 
 <div class="ms-menu">
-	<Dropdown title="Game" hotkeyLetter={'G'} bind:contextHasOpenDropdown>
+	<Dropdown title="Game" hotkeyLetter={'G'} bind:active>
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
 			on:click={() => minesweeperActions.resetGame.next()}
@@ -89,14 +89,15 @@
 			</Button>
 		</Observer>
 	</Dropdown>
-	<Dropdown title={'Help'} hotkeyLetter={'H'} bind:contextHasOpenDropdown>
+	<Dropdown title={'Help'} hotkeyLetter={'H'} bind:active>
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
 			on:click={() => window.open(homepage, '_blank')}
-			contextHasToggleable={true}
 		>
-			github
+			Github
 		</Button>
+		<hr />
+		<Button look={ButtonLook.CONTEXT_MENU_ITEM}>About Minesweeper...</Button>
 	</Dropdown>
 </div>
 

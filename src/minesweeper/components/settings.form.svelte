@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { GamePreset } from '../consts/game-presets.conts';
+	import type { GamePreset } from '../core';
 	import { presets$ } from '../store/game.store';
 	import Button from '../ui/button.svelte';
 

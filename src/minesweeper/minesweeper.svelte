@@ -3,14 +3,20 @@
 	import Menu from './components/menu.svelte';
 	import Playfield from './components/playfield.svelte';
 	import Smiley from './components/smiley.svelte';
-	import { assetMap } from './consts/asset-urls.const';
+
 	import { elapsedSeconds$, minesweeperActions, remainingMines$ } from './store/game.store';
 	import Panel from './ui/panel.svelte';
 	import SegmentDisplayPanel from './ui/segment-display-panel.svelte';
 	import Window from './ui/window.svelte';
 </script>
 
-<Window title={displayName} icon={assetMap.mine} tight={true} resizable={true} class="minesweeper">
+<Window
+	title={displayName}
+	icon="./assets/minesweeper/mine.png"
+	tight={true}
+	resizable={true}
+	class="minesweeper"
+>
 	<Menu />
 	<div class="game">
 		<Panel class="game panel inset padded">

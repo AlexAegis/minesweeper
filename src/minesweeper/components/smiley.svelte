@@ -1,9 +1,15 @@
 <script lang="ts">
-	import { assetMap } from '../consts/asset-urls.const';
 	import { smileyState$ } from '../store/game.store';
-	import { ButtonLook } from '../ui/button-type.enum';
+	import { ButtonLook } from '../ui/button-look.enum';
 	import Button from '../ui/button.svelte';
 	import Image from '../ui/image.svelte';
+
+	export const assetMap = {
+		clickSmiley: './assets/minesweeper/smiley-click-small.png',
+		lostSmiley: './assets/minesweeper/smiley-lost-small.png',
+		ongoingSmiley: './assets/minesweeper/smiley-ongoing-small.png',
+		wonSmiley: './assets/minesweeper/smiley-won-small.png',
+	};
 
 	$: src = assetMap[$smileyState$];
 </script>
