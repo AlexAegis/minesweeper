@@ -84,7 +84,7 @@
 	}
 
 	.type-thick:active {
-		padding: 4px 2px 2px 4px;
+		padding: 2px 1px 1px 2px;
 	}
 
 	.type-thick-but-pressed-thin:not(.pressed),
