@@ -2,7 +2,7 @@
 	"name": "svelte-minesweeper",
 	"displayName": "Minesweeper",
 	"description": "Minesweeper Clone powered by Svelte and TinySlice",
-	"version": "2.1.0",
+	"version": "3.0.0",
 	"license": "mit",
 	"private": true,
 	"author": {

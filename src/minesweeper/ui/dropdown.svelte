@@ -16,7 +16,6 @@
 		.subscribe(() => (active = undefined));
 
 	function itemClick(event: MouseEvent) {
-		console.log('(event.target as Element)?.nodeName', (event.target as Element)?.nodeName);
 		if (
 			(event.target as Element)?.nodeName !== 'HR' &&
 			(event.target as Element)?.nodeName !== 'DIV'

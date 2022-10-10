@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { highscoreEntries$ } from '../store';
+	import type { Observable } from 'rxjs';
+	import type { HighscoreEntry } from '../store';
+
+	export let highscoreEntries$: Observable<HighscoreEntry[]>;
 </script>
 
 <div class="header column-layout">

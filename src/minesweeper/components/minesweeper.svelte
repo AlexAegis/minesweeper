@@ -1,28 +1,42 @@
 <script lang="ts">
+	import { Observer } from 'svelte-rxjs-observer';
+	import { minesweeperActions, type MinesweeperGame } from '../store';
+	import Panel from '../ui/panel.svelte';
+	import SegmentDisplayPanel from '../ui/segment-display-panel.svelte';
 	import Menu from './menu.svelte';
 	import Playfield from './playfield.svelte';
 	import Smiley from './smiley.svelte';
 
-	import { elapsedSeconds$, minesweeperActions, remainingMines$ } from '../store';
-	import Panel from '../ui/panel.svelte';
-	import SegmentDisplayPanel from '../ui/segment-display-panel.svelte';
-	import type { WindowState } from '../ui/window-state.interface';
-	import Window from '../ui/window.svelte';
-
-	export let windowState: WindowState;
+	export let internals: MinesweeperGame;
 </script>
 
-<Window {windowState} class="minesweeper">
-	<Menu />
-	<div class="game">
-		<Panel class="game panel inset padded">
-			<SegmentDisplayPanel value={$remainingMines$} paddedLength={3} />
-			<Smiley on:click={() => minesweeperActions.resetGame.next()} />
-			<SegmentDisplayPanel value={$elapsedSeconds$} paddedLength={3} />
-		</Panel>
-		<Playfield class="panel inset" />
-	</div>
-</Window>
+<Menu
+	gameSettings$={internals.gameSettings$}
+	isGameSettingsAPreset$={internals.isGameSettingsAPreset$}
+	isGameSettingsNotAPreset$={internals.isGameSettingsNotAPreset$}
+	highscoreEntries$={internals.highscoreEntries$}
+	presets$={internals.presets$}
+/>
+<div class="game">
+	<Panel class="game panel inset padded">
+		<Observer observable={internals.remainingMines$} let:next>
+			<SegmentDisplayPanel value={next} paddedLength={3} />
+		</Observer>
+		<Observer observable={internals.smileyState$} let:next>
+			<Smiley on:click={() => minesweeperActions.resetGame.next()} smileyState={next} />
+		</Observer>
+		<Observer observable={internals.elapsedSeconds$} let:next>
+			<SegmentDisplayPanel value={next} paddedLength={3} />
+		</Observer>
+	</Panel>
+
+	<Playfield
+		class="panel inset"
+		gameHeightArray$={internals.gameHeightArray$}
+		gameWidthArray$={internals.gameWidthArray$}
+		getGameTileState={internals.getGameTileState}
+	/>
+</div>
 
 <style lang="scss">
 	.game {

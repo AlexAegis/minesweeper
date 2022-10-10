@@ -113,19 +113,22 @@
 	</div>
 </div>
 
-<style>
+<style lang="scss">
+	// 98.css
 	.title-bar {
 		user-select: none;
-	}
 
-	:global(.ms-title-bar-icon) {
-		filter: drop-shadow(0px 0px 8px rgba(180, 180, 255, 0.8));
-		max-height: 13px;
-	}
+		// 98.css
+		.title-bar-text {
+			display: flex;
+			gap: 2px;
+			align-items: center;
+			text-transform: capitalize;
+		}
 
-	.title-bar-text {
-		display: flex;
-		gap: 2px;
-		align-items: center;
+		:global(.ms-title-bar-icon) {
+			filter: drop-shadow(0px 0px 8px rgba(180, 180, 255, 0.8));
+			max-height: 13px;
+		}
 	}
 </style>

@@ -1,11 +1,13 @@
 <script lang="ts">
+	import type { Observable } from 'rxjs';
 	import { createEventDispatcher } from 'svelte';
 	import type { GamePreset } from '../core';
-	import { presets$ } from '../store';
+
 	import Button from '../ui/button.svelte';
 
 	const dispatch = createEventDispatcher();
 
+	export let presets$: Observable<Record<string, GamePreset>>;
 	export let preset: GamePreset;
 
 	function ok() {

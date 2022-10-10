@@ -9,19 +9,19 @@
 	let customGameModal: Modal;
 	let highScoreModal: Modal;
 
-	import { map } from 'rxjs';
+	import { map, Observable } from 'rxjs';
 	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
 	import type { GamePreset } from '../core';
-	import {
-		CLASSIC_GAME_PRESETS,
-		gameSettings$,
-		isGameSettingsAPreset$,
-		isGameSettingsNotAPreset$,
-		minesweeperActions,
-	} from '../store';
+	import { CLASSIC_GAME_PRESETS, minesweeperActions, type HighscoreEntry } from '../store';
 	import { debug$ } from '../store/root.store';
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Dropdown from '../ui/dropdown.svelte';
+
+	export let gameSettings$: Observable<GamePreset>;
+	export let isGameSettingsAPreset$: (preset: GamePreset) => Observable<boolean>;
+	export let isGameSettingsNotAPreset$: Observable<boolean>;
+	export let presets$: Observable<Record<string, GamePreset>>;
+	export let highscoreEntries$: Observable<HighscoreEntry[]>;
 
 	const preset$ = gameSettings$.pipe(map((settings) => ({ ...settings })));
 
@@ -103,6 +103,7 @@
 
 <Modal title="Custom Field" bind:this={customGameModal}>
 	<Settings
+		{presets$}
 		preset={$preset$}
 		on:ok={settingsOkListener}
 		on:cancel={() => customGameModal.close()}
@@ -110,7 +111,7 @@
 </Modal>
 
 <Modal title="Highscore" bind:this={highScoreModal}>
-	<Highscore />
+	<Highscore {highscoreEntries$} />
 </Modal>
 
 <style lang="scss">

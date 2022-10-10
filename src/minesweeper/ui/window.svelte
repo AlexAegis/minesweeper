@@ -1,14 +1,26 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import TitleBar from './title-bar.svelte';
-	import type { WindowState } from './window-state.interface';
+	import { initialWindowState, type WindowState } from './window-state.interface';
 
 	const dispatch = createEventDispatcher();
 
-	export let windowState: WindowState;
+	export let windowState: Partial<WindowState> | undefined = undefined;
+
+	export let transient: boolean = false;
+
+	$: transientState = {
+		...initialWindowState,
+		...windowState,
+	};
 
 	function move(dragEvent: CustomEvent<{ x: number; y: number }>) {
 		dispatch('move', { x: dragEvent.detail.x, y: dragEvent.detail.y });
+		console.log('move', transient, transientState, dragEvent.detail);
+		if (transient) {
+			transientState.x = dragEvent.detail.x;
+			transientState.y = dragEvent.detail.y;
+		}
 	}
 
 	function minimize() {
@@ -17,10 +29,16 @@
 
 	function restore() {
 		dispatch('restore');
+		if (transient) {
+			transientState.maximized = false;
+		}
 	}
 
 	function maximize() {
 		dispatch('maximize');
+		if (transient) {
+			transientState.maximized = true;
+		}
 	}
 
 	function close() {
@@ -29,26 +47,27 @@
 </script>
 
 <div
-	class="ms-window window pid{windowState.programId} {$$props.class}"
-	class:maximized={windowState.maximized}
-	style:top={`${windowState.y}px`}
-	style:left={`${windowState.x}px`}
-	style:height={`${windowState.height}px`}
-	style:width={`${windowState.width}px`}
+	class="ms-window window pid{transientState.programId} {transientState.program} {$$props.class ??
+		''}"
+	class:maximized={transientState.maximized}
+	style:top={`${transientState.y}px`}
+	style:left={`${transientState.x}px`}
+	style:height={`${transientState.height}px`}
+	style:width={`${transientState.width}px`}
 >
 	<TitleBar
-		title={windowState.title}
-		icon={windowState.icon}
-		active={windowState.active}
-		maximized={windowState.maximized}
-		resizable={windowState.resizable}
+		title={transientState.title}
+		icon={transientState.icon}
+		active={transientState.active}
+		maximized={transientState.maximized}
+		resizable={transientState.resizable}
 		on:minimize={minimize}
 		on:restore={restore}
 		on:maximize={maximize}
 		on:close={close}
 		on:drag={move}
 	/>
-	<div class="window-body" class:tight={windowState.tight}>
+	<div class="window-body" class:tight={transientState.tight}>
 		<slot />
 	</div>
 
@@ -71,6 +90,8 @@
 			left: 0 !important;
 		}
 		&:not(.maximized) {
+			display: table-cell;
+
 			height: fit-content;
 			width: fit-content;
 

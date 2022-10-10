@@ -37,7 +37,7 @@
 
 <button
 	{type}
-	class="ms-button {$$props.class}"
+	class="ms-button {$$props.class ?? ''}"
 	aria-label={$$props['aria-label']}
 	style={$$props.style}
 	disabled={$$props.disabled}

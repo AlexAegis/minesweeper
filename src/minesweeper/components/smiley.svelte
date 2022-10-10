@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { smileyState$ } from '../store';
+	import type { SmileyState } from '../store';
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Button from '../ui/button.svelte';
+
+	export let smileyState: SmileyState;
 </script>
 
-<div class="ms-smiley {$smileyState$}">
+<div class="ms-smiley {smileyState}">
 	<Button on:click aria-label="Restart" look={ButtonLook.THICK} />
 </div>
 

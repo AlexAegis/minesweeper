@@ -6,19 +6,13 @@
 
 	export let title: string;
 
-	export let windowState: WindowState = {
-		programId: -1,
-		active: true,
+	let windowState: Partial<WindowState> = {
 		height: 400,
 		icon: undefined,
 		maximized: false,
 		resizable: true,
 		tight: true,
 		title,
-		x: 200,
-		y: 200,
-		width: 200,
-		program: undefined,
 	};
 
 	export let isOpen: boolean = false;
@@ -66,7 +60,7 @@
 		style={$$props.style}
 		on:click|preventDefault={backdropClick}
 	>
-		<Window {windowState} on:close={() => close()}>
+		<Window {windowState} transient={true} on:close={() => close()}>
 			<slot />
 		</Window>
 	</div>

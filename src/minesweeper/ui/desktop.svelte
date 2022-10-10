@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
-	import { desktopActions, programIds$, windowState } from '../store';
+	import Minesweeper from '../components/minesweeper.svelte';
+	import { desktopActions, DesktopProgram, programIds$, windowWithInternals } from '../store';
 	import Window from './window.svelte';
 </script>
 
@@ -9,15 +10,20 @@
 		<slot />
 
 		{#each $programIds$ as programId}
-			<Observer observable={windowState(programId)} let:next>
+			{@const windowWithInternals$ = windowWithInternals(programId)}
+			<Observer observable={windowWithInternals$} let:next>
 				<Window
-					windowState={next}
+					windowState={next.window}
 					on:maximize={() => desktopActions.maximize.next(programId)}
 					on:minimize={() => desktopActions.minimize.next(programId)}
 					on:restore={() => desktopActions.restore.next(programId)}
 					on:close={() => desktopActions.close.next(programId)}
 					on:move={(event) => desktopActions.move.next({ programId, to: event.detail })}
-				/>
+				>
+					{#if next.window.program === DesktopProgram.MINESWEEPER}
+						<Minesweeper internals={next.internals} />
+					{/if}
+				</Window>
 			</Observer>
 		{/each}
 	</div>
