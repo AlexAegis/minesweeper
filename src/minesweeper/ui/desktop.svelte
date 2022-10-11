@@ -1,27 +1,31 @@
 <script lang="ts">
-	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
+	import { Observer } from 'svelte-rxjs-observer';
 	import Minesweeper from '../components/minesweeper.svelte';
-	import { desktopActions, DesktopProgram, programIds$, windowWithInternals } from '../store';
+	import { DesktopProgram, dicedWindows } from '../store';
 	import Window from './window.svelte';
+
+	let sliceKeys$ = dicedWindows.sliceKeys$;
 </script>
 
 <div class="desktop">
 	<div class="workspace">
 		<slot />
 
-		{#each $programIds$ as programId}
-			{@const windowWithInternals$ = windowWithInternals(programId)}
-			<Observer observable={windowWithInternals$} let:next>
+		{#each $sliceKeys$ as windowId (windowId)}
+			{@const windowSlice$ = dicedWindows.get(windowId)}
+
+			<Observer observable={windowSlice$} let:next>
 				<Window
-					windowState={next.window}
-					on:maximize={() => desktopActions.maximize.next(programId)}
-					on:minimize={() => desktopActions.minimize.next(programId)}
-					on:restore={() => desktopActions.restore.next(programId)}
-					on:close={() => desktopActions.close.next(programId)}
-					on:move={(event) => desktopActions.move.next({ programId, to: event.detail })}
+					windowState={next}
+					on:maximize={() => windowSlice$.internals.windowActions.maximize.next(windowId)}
+					on:minimize={() => windowSlice$.internals.windowActions.minimize.next(windowId)}
+					on:restore={() => windowSlice$.internals.windowActions.restore.next(windowId)}
+					on:close={() => dicedWindows.remove(windowId)}
+					on:move={(event) =>
+						windowSlice$.internals.windowActions.move.next(event.detail)}
 				>
-					{#if next.window.program === DesktopProgram.MINESWEEPER}
-						<Minesweeper internals={next.internals} />
+					{#if next.program === DesktopProgram.MINESWEEPER && windowSlice$.internals.minesweeperGame}
+						<Minesweeper internals={windowSlice$.internals.minesweeperGame} />
 					{/if}
 				</Window>
 			</Observer>

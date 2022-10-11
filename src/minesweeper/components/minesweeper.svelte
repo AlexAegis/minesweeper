@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
-	import { minesweeperActions, type MinesweeperGame } from '../store';
+	import type { MinesweeperGame } from '../store';
 	import Panel from '../ui/panel.svelte';
 	import SegmentDisplayPanel from '../ui/segment-display-panel.svelte';
 	import Menu from './menu.svelte';
@@ -10,20 +10,17 @@
 	export let internals: MinesweeperGame;
 </script>
 
-<Menu
-	gameSettings$={internals.gameSettings$}
-	isGameSettingsAPreset$={internals.isGameSettingsAPreset$}
-	isGameSettingsNotAPreset$={internals.isGameSettingsNotAPreset$}
-	highscoreEntries$={internals.highscoreEntries$}
-	presets$={internals.presets$}
-/>
+<Menu {internals} />
 <div class="game">
 	<Panel class="game panel inset padded">
 		<Observer observable={internals.remainingMines$} let:next>
 			<SegmentDisplayPanel value={next} paddedLength={3} />
 		</Observer>
 		<Observer observable={internals.smileyState$} let:next>
-			<Smiley on:click={() => minesweeperActions.resetGame.next()} smileyState={next} />
+			<Smiley
+				on:click={() => internals.minesweeperActions.resetGame.next()}
+				smileyState={next}
+			/>
 		</Observer>
 		<Observer observable={internals.elapsedSeconds$} let:next>
 			<SegmentDisplayPanel value={next} paddedLength={3} />
@@ -35,6 +32,14 @@
 		gameHeightArray$={internals.gameHeightArray$}
 		gameWidthArray$={internals.gameWidthArray$}
 		getGameTileState={internals.getGameTileState}
+		on:leftclickDown={(event) =>
+			internals.minesweeperActions.clickActions.leftclickDown.next(event.detail)}
+		on:leftclickUp={(event) =>
+			internals.minesweeperActions.clickActions.leftclickUp.next(event.detail)}
+		on:rightclickUp={(event) =>
+			internals.minesweeperActions.clickActions.rightclickUp.next(event.detail)}
+		on:mouseleave={(event) =>
+			internals.minesweeperActions.clickActions.cancelClick.next(event.detail)}
 	/>
 </div>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Observable } from 'rxjs';
 	import { Observer } from 'svelte-rxjs-observer';
-	import { minesweeperActions, type TileState } from '../store';
+	import type { TileState } from '../store';
 	import { debug$ } from '../store/root.store';
 	import Tile from './tile.svelte';
 
@@ -17,14 +17,10 @@
 				<Tile
 					debug={$debug$}
 					tile={next}
-					on:leftclickDown={(event) =>
-						minesweeperActions.clickActions.leftclickDown.next(event.detail)}
-					on:leftclickUp={(event) =>
-						minesweeperActions.clickActions.leftclickUp.next(event.detail)}
-					on:rightclickUp={(event) =>
-						minesweeperActions.clickActions.rightclickUp.next(event.detail)}
-					on:mouseleave={(event) =>
-						minesweeperActions.clickActions.cancelClick.next(event.detail)}
+					on:leftclickDown
+					on:leftclickUp
+					on:rightclickUp
+					on:mouseleave
 				/>
 			</Observer>
 		{/each}

@@ -9,26 +9,25 @@
 	let customGameModal: Modal;
 	let highScoreModal: Modal;
 
-	import { map, Observable } from 'rxjs';
+	import { map } from 'rxjs';
 	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
 	import type { GamePreset } from '../core';
-	import { CLASSIC_GAME_PRESETS, minesweeperActions, type HighscoreEntry } from '../store';
+	import { CLASSIC_GAME_PRESETS, type MinesweeperGame } from '../store';
 	import { debug$ } from '../store/root.store';
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Dropdown from '../ui/dropdown.svelte';
 
-	export let gameSettings$: Observable<GamePreset>;
-	export let isGameSettingsAPreset$: (preset: GamePreset) => Observable<boolean>;
-	export let isGameSettingsNotAPreset$: Observable<boolean>;
-	export let presets$: Observable<Record<string, GamePreset>>;
-	export let highscoreEntries$: Observable<HighscoreEntry[]>;
+	export let internals: MinesweeperGame;
 
-	const preset$ = gameSettings$.pipe(map((settings) => ({ ...settings })));
+	$: preset$ = internals.gameSettings$.pipe(map((settings) => ({ ...settings })));
+	$: isGameSettingsNotAPreset$ = internals.isGameSettingsNotAPreset$;
+	$: presets$ = internals.presets$;
+	$: highscoreEntries$ = internals.highscoreEntries$;
 
 	let active: string | undefined;
 
 	function settingsOkListener(event: CustomEvent<GamePreset>): void {
-		minesweeperActions.resetGame.next(event.detail);
+		internals.minesweeperActions.resetGame.next(event.detail);
 		customGameModal.close();
 	}
 </script>
@@ -37,21 +36,19 @@
 	<Dropdown title="Game" hotkeyLetter={'G'} bind:active>
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() => minesweeperActions.resetGame.next()}
+			on:click={() => internals.minesweeperActions.resetGame.next()}
 			contextHasToggleable={true}
 		>
 			New
 		</Button>
 		<hr />
 		{#each Object.entries(CLASSIC_GAME_PRESETS) as [key, preset]}
-			<Observer observable={isGameSettingsAPreset$(preset)} let:next>
+			<Observer observable={internals.isGameSettingsAPreset$(preset)} let:next>
 				<Button
 					look={ButtonLook.CONTEXT_MENU_ITEM}
 					toggled={next}
 					contextHasToggleable={true}
-					on:click={() => {
-						minesweeperActions.resetGame.next(preset);
-					}}
+					on:click={() => internals.minesweeperActions.resetGame.next(preset)}
 				>
 					{key}
 				</Button>

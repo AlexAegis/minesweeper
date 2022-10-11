@@ -1,11 +1,15 @@
-import { entitySliceReducer, entitySliceReducerWithPrecompute, Slice } from '@tinyslice/core';
+import {
+	Action,
+	entitySliceReducer,
+	entitySliceReducerWithPrecompute,
+	Slice,
+} from '@tinyslice/core';
 import {
 	combineLatest,
 	distinctUntilChanged,
 	filter,
 	fromEvent,
 	map,
-	merge,
 	Observable,
 	of,
 	shareReplay,
@@ -35,8 +39,6 @@ import {
 	isGameWon,
 } from '../core/game-state.enum';
 import { ifLatestFrom, shuffle } from '../helper';
-import type { WindowState } from '../ui/window-state.interface';
-import type { DesktopProgram } from './desktop.store';
 import { debug$ } from './root.store';
 import { MS_TAG, scope } from './scope';
 
@@ -97,34 +99,6 @@ export interface GameInstance {
 	enteredDebugMode: boolean;
 	tiles: Record<CoordinateKey, TileState>;
 }
-
-const TILE_TAG = '[tile]';
-const CLICK_TAG = '[click]';
-
-export const minesweeperActions = {
-	resetGame: scope.createAction<GamePreset | void>(`${MS_TAG} reset`),
-	startGame: scope.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
-		`${MS_TAG} start game`
-	),
-	setPreset: scope.createAction<{ name: string; preset: GamePreset }>(`${MS_TAG} set preset`),
-	addGameToHistory: scope.createAction<WinData>(`${MS_TAG} add game to history`),
-	incrementTimer: scope.createAction<number>(`${MS_TAG} increment timer ms`),
-	tileActions: {
-		depressTile: scope.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} depress`),
-		revealTile: scope.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} reveal`),
-		markTile: scope.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} mark`),
-	},
-	clickActions: {
-		cancelClick: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
-		globalMouseUp: scope.createAction(`${MS_TAG} ${CLICK_TAG} global up`),
-		leftclickDown: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left down`),
-		leftclickUp: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left up`),
-		middleclickDown: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} middle down`),
-		middleclickUp: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} middle up`),
-		rightclickDown: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} right down`),
-		rightclickUp: scope.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} right up`),
-	},
-};
 
 /**
  * Take all tiles, shuffle them, take the first n amount, those will be the mines
@@ -239,94 +213,149 @@ export interface MinesweeperGame {
 	getGameTileState: (x: number, y: number) => Observable<TileState>;
 	highscoreEntries$: Observable<HighscoreEntry[]>;
 	presets$: Observable<Record<string, GamePreset>>;
+	minesweeperActions: {
+		resetGame: Action<GamePreset | void>;
+		clickActions: {
+			leftclickDown: Action<CoordinateLike>;
+			leftclickUp: Action<CoordinateLike>;
+			rightclickUp: Action<CoordinateLike>;
+			cancelClick: Action<CoordinateLike>;
+		};
+	};
 	[key: string]: unknown;
-}
-
-export interface MinesweeperWindowState extends WindowState {
-	program: DesktopProgram.MINESWEEPER;
-	data: Game;
 }
 
 export const createMineSweeperGame = <ParentSlice, T>(
 	parentSlice: Slice<ParentSlice, T>,
 	key: string
 ): MinesweeperGame => {
-	const game$ = parentSlice.addSlice<Game>(key, {
+	const game$ = parentSlice.addSlice(key, {
 		inactive: false,
 		instance: generateGameInstance(CLASSIC_GAME_PRESETS.beginner),
 		history: [],
 		presets: CLASSIC_GAME_PRESETS,
-	});
+	} as Game);
+
+	const TILE_TAG = '[tile]';
+	const CLICK_TAG = '[click]';
+
+	const minesweeperActions = {
+		resetGame: game$.createScopedAction<GamePreset | void>(`${MS_TAG} reset`),
+		startGame: game$.createScopedAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
+			`${MS_TAG} start game`
+		),
+		setPreset: game$.createScopedAction<{ name: string; preset: GamePreset }>(
+			`${MS_TAG} set preset`
+		),
+		addGameToHistory: game$.createScopedAction<WinData>(`${MS_TAG} add game to history`),
+		incrementTimer: game$.createScopedAction<number>(`${MS_TAG} increment timer ms`),
+		tileActions: {
+			depressTile: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} depress`),
+			revealTile: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} reveal`),
+			markTile: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} mark`),
+		},
+		clickActions: {
+			cancelClick: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
+			globalMouseUp: game$.createScopedAction(`${MS_TAG} ${CLICK_TAG} global up`),
+			leftclickDown: game$.createScopedAction<CoordinateLike>(
+				`${MS_TAG} ${CLICK_TAG} left down`
+			),
+			leftclickUp: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left up`),
+			middleclickDown: game$.createScopedAction<CoordinateLike>(
+				`${MS_TAG} ${CLICK_TAG} middle down`
+			),
+			middleclickUp: game$.createScopedAction<CoordinateLike>(
+				`${MS_TAG} ${CLICK_TAG} middle up`
+			),
+			rightclickDown: game$.createScopedAction<CoordinateLike>(
+				`${MS_TAG} ${CLICK_TAG} right down`
+			),
+			rightclickUp: game$.createScopedAction<CoordinateLike>(
+				`${MS_TAG} ${CLICK_TAG} right up`
+			),
+		},
+	};
 
 	const inactive$ = game$.slice('inactive');
 
-	const presets$ = game$.slice('presets', [
-		minesweeperActions.setPreset.reduce((state, { name, preset }) => ({
-			...state,
-			[name]: preset,
-		})),
-		debug$.setAction.reduce((state, debug) => {
-			if (debug) {
-				return {
-					...state,
-					debug: {
-						width: 2,
-						height: 2,
-						mineCount: 2,
-					},
-				};
-			} else if ('debug' in state) {
-				const nextState = { ...state };
-				delete nextState.debug;
-				return nextState;
-			} else {
-				return state;
-			}
-		}),
-	]);
+	const presets$ = game$.slice('presets', {
+		reducers: [
+			minesweeperActions.setPreset.reduce((state, { name, preset }) => ({
+				...state,
+				[name]: preset,
+			})),
+			debug$.setAction.reduce((state, debug) => {
+				if (debug) {
+					return {
+						...state,
+						debug: {
+							width: 2,
+							height: 2,
+							mineCount: 2,
+						},
+					};
+				} else if ('debug' in state) {
+					const nextState = { ...state };
+					delete nextState.debug;
+					return nextState;
+				} else {
+					return state;
+				}
+			}),
+		],
+	});
 
-	const gameInstance$ = game$.slice('instance', [
-		minesweeperActions.resetGame.reduce((state, payload) => ({
-			...generateGameInstance(payload ?? state.settings),
-		})),
-		minesweeperActions.startGame.reduce((state, { safeCoordinate, mineCount }) => {
-			const mines = selectNRandomTiles(Object.values(state.tiles), safeCoordinate, mineCount);
-			const tiles: Record<string, TileState> = { ...state.tiles };
+	const gameInstance$ = game$.slice('instance', {
+		reducers: [
+			minesweeperActions.resetGame.reduce((state, payload) => ({
+				...generateGameInstance(payload ?? state.settings),
+			})),
+			minesweeperActions.startGame.reduce((state, { safeCoordinate, mineCount }) => {
+				const mines = selectNRandomTiles(
+					Object.values(state.tiles),
+					safeCoordinate,
+					mineCount
+				);
+				const tiles: Record<string, TileState> = { ...state.tiles };
 
-			for (const mineCoordinate of mines) {
-				const mineKey = Coordinate.keyOf(mineCoordinate);
-				tiles[mineKey] = { ...tiles[mineKey], isMine: true };
+				for (const mineCoordinate of mines) {
+					const mineKey = Coordinate.keyOf(mineCoordinate);
+					tiles[mineKey] = { ...tiles[mineKey], isMine: true };
 
-				for (const mineNeighbour of getNeighbouringCoordinateKeys(tiles, mineCoordinate)) {
-					const tile = tiles[mineNeighbour];
-					if (tile) {
-						if (!tile.isMine) {
-							tiles[mineNeighbour] = { ...tile, value: tile.value + 1 };
+					for (const mineNeighbour of getNeighbouringCoordinateKeys(
+						tiles,
+						mineCoordinate
+					)) {
+						const tile = tiles[mineNeighbour];
+						if (tile) {
+							if (!tile.isMine) {
+								tiles[mineNeighbour] = { ...tile, value: tile.value + 1 };
+							}
 						}
 					}
 				}
-			}
-			return { ...state, gameState: GameState.ONGOING, tiles };
-		}),
-		minesweeperActions.tileActions.revealTile.reduce((state, revealedTile) => {
-			const revealedTileKey = Coordinate.keyOf(revealedTile);
-			const tiles = Object.values(state.tiles);
-			const didJustWin = isAWinState(tiles);
-			const didJustLose = isALoseState(tiles);
-			if (didJustWin || didJustLose) {
-				return {
-					...state,
-					gameState: didJustWin ? GameState.WON : GameState.LOST,
-					tiles: revealEndStateReducer(state.tiles, revealedTileKey),
-				};
-			}
-			return state;
-		}),
-		minesweeperActions.tileActions.depressTile.reduce((state) => ({
-			...state,
-			clickCount: state.clickCount + 1,
-		})),
-	]);
+				return { ...state, gameState: GameState.ONGOING, tiles };
+			}),
+			minesweeperActions.tileActions.revealTile.reduce((state, revealedTile) => {
+				const revealedTileKey = Coordinate.keyOf(revealedTile);
+				const tiles = Object.values(state.tiles);
+				const didJustWin = isAWinState(tiles);
+				const didJustLose = isALoseState(tiles);
+				if (didJustWin || didJustLose) {
+					return {
+						...state,
+						gameState: didJustWin ? GameState.WON : GameState.LOST,
+						tiles: revealEndStateReducer(state.tiles, revealedTileKey),
+					};
+				}
+				return state;
+			}),
+			minesweeperActions.tileActions.depressTile.reduce((state) => ({
+				...state,
+				clickCount: state.clickCount + 1,
+			})),
+		],
+	});
 
 	const enteredDebugMode$ = gameInstance$.slice('enteredDebugMode');
 	const gameSettings$ = gameInstance$.slice('settings');
@@ -348,9 +377,11 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		map((settings) => [...Array(settings.height).keys()])
 	);
 
-	const winHistory$ = game$.slice('history', [
-		minesweeperActions.addGameToHistory.reduce((state, payload) => [...state, payload]),
-	]);
+	const winHistory$ = game$.slice('history', {
+		reducers: [
+			minesweeperActions.addGameToHistory.reduce((state, payload) => [...state, payload]),
+		],
+	});
 
 	const highscoreEntries$: Observable<HighscoreEntry[]> = winHistory$.pipe(
 		withLatestFrom(presets$),
@@ -406,9 +437,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		filter((ongoing) => ongoing)
 	);
 
-	const elapsedTime$ = gameInstance$.slice('elapsedTime', [
-		minesweeperActions.incrementTimer.reduce((state, elapsed) => state + elapsed),
-	]);
+	const elapsedTime$ = gameInstance$.slice('elapsedTime', {
+		reducers: [minesweeperActions.incrementTimer.reduce((state, elapsed) => state + elapsed)],
+	});
 
 	const elapsedSeconds$ = elapsedTime$.pipe(map((elapsedTime) => Math.floor(elapsedTime / 1000)));
 
@@ -461,126 +492,131 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		}
 	};
 
-	const gameTilesSlice$ = gameInstance$.slice('tiles', [
-		/**
-		 * Press reducer
-		 */
-		minesweeperActions.tileActions.depressTile.reduce(
-			entitySliceReducerWithPrecompute(
-				(state, payload) => ({
-					neighbours: getNeighbouringCoordinateKeys(state, payload),
-					sourceTile: state[Coordinate.keyOf(payload)],
-				}),
-				(key, tile, payload, { neighbours, sourceTile }) => {
-					const isSameTile = Coordinate.keyOf(payload) === key;
-					const isANeighbour = neighbours.includes(key);
+	const gameTilesSlice$ = gameInstance$.slice('tiles', {
+		reducers: [
+			/**
+			 * Press reducer
+			 */
+			minesweeperActions.tileActions.depressTile.reduce(
+				entitySliceReducerWithPrecompute(
+					(state, payload) => ({
+						neighbours: getNeighbouringCoordinateKeys(state, payload),
+						sourceTile: state[Coordinate.keyOf(payload)],
+					}),
+					(key, tile, payload, { neighbours, sourceTile }) => {
+						const isSameTile = Coordinate.keyOf(payload) === key;
+						const isANeighbour = neighbours.includes(key);
 
-					if (isSameTile && !tile.revealed) {
-						return { ...tile, pressed: true };
-					}
+						if (isSameTile && !tile.revealed) {
+							return { ...tile, pressed: true };
+						}
 
-					if (isANeighbour && sourceTile.revealed && !tile.revealed) {
-						return { ...tile, pressed: true };
-					}
-				}
-			)
-		),
-		minesweeperActions.clickActions.cancelClick.reduce(
-			entitySliceReducerWithPrecompute(
-				(state, revealedTileCoord) => ({
-					revealedTileCoordKey: Coordinate.keyOf(revealedTileCoord),
-					pressedNeighbourkeys: getNeighbouringTiles(state, revealedTileCoord)
-						.filter((neighbour) => neighbour.pressed)
-						.map((coord) => Coordinate.keyOf(coord)),
-				}),
-				(key, tile, _payload, { revealedTileCoordKey, pressedNeighbourkeys }) => {
-					if (
-						(revealedTileCoordKey === key && tile.pressed) ||
-						pressedNeighbourkeys.includes(key)
-					) {
-						return { ...tile, pressed: false };
-					}
-				}
-			)
-		),
-		minesweeperActions.tileActions.revealTile.reduce(
-			entitySliceReducerWithPrecompute(
-				(state, revealedTileCoord) => {
-					const revealedTileKey = Coordinate.keyOf(revealedTileCoord);
-					const revealedTile = state[revealedTileKey];
-					const neighbourKeys = getNeighbouringCoordinateKeys(state, revealedTileCoord);
-					const neighbours = getNeighbouringTiles(state, revealedTileCoord);
-					// const neighbourCount = neighbours.length;
-					const neighbouringMines = neighbours.filter(
-						(neighbour) => neighbour.isMine
-					).length;
-					const flaggedNeighbours = neighbours.filter((neighbour) =>
-						isFlagTileMark(neighbour.mark)
-					).length;
-					const uncertainNeighbours = neighbours.filter((neighbour) =>
-						isQuestionTileMark(neighbour.mark)
-					).length;
-					const canRevealNeighbours =
-						neighbouringMines === flaggedNeighbours &&
-						uncertainNeighbours === 0 &&
-						isEmptyTileMark(revealedTile.mark);
-
-					const checked = new Set<CoordinateKey>();
-					const spill = spillOnSafeTiles(state, revealedTileKey, checked);
-					if (canRevealNeighbours) {
-						for (const neighbourKey of neighbourKeys) {
-							spill.push(...spillOnSafeTiles(state, neighbourKey, checked));
+						if (isANeighbour && sourceTile.revealed && !tile.revealed) {
+							return { ...tile, pressed: true };
 						}
 					}
-
-					return {
-						spill,
-						canRevealNeighbours,
-						neighbourKeys,
-						revealedTileKey,
-					};
-				},
-				(
-					key,
-					tile,
-					_revealedTile,
-					{ spill, canRevealNeighbours, revealedTileKey, neighbourKeys }
-				) => {
-					if (!tile.revealed && (revealedTileKey === key || spill.includes(key))) {
-						if (isEmptyTileMark(tile.mark)) {
-							return { ...tile, revealed: true, pressed: false };
-						} else if (revealedTileKey === key) {
-							return { ...tile, mark: TileMark.EMTPY, pressed: false };
-						} else {
+				)
+			),
+			minesweeperActions.clickActions.cancelClick.reduce(
+				entitySliceReducerWithPrecompute(
+					(state, revealedTileCoord) => ({
+						revealedTileCoordKey: Coordinate.keyOf(revealedTileCoord),
+						pressedNeighbourkeys: getNeighbouringTiles(state, revealedTileCoord)
+							.filter((neighbour) => neighbour.pressed)
+							.map((coord) => Coordinate.keyOf(coord)),
+					}),
+					(key, tile, _payload, { revealedTileCoordKey, pressedNeighbourkeys }) => {
+						if (
+							(revealedTileCoordKey === key && tile.pressed) ||
+							pressedNeighbourkeys.includes(key)
+						) {
 							return { ...tile, pressed: false };
 						}
-					} else if (
-						canRevealNeighbours &&
-						neighbourKeys.includes(key) &&
-						isEmptyTileMark(tile.mark)
-					) {
-						return { ...tile, revealed: true, pressed: false };
-					} else if (tile.pressed) {
+					}
+				)
+			),
+			minesweeperActions.tileActions.revealTile.reduce(
+				entitySliceReducerWithPrecompute(
+					(state, revealedTileCoord) => {
+						const revealedTileKey = Coordinate.keyOf(revealedTileCoord);
+						const revealedTile = state[revealedTileKey];
+						const neighbourKeys = getNeighbouringCoordinateKeys(
+							state,
+							revealedTileCoord
+						);
+						const neighbours = getNeighbouringTiles(state, revealedTileCoord);
+						// const neighbourCount = neighbours.length;
+						const neighbouringMines = neighbours.filter(
+							(neighbour) => neighbour.isMine
+						).length;
+						const flaggedNeighbours = neighbours.filter((neighbour) =>
+							isFlagTileMark(neighbour.mark)
+						).length;
+						const uncertainNeighbours = neighbours.filter((neighbour) =>
+							isQuestionTileMark(neighbour.mark)
+						).length;
+						const canRevealNeighbours =
+							neighbouringMines === flaggedNeighbours &&
+							uncertainNeighbours === 0 &&
+							isEmptyTileMark(revealedTile.mark);
+
+						const checked = new Set<CoordinateKey>();
+						const spill = spillOnSafeTiles(state, revealedTileKey, checked);
+						if (canRevealNeighbours) {
+							for (const neighbourKey of neighbourKeys) {
+								spill.push(...spillOnSafeTiles(state, neighbourKey, checked));
+							}
+						}
+
+						return {
+							spill,
+							canRevealNeighbours,
+							neighbourKeys,
+							revealedTileKey,
+						};
+					},
+					(
+						key,
+						tile,
+						_revealedTile,
+						{ spill, canRevealNeighbours, revealedTileKey, neighbourKeys }
+					) => {
+						if (!tile.revealed && (revealedTileKey === key || spill.includes(key))) {
+							if (isEmptyTileMark(tile.mark)) {
+								return { ...tile, revealed: true, pressed: false };
+							} else if (revealedTileKey === key) {
+								return { ...tile, mark: TileMark.EMTPY, pressed: false };
+							} else {
+								return { ...tile, pressed: false };
+							}
+						} else if (
+							canRevealNeighbours &&
+							neighbourKeys.includes(key) &&
+							isEmptyTileMark(tile.mark)
+						) {
+							return { ...tile, revealed: true, pressed: false };
+						} else if (tile.pressed) {
+							return { ...tile, pressed: false };
+						}
+					}
+				)
+			),
+			minesweeperActions.tileActions.markTile.reduce(
+				entitySliceReducer((key, tile, payload) => {
+					if (Coordinate.keyOf(payload) === key && !tile.revealed) {
+						return { ...tile, mark: getNextTileMark(tile.mark), pressed: false };
+					}
+				})
+			),
+			minesweeperActions.clickActions.globalMouseUp.reduce(
+				entitySliceReducer((_key, tile, _payload) => {
+					if (tile.pressed) {
 						return { ...tile, pressed: false };
 					}
-				}
-			)
-		),
-		minesweeperActions.tileActions.markTile.reduce(
-			entitySliceReducer((key, tile, payload) => {
-				if (Coordinate.keyOf(payload) === key && !tile.revealed) {
-					return { ...tile, mark: getNextTileMark(tile.mark), pressed: false };
-				}
-			})
-		),
-		minesweeperActions.clickActions.globalMouseUp.reduce(
-			entitySliceReducer((_key, tile, _payload) => {
-				if (tile.pressed) {
-					return { ...tile, pressed: false };
-				}
-			})
-		),
-	]);
+				})
+			),
+		],
+	});
 
 	const getGameTileState = (x: number, y: number): Observable<TileState> =>
 		gameTilesSlice$.pipe(map((tiles) => tiles[Coordinate.keyOf(x, y)]));
@@ -620,12 +656,13 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	/*
 	/**
 	 * Unpress all buttons if the mouse releases
-	 */
+	 * TODO: reevaluate
+
 	scope.createEffect(
 		merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave')).pipe(
 			map(() => minesweeperActions.clickActions.globalMouseUp.makePacket())
 		)
-	);
+	); */
 
 	/**
 	 * Start the game at a safe tile and generate mines
@@ -735,6 +772,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	);
 
 	return {
+		minesweeperActions,
 		game$,
 		smileyState$,
 		remainingMines$,

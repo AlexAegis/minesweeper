@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import TitleBar from './title-bar.svelte';
-	import { initialWindowState, type WindowState } from './window-state.interface';
+	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
 	const dispatch = createEventDispatcher();
 
-	export let windowState: Partial<WindowState> | undefined = undefined;
+	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 
 	export let transient: boolean = false;
 
@@ -18,8 +18,8 @@
 		dispatch('move', { x: dragEvent.detail.x, y: dragEvent.detail.y });
 		console.log('move', transient, transientState, dragEvent.detail);
 		if (transient) {
-			transientState.x = dragEvent.detail.x;
-			transientState.y = dragEvent.detail.y;
+			transientState.position.x = dragEvent.detail.x;
+			transientState.position.y = dragEvent.detail.y;
 		}
 	}
 
@@ -47,11 +47,11 @@
 </script>
 
 <div
-	class="ms-window window pid{transientState.programId} {transientState.program} {$$props.class ??
+	class="ms-window window wid{transientState.windowId} {transientState.program} {$$props.class ??
 		''}"
 	class:maximized={transientState.maximized}
-	style:top={`${transientState.y}px`}
-	style:left={`${transientState.x}px`}
+	style:top={`${transientState.position.y}px`}
+	style:left={`${transientState.position.x}px`}
 	style:height={`${transientState.height}px`}
 	style:width={`${transientState.width}px`}
 >
@@ -67,7 +67,7 @@
 		on:close={close}
 		on:drag={move}
 	/>
-	<div class="window-body" class:tight={transientState.tight}>
+	<div class="window-body">
 		<slot />
 	</div>
 
@@ -82,6 +82,11 @@
 	.ms-window {
 		position: relative;
 		box-sizing: border-box;
+		user-select: none;
+
+		.window-body {
+			margin: 0;
+		}
 
 		&.maximized {
 			height: 100% !important;
@@ -97,10 +102,6 @@
 
 			min-width: fit-content;
 			min-height: fit-content;
-		}
-
-		.tight {
-			margin: 0;
 		}
 	}
 </style>

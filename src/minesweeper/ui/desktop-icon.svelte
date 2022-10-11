@@ -16,14 +16,19 @@
 
 <style lang="scss">
 	.desktop-icon {
-		width: 16px;
-		height: 16px;
-
 		display: flex;
 		position: fixed;
 
 		flex-direction: column;
 		align-items: center;
+
+		margin: 16px;
+
+		.icon {
+			width: 32px;
+			height: 32px;
+			background-color: gray;
+		}
 
 		&.selected {
 			background-color: blue;

@@ -1,30 +1,41 @@
-import type { DesktopProgram, ProgramId } from '../store/desktop.store';
+import type { CoordinateLike } from '../core';
+import type { MinesweeperGame } from '../store';
+import type { DesktopProgram, WindowId } from '../store/desktop.store';
 
-export interface WindowState {
-	title: string;
-	programId: ProgramId;
+export interface BaseWindowState {
+	windowId: WindowId;
 	program?: DesktopProgram;
+	title: string;
 	icon: string | undefined;
-	x: number;
-	y: number;
+	position: CoordinateLike;
 	width: number;
 	height: number;
 	maximized: boolean;
 	resizable: boolean;
-	tight: boolean;
 	active: boolean;
 }
 
-export const initialWindowState: WindowState = {
+export interface ProgramWindowState<ProgramData> extends BaseWindowState {
+	programData: ProgramData;
+}
+
+export interface MineSweeperWindowState extends ProgramWindowState<MinesweeperGame> {
+	program: DesktopProgram.MINESWEEPER;
+}
+
+export type WindowState = MineSweeperWindowState | BaseWindowState;
+
+export const initialWindowState: BaseWindowState = {
+	windowId: '-2',
 	active: false,
 	height: 100,
 	icon: '',
 	maximized: false,
-	programId: -2,
 	resizable: false,
-	tight: false,
 	title: '...',
 	width: 100,
-	x: 200,
-	y: 200,
+	position: {
+		x: 200,
+		y: 200,
+	},
 };

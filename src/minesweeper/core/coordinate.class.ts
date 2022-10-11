@@ -3,8 +3,8 @@ import { random } from '../helper';
 export type CoordinateKey = `${number},${number}`;
 
 export interface CoordinateLike {
-	readonly x: number;
-	readonly y: number;
+	x: number;
+	y: number;
 }
 
 export class Coordinate implements CoordinateLike {
