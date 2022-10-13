@@ -11,7 +11,7 @@
 
 	export let tile: TileState;
 
-	export let debug = false;
+	export let cheating = false;
 
 	let pressed = false;
 
@@ -72,7 +72,7 @@
 			classes.push('question-mark');
 		} else if (isFlagTileMark(tile.mark)) {
 			classes.push('flag');
-		} else if (debug) {
+		} else if (cheating) {
 			classes.push('debug');
 		} else {
 		}
@@ -86,7 +86,7 @@
 		}
 
 		// Protected styles to avoid information leaking
-		if (isEmptyTileMark(tile.mark) && (tile.revealed || debug)) {
+		if (isEmptyTileMark(tile.mark) && (tile.revealed || cheating)) {
 			classes.push(getValueClass(tile));
 
 			if (tile.isMine) {

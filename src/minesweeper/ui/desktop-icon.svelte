@@ -24,6 +24,7 @@
 
 		margin: 16px;
 
+		user-select: none;
 		.icon {
 			width: 32px;
 			height: 32px;

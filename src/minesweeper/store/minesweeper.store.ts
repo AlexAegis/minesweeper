@@ -1,8 +1,9 @@
 import {
 	Action,
-	entitySliceReducer,
 	entitySliceReducerWithPrecompute,
+	ifLatestFrom,
 	Slice,
+	type DicedSlice,
 } from '@tinyslice/core';
 import {
 	combineLatest,
@@ -10,6 +11,7 @@ import {
 	filter,
 	fromEvent,
 	map,
+	merge,
 	Observable,
 	of,
 	shareReplay,
@@ -38,15 +40,15 @@ import {
 	isGameReadyToStart,
 	isGameWon,
 } from '../core/game-state.enum';
-import { ifLatestFrom, shuffle } from '../helper';
+import { shuffle } from '../helper';
 import { debug$ } from './root.store';
 import { MS_TAG, scope } from './scope';
 
 export interface Game {
-	inactive: boolean;
 	presets: Record<string, GamePreset>;
 	instance: GameInstance;
 	history: WinData[];
+	cheating: boolean;
 }
 
 export enum FieldState {
@@ -73,6 +75,14 @@ export enum SmileyState {
 	DEAD = 'lost',
 }
 
+export type DicedTiles = DicedSlice<
+	Record<CoordinateKey, TileState>,
+	TileState,
+	unknown,
+	unknown,
+	CoordinateKey
+>;
+
 export interface TileState {
 	x: number;
 	y: number;
@@ -96,7 +106,7 @@ export interface GameInstance {
 	elapsedTime: number;
 	clickCount: number;
 	gameState: GameState;
-	enteredDebugMode: boolean;
+	cheated: boolean;
 	tiles: Record<CoordinateKey, TileState>;
 }
 
@@ -144,6 +154,18 @@ const revealEndStateReducer = (
 		return acc;
 	}, {} as Record<CoordinateKey, TileState>);
 
+const initialTile: TileState = {
+	x: 0,
+	y: 0,
+	pressed: false,
+	revealed: false,
+	value: 0,
+	isMine: false,
+	mark: TileMark.EMTPY,
+	guessedWrong: false,
+	disabled: false,
+};
+
 const generateGameInstance = (settings: GamePreset): GameInstance => {
 	const gameInstanceInitialState: GameInstance = {
 		settings,
@@ -151,21 +173,15 @@ const generateGameInstance = (settings: GamePreset): GameInstance => {
 		clickCount: 0,
 		gameState: GameState.READY_TO_START,
 		tiles: {},
-		enteredDebugMode: false,
+		cheated: false,
 	};
 
 	for (let x = 0; x < settings.width; x++) {
 		for (let y = 0; y < settings.height; y++) {
 			gameInstanceInitialState.tiles[Coordinate.keyOf(x, y)] = {
+				...initialTile,
 				x,
 				y,
-				pressed: false,
-				revealed: false,
-				value: 0,
-				isMine: false,
-				mark: TileMark.EMTPY,
-				guessedWrong: false,
-				disabled: false,
 			};
 		}
 	}
@@ -202,6 +218,7 @@ export interface HighscoreEntry {
 
 export interface MinesweeperGame {
 	game$: Slice<unknown, Game>;
+	dicedTiles: DicedTiles;
 	elapsedSeconds$: Observable<number>;
 	remainingMines$: Observable<number>;
 	gameHeightArray$: Observable<number[]>;
@@ -215,6 +232,7 @@ export interface MinesweeperGame {
 	presets$: Observable<Record<string, GamePreset>>;
 	minesweeperActions: {
 		resetGame: Action<GamePreset | void>;
+		cheating: Action<boolean>;
 		clickActions: {
 			leftclickDown: Action<CoordinateLike>;
 			leftclickUp: Action<CoordinateLike>;
@@ -222,6 +240,7 @@ export interface MinesweeperGame {
 			cancelClick: Action<CoordinateLike>;
 		};
 	};
+	cheating$: Observable<boolean>;
 	[key: string]: unknown;
 }
 
@@ -230,53 +249,44 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	key: string
 ): MinesweeperGame => {
 	const game$ = parentSlice.addSlice(key, {
-		inactive: false,
 		instance: generateGameInstance(CLASSIC_GAME_PRESETS.beginner),
 		history: [],
 		presets: CLASSIC_GAME_PRESETS,
+		cheating: false,
 	} as Game);
 
 	const TILE_TAG = '[tile]';
 	const CLICK_TAG = '[click]';
 
+	const cheating$ = game$.slice('cheating');
+
 	const minesweeperActions = {
-		resetGame: game$.createScopedAction<GamePreset | void>(`${MS_TAG} reset`),
-		startGame: game$.createScopedAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
+		cheating: cheating$.setAction,
+		resetGame: game$.createAction<GamePreset | void>(`${MS_TAG} reset`),
+		startGame: game$.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
 			`${MS_TAG} start game`
 		),
-		setPreset: game$.createScopedAction<{ name: string; preset: GamePreset }>(
-			`${MS_TAG} set preset`
-		),
-		addGameToHistory: game$.createScopedAction<WinData>(`${MS_TAG} add game to history`),
-		incrementTimer: game$.createScopedAction<number>(`${MS_TAG} increment timer ms`),
+		setPreset: game$.createAction<{ name: string; preset: GamePreset }>(`${MS_TAG} set preset`),
+		addGameToHistory: game$.createAction<WinData>(`${MS_TAG} add game to history`),
+		incrementTimer: game$.createAction<number>(`${MS_TAG} increment timer ms`),
 		tileActions: {
-			depressTile: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} depress`),
-			revealTile: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} reveal`),
-			markTile: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} mark`),
+			revealTile: game$.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} reveal`),
+			depressTile: game$.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} depress`),
+			markTile: game$.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} mark`),
 		},
 		clickActions: {
-			cancelClick: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
-			globalMouseUp: game$.createScopedAction(`${MS_TAG} ${CLICK_TAG} global up`),
-			leftclickDown: game$.createScopedAction<CoordinateLike>(
-				`${MS_TAG} ${CLICK_TAG} left down`
-			),
-			leftclickUp: game$.createScopedAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left up`),
-			middleclickDown: game$.createScopedAction<CoordinateLike>(
+			cancelClick: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
+			globalMouseUp: game$.createAction<void>(`${MS_TAG} ${CLICK_TAG} global up`),
+			leftclickDown: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left down`),
+			leftclickUp: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left up`),
+			middleclickDown: game$.createAction<CoordinateLike>(
 				`${MS_TAG} ${CLICK_TAG} middle down`
 			),
-			middleclickUp: game$.createScopedAction<CoordinateLike>(
-				`${MS_TAG} ${CLICK_TAG} middle up`
-			),
-			rightclickDown: game$.createScopedAction<CoordinateLike>(
-				`${MS_TAG} ${CLICK_TAG} right down`
-			),
-			rightclickUp: game$.createScopedAction<CoordinateLike>(
-				`${MS_TAG} ${CLICK_TAG} right up`
-			),
+			middleclickUp: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} middle up`),
+			rightclickDown: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} right down`),
+			rightclickUp: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} right up`),
 		},
 	};
-
-	const inactive$ = game$.slice('inactive');
 
 	const presets$ = game$.slice('presets', {
 		reducers: [
@@ -357,7 +367,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		],
 	});
 
-	const enteredDebugMode$ = gameInstance$.slice('enteredDebugMode');
+	const cheated$ = gameInstance$.slice('cheated');
 	const gameSettings$ = gameInstance$.slice('settings');
 
 	const isGameSettingsAPreset$ = (preset: GamePreset) =>
@@ -398,7 +408,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					const timeStamp = `${minutes ? minutes + 'm ' : ''}${remainingSeconds}s`;
 					return {
 						title: presetName ?? 'Custom',
-						description: `${winEntry.enteredDebugMode ? 'Debug ' : ''}size: ${
+						description: `${winEntry.cheated ? 'Debug ' : ''}size: ${
 							winEntry.preset.height
 						}*${winEntry.preset.width}, mines: ${winEntry.preset.mineCount}`,
 						timeStamp,
@@ -492,11 +502,8 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		}
 	};
 
-	const gameTilesSlice$ = gameInstance$.slice('tiles', {
+	const tilesSlice$ = gameInstance$.slice('tiles', {
 		reducers: [
-			/**
-			 * Press reducer
-			 */
 			minesweeperActions.tileActions.depressTile.reduce(
 				entitySliceReducerWithPrecompute(
 					(state, payload) => ({
@@ -601,27 +608,44 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}
 				)
 			),
-			minesweeperActions.tileActions.markTile.reduce(
-				entitySliceReducer((key, tile, payload) => {
-					if (Coordinate.keyOf(payload) === key && !tile.revealed) {
-						return { ...tile, mark: getNextTileMark(tile.mark), pressed: false };
-					}
-				})
-			),
-			minesweeperActions.clickActions.globalMouseUp.reduce(
-				entitySliceReducer((_key, tile, _payload) => {
-					if (tile.pressed) {
-						return { ...tile, pressed: false };
-					}
-				})
-			),
 		],
 	});
 
-	const getGameTileState = (x: number, y: number): Observable<TileState> =>
-		gameTilesSlice$.pipe(map((tiles) => tiles[Coordinate.keyOf(x, y)]));
+	const dicedTiles = tilesSlice$.dice(initialTile as TileState, {
+		getAllKeys: (slice) => Object.keys(slice) as `${number},${number}`[],
+		getNextKey: (_keys) => '0,0',
+		defineInternals: (tileSlice) => {
+			const tileActions = {
+				depressTile: tileSlice.createAction(`${MS_TAG} ${TILE_TAG} depress`),
+			};
 
-	const tiles$ = gameTilesSlice$.pipe(map((tiles) => Object.values(tiles)));
+			tileSlice.addReducers([
+				minesweeperActions.tileActions.markTile.reduce((tile, payload) =>
+					Coordinate.equal(tile, payload)
+						? {
+								...tile,
+								mark: getNextTileMark(tile.mark),
+								pressed: false,
+						  }
+						: tile
+				),
+				minesweeperActions.clickActions.globalMouseUp.reduce((tile) => {
+					if (tile.pressed) {
+						return { ...tile, pressed: false };
+					} else {
+						return tile;
+					}
+				}),
+			]);
+			return { tileActions };
+		},
+	});
+
+	const getGameTileState = (x: number, y: number): Observable<TileState> =>
+		tilesSlice$.pipe(map((tiles) => tiles[Coordinate.keyOf(x, y)]));
+
+	const tiles$ = tilesSlice$.pipe(map((tiles) => Object.values(tiles)));
+
 	const tilesFlagged$ = tiles$.pipe(
 		map((tiles) => tiles.filter((tile) => isFlagTileMark(tile.mark)).length)
 	);
@@ -653,16 +677,16 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			}
 		})
 	);
-	/*
+
 	/**
 	 * Unpress all buttons if the mouse releases
 	 * TODO: reevaluate
-
-	scope.createEffect(
+	 */
+	game$.createEffect(
 		merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave')).pipe(
 			map(() => minesweeperActions.clickActions.globalMouseUp.makePacket())
 		)
-	); */
+	);
 
 	/**
 	 * Start the game at a safe tile and generate mines
@@ -683,7 +707,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	/**
 	 * Sanitize left clicks into depress
 	 */
-	scope.createEffect(
+	game$.createEffect(
 		minesweeperActions.clickActions.leftclickDown.pipe(
 			ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
 			map((click) => minesweeperActions.tileActions.depressTile.makePacket(click))
@@ -693,7 +717,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	/**
 	 * Sanitize left clicks into reveal clicks
 	 */
-	scope.createEffect(
+	game$.createEffect(
 		minesweeperActions.clickActions.leftclickUp.pipe(
 			ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
 			map((click) => minesweeperActions.tileActions.revealTile.makePacket(click))
@@ -703,7 +727,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	/**
 	 * Sanitize right clicks
 	 */
-	scope.createEffect(
+	game$.createEffect(
 		minesweeperActions.clickActions.rightclickUp.pipe(
 			ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
 			map((click) => minesweeperActions.tileActions.markTile.makePacket(click))
@@ -727,7 +751,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	/**
 	 * Elapse time
 	 */
-	scope.createEffect(
+	game$.createEffect(
 		gameState$.pipe(
 			withLatestFrom(timeElapseTickrate$),
 			switchMap(([gameState, timeElapseTickrate]) =>
@@ -739,9 +763,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					: of(false)
 			),
 			map((running) =>
-				running
-					? minesweeperActions.incrementTimer.makePacket(TIME_TICKRATE_MS)
-					: scope.internalActionVoid.makePacket()
+				running ? minesweeperActions.incrementTimer.makePacket(TIME_TICKRATE_MS) : undefined
 			)
 		)
 	);
@@ -749,7 +771,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	/**
 	 * Add won game to the gamehistory
 	 */
-	scope.createEffect(
+	game$.createEffect(
 		gameWon$.pipe(
 			withLatestFrom(elapsedTime$, gameInstance$),
 			map(
@@ -757,36 +779,37 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					({
 						preset: gameInstance.settings,
 						time,
-						enteredDebugMode: gameInstance.enteredDebugMode,
+						cheated: gameInstance.cheated,
 					} as WinData)
 			),
 			map((winData) => minesweeperActions.addGameToHistory.makePacket(winData))
 		)
 	);
 
-	scope.createEffect(
+	game$.createEffect(
 		debug$.pipe(
 			filter((debug) => debug),
-			map(() => enteredDebugMode$.setAction.makePacket(true))
+			map(() => cheated$.setAction.makePacket(true))
 		)
 	);
 
 	return {
+		dicedTiles,
 		minesweeperActions,
 		game$,
+		cheating$,
 		smileyState$,
 		remainingMines$,
 		tileCount$,
 		mineCount$,
 		highscoreEntries$,
-		inactive$,
 		presets$,
 		gameInstance$,
-		enteredDebugMode$,
+		cheated$,
 		isGameSettingsAPreset$,
 		getGameTileState,
 		gameWidthArray$,
-		gameTilesSlice$,
+		tilesSlice$,
 		isGameOngoing$,
 		isGameEnded$,
 		gameStarted$,

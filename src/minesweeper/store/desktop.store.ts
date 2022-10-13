@@ -25,6 +25,8 @@ export const desktopActions = {
 	spawnProgram: scope.createAction<DesktopProgram>('[Desktop] spawn'),
 };
 
+export const programs$ = desktop$.slice('programs');
+
 const getNextProcessId = (keys: WindowId[]) =>
 	(keys.map((key) => parseInt(key, 10)).reduce((a, b) => (a > b ? a : b), 0) + 1).toString();
 
@@ -43,17 +45,17 @@ export const windows$ = desktop$.slice('windows', {
 	],
 });
 
-export const dicedWindows = windows$.dice({
+export const dicedWindows = windows$.dice(initialWindowState, {
 	getAllKeys: (state) => Object.keys(state),
 	getNextKey: getNextProcessId,
 	defineInternals: (slice) => {
 		const WINDOW_ACTION = '[window]';
 
 		const windowActions = {
-			maximize: slice.createScopedAction(`${WINDOW_ACTION} maximize`),
-			minimize: slice.createScopedAction(`${WINDOW_ACTION} minimize`),
-			restore: slice.createScopedAction(`${WINDOW_ACTION} restore`),
-			move: slice.createScopedAction<CoordinateLike>(`${WINDOW_ACTION} move`),
+			maximize: slice.createAction(`${WINDOW_ACTION} maximize`),
+			minimize: slice.createAction(`${WINDOW_ACTION} minimize`),
+			restore: slice.createAction(`${WINDOW_ACTION} restore`),
+			move: slice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
 		};
 
 		slice.slice('maximized', {
@@ -78,6 +80,5 @@ export const dicedWindows = windows$.dice({
 
 		return { windowActions, program$, minesweeperGame };
 	},
-	initialState: initialWindowState,
 	reducers: [],
 });

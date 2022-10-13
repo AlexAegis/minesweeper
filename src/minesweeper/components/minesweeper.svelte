@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy, onMount } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import type { MinesweeperGame } from '../store';
 	import Panel from '../ui/panel.svelte';
@@ -8,6 +9,12 @@
 	import Smiley from './smiley.svelte';
 
 	export let internals: MinesweeperGame;
+
+	$: cheating$ = internals.cheating$;
+	$: cheating = $cheating$;
+
+	onMount(() => internals.game$.unpause());
+	onDestroy(() => internals.game$.pause());
 </script>
 
 <Menu {internals} />
@@ -29,9 +36,8 @@
 
 	<Playfield
 		class="panel inset"
-		gameHeightArray$={internals.gameHeightArray$}
-		gameWidthArray$={internals.gameWidthArray$}
-		getGameTileState={internals.getGameTileState}
+		dicedTiles={internals.dicedTiles}
+		{cheating}
 		on:leftclickDown={(event) =>
 			internals.minesweeperActions.clickActions.leftclickDown.next(event.detail)}
 		on:leftclickUp={(event) =>

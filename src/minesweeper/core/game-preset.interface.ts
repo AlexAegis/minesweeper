@@ -7,7 +7,7 @@ export interface GamePreset {
 export interface WinData {
 	time: number;
 	preset: GamePreset;
-	enteredDebugMode: boolean;
+	cheated: boolean;
 }
 
 export enum PresetKeys {

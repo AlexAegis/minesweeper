@@ -13,7 +13,7 @@
 	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
 	import type { GamePreset } from '../core';
 	import { CLASSIC_GAME_PRESETS, type MinesweeperGame } from '../store';
-	import { debug$ } from '../store/root.store';
+
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Dropdown from '../ui/dropdown.svelte';
 
@@ -71,10 +71,10 @@
 			Highscore
 		</Button>
 
-		<Observer observable={debug$} let:next>
+		<Observer observable={internals.cheating$} let:next>
 			<Button
 				look={ButtonLook.CONTEXT_MENU_ITEM}
-				on:click={() => debug$.set(!next)}
+				on:click={() => internals.minesweeperActions.cheating.next(!next)}
 				contextHasToggleable={true}
 			>
 				{#if !next}
@@ -82,7 +82,7 @@
 				{:else}
 					Disable
 				{/if}
-				Debug
+				Cheats
 			</Button>
 		</Observer>
 	</Dropdown>

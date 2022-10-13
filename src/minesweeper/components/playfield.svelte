@@ -1,29 +1,27 @@
 <script lang="ts">
-	import type { Observable } from 'rxjs';
 	import { Observer } from 'svelte-rxjs-observer';
-	import type { TileState } from '../store';
-	import { debug$ } from '../store/root.store';
+	import type { DicedTiles } from '../store';
+
 	import Tile from './tile.svelte';
 
-	export let gameHeightArray$: Observable<number[]>;
-	export let gameWidthArray$: Observable<number[]>;
-	export let getGameTileState: (x: number, y: number) => Observable<TileState>;
+	export let dicedTiles: DicedTiles;
+	$: sliceKeys$ = dicedTiles.sliceKeys$;
+
+	export let cheating: boolean;
 </script>
 
 <div class="playfield {$$props.class ?? ''}" style={$$props.style ?? ''}>
-	{#each $gameHeightArray$ as y}
-		{#each $gameWidthArray$ as x}
-			<Observer observable={getGameTileState(x, y)} let:next>
-				<Tile
-					debug={$debug$}
-					tile={next}
-					on:leftclickDown
-					on:leftclickUp
-					on:rightclickUp
-					on:mouseleave
-				/>
-			</Observer>
-		{/each}
+	{#each $sliceKeys$ as key}
+		<Observer observable={dicedTiles.get(key)} let:next>
+			<Tile
+				{cheating}
+				tile={next}
+				on:leftclickDown
+				on:leftclickUp
+				on:rightclickUp
+				on:mouseleave
+			/>
+		</Observer>
 	{/each}
 </div>
 

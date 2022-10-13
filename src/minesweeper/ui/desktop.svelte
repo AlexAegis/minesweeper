@@ -2,6 +2,7 @@
 	import { Observer } from 'svelte-rxjs-observer';
 	import Minesweeper from '../components/minesweeper.svelte';
 	import { DesktopProgram, dicedWindows } from '../store';
+	import Button from './button.svelte';
 	import Window from './window.svelte';
 
 	let sliceKeys$ = dicedWindows.sliceKeys$;
@@ -33,7 +34,13 @@
 	</div>
 </div>
 <div class="taskbar window">
-	<slot name="taskbar" />
+	<Button>Start</Button>
+	<div>
+		<slot name="taskbar" />
+	</div>
+	<div class="quickbar">
+		<slot name="quickbar" />
+	</div>
 </div>
 
 <style lang="scss">
@@ -51,6 +58,9 @@
 	}
 
 	.taskbar {
+		display: flex;
+		justify-content: space-between;
+
 		--taskbar-height: 26px;
 		height: var(--taskbar-height);
 
@@ -58,5 +68,9 @@
 
 		bottom: 0px;
 		width: calc(100% - 6px);
+
+		.quickbar {
+			margin-left: auto;
+		}
 	}
 </style>

@@ -67,4 +67,12 @@ export class Coordinate implements CoordinateLike {
 			return this.x === x.x && this.y === x.y;
 		}
 	}
+
+	public static equal(a: CoordinateLike, b: CoordinateLike): boolean {
+		return a.x === b.x && a.y === b.y;
+	}
+
+	public static isNeighbouring(a: CoordinateLike, b: CoordinateLike): boolean {
+		return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
+	}
 }

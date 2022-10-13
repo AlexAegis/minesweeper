@@ -5,6 +5,8 @@
 
 	const dispatch = createEventDispatcher();
 
+	console.log('wINDOW');
+
 	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 
 	export let transient: boolean = false;
