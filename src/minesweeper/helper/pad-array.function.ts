@@ -1,5 +1,5 @@
-export function padArray<T>(array: T[], to: number, padding: T): T[] {
-	while (array.length < to) {
+export function padArray<T>(array: T[], until: number, padding: T): T[] {
+	while (array.length < until) {
 		array.unshift(padding);
 	}
 	return array;

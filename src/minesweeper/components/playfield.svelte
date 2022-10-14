@@ -5,13 +5,13 @@
 	import Tile from './tile.svelte';
 
 	export let dicedTiles: DicedTiles;
-	$: sliceKeys$ = dicedTiles.sliceKeys$;
+	$: keys$ = dicedTiles.keys$;
 
 	export let cheating: boolean;
 </script>
 
 <div class="playfield {$$props.class ?? ''}" style={$$props.style ?? ''}>
-	{#each $sliceKeys$ as key}
+	{#each $keys$ as key}
 		<Observer observable={dicedTiles.get(key)} let:next>
 			<Tile
 				{cheating}

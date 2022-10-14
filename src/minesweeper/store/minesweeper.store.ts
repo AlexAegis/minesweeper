@@ -1,10 +1,4 @@
-import {
-	Action,
-	entitySliceReducerWithPrecompute,
-	ifLatestFrom,
-	Slice,
-	type DicedSlice,
-} from '@tinyslice/core';
+import { entitySliceReducerWithPrecompute, ifLatestFrom, Slice } from '@tinyslice/core';
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -41,74 +35,15 @@ import {
 	isGameWon,
 } from '../core/game-state.enum';
 import { shuffle } from '../helper';
+import {
+	SmileyState,
+	type Game,
+	type GameInstance,
+	type HighscoreEntry,
+	type TileState,
+} from './minesweeper.interface';
 import { debug$ } from './root.store';
 import { MS_TAG, scope } from './scope';
-
-export interface Game {
-	presets: Record<string, GamePreset>;
-	instance: GameInstance;
-	history: WinData[];
-	cheating: boolean;
-}
-
-export enum FieldState {
-	SAFE,
-	MINE,
-}
-
-export enum SmileyState {
-	/**
-	 * Normally
-	 */
-	SMILING = 'ongoing',
-	/**
-	 * While mousedown
-	 */
-	SURPRISED = 'click',
-	/**
-	 * If won
-	 */
-	COOL = 'won',
-	/**
-	 * If lost...
-	 */
-	DEAD = 'lost',
-}
-
-export type DicedTiles = DicedSlice<
-	Record<CoordinateKey, TileState>,
-	TileState,
-	unknown,
-	unknown,
-	CoordinateKey
->;
-
-export interface TileState {
-	x: number;
-	y: number;
-	value: number;
-	isMine: boolean;
-	mark: TileMark;
-	guessedWrong: boolean;
-	revealed: boolean;
-	/**
-	 * Whether or not the tile should appear as pressed
-	 */
-	pressed: boolean;
-	/**
-	 * Tiles are disabled when the game is ended
-	 */
-	disabled: boolean;
-}
-
-export interface GameInstance {
-	settings: GamePreset;
-	elapsedTime: number;
-	clickCount: number;
-	gameState: GameState;
-	cheated: boolean;
-	tiles: Record<CoordinateKey, TileState>;
-}
 
 /**
  * Take all tiles, shuffle them, take the first n amount, those will be the mines
@@ -209,51 +144,30 @@ export const CLASSIC_GAME_PRESETS = {
 
 const TIME_TICKRATE_MS = 1000;
 
-export interface HighscoreEntry {
-	title: string;
-	description: string;
-	timeStamp: string;
-	time: number;
-}
-
-export interface MinesweeperGame {
-	game$: Slice<unknown, Game>;
-	dicedTiles: DicedTiles;
-	elapsedSeconds$: Observable<number>;
-	remainingMines$: Observable<number>;
-	gameHeightArray$: Observable<number[]>;
-	gameWidthArray$: Observable<number[]>;
-	smileyState$: Observable<SmileyState>;
-	gameSettings$: Observable<GamePreset>;
-	isGameSettingsAPreset$: (preset: GamePreset) => Observable<boolean>;
-	isGameSettingsNotAPreset$: Observable<boolean>;
-	getGameTileState: (x: number, y: number) => Observable<TileState>;
-	highscoreEntries$: Observable<HighscoreEntry[]>;
-	presets$: Observable<Record<string, GamePreset>>;
-	minesweeperActions: {
-		resetGame: Action<GamePreset | void>;
-		cheating: Action<boolean>;
-		clickActions: {
-			leftclickDown: Action<CoordinateLike>;
-			leftclickUp: Action<CoordinateLike>;
-			rightclickUp: Action<CoordinateLike>;
-			cancelClick: Action<CoordinateLike>;
-		};
-	};
-	cheating$: Observable<boolean>;
-	[key: string]: unknown;
-}
-
 export const createMineSweeperGame = <ParentSlice, T>(
 	parentSlice: Slice<ParentSlice, T>,
 	key: string
-): MinesweeperGame => {
-	const game$ = parentSlice.addSlice(key, {
-		instance: generateGameInstance(CLASSIC_GAME_PRESETS.beginner),
-		history: [],
-		presets: CLASSIC_GAME_PRESETS,
-		cheating: false,
-	} as Game);
+) => {
+	console.log('createMineSweeperGame', parentSlice.absolutePath);
+
+	const game$ = parentSlice.addSlice(
+		key,
+		{
+			instance: generateGameInstance(CLASSIC_GAME_PRESETS.beginner),
+			history: [],
+			presets: CLASSIC_GAME_PRESETS,
+			cheating: false,
+		} as Game,
+		{
+			defineInternals: () => {
+				return 1;
+			},
+		}
+	);
+
+	console.log('key', key, game$.value);
+	parentSlice.defineKeyAction.next({ key, data: game$.value });
+	// parentSlice.set({ ...parentSlice.value, [key]: game$.value });
 
 	const TILE_TAG = '[tile]';
 	const CLICK_TAG = '[click]';
@@ -428,10 +342,6 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	);
 
 	const isGameLost$ = gameState$.pipe(map(isGameLost));
-	const gameLost$ = isGameLost$.pipe(
-		distinctUntilChanged(),
-		filter((lost) => lost)
-	);
 
 	const isGameEnded$ = gameState$.pipe(
 		map((gameState) => isGameLost(gameState) || isGameWon(gameState))
@@ -439,12 +349,6 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	const gameEnded$ = isGameLost$.pipe(
 		distinctUntilChanged(),
 		filter((ended) => ended)
-	);
-
-	const isGameOngoing$ = gameState$.pipe(map(isGameOngoing));
-	const gameStarted$ = isGameOngoing$.pipe(
-		distinctUntilChanged(),
-		filter((ongoing) => ongoing)
 	);
 
 	const elapsedTime$ = gameInstance$.slice('elapsedTime', {
@@ -615,6 +519,16 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		getAllKeys: (slice) => Object.keys(slice) as `${number},${number}`[],
 		getNextKey: (_keys) => '0,0',
 		defineInternals: (tileSlice) => {
+			const isMine$ = tileSlice.slice('isMine');
+			const guessedWrong$ = tileSlice.slice('guessedWrong');
+			const disabled$ = tileSlice.slice('disabled');
+			const mark$ = tileSlice.slice('mark');
+			const pressed$ = tileSlice.slice('pressed');
+			const value$ = tileSlice.slice('value');
+			const revealed$ = tileSlice.slice('revealed');
+			const x$ = tileSlice.slice('x');
+			const y$ = tileSlice.slice('y');
+
 			const tileActions = {
 				depressTile: tileSlice.createAction(`${MS_TAG} ${TILE_TAG} depress`),
 			};
@@ -637,12 +551,20 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}
 				}),
 			]);
-			return { tileActions };
+			return {
+				tileActions,
+				isMine$,
+				guessedWrong$,
+				disabled$,
+				mark$,
+				pressed$,
+				value$,
+				revealed$,
+				x$,
+				y$,
+			};
 		},
 	});
-
-	const getGameTileState = (x: number, y: number): Observable<TileState> =>
-		tilesSlice$.pipe(map((tiles) => tiles[Coordinate.keyOf(x, y)]));
 
 	const tiles$ = tilesSlice$.pipe(map((tiles) => Object.values(tiles)));
 
@@ -652,8 +574,6 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	const tilesPressed$ = tiles$.pipe(map((tiles) => tiles.filter((tile) => tile.pressed)));
 
 	const isATilePressed$ = tilesPressed$.pipe(map((tilesPressed) => tilesPressed.length > 0));
-
-	const tileCount$ = tiles$.pipe(map((tiles) => tiles.length));
 
 	const mineCount$ = gameSettings$.slice('mineCount');
 
@@ -684,7 +604,8 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 */
 	game$.createEffect(
 		merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave')).pipe(
-			map(() => minesweeperActions.clickActions.globalMouseUp.makePacket())
+			map(() => minesweeperActions.clickActions.globalMouseUp.makePacket()),
+			map(() => undefined)
 		)
 	);
 
@@ -787,8 +708,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	);
 
 	game$.createEffect(
-		debug$.pipe(
-			filter((debug) => debug),
+		cheating$.pipe(
+			ifLatestFrom(cheated$, (cheated) => !cheated),
+			filter((cheating) => cheating),
 			map(() => cheated$.setAction.makePacket(true))
 		)
 	);
@@ -800,30 +722,13 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		cheating$,
 		smileyState$,
 		remainingMines$,
-		tileCount$,
-		mineCount$,
 		highscoreEntries$,
 		presets$,
-		gameInstance$,
-		cheated$,
 		isGameSettingsAPreset$,
-		getGameTileState,
 		gameWidthArray$,
-		tilesSlice$,
-		isGameOngoing$,
-		isGameEnded$,
-		gameStarted$,
-		gameState$,
-		gameEnded$,
 		isGameSettingsNotAPreset$,
 		gameHeightArray$,
-		winHistory$,
-		isGameLost$,
-		gameLost$,
-		isGameWon$,
-		gameWon$,
 		gameSettings$,
-		elapsedTime$,
 		elapsedSeconds$,
 	};
 };

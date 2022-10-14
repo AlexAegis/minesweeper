@@ -1,19 +1,29 @@
 import { createLoggingMetaReducer } from '@tinyslice/core';
-import { of, switchMap, tap } from 'rxjs';
+import { take, tap } from 'rxjs';
 import packageJson from '../../../package.json';
 import { scope } from './scope';
 
+import { TinySliceDevtoolPlugin } from '@tinyslice/devtools-plugin';
 export interface RootState {
 	debug: boolean;
 }
 
 export const PACKAGE_NAME_AND_VERSION = `${packageJson.displayName} (${packageJson.version})`;
-export const rootSlice$ = scope.createRootSlice({
-	debug: true,
-} as RootState);
+export const rootSlice$ = scope.createRootSlice(
+	{
+		debug: true,
+	} as RootState,
+	{
+		plugins: [
+			new TinySliceDevtoolPlugin<RootState>({
+				name: PACKAGE_NAME_AND_VERSION,
+			}),
+		],
+	}
+);
 
 export const debug$ = rootSlice$.slice('debug');
-
+/*
 scope.createEffect(
 	debug$.pipe(
 		switchMap((debug) => {
@@ -35,10 +45,11 @@ scope.createEffect(
 			)
 		)
 	)
-);
+);*/
 
 scope.createEffect(
 	debug$.pipe(
+		take(0),
 		tap((debug) =>
 			rootSlice$.setMetaReducers(debug ? [createLoggingMetaReducer<RootState>()] : [])
 		)

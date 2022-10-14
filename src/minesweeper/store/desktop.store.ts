@@ -1,6 +1,8 @@
+import { filter, map, take } from 'rxjs';
 import type { CoordinateLike } from '../core';
 import { initialWindowState, type WindowState } from '../ui/window-state.interface';
-import { createMineSweeperGame, type MinesweeperGame } from './minesweeper.store';
+import type { MinesweeperGame } from './minesweeper.interface';
+import { createMineSweeperGame } from './minesweeper.store';
 
 import { rootSlice$ } from './root.store';
 import { scope } from './scope';
@@ -43,6 +45,9 @@ export const windows$ = desktop$.slice('windows', {
 			return { ...state, [windowId]: spawnedWindow };
 		}),
 	],
+	defineInternals: (slice) => {
+		slice.pipe(map((s) => s));
+	},
 });
 
 export const dicedWindows = windows$.dice(initialWindowState, {
@@ -82,3 +87,16 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 	},
 	reducers: [],
 });
+
+export const isProgramSpawned$ = (program: DesktopProgram) =>
+	dicedWindows.some$((window) => window.program === program);
+
+export const isMinesweeperSpawned$ = isProgramSpawned$(DesktopProgram.MINESWEEPER);
+
+windows$.createEffect(
+	isMinesweeperSpawned$.pipe(
+		take(1),
+		filter((is) => !is),
+		map(() => desktopActions.spawnProgram.makePacket(DesktopProgram.MINESWEEPER))
+	)
+);

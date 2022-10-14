@@ -31,7 +31,7 @@ export const initialWindowState: BaseWindowState = {
 	height: 100,
 	icon: '',
 	maximized: false,
-	resizable: false,
+	resizable: true,
 	title: '...',
 	width: 100,
 	position: {

@@ -5,8 +5,6 @@
 
 	const dispatch = createEventDispatcher();
 
-	console.log('wINDOW');
-
 	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 
 	export let transient: boolean = false;
@@ -18,7 +16,7 @@
 
 	function move(dragEvent: CustomEvent<{ x: number; y: number }>) {
 		dispatch('move', { x: dragEvent.detail.x, y: dragEvent.detail.y });
-		console.log('move', transient, transientState, dragEvent.detail);
+		// console.log('move', transient, transientState, dragEvent.detail);
 		if (transient) {
 			transientState.position.x = dragEvent.detail.x;
 			transientState.position.y = dragEvent.detail.y;

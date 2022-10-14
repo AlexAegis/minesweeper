@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { desktopActions, DesktopProgram, programs$ } from './minesweeper/store/desktop.store';
+	import { desktopActions, programs$ } from './minesweeper/store/desktop.store';
 	import Button from './minesweeper/ui/button.svelte';
 	import DesktopIcon from './minesweeper/ui/desktop-icon.svelte';
 	import Desktop from './minesweeper/ui/desktop.svelte';
-
-	desktopActions.spawnProgram.next(DesktopProgram.MINESWEEPER);
 </script>
 
 <Desktop>
