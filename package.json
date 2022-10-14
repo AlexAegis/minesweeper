@@ -1,5 +1,5 @@
 {
-	"name": "svelte-minesweeper",
+	"name": "@alexaegis/desktop-workspace",
 	"displayName": "Minesweeper",
 	"description": "Minesweeper Clone powered by Svelte and TinySlice",
 	"version": "3.0.0",
@@ -10,10 +10,10 @@
 		"email": "alexaegis@gmail.com",
 		"url": "https://github.com/AlexAegis"
 	},
-	"homepage": "https://github.com/AlexAegis/svelte-minesweeper",
+	"homepage": "https://github.com/AlexAegis/minesweeper",
 	"bugs": {
 		"email": "alexaegis@gmail.com",
-		"url": "https://github.com/AlexAegis/svelte-minesweeper/issues"
+		"url": "https://github.com/AlexAegis/minesweeper/issues"
 	},
 	"type": "module",
 	"scripts": {
@@ -41,6 +41,8 @@
 		"@tinyslice/hydration-plugin": "^0.4.5",
 		"98.css": "^0.1.18",
 		"rxjs": "^7.5.7",
+		"svelte-gestures": "^1.4.1",
+		"svelte-hammer": "^0.1.7",
 		"svelte-rxjs-observer": "^0.2.1",
 		"xp.css": "^0.3.0"
 	},

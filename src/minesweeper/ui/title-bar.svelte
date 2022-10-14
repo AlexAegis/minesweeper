@@ -3,15 +3,18 @@
 
 	import { filter, fromEvent, merge, Subscription, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { tap as tapGesture } from 'svelte-gestures';
 
 	const dispatch = createEventDispatcher();
+
+	type PointerType = 'mouse' | 'touch';
 
 	export let title: string;
 	export let icon: string | undefined = undefined;
 	export let active: boolean = true;
 	export let maximized: boolean = false;
 	export let resizable: boolean = true;
-	let dragging: { x: number; y: number } | undefined;
+	let dragging: { x: number; y: number; pointerType: PointerType } | undefined;
 
 	const sink = new Subscription();
 
@@ -29,14 +32,55 @@
 		fromEvent(document, 'mousemove')
 			.pipe(
 				filter((event: Event) => !!dragging && event.target !== htmlRef),
-				tap((event: Event) => drag(event as MouseEvent))
+				tap((event: Event) => mousemove(event as MouseEvent))
 			)
 			.subscribe()
 	);
 
 	let titleBar: Element;
 
-	function drag(event: MouseEvent) {
+	function minimize() {
+		dispatch('minimize');
+	}
+
+	function maximize() {
+		if (maximized) {
+			dispatch('restore');
+		} else {
+			dispatch('maximize');
+		}
+	}
+
+	function close() {
+		dispatch('close');
+	}
+
+	function tapup(_event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) {
+		if (dragging?.pointerType === 'touch') {
+			dragging = undefined;
+		}
+	}
+
+	function tapdown(event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) {
+		dragging = {
+			x: event.detail.event.clientX,
+			y: event.detail.event.clientY,
+			pointerType: event.detail.event.pointerType as PointerType,
+		};
+	}
+
+	function tapmove(event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) {
+		if (dragging && !maximized && event.detail.event.pointerType === 'touch') {
+			const rect = titleBar.getBoundingClientRect();
+			let x = rect.left - dragging.x + event.detail.event.clientX - 3;
+			let y = rect.top - dragging.y + event.detail.event.clientY - 3;
+			dragging.x = event.detail.event.clientX;
+			dragging.y = event.detail.event.clientY;
+			dispatch('drag', { x, y });
+		}
+	}
+
+	function mousemove(event: MouseEvent) {
 		if (dragging && !maximized) {
 			const rect = titleBar.getBoundingClientRect();
 			let x = rect.left - dragging.x + event.clientX - 3;
@@ -47,38 +91,20 @@
 		}
 	}
 
-	function startDrag(event: MouseEvent) {
-		dragging = { x: event.clientX, y: event.clientY };
-	}
-
-	function minimize(event: MouseEvent) {
-		event.stopPropagation();
-		dispatch('minimize');
-	}
-
-	function maximize(event: MouseEvent) {
-		event.stopPropagation();
-		if (maximized) {
-			dispatch('restore');
-		} else {
-			dispatch('maximize');
-		}
-	}
-
-	function close(event: MouseEvent) {
-		event.stopPropagation();
-		dispatch('close');
-	}
-
-	function noop(event: MouseEvent) {
-		event?.stopPropagation();
-		event?.preventDefault();
-	}
-
 	onDestroy(() => sink.unsubscribe());
 </script>
 
-<div class="title-bar" on:mousedown={startDrag} bind:this={titleBar} on:dblclick={maximize}>
+<div
+	class="title-bar"
+	bind:this={titleBar}
+	on:dblclick={maximize}
+	on:tap
+	use:tapGesture
+	on:mousemove={mousemove}
+	on:tapup={tapup}
+	on:tapdown={tapdown}
+	on:tapmove={tapmove}
+>
 	<div aria-label="title" class="title-bar-text" class:active>
 		{#if icon}
 			<Image class="ms-title-bar-icon" src={icon} alt={title} />
@@ -90,25 +116,28 @@
 	<div class="title-bar-controls">
 		<button
 			aria-label="Minimize"
-			on:click={minimize}
-			on:mousemove={noop}
-			on:mousedown={noop}
-			on:dblclick={noop}
+			on:click|preventDefault|stopPropagation={minimize}
+			on:tap|preventDefault|stopPropagation={minimize}
+			on:mousemove|preventDefault|stopPropagation
+			on:mousedown|preventDefault|stopPropagation
+			on:dblclick|preventDefault|stopPropagation
 		/>
 		<button
 			aria-label={maximized ? 'Restore' : 'Maximize'}
-			on:click={maximize}
-			on:mousemove={noop}
-			on:mousedown={noop}
-			on:dblclick={noop}
+			on:click|preventDefault|stopPropagation={maximize}
+			on:tap|preventDefault|stopPropagation={maximize}
+			on:mousemove|preventDefault|stopPropagation
+			on:mousedown|preventDefault|stopPropagation
+			on:dblclick|preventDefault|stopPropagation
 			disabled={!resizable}
 		/>
 		<button
 			aria-label="Close"
-			on:click={close}
-			on:mousemove={noop}
-			on:mousedown={noop}
-			on:dblclick={noop}
+			on:click|preventDefault|stopPropagation={close}
+			on:tap|preventDefault|stopPropagation={close}
+			on:mousemove|preventDefault|stopPropagation
+			on:mousedown|preventDefault|stopPropagation
+			on:dblclick|preventDefault|stopPropagation
 		/>
 	</div>
 </div>

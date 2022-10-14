@@ -1,9 +1,9 @@
-# [Svelte Minesweeper](https://alexaegis.github.io/svelte-minesweeper/)
+# [Svelte Minesweeper](https://alexaegis.github.io/minesweeper/)
 
 <!-- markdownlint-disable MD013 -->
 
-[![CI](https://github.com/AlexAegis/svelte-minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/svelte-minesweeper/actions?query=workflow%3ACI)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cdc716a23e1d4528a62c19998dab35d4)](https://www.codacy.com/gh/AlexAegis/svelte-minesweeper/dashboard?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/svelte-minesweeper&utm_campaign=Badge_Grade)
+[![CI](https://github.com/AlexAegis/minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/minesweeper/actions?query=workflow%3ACI)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cdc716a23e1d4528a62c19998dab35d4)](https://www.codacy.com/gh/AlexAegis/minesweeper/dashboard?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/minesweeper&utm_campaign=Badge_Grade)
 [![Svelte](https://img.shields.io/badge/made%20with-svelte-orange)](https://github.com/sveltejs/svelte)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
@@ -12,7 +12,7 @@
 The classic Win98 Minesweeper game recreated for the web using reactive
 technologies such as Svelte and RxJS.
 
-[![Preview](./docs/minesweeper-preview.png)](https://alexaegis.github.io/svelte-minesweeper/)
+[![Preview](./docs/minesweeper-preview.png)](https://alexaegis.github.io/minesweeper/)
 
 > Click on the image to try out!
 
