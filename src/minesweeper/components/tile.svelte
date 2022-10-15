@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { tap as tapGesture } from 'svelte-gestures';
 	import type { CoordinateLike } from '../core';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
 	import type { TileState } from '../store';
@@ -49,6 +50,7 @@
 
 	function click(event: Event) {
 		event.preventDefault();
+		console.log('click');
 		const coord = asCoordinate(tile);
 		dispatch('leftclickUp', coord);
 		pressed = false;
@@ -97,15 +99,29 @@
 		return classes.join(' ');
 	}
 
+	function tapup(event: Event) {
+		console.log('tapup', event, tile);
+		const coord = asCoordinate(tile);
+		//if (tile.pressed) {
+		// if above tile
+		// dispatch('leftclickUp', coord);
+		// if outside
+		dispatch('mouseleave', coord);
+		//}
+		pressed = false;
+	}
+
 	$: tileClass = getTileClassList(tile);
 </script>
 
 {#if tile.revealed}
 	<div
 		class="ms-tile {tileClass}"
+		use:tapGesture
+		on:tap={click}
+		on:tapup={tapup}
 		on:pointerdown|preventDefault={pointerdown}
 		on:pointerup|preventDefault={pointerup}
-		on:click|preventDefault={click}
 		on:contextmenu|preventDefault={contextmenu}
 		on:mouseleave|preventDefault={mouseleave}
 		style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
@@ -118,9 +134,10 @@
 		disabled={tile.disabled}
 		disableSelfInset={true}
 		look={ButtonLook.THICK_PRESSED_THIN}
+		on:tap={click}
+		on:tapup={tapup}
 		on:pointerdown={pointerdown}
 		on:pointerup={pointerup}
-		on:click={click}
 		on:contextmenu={contextmenu}
 		on:mouseleave={mouseleave}
 		style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"

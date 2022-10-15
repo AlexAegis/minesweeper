@@ -98,7 +98,6 @@
 	class="title-bar"
 	bind:this={titleBar}
 	on:dblclick={maximize}
-	on:tap
 	use:tapGesture
 	on:mousemove={mousemove}
 	on:tapup={tapup}
@@ -116,27 +115,39 @@
 	<div class="title-bar-controls">
 		<button
 			aria-label="Minimize"
+			use:tapGesture
 			on:click|preventDefault|stopPropagation={minimize}
 			on:tap|preventDefault|stopPropagation={minimize}
 			on:mousemove|preventDefault|stopPropagation
 			on:mousedown|preventDefault|stopPropagation
+			on:tapup|preventDefault|stopPropagation
+			on:tapdown|preventDefault|stopPropagation
+			on:tapmove|preventDefault|stopPropagation
 			on:dblclick|preventDefault|stopPropagation
 		/>
 		<button
 			aria-label={maximized ? 'Restore' : 'Maximize'}
+			use:tapGesture
 			on:click|preventDefault|stopPropagation={maximize}
 			on:tap|preventDefault|stopPropagation={maximize}
 			on:mousemove|preventDefault|stopPropagation
 			on:mousedown|preventDefault|stopPropagation
+			on:tapup|preventDefault|stopPropagation
+			on:tapdown|preventDefault|stopPropagation
+			on:tapmove|preventDefault|stopPropagation
 			on:dblclick|preventDefault|stopPropagation
 			disabled={!resizable}
 		/>
 		<button
 			aria-label="Close"
+			use:tapGesture
 			on:click|preventDefault|stopPropagation={close}
 			on:tap|preventDefault|stopPropagation={close}
 			on:mousemove|preventDefault|stopPropagation
 			on:mousedown|preventDefault|stopPropagation
+			on:tapup|preventDefault|stopPropagation
+			on:tapdown|preventDefault|stopPropagation
+			on:tapmove|preventDefault|stopPropagation
 			on:dblclick|preventDefault|stopPropagation
 		/>
 	</div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fromEvent, Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { tap } from 'svelte-gestures';
 	import { ButtonLook } from './button-look.enum';
 
 	const dispatch = createEventDispatcher();
@@ -53,6 +54,11 @@
 	class:type-thick-but-pressed-thin={look === ButtonLook.THICK_PRESSED_THIN}
 	class:type-title-bar-menu-bar-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
 	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
+	use:tap
+	on:tap
+	on:tapup
+	on:tapdown
+	on:tapmove
 	on:click
 	on:mouseup
 	on:mousedown={onMouseDown}
