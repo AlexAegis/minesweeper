@@ -4,7 +4,6 @@
 	import type { MinesweeperGame } from '../store';
 	import Panel from '../ui/panel.svelte';
 	import SegmentDisplayPanel from '../ui/segment-display-panel.svelte';
-	import Menu from './menu.svelte';
 	import Playfield from './playfield.svelte';
 	import Smiley from './smiley.svelte';
 
@@ -17,7 +16,6 @@
 	onDestroy(() => internals.game$.pause());
 </script>
 
-<Menu {internals} />
 <div class="game">
 	<Panel class="game panel inset padded">
 		<Observer observable={internals.remainingMines$} let:next>

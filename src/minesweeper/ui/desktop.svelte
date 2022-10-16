@@ -1,31 +1,52 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
+	import MinesweeperMenu from '../components/minesweeper-menu.svelte';
 	import Minesweeper from '../components/minesweeper.svelte';
-	import { DesktopProgram, dicedWindows } from '../store';
+	import { desktopActions, DesktopProgram, dicedWindows } from '../store';
 	import Button from './button.svelte';
 	import Window from './window.svelte';
 
 	let keys$ = dicedWindows.keys$;
+
+	const windowComponents: Record<DesktopProgram, any> = {
+		[DesktopProgram.MINESWEEPER]: {
+			menu: MinesweeperMenu,
+			content: Minesweeper,
+		},
+	};
 </script>
 
 <div class="desktop">
 	<div class="workspace">
 		<slot />
 
-		{#each $keys$ as windowId (windowId)}
-			{@const window = dicedWindows.get(windowId)}
+		{#each $keys$ as processId (processId)}
+			{@const window = dicedWindows.get(processId)}
 
 			<Observer observable={window} let:next>
 				<Window
 					windowState={next}
-					on:maximize={() => window.internals.windowActions.maximize.next(windowId)}
-					on:minimize={() => window.internals.windowActions.minimize.next(windowId)}
-					on:restore={() => window.internals.windowActions.restore.next(windowId)}
-					on:close={() => dicedWindows.remove(windowId)}
+					on:activate={() => desktopActions.activateProgram.next(processId)}
+					on:maximize={() => window.internals.windowActions.maximize.next(processId)}
+					on:minimize={() => window.internals.windowActions.minimize.next(processId)}
+					on:restore={() => window.internals.windowActions.restore.next(processId)}
+					on:close={() => dicedWindows.remove(processId)}
 					on:move={(event) => window.internals.windowActions.move.next(event.detail)}
+					on:resize={(event) => window.internals.windowActions.resize.next(event.detail)}
 				>
-					{#if next.program === DesktopProgram.MINESWEEPER && window.internals.minesweeperGame}
-						<Minesweeper internals={window.internals.minesweeperGame} />
+					<svelte:fragment slot="menu">
+						{#if next.program}
+							<svelte:component
+								this={windowComponents[next.program].menu}
+								internals={window.internals.minesweeperGame}
+							/>
+						{/if}
+					</svelte:fragment>
+					{#if next.program}
+						<svelte:component
+							this={windowComponents[next.program].content}
+							internals={window.internals.minesweeperGame}
+						/>
 					{/if}
 				</Window>
 			</Observer>

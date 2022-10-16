@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import type { CoordinateLike } from '../core';
+	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
+
+	let windowElement: HTMLElement;
 
 	const dispatch = createEventDispatcher();
 
@@ -14,12 +18,19 @@
 		...windowState,
 	};
 
-	function move(dragEvent: CustomEvent<{ x: number; y: number }>) {
-		dispatch('move', { x: dragEvent.detail.x, y: dragEvent.detail.y });
-		// console.log('move', transient, transientState, dragEvent.detail);
+	function resize(next: ResizeData) {
+		dispatch('resize', next);
 		if (transient) {
-			transientState.position.x = dragEvent.detail.x;
-			transientState.position.y = dragEvent.detail.y;
+			transientState.width = next.width;
+			transientState.height = next.height;
+		}
+	}
+
+	function move(delta: CoordinateLike) {
+		dispatch('move', delta);
+		if (transient) {
+			transientState.position.x = delta.x;
+			transientState.position.y = delta.y;
 		}
 	}
 
@@ -29,6 +40,7 @@
 
 	function restore() {
 		dispatch('restore');
+		interact.on();
 		if (transient) {
 			transientState.maximized = false;
 		}
@@ -36,6 +48,7 @@
 
 	function maximize() {
 		dispatch('maximize');
+		interact.off();
 		if (transient) {
 			transientState.maximized = true;
 		}
@@ -44,11 +57,23 @@
 	function close() {
 		dispatch('close');
 	}
+
+	let interact: InteractBuilder;
+
+	onMount(() => {
+		interact = InteractBuilder.from(windowElement).movable(move).resizable(resize);
+	});
+
+	onDestroy(() => {
+		interact.unsubscribe();
+	});
 </script>
 
 <div
-	class="ms-window window wid{transientState.windowId} {transientState.program} {$$props.class ??
+	bind:this={windowElement}
+	class="ms-window window pid{transientState.processId} {transientState.program} {$$props.class ??
 		''}"
+	class:immobile={transientState.maximized}
 	class:maximized={transientState.maximized}
 	style:top={`${transientState.position.y}px`}
 	style:left={`${transientState.position.x}px`}
@@ -65,8 +90,13 @@
 		on:restore={restore}
 		on:maximize={maximize}
 		on:close={close}
-		on:drag={move}
 	/>
+	{#if $$slots.menu}
+		<div class="menu">
+			<slot name="menu" />
+		</div>
+	{/if}
+
 	<div class="window-body">
 		<slot />
 	</div>
@@ -80,11 +110,25 @@
 
 <style lang="scss">
 	.ms-window {
-		position: relative;
+		display: flex;
+		flex-direction: column;
+
+		position: absolute;
 		box-sizing: border-box;
 		user-select: none;
 
+		.menu {
+			height: 16px;
+			display: flex;
+			height: max-content;
+
+			:global(button:first-letter) {
+				text-transform: uppercase;
+			}
+		}
+
 		.window-body {
+			overflow: auto;
 			margin: 0;
 		}
 
@@ -93,10 +137,11 @@
 			width: 100% !important;
 			top: 0 !important;
 			left: 0 !important;
-		}
-		&:not(.maximized) {
-			display: table-cell;
 
+			transform: none !important;
+		}
+
+		&:not(.maximized) {
 			height: fit-content;
 			width: fit-content;
 

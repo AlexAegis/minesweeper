@@ -41,7 +41,7 @@
 		}
 	}
 
-	export function backdropClick() {
+	export function backdropClick(event: MouseEvent) {
 		if ((event?.target as Element)?.className.includes('ms-modal')) {
 			errorNotification.next();
 		}

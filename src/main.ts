@@ -1,4 +1,5 @@
-// import '../node_modules/98.css/style.css';
+import '98.css/dist/98.css';
+import 'normalize.css/normalize.css';
 import './app.scss';
 import App from './app.svelte';
 import './minesweeper.scss';

@@ -32,71 +32,66 @@
 	}
 </script>
 
-<div class="ms-menu">
-	<Dropdown title="Game" hotkeyLetter={'G'} bind:active>
-		<Button
-			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() => internals.minesweeperActions.resetGame.next()}
-			contextHasToggleable={true}
-		>
-			New
-		</Button>
-		<hr />
-		{#each Object.entries(CLASSIC_GAME_PRESETS) as [key, preset]}
-			<Observer observable={internals.isGameSettingsAPreset$(preset)} let:next>
-				<Button
-					look={ButtonLook.CONTEXT_MENU_ITEM}
-					toggled={next}
-					contextHasToggleable={true}
-					on:click={() => internals.minesweeperActions.resetGame.next(preset)}
-				>
-					{key}
-				</Button>
-			</Observer>
-		{/each}
-
-		<Button
-			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() => customGameModal.open()}
-			toggled={$isGameSettingsNotAPreset$}
-			contextHasToggleable={true}
-		>
-			Custom...
-		</Button>
-		<Button
-			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() => highScoreModal.open()}
-			contextHasToggleable={true}
-		>
-			Highscore
-		</Button>
-
-		<Observer observable={internals.cheating$} let:next>
+<Dropdown title="Game" hotkeyLetter={'G'} bind:active>
+	<Button
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => internals.minesweeperActions.resetGame.next()}
+		contextHasToggleable={true}
+	>
+		New
+	</Button>
+	<hr />
+	{#each Object.entries(CLASSIC_GAME_PRESETS) as [key, preset]}
+		<Observer observable={internals.isGameSettingsAPreset$(preset)} let:next>
 			<Button
 				look={ButtonLook.CONTEXT_MENU_ITEM}
-				on:click={() => internals.minesweeperActions.cheating.next(!next)}
+				toggled={next}
 				contextHasToggleable={true}
+				on:click={() => internals.minesweeperActions.resetGame.next(preset)}
 			>
-				{#if !next}
-					Enable
-				{:else}
-					Disable
-				{/if}
-				Cheats
+				{key}
 			</Button>
 		</Observer>
-	</Dropdown>
-	<Dropdown title={'Help'} hotkeyLetter={'H'} bind:active>
+	{/each}
+
+	<Button
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => customGameModal.open()}
+		toggled={$isGameSettingsNotAPreset$}
+		contextHasToggleable={true}
+	>
+		Custom...
+	</Button>
+	<Button
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => highScoreModal.open()}
+		contextHasToggleable={true}
+	>
+		Highscore
+	</Button>
+
+	<Observer observable={internals.cheating$} let:next>
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() => window.open(homepage, '_blank')}
+			on:click={() => internals.minesweeperActions.cheating.next(!next)}
+			contextHasToggleable={true}
 		>
-			Github
+			{#if !next}
+				Enable
+			{:else}
+				Disable
+			{/if}
+			Cheats
 		</Button>
-		<hr />
-		<Button look={ButtonLook.CONTEXT_MENU_ITEM}>About Minesweeper...</Button>
-	</Dropdown>
-</div>
+	</Observer>
+</Dropdown>
+<Dropdown title={'Help'} hotkeyLetter={'H'} bind:active>
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => window.open(homepage, '_blank')}>
+		Github
+	</Button>
+	<hr />
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM}>About Minesweeper...</Button>
+</Dropdown>
 
 <Modal title="Custom Field" bind:this={customGameModal}>
 	<Settings
@@ -112,13 +107,4 @@
 </Modal>
 
 <style lang="scss">
-	.ms-menu {
-		height: 16px;
-		display: flex;
-		height: max-content;
-
-		:global(button:first-letter) {
-			text-transform: uppercase;
-		}
-	}
 </style>

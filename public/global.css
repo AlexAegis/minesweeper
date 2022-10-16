@@ -6,7 +6,7 @@
 body {
 	margin: 0;
 	height: 100vh;
-	font-family: 'Tahoma8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif;
+	font-family: 'Tahoma8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
 /*

@@ -19,6 +19,7 @@ export const rootSlice$ = scope.createRootSlice(
 				name: PACKAGE_NAME_AND_VERSION,
 			}),
 		],
+		useDefaultLogger: true,
 	}
 );
 

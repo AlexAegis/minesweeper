@@ -1,18 +1,22 @@
 import type { CoordinateLike } from '../core';
 import type { MinesweeperGame } from '../store';
-import type { DesktopProgram, WindowId } from '../store/desktop.store';
+import type { DesktopProgram, ProcessId } from '../store/desktop.store';
 
 export interface BaseWindowState {
-	windowId: WindowId;
+	processId: ProcessId;
 	program?: DesktopProgram;
 	title: string;
 	icon: string | undefined;
-	position: CoordinateLike;
-	width: number;
+	active: boolean;
+	/**
+	 * Its initial value will act as the minimum height of the window as
+	 * resizable is using scollHeight as the minimum size
+	 */
 	height: number;
+	width: number;
+	position: CoordinateLike;
 	maximized: boolean;
 	resizable: boolean;
-	active: boolean;
 }
 
 export interface ProgramWindowState<ProgramData> extends BaseWindowState {
@@ -26,16 +30,16 @@ export interface MineSweeperWindowState extends ProgramWindowState<MinesweeperGa
 export type WindowState = MineSweeperWindowState | BaseWindowState;
 
 export const initialWindowState: BaseWindowState = {
-	windowId: '-2',
+	processId: '-2',
+	title: '...',
+	icon: '',
 	active: false,
 	height: 100,
-	icon: '',
-	maximized: false,
-	resizable: true,
-	title: '...',
-	width: 100,
+	width: 80,
 	position: {
 		x: 200,
 		y: 200,
 	},
+	maximized: false,
+	resizable: true,
 };

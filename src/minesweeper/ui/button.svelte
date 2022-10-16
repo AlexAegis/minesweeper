@@ -85,6 +85,8 @@
 <style lang="scss">
 	button {
 		font-size: 18px;
+		line-height: 14px;
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
 
