@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { debug$ } from './minesweeper/store';
 	import { desktopActions, programs$ } from './minesweeper/store/desktop.store';
 	import Button from './minesweeper/ui/button.svelte';
 	import DesktopIcon from './minesweeper/ui/desktop-icon.svelte';
@@ -14,8 +15,7 @@
 	{/each}
 
 	<svelte:fragment slot="quickbar">
-		<Button class="debug-button">Debug</Button>
-		<Button class="debug-button">Debug</Button>
+		<Button class="debug-button" on:click={() => debug$.set(!debug$.value)}>Debug</Button>
 	</svelte:fragment>
 </Desktop>
 

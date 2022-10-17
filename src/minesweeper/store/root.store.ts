@@ -1,58 +1,47 @@
-import { createLoggingMetaReducer } from '@tinyslice/core';
-import { take, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import packageJson from '../../../package.json';
 import { scope } from './scope';
 
-import { TinySliceDevtoolPlugin } from '@tinyslice/devtools-plugin';
+import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
 export interface RootState {
 	debug: boolean;
 }
 
 export const PACKAGE_NAME_AND_VERSION = `${packageJson.displayName} (${packageJson.version})`;
+
+const plugins = [new TinySliceHydrationPlugin<RootState>('rootState')];
+
 export const rootSlice$ = scope.createRootSlice(
 	{
-		debug: true,
+		debug: false,
 	} as RootState,
 	{
-		plugins: [
-			new TinySliceDevtoolPlugin<RootState>({
-				name: PACKAGE_NAME_AND_VERSION,
-			}),
-		],
-		useDefaultLogger: true,
+		plugins,
 	}
 );
 
 export const debug$ = rootSlice$.slice('debug');
-/*
-scope.createEffect(
-	debug$.pipe(
-		switchMap((debug) => {
-			if (debug) {
-				return import('@tinyslice/devtools-plugin');
-			} else {
-				return of(undefined);
-			}
-		}),
-		tap((pluginBundle) =>
-			rootSlice$.setPlugins(
-				pluginBundle
-					? [
-							new pluginBundle.TinySliceDevtoolPlugin<RootState>({
-								name: PACKAGE_NAME_AND_VERSION,
-							}),
-					  ]
-					: []
-			)
-		)
-	)
-);*/
 
 scope.createEffect(
 	debug$.pipe(
-		take(0),
-		tap((debug) =>
-			rootSlice$.setMetaReducers(debug ? [createLoggingMetaReducer<RootState>()] : [])
-		)
+		tap((debug) => {
+			if (debug) {
+				rootSlice$.loadAndAddPlugins(
+					() =>
+						import('@tinyslice/devtools-plugin').then(
+							(plugin) =>
+								new plugin.TinySliceDevtoolPlugin<RootState>({
+									name: PACKAGE_NAME_AND_VERSION,
+								})
+						),
+					() =>
+						import('@tinyslice/logger-plugin').then(
+							(plugin) => new plugin.TinySliceLoggerPlugin<RootState>()
+						)
+				);
+			} else {
+				rootSlice$.setPlugins(plugins);
+			}
+		})
 	)
 );
