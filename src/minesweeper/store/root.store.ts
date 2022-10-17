@@ -9,7 +9,7 @@ export interface RootState {
 
 export const PACKAGE_NAME_AND_VERSION = `${packageJson.displayName} (${packageJson.version})`;
 
-const plugins = [new TinySliceHydrationPlugin<RootState>('rootState')];
+const plugins = [new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION)];
 
 export const rootSlice$ = scope.createRootSlice(
 	{

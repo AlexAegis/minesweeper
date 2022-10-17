@@ -117,10 +117,11 @@
 		box-sizing: border-box;
 		user-select: none;
 
+		touch-action: none;
+
 		.menu {
-			height: 16px;
+			min-height: 20px;
 			display: flex;
-			height: max-content;
 
 			:global(button:first-letter) {
 				text-transform: uppercase;

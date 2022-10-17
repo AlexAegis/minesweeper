@@ -37,8 +37,8 @@
 		"postpublish": "pinst --enable"
 	},
 	"dependencies": {
-		"@tinyslice/core": "^0.5.0",
-		"@tinyslice/hydration-plugin": "^0.5.0",
+		"@tinyslice/core": "^0.5.1",
+		"@tinyslice/hydration-plugin": "^0.5.1",
 		"98.css": "^0.1.18",
 		"interactjs": "^1.10.17",
 		"normalize.css": "^8.0.1",
@@ -51,8 +51,8 @@
 		"@commitlint/cli": "^17.1.2",
 		"@commitlint/config-conventional": "^17.1.0",
 		"@sveltejs/vite-plugin-svelte": "^1.0.9",
-		"@tinyslice/devtools-plugin": "^0.5.0",
-		"@tinyslice/logger-plugin": "^0.5.0",
+		"@tinyslice/devtools-plugin": "^0.5.1",
+		"@tinyslice/logger-plugin": "^0.5.1",
 		"@tsconfig/svelte": "^3.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.40.1",
 		"@typescript-eslint/parser": "^5.40.1",

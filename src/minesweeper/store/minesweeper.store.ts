@@ -165,10 +165,6 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		}
 	);
 
-	console.log('key', key, game$.value);
-	parentSlice.defineKeyAction.next({ key, data: game$.value });
-	// parentSlice.set({ ...parentSlice.value, [key]: game$.value });
-
 	const TILE_TAG = '[tile]';
 	const CLICK_TAG = '[click]';
 
@@ -495,8 +491,6 @@ export const createMineSweeperGame = <ParentSlice, T>(
 						if (!tile.revealed && (revealedTileKey === key || spill.includes(key))) {
 							if (isEmptyTileMark(tile.mark)) {
 								return { ...tile, revealed: true, pressed: false };
-							} else if (revealedTileKey === key) {
-								return { ...tile, mark: TileMark.EMTPY, pressed: false };
 							} else {
 								return { ...tile, pressed: false };
 							}
@@ -534,15 +528,22 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			};
 
 			tileSlice.addReducers([
-				minesweeperActions.tileActions.markTile.reduce((tile, payload) =>
-					Coordinate.equal(tile, payload)
-						? {
-								...tile,
-								mark: getNextTileMark(tile.mark),
-								pressed: false,
-						  }
-						: tile
-				),
+				minesweeperActions.tileActions.markTile.reduce((tile, payload) => {
+					if (!tile.revealed && Coordinate.equal(tile, payload)) {
+						return {
+							...tile,
+							mark: getNextTileMark(tile.mark),
+							pressed: false,
+						};
+					} else if (!tile.revealed && Coordinate.isNeighbouring(tile, payload)) {
+						return {
+							...tile,
+							pressed: false,
+						};
+					} else {
+						return tile;
+					}
+				}),
 				minesweeperActions.clickActions.globalMouseUp.reduce((tile) => {
 					if (tile.pressed) {
 						return { ...tile, pressed: false };
@@ -565,9 +566,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			};
 		},
 	});
-
 	const tiles$ = tilesSlice$.pipe(map((tiles) => Object.values(tiles)));
-
 	const tilesFlagged$ = tiles$.pipe(
 		map((tiles) => tiles.filter((tile) => isFlagTileMark(tile.mark)).length)
 	);

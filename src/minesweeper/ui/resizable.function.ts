@@ -56,6 +56,7 @@ const resizable = (
 ): Interactable => {
 	return interactable.resizable({
 		edges: { left: true, right: true, bottom: true, top: true },
+		// 5 on desktop 10 on mobile
 		margin: 5, // window padding in px is 3
 		listeners: {
 			move: (event: ResizeEvent) => {
@@ -72,8 +73,9 @@ const resizable = (
 		modifiers: [
 			interact.modifiers.restrictSize({
 				min: {
-					width: element.scrollWidth,
-					height: element.scrollHeight,
+					width: 120, //element.scrollWidth,
+					// 45: titlebar and menubar together
+					height: 45, //element.scrollHeight,
 				},
 			}),
 		],

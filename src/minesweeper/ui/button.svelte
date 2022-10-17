@@ -28,6 +28,24 @@
 			}
 		}
 	}
+	function tapdown(_e: CustomEvent<{ event: PointerEvent; pointersCount: number }>): void {
+		if (!disableSelfInset) {
+			mousedown = true;
+		}
+	}
+
+	function tapmove(event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) {
+		const elementsUnderFinger = document.elementsFromPoint(
+			event.detail.event.pageX,
+			event.detail.event.pageY
+		);
+		if (!elementsUnderFinger.includes(event.detail.event.target as Element)) {
+			dispatch('tapleave');
+			if (!disableSelfInset) {
+				mousedown = false;
+			}
+		}
+	}
 
 	onDestroy(() => {
 		if (mouseUpListener) {
@@ -57,8 +75,8 @@
 	use:tap
 	on:tap
 	on:tapup
-	on:tapdown
-	on:tapmove
+	on:tapdown={tapdown}
+	on:tapmove={tapmove}
 	on:click
 	on:mouseup
 	on:mousedown={onMouseDown}

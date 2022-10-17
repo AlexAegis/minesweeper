@@ -36,10 +36,20 @@
 		dispatch('close');
 	}
 
+	let lastTap = 0;
+
+	function dbltap() {
+		const tap = new Date().getTime();
+		if (tap - lastTap < 250) {
+			maximize();
+		}
+		lastTap = tap;
+	}
+
 	onDestroy(() => sink.unsubscribe());
 </script>
 
-<div class="title-bar" on:dblclick={maximize}>
+<div class="title-bar" on:dblclick={maximize} use:tapGesture on:tapdown={dbltap}>
 	<div aria-label="title" class="title-bar-text" class:active>
 		{#if icon}
 			<Image class="ms-title-bar-icon" src={icon} alt={title} />
