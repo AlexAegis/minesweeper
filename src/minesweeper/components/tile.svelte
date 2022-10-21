@@ -37,7 +37,7 @@
 		return `ms-tile-${tile.value}`;
 	}
 
-	function getTileClassList(tile: TileState): string {
+	function getTileClassList(tile: TileState, cheating: boolean): string {
 		const classes: string[] = [];
 
 		if (isQuestionTileMark(tile.mark)) {
@@ -69,7 +69,7 @@
 		return classes.join(' ');
 	}
 
-	$: tileClass = getTileClassList(tile);
+	$: tileClass = getTileClassList(tile, cheating);
 </script>
 
 <Button
