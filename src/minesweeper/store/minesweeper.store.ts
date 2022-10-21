@@ -1,4 +1,9 @@
-import { entitySliceReducerWithPrecompute, ifLatestFrom, Slice } from '@tinyslice/core';
+import {
+	entitySliceReducer,
+	entitySliceReducerWithPrecompute,
+	ifLatestFrom,
+	Slice,
+} from '@tinyslice/core';
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -424,6 +429,29 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}
 				)
 			),
+			minesweeperActions.tileActions.markTile.reduce(
+				entitySliceReducerWithPrecompute(
+					(state, payload) => ({
+						neighbours: getNeighbouringCoordinateKeys(state, payload),
+					}),
+					(key, tile, payload, { neighbours }) => {
+						if (!tile.revealed && Coordinate.equal(tile, payload)) {
+							return {
+								...tile,
+								mark: getNextTileMark(tile.mark),
+								pressed: false,
+							};
+						} else if (!tile.revealed && neighbours.includes(key)) {
+							return {
+								...tile,
+								pressed: false,
+							};
+						} else {
+							return tile;
+						}
+					}
+				)
+			),
 			minesweeperActions.clickActions.cancelClick.reduce(
 				entitySliceReducerWithPrecompute(
 					(state, revealedTileCoord) => ({
@@ -506,66 +534,23 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}
 				)
 			),
+			minesweeperActions.clickActions.globalMouseUp.reduce(
+				entitySliceReducer((_key, tile) => {
+					if (tile.pressed) {
+						return { ...tile, pressed: false };
+					} else {
+						return tile;
+					}
+				})
+			),
 		],
 	});
 
 	const dicedTiles = tilesSlice$.dice(initialTile as TileState, {
 		getAllKeys: (slice) => Object.keys(slice) as `${number},${number}`[],
 		getNextKey: (_keys) => '0,0',
-		defineInternals: (tileSlice) => {
-			const isMine$ = tileSlice.slice('isMine');
-			const guessedWrong$ = tileSlice.slice('guessedWrong');
-			const disabled$ = tileSlice.slice('disabled');
-			const mark$ = tileSlice.slice('mark');
-			const pressed$ = tileSlice.slice('pressed');
-			const value$ = tileSlice.slice('value');
-			const revealed$ = tileSlice.slice('revealed');
-			const x$ = tileSlice.slice('x');
-			const y$ = tileSlice.slice('y');
-
-			const tileActions = {
-				depressTile: tileSlice.createAction(`${MS_TAG} ${TILE_TAG} depress`),
-			};
-
-			tileSlice.addReducers([
-				minesweeperActions.tileActions.markTile.reduce((tile, payload) => {
-					if (!tile.revealed && Coordinate.equal(tile, payload)) {
-						return {
-							...tile,
-							mark: getNextTileMark(tile.mark),
-							pressed: false,
-						};
-					} else if (!tile.revealed && Coordinate.isNeighbouring(tile, payload)) {
-						return {
-							...tile,
-							pressed: false,
-						};
-					} else {
-						return tile;
-					}
-				}),
-				minesweeperActions.clickActions.globalMouseUp.reduce((tile) => {
-					if (tile.pressed) {
-						return { ...tile, pressed: false };
-					} else {
-						return tile;
-					}
-				}),
-			]);
-			return {
-				tileActions,
-				isMine$,
-				guessedWrong$,
-				disabled$,
-				mark$,
-				pressed$,
-				value$,
-				revealed$,
-				x$,
-				y$,
-			};
-		},
 	});
+
 	const tiles$ = tilesSlice$.pipe(map((tiles) => Object.values(tiles)));
 	const tilesFlagged$ = tiles$.pipe(
 		map((tiles) => tiles.filter((tile) => isFlagTileMark(tile.mark)).length)

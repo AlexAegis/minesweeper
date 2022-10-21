@@ -13,7 +13,7 @@ const plugins = [new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSIO
 
 export const rootSlice$ = scope.createRootSlice(
 	{
-		debug: false,
+		debug: true,
 	} as RootState,
 	{
 		plugins,
@@ -26,17 +26,25 @@ scope.createEffect(
 	debug$.pipe(
 		tap((debug) => {
 			if (debug) {
-				rootSlice$.loadAndAddPlugins(
+				rootSlice$.loadAndSetPlugins(
 					() =>
 						import('@tinyslice/devtools-plugin').then(
 							(plugin) =>
-								new plugin.TinySliceDevtoolPlugin<RootState>({
+								new plugin.TinySliceDevtoolPlugin({
 									name: PACKAGE_NAME_AND_VERSION,
 								})
 						),
 					() =>
 						import('@tinyslice/logger-plugin').then(
-							(plugin) => new plugin.TinySliceLoggerPlugin<RootState>()
+							(plugin) =>
+								new plugin.TinySliceLoggerPlugin({
+									onlyTimers: true,
+									disableGrouping: true,
+									ignoreActions: [
+										/.*timer.*/,
+										'root.desktop.windows.1.programData [minesweeper] increment timer ms',
+									],
+								})
 						)
 				);
 			} else {
