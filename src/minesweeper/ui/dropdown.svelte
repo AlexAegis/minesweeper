@@ -11,8 +11,15 @@
 
 	let button: Button;
 
-	const clickListener = fromEvent(document, 'click')
-		.pipe(filter((event) => !button.$$.root.contains(event.target as Node)))
+	const clickListener = fromEvent<PointerEvent>(document, 'pointerup')
+		.pipe(
+			filter((event) => {
+				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+				return !Array.from(button.$$.root.children).some((child) =>
+					elementsUnderPointer.includes(child)
+				);
+			})
+		)
 		.subscribe(() => (active = undefined));
 
 	function itemClick(event: MouseEvent) {
@@ -24,6 +31,18 @@
 		}
 	}
 
+	function pointerenter(event: PointerEvent): void {
+		if (event.pointerType === 'mouse') {
+			if (active !== undefined && active !== title) {
+				active = title;
+			}
+		}
+	}
+
+	function click(_event: MouseEvent): void {
+		active = active === title ? undefined : title;
+	}
+
 	onDestroy(() => clickListener.unsubscribe());
 </script>
 
@@ -32,19 +51,17 @@
 	look={ButtonLook.TITLE_BAR_MENU_ITEM}
 	active={active === title}
 	disableSelfInset={active === undefined}
-	on:mouseenter={() => {
-		if (active !== undefined && active !== title) {
-			active = title;
-		}
-	}}
-	on:click={() => {
-		active = active === title ? undefined : title;
-	}}
+	on:pointerenter={pointerenter}
+	on:click={click}
 	{hotkeyLetter}
 >
 	{title}
 	{#if active === title}
-		<div class="dropdown window" on:click|preventDefault|stopPropagation={itemClick}>
+		<div
+			class="dropdown window"
+			on:click|preventDefault|stopPropagation={itemClick}
+			on:keypress
+		>
 			<slot />
 		</div>
 	{/if}

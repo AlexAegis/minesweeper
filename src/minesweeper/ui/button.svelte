@@ -94,20 +94,18 @@
 		}
 	}
 
-	function mouseleave() {
+	function pointerleave() {
 		cancelLongpress();
 	}
 
 	function startFire() {
 		if (!disabled) {
-			console.log('startFire');
 			dispatch('startFire');
 		}
 	}
 
 	function fire() {
 		if (!disabled) {
-			console.log('fire');
 			dispatch('fire');
 			cancelLongpress();
 		}
@@ -115,7 +113,6 @@
 
 	function alternativeFire() {
 		if (!disabled) {
-			console.log('alternativeFire');
 			dispatch('alternativeFire');
 			cancelLongpress();
 		}
@@ -165,13 +162,12 @@
 	on:mousedown
 	on:mouseenter
 	on:dblclick
-	on:mouseleave={mouseleave}
 	on:contextmenu|preventDefault
+	on:pointercancel
+	on:pointerenter
 	on:pointerup={pointerup}
 	on:pointerdown={pointerdown}
-	on:pointercancel
-	on:pointerout
-	on:pointerenter
+	on:pointerleave={pointerleave}
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
 		<span class="icon" class:checkmark={toggled} />

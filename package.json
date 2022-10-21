@@ -2,7 +2,7 @@
 	"name": "@alexaegis/desktop-workspace",
 	"displayName": "Minesweeper",
 	"description": "Minesweeper Clone powered by Svelte and TinySlice",
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"license": "mit",
 	"private": true,
 	"author": {
@@ -17,7 +17,7 @@
 	},
 	"type": "module",
 	"scripts": {
-		"start": "vite",
+		"start": "vite --host",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "jest --passWithNoTests",

@@ -153,8 +153,6 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	parentSlice: Slice<ParentSlice, T>,
 	key: string
 ) => {
-	console.log('createMineSweeperGame', parentSlice.absolutePath);
-
 	const game$ = parentSlice.addSlice(
 		key,
 		{
