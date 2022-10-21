@@ -1,6 +1,8 @@
 body {
 	display: block;
 	height: 100vh;
+	overscroll-behavior: none;
+	touch-action: none;
 
 	&.w98 {
 		background-color: rgb(59, 110, 165);

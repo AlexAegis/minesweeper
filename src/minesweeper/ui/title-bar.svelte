@@ -103,6 +103,7 @@
 	// 98.css
 	.title-bar {
 		user-select: none;
+		touch-action: none;
 
 		// 98.css
 		.title-bar-text {
