@@ -66,7 +66,6 @@
 <style lang="scss">
 	.desktop {
 		overscroll-behavior: none;
-		touch-action: none;
 
 		width: 100%;
 		height: 100%;

@@ -13,14 +13,7 @@
 <div class="playfield {$$props.class ?? ''}" style={$$props.style ?? ''}>
 	{#each $keys$ as key}
 		<Observer observable={dicedTiles.get(key)} let:next>
-			<Tile
-				{cheating}
-				tile={next}
-				on:leftclickDown
-				on:leftclickUp
-				on:rightclickUp
-				on:mouseleave
-			/>
+			<Tile {cheating} tile={next} on:startFire on:fire on:alternativeFire on:cancelFire />
 		</Observer>
 	{/each}
 </div>

@@ -1,49 +1,132 @@
 <script lang="ts">
+	import { isNonNullable } from '@tinyslice/core';
 	import { fromEvent, Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
 	import { tap } from 'svelte-gestures';
 	import { ButtonLook } from './button-look.enum';
 
 	const dispatch = createEventDispatcher();
-	export let mousedown = false;
+
+	export let disabled = false;
+	export let appearDisabled = false;
+	export let pressed = false;
+	export let longpressTime = 250;
 	export let type: 'button' | 'menu' | 'submit' | 'reset' = 'button';
 	export let look: ButtonLook | undefined = undefined;
 
-	export let disableSelfInset = false;
+	export let selfPress = true;
 	export let hotkeyLetter: string | undefined = undefined;
 	export let toggled: boolean | undefined = undefined;
 	export let active: boolean | undefined = undefined;
 
+	let longpressHappened = false;
+	let cancelHappened = false;
+
 	let mouseUpListener: Subscription | undefined;
 
-	if (!disableSelfInset) {
-		mouseUpListener = fromEvent(document, 'mouseup').subscribe(() => (mousedown = false));
+	if (selfPress) {
+		mouseUpListener = fromEvent(document, 'mouseup').subscribe(() => {
+			pressed = false;
+			cancelLongpress();
+		});
 	}
 
-	function onMouseDown(e: MouseEvent): void {
-		dispatch('mousedown');
-		if (!disableSelfInset) {
-			if (e.button === 0 || e.button === 1) {
-				mousedown = true;
+	function pointerdown(event: PointerEvent): void {
+		longpressHappened = false;
+		cancelHappened = false;
+		if (event.button === 0 || event.button === 1 || event.pointerType === 'touch') {
+			startFire();
+			longpress();
+			if (selfPress) {
+				pressed = true;
 			}
 		}
 	}
-	function tapdown(_e: CustomEvent<{ event: PointerEvent; pointersCount: number }>): void {
-		if (!disableSelfInset) {
-			mousedown = true;
+
+	function pointerup(e: PointerEvent): void {
+		if (!longpressHappened && !cancelHappened) {
+			cancelLongpress();
+			if (e.button === 0 || e.button === 1) {
+				fire();
+				if (selfPress) {
+					pressed = true;
+				}
+			} else if (e.button === 2) {
+				alternativeFire();
+				if (selfPress) {
+					pressed = true;
+				}
+			}
 		}
 	}
 
 	function tapmove(event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) {
-		const elementsUnderFinger = document.elementsFromPoint(
-			event.detail.event.pageX,
-			event.detail.event.pageY
-		);
-		if (!elementsUnderFinger.includes(event.detail.event.target as Element)) {
-			dispatch('tapleave');
-			if (!disableSelfInset) {
-				mousedown = false;
+		if (event.detail.event.pointerType === 'touch') {
+			const elementsUnderFinger = document.elementsFromPoint(
+				event.detail.event.pageX,
+				event.detail.event.pageY
+			);
+			if (!elementsUnderFinger.includes(event.detail.event.target as Element)) {
+				cancelFire();
+				if (selfPress) {
+					pressed = false;
+				}
 			}
+		}
+	}
+
+	function longpress(): void {
+		longpressTimeout = window.setTimeout(() => {
+			if (!longpressHappened && !cancelHappened) {
+				longpressHappened = true;
+				cancelLongpress();
+				alternativeFire();
+			}
+		}, longpressTime);
+	}
+
+	let longpressTimeout: number | undefined;
+
+	function cancelLongpress() {
+		if (isNonNullable(longpressTimeout)) {
+			window.clearTimeout(longpressTimeout);
+			longpressTimeout = undefined;
+		}
+	}
+
+	function mouseleave() {
+		cancelLongpress();
+	}
+
+	function startFire() {
+		if (!disabled) {
+			console.log('startFire');
+			dispatch('startFire');
+		}
+	}
+
+	function fire() {
+		if (!disabled) {
+			console.log('fire');
+			dispatch('fire');
+			cancelLongpress();
+		}
+	}
+
+	function alternativeFire() {
+		if (!disabled) {
+			console.log('alternativeFire');
+			dispatch('alternativeFire');
+			cancelLongpress();
+		}
+	}
+
+	function cancelFire() {
+		if (!disabled && pressed && !cancelHappened) {
+			cancelHappened = true;
+			cancelLongpress();
+			console.log('cancelFire');
+			dispatch('cancelFire');
 		}
 	}
 
@@ -59,11 +142,11 @@
 	class="ms-button {$$props.class ?? ''}"
 	aria-label={$$props['aria-label']}
 	style={$$props.style}
-	disabled={$$props.disabled}
+	class:disabled={disabled || appearDisabled}
 	class:hotkey-letter={!!hotkeyLetter}
 	class:active
-	class:disableSelfInset
-	class:pressed={mousedown}
+	class:selfPress
+	class:pressed
 	class:toggleable={toggled !== undefined}
 	class:toggleable-context={look === ButtonLook.CONTEXT_MENU_ITEM}
 	class:type-none={look === undefined}
@@ -75,17 +158,17 @@
 	use:tap
 	on:tap
 	on:tapup
-	on:tapdown={tapdown}
+	on:tapdown
 	on:tapmove={tapmove}
 	on:click
 	on:mouseup
-	on:mousedown={onMouseDown}
+	on:mousedown
 	on:mouseenter
 	on:dblclick
-	on:mouseleave
-	on:contextmenu
-	on:pointerup
-	on:pointerdown
+	on:mouseleave={mouseleave}
+	on:contextmenu|preventDefault
+	on:pointerup={pointerup}
+	on:pointerdown={pointerdown}
 	on:pointercancel
 	on:pointerout
 	on:pointerenter
@@ -104,12 +187,16 @@
 	button {
 		font-size: 18px;
 		line-height: 14px;
+		touch-action: none;
+		user-select: none;
+		-webkit-user-select: none !important;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
 
 		image-rendering: pixelated;
 		background-repeat: no-repeat;
+		color: black;
 
 		background-position-x: var(--background-image-positon, 1px);
 		background-position-y: var(--background-image-positon, 1px);
@@ -123,6 +210,10 @@
 			display: flex;
 			gap: 8px;
 			align-items: center;
+		}
+
+		&.disabled {
+			cursor: default;
 		}
 
 		.icon {

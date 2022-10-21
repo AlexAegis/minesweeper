@@ -39,11 +39,8 @@ scope.createEffect(
 							(plugin) =>
 								new plugin.TinySliceLoggerPlugin({
 									onlyTimers: true,
-									disableGrouping: true,
-									ignoreActions: [
-										/.*timer.*/,
-										'root.desktop.windows.1.programData [minesweeper] increment timer ms',
-									],
+									disableGrouping: false,
+									ignoreActions: [/.*timer.*/, /.*move.*/, /.*resize.*/],
 								})
 						)
 				);

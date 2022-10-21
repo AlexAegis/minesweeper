@@ -37,6 +37,7 @@
 
 		.title {
 			user-select: none;
+			font-size: 18px;
 		}
 	}
 </style>

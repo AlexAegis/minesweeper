@@ -49,68 +49,35 @@ export class InteractBuilder {
 	}
 }
 
-function preventDefault(event: Event) {
-	event.preventDefault();
-}
-
 const resizable = (
 	interactable: Interactable,
 	element: HTMLElement,
 	resized: ResizeListener
 ): Interactable => {
-	return interactable
-		.resizable({
-			edges: { left: true, right: true, bottom: true, top: true },
-			// 5 on desktop 10 on mobile
-
-			margin: 20, // window padding in px is 3
-			listeners: {
-				move: (event: ResizeEvent) => {
-					if (!event.target.classList.contains('immobile')) {
-						resized({
-							height: event.rect.height,
-							width: event.rect.width,
-							left: event.deltaRect?.left,
-							top: event.deltaRect?.top,
-						});
-					}
-				},
-				start: (event: ResizeEvent) => {
-					console.log('YE!');
-					event.preventDefault();
-					element.classList.add('no-touch');
-					['touchstart', 'touchmove', 'touchend'].forEach((eventType) =>
-						element.addEventListener(eventType, preventDefault)
-					);
-				},
-				end: () => {
-					element.classList.remove('no-touch');
-					['touchstart', 'touchmove', 'touchend'].forEach((eventType) =>
-						element.removeEventListener(eventType, preventDefault)
-					);
-				},
+	return interactable.resizable({
+		edges: { left: true, right: true, bottom: true, top: true },
+		// 5 on desktop 10 on mobile
+		margin: 7, // window padding in px is 3
+		listeners: {
+			move: (event: ResizeEvent) => {
+				if (!event.target.classList.contains('immobile')) {
+					resized({
+						height: event.rect.height,
+						width: event.rect.width,
+						left: event.deltaRect?.left,
+						top: event.deltaRect?.top,
+					});
+				}
 			},
-			modifiers: [
-				interact.modifiers.restrictSize({
-					min: {
-						width: 120, //element.scrollWidth,
-						// 45: titlebar and menubar together
-						height: 45, //element.scrollHeight,
-					},
-				}),
-			],
-		})
-		.on('resizestart', () => {
-			console.log('Yo!');
-
-			// nullify touch events.
-			['touchstart', 'touchmove', 'touchend'].forEach((eventType) =>
-				element.addEventListener(eventType, preventDefault)
-			);
-		})
-		.on('resizeend', () => {
-			['touchstart', 'touchmove', 'touchend'].forEach((eventType) =>
-				element.removeEventListener(eventType, preventDefault)
-			);
-		});
+		},
+		modifiers: [
+			interact.modifiers.restrictSize({
+				min: {
+					width: 120, //element.scrollWidth,
+					// 45: titlebar and menubar together
+					height: 45, //element.scrollHeight,
+				},
+			}),
+		],
+	});
 };

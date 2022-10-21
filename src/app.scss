@@ -2,7 +2,7 @@ body {
 	display: block;
 	height: 100vh;
 	overscroll-behavior: none;
-	touch-action: none;
+	-webkit-touch-callout: none !important;
 
 	&.w98 {
 		background-color: rgb(59, 110, 165);

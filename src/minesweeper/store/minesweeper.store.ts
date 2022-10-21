@@ -190,16 +190,13 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			markTile: game$.createAction<CoordinateLike>(`${MS_TAG} ${TILE_TAG} mark`),
 		},
 		clickActions: {
-			cancelClick: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
-			globalMouseUp: game$.createAction<void>(`${MS_TAG} ${CLICK_TAG} global up`),
-			leftclickDown: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left down`),
-			leftclickUp: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} left up`),
-			middleclickDown: game$.createAction<CoordinateLike>(
-				`${MS_TAG} ${CLICK_TAG} middle down`
+			cancelFire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
+			globalCancel: game$.createAction<void>(`${MS_TAG} ${CLICK_TAG} global cancel`),
+			startFire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} start fire`),
+			fire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} fire`),
+			alternativeFire: game$.createAction<CoordinateLike>(
+				`${MS_TAG} ${CLICK_TAG} alternative fire`
 			),
-			middleclickUp: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} middle up`),
-			rightclickDown: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} right down`),
-			rightclickUp: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} right up`),
 		},
 	};
 
@@ -452,7 +449,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}
 				)
 			),
-			minesweeperActions.clickActions.cancelClick.reduce(
+			minesweeperActions.clickActions.cancelFire.reduce(
 				entitySliceReducerWithPrecompute(
 					(state, revealedTileCoord) => ({
 						revealedTileCoordKey: Coordinate.keyOf(revealedTileCoord),
@@ -534,7 +531,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}
 				)
 			),
-			minesweeperActions.clickActions.globalMouseUp.reduce(
+			minesweeperActions.clickActions.globalCancel.reduce(
 				entitySliceReducer((_key, tile) => {
 					if (tile.pressed) {
 						return { ...tile, pressed: false };
@@ -588,7 +585,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 */
 	game$.createEffect(
 		merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave')).pipe(
-			map(() => minesweeperActions.clickActions.globalMouseUp.makePacket()),
+			map(() => minesweeperActions.clickActions.globalCancel.makePacket()),
 			map(() => undefined)
 		)
 	);
@@ -597,7 +594,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 * Start the game at a safe tile and generate mines
 	 */
 	scope.createEffect(
-		minesweeperActions.clickActions.leftclickUp.pipe(
+		minesweeperActions.clickActions.fire.pipe(
 			ifLatestFrom(gameState$, isGameReadyToStart),
 			withLatestFrom(gameInstance$),
 			map(([tile, preset]) =>
@@ -613,7 +610,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 * Sanitize left clicks into depress
 	 */
 	game$.createEffect(
-		minesweeperActions.clickActions.leftclickDown.pipe(
+		minesweeperActions.clickActions.startFire.pipe(
 			ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
 			map((click) => minesweeperActions.tileActions.depressTile.makePacket(click))
 		)
@@ -623,7 +620,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 * Sanitize left clicks into reveal clicks
 	 */
 	game$.createEffect(
-		minesweeperActions.clickActions.leftclickUp.pipe(
+		minesweeperActions.clickActions.fire.pipe(
 			ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
 			map((click) => minesweeperActions.tileActions.revealTile.makePacket(click))
 		)
@@ -633,7 +630,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 * Sanitize right clicks
 	 */
 	game$.createEffect(
-		minesweeperActions.clickActions.rightclickUp.pipe(
+		minesweeperActions.clickActions.alternativeFire.pipe(
 			ifLatestFrom(isGameEnded$, (isGameEnded) => !isGameEnded),
 			map((click) => minesweeperActions.tileActions.markTile.makePacket(click))
 		)

@@ -36,14 +36,13 @@
 		class="panel inset"
 		dicedTiles={internals.dicedTiles}
 		{cheating}
-		on:leftclickDown={(event) =>
-			internals.minesweeperActions.clickActions.leftclickDown.next(event.detail)}
-		on:leftclickUp={(event) =>
-			internals.minesweeperActions.clickActions.leftclickUp.next(event.detail)}
-		on:rightclickUp={(event) =>
-			internals.minesweeperActions.clickActions.rightclickUp.next(event.detail)}
-		on:mouseleave={(event) =>
-			internals.minesweeperActions.clickActions.cancelClick.next(event.detail)}
+		on:startFire={(event) =>
+			internals.minesweeperActions.clickActions.startFire.next(event.detail)}
+		on:fire={(event) => internals.minesweeperActions.clickActions.fire.next(event.detail)}
+		on:alternativeFire={(event) =>
+			internals.minesweeperActions.clickActions.alternativeFire.next(event.detail)}
+		on:cancelFire={(event) =>
+			internals.minesweeperActions.clickActions.cancelFire.next(event.detail)}
 	/>
 </div>
 
