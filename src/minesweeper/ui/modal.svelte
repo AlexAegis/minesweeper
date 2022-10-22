@@ -57,6 +57,7 @@
 		class="ms-modal"
 		class:error={$error$}
 		style={$$props.style}
+		on:keypress
 		on:click|preventDefault={backdropClick}
 	>
 		<Window {windowState} transient={true} on:close={() => close()}>
