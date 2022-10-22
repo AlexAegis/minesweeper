@@ -1,16 +1,20 @@
 <script lang="ts">
 	import { interval, map, merge, of, startWith, Subject, switchMap, take } from 'rxjs';
 	import { onDestroy } from 'svelte';
+	import type { CoordinateLike } from '../core';
 	import type { BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
 	export let title: string;
 
+	let modalWindow: Window;
+
 	let windowState: Partial<BaseWindowState> = {
-		height: 400,
+		height: 200,
 		icon: undefined,
 		maximized: false,
 		resizable: true,
+		fitContent: true,
 		title,
 	};
 
@@ -31,8 +35,32 @@
 		startWith(false)
 	);
 
-	export function open() {
+	const centerOf = (
+		position: CoordinateLike,
+		size: CoordinateLike,
+		sizeOfTarget?: CoordinateLike
+	): CoordinateLike => {
+		return {
+			x: position.x + Math.floor(size.x / 2) - Math.floor((sizeOfTarget?.x ?? 0) / 2),
+			y: position.y + Math.floor(size.y / 2) - Math.floor((sizeOfTarget?.y ?? 0) / 2),
+		};
+	};
+
+	export function open(parentWindow?: BaseWindowState) {
+		windowState.invisible = true;
 		isOpen = true;
+		// Let the modal window mount before calculating center
+		setTimeout(() => {
+			windowState.position = centerOf(
+				parentWindow?.position ?? { x: 0, y: 0 },
+				{
+					x: parentWindow?.width ?? document.body.scrollWidth,
+					y: parentWindow?.height ?? document.body.scrollHeight,
+				},
+				{ x: windowState.width ?? 0, y: windowState.height ?? 0 }
+			);
+			windowState.invisible = false;
+		}, 0);
 	}
 
 	export function close(event?: MouseEvent) {
@@ -60,7 +88,7 @@
 		on:keypress
 		on:click|preventDefault={backdropClick}
 	>
-		<Window {windowState} transient={true} on:close={() => close()}>
+		<Window bind:this={modalWindow} {windowState} transient={true} on:close={() => close()}>
 			<slot />
 		</Window>
 	</div>

@@ -39,6 +39,7 @@
 							<svelte:component
 								this={windowComponents[next.program].menu}
 								internals={window.internals.minesweeperGame}
+								windowState={next}
 							/>
 						{/if}
 					</svelte:fragment>

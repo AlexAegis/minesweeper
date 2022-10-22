@@ -62,6 +62,18 @@
 
 	onMount(() => {
 		interact = InteractBuilder.from(windowElement).movable(move).resizable(resize);
+		// Update size on render
+		if (windowState) {
+			if (transient) {
+				windowState.width = windowElement.scrollWidth;
+				windowState.height = windowElement.scrollHeight;
+			} else {
+				dispatch('resize', {
+					height: windowElement.scrollHeight,
+					width: windowElement.scrollWidth,
+				} as ResizeData);
+			}
+		}
 	});
 
 	onDestroy(() => {
@@ -73,6 +85,7 @@
 	bind:this={windowElement}
 	class="ms-window window pid{transientState.processId} {transientState.program} {$$props.class ??
 		''}"
+	class:invisible={transientState.invisible}
 	class:immobile={transientState.maximized}
 	class:maximized={transientState.maximized}
 	class:fit-content={transientState.fitContent}
@@ -111,6 +124,10 @@
 
 <style lang="scss">
 	.ms-window {
+		&.invisible {
+			opacity: 0;
+		}
+
 		&.fit-content {
 			display: table;
 		}

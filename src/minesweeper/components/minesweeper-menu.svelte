@@ -16,7 +16,9 @@
 
 	import { ButtonLook } from '../ui/button-look.enum';
 	import Dropdown from '../ui/dropdown.svelte';
+	import type { BaseWindowState } from '../ui/window-state.interface';
 
+	export let windowState: BaseWindowState;
 	export let internals: MinesweeperGame;
 
 	$: preset$ = internals.gameSettings$.pipe(map((settings) => ({ ...settings })));
@@ -56,7 +58,7 @@
 
 	<Button
 		look={ButtonLook.CONTEXT_MENU_ITEM}
-		on:click={() => customGameModal.open()}
+		on:click={() => customGameModal.open(windowState)}
 		toggled={$isGameSettingsNotAPreset$}
 		contextHasToggleable={true}
 	>
@@ -64,7 +66,7 @@
 	</Button>
 	<Button
 		look={ButtonLook.CONTEXT_MENU_ITEM}
-		on:click={() => highScoreModal.open()}
+		on:click={() => highScoreModal.open(windowState)}
 		contextHasToggleable={true}
 	>
 		Highscore
