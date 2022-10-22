@@ -17,6 +17,9 @@ export interface BaseWindowState {
 	position: CoordinateLike;
 	maximized: boolean;
 	resizable: boolean;
+	minWidth: number;
+	minHeight: number;
+	fitContent: boolean;
 }
 
 export interface ProgramWindowState<ProgramData> extends BaseWindowState {
@@ -42,4 +45,7 @@ export const initialWindowState: BaseWindowState = {
 	},
 	maximized: false,
 	resizable: true,
+	minWidth: 120,
+	minHeight: 45, // 45: titlebar and menubar together
+	fitContent: false,
 };

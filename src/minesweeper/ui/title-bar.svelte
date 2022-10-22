@@ -7,11 +7,6 @@
 
 	const dispatch = createEventDispatcher();
 
-	enum PointerType {
-		MOUSE = 'mouse',
-		TOUCH = 'touch',
-	}
-
 	export let title: string;
 	export let icon: string | undefined = undefined;
 	export let active: boolean = true;
@@ -63,7 +58,7 @@
 			aria-label="Minimize"
 			use:tapGesture
 			on:click|preventDefault|stopPropagation={minimize}
-			on:tap|preventDefault|stopPropagation={minimize}
+			on:tap|preventDefault|stopPropagation
 			on:mousemove|preventDefault|stopPropagation
 			on:mousedown|preventDefault|stopPropagation
 			on:tapup|preventDefault|stopPropagation
@@ -75,7 +70,7 @@
 			aria-label={maximized ? 'Restore' : 'Maximize'}
 			use:tapGesture
 			on:click|preventDefault|stopPropagation={maximize}
-			on:tap|preventDefault|stopPropagation={maximize}
+			on:tap|preventDefault|stopPropagation
 			on:mousemove|preventDefault|stopPropagation
 			on:mousedown|preventDefault|stopPropagation
 			on:tapup|preventDefault|stopPropagation
@@ -88,7 +83,7 @@
 			aria-label="Close"
 			use:tapGesture
 			on:click|preventDefault|stopPropagation={close}
-			on:tap|preventDefault|stopPropagation={close}
+			on:tap|preventDefault|stopPropagation
 			on:mousemove|preventDefault|stopPropagation
 			on:mousedown|preventDefault|stopPropagation
 			on:tapup|preventDefault|stopPropagation

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import type { CoordinateLike } from '../core';
+	import { resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
@@ -21,16 +22,15 @@
 	function resize(next: ResizeData) {
 		dispatch('resize', next);
 		if (transient) {
-			transientState.width = next.width;
-			transientState.height = next.height;
+			transientState = resizeWindow(transientState, next);
 		}
 	}
 
 	function move(delta: CoordinateLike) {
 		dispatch('move', delta);
 		if (transient) {
-			transientState.position.x = delta.x;
-			transientState.position.y = delta.y;
+			transientState.position.x += delta.x;
+			transientState.position.y += delta.y;
 		}
 	}
 
@@ -75,6 +75,7 @@
 		''}"
 	class:immobile={transientState.maximized}
 	class:maximized={transientState.maximized}
+	class:fit-content={transientState.fitContent}
 	style:top={`${transientState.position.y}px`}
 	style:left={`${transientState.position.x}px`}
 	style:height={`${transientState.height}px`}
@@ -110,8 +111,14 @@
 
 <style lang="scss">
 	.ms-window {
-		display: flex;
-		flex-direction: column;
+		&.fit-content {
+			display: table;
+		}
+
+		&:not(.fit-content) {
+			display: flex;
+			flex-direction: column;
+		}
 
 		position: absolute;
 		box-sizing: border-box;

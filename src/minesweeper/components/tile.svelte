@@ -74,8 +74,7 @@
 
 <Button
 	class="ms-tile {tileClass}"
-	pressed={(tile.revealed || tile.pressed) &&
-		!(isFlagTileMark(tile.mark) || isQuestionTileMark(tile.mark))}
+	pressed={tile.pressed || tile.revealed}
 	disabled={tile.disabled}
 	appearDisabled={tile.revealed}
 	selfPress={false}

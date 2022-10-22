@@ -23,6 +23,7 @@
 	let cancelHappened = false;
 
 	let mouseUpListener: Subscription | undefined;
+	let firing = false;
 
 	if (selfPress) {
 		mouseUpListener = fromEvent(document, 'mouseup').subscribe(() => {
@@ -34,6 +35,7 @@
 	function pointerdown(event: PointerEvent): void {
 		longpressHappened = false;
 		cancelHappened = false;
+		firing = true;
 		if (event.button === 0 || event.button === 1 || event.pointerType === 'touch') {
 			startFire();
 			longpress();
@@ -44,7 +46,7 @@
 	}
 
 	function pointerup(e: PointerEvent): void {
-		if (!longpressHappened && !cancelHappened) {
+		if (firing && !longpressHappened && !cancelHappened) {
 			cancelLongpress();
 			if (e.button === 0 || e.button === 1) {
 				fire();
@@ -88,6 +90,7 @@
 	let longpressTimeout: number | undefined;
 
 	function cancelLongpress() {
+		firing = false;
 		if (isNonNullable(longpressTimeout)) {
 			window.clearTimeout(longpressTimeout);
 			longpressTimeout = undefined;
@@ -95,7 +98,9 @@
 	}
 
 	function pointerleave() {
-		cancelLongpress();
+		if (firing) {
+			cancelFire();
+		}
 	}
 
 	function startFire() {
@@ -105,6 +110,7 @@
 	}
 
 	function fire() {
+		firing = false;
 		if (!disabled) {
 			dispatch('fire');
 			cancelLongpress();
@@ -112,6 +118,7 @@
 	}
 
 	function alternativeFire() {
+		firing = false;
 		if (!disabled) {
 			dispatch('alternativeFire');
 			cancelLongpress();
@@ -119,6 +126,7 @@
 	}
 
 	function cancelFire() {
+		firing = false;
 		if (!disabled && pressed && !cancelHappened) {
 			cancelHappened = true;
 			cancelLongpress();

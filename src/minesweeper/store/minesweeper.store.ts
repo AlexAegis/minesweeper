@@ -414,12 +414,10 @@ export const createMineSweeperGame = <ParentSlice, T>(
 						const isSameTile = Coordinate.keyOf(payload) === key;
 						const isANeighbour = neighbours.includes(key);
 
-						if (isSameTile && !tile.revealed) {
-							return { ...tile, pressed: true };
-						}
-
-						if (isANeighbour && sourceTile.revealed && !tile.revealed) {
-							return { ...tile, pressed: true };
+						if (!tile.revealed && isEmptyTileMark(tile.mark)) {
+							if (isSameTile || (isANeighbour && sourceTile.revealed)) {
+								return { ...tile, pressed: true };
+							}
 						}
 					}
 				)

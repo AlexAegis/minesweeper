@@ -1,3 +1,4 @@
+import { isNonNullable, isNullish } from '@tinyslice/core';
 import { filter, map, take } from 'rxjs';
 import type { CoordinateLike } from '../core';
 import type { ResizeData } from '../ui/resizable.function';
@@ -19,7 +20,7 @@ export enum DesktopProgram {
 }
 
 export const programSpawnWindowData: Record<DesktopProgram, Partial<BaseWindowState>> = {
-	[DesktopProgram.MINESWEEPER]: { height: 257 },
+	[DesktopProgram.MINESWEEPER]: { fitContent: true },
 };
 
 export interface DesktopState {
@@ -67,6 +68,38 @@ export const windows$ = desktop$.slice('windows', {
 	},
 });
 
+export const resizeWindow = (
+	windowState: BaseWindowState,
+	resizeData: ResizeData
+): BaseWindowState => {
+	if (isNullish(resizeData.height) && isNullish(resizeData.width)) {
+		return windowState;
+	} else {
+		const nextWindowState = { ...windowState };
+
+		if (isNonNullable(resizeData.width) && resizeData.width >= nextWindowState.minWidth) {
+			nextWindowState.width = resizeData.width;
+			if (resizeData.moveX) {
+				nextWindowState.position = {
+					...nextWindowState.position,
+					x: nextWindowState.position.x + resizeData.moveX,
+				};
+			}
+		}
+
+		if (isNonNullable(resizeData.height) && resizeData.height >= nextWindowState.minHeight) {
+			nextWindowState.height = resizeData.height;
+			if (resizeData.moveY) {
+				nextWindowState.position = {
+					...nextWindowState.position,
+					y: nextWindowState.position.y + resizeData.moveY,
+				};
+			}
+		}
+		return nextWindowState;
+	}
+};
+
 export const dicedWindows = windows$.dice(initialWindowState, {
 	getAllKeys: (state) => Object.keys(state),
 	getNextKey: getNextProcessId,
@@ -88,21 +121,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 			],
 		});
 
-		slice.addReducers([
-			windowActions.resize.reduce((state, payload) => ({
-				...state,
-				height: payload.height,
-				width: payload.width,
-				position:
-					payload.left || payload.top
-						? {
-								...state.position,
-								x: state.position.x + (payload.left ?? 0),
-								y: state.position.y + (payload.top ?? 0),
-						  }
-						: state.position,
-			})),
-		]);
+		slice.addReducers([windowActions.resize.reduce(resizeWindow)]);
 
 		slice.slice('position', {
 			reducers: [

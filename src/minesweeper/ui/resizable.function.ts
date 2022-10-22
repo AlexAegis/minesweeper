@@ -3,10 +3,10 @@ import interact from 'interactjs';
 import { movable, type MoveListener } from './movable.function';
 
 export interface ResizeData {
-	height: number;
-	width: number;
-	left: number | undefined;
-	top: number | undefined;
+	height: number | undefined;
+	width: number | undefined;
+	moveX: number | undefined;
+	moveY: number | undefined;
 }
 
 export type ResizeListener = (next: ResizeData) => void;
@@ -56,16 +56,52 @@ const resizable = (
 ): Interactable => {
 	return interactable.resizable({
 		edges: { left: true, right: true, bottom: true, top: true },
+
 		// 5 on desktop 10 on mobile
 		margin: 7, // window padding in px is 3
 		listeners: {
 			move: (event: ResizeEvent) => {
 				if (!event.target.classList.contains('immobile')) {
+					const originalWidthStyle = element.style.width;
+					const originalHeightStyle = element.style.height;
+
+					const originalWidth = element.offsetWidth;
+					const originalHeight = element.offsetHeight;
+
+					const targetWidth = Math.round(event.rect.width);
+					const targetHeight = Math.round(event.rect.height);
+
+					element.style.width = targetWidth + 'px';
+					const nextWidth = element.offsetWidth;
+
+					const widthChanged = originalWidth !== nextWidth;
+					element.style.width = originalWidthStyle;
+
+					element.style.height = targetHeight + 'px';
+					const nextHeight = element.offsetHeight;
+					const heightChanged = originalHeight !== nextHeight;
+					element.style.height = originalHeightStyle;
+
+					const left = event.deltaRect?.left ?? 0;
+					const top = event.deltaRect?.top ?? 0;
+
+					const maxPossibleWidthChange = originalWidth - nextWidth;
+					const maxPossibleHeightChange = originalHeight - nextHeight;
+
+					const moveX =
+						maxPossibleWidthChange > 0
+							? Math.min(maxPossibleWidthChange, left)
+							: Math.max(maxPossibleWidthChange, left);
+					const moveY =
+						maxPossibleHeightChange > 0
+							? Math.min(maxPossibleHeightChange, top)
+							: Math.max(maxPossibleHeightChange, top);
+
 					resized({
-						height: event.rect.height,
-						width: event.rect.width,
-						left: event.deltaRect?.left,
-						top: event.deltaRect?.top,
+						height: heightChanged ? targetHeight : undefined,
+						width: widthChanged ? targetWidth : undefined,
+						moveY,
+						moveX,
 					});
 				}
 			},
@@ -77,6 +113,15 @@ const resizable = (
 					// 45: titlebar and menubar together
 					height: 45, //element.scrollHeight,
 				},
+			}),
+			interact.modifiers.snap({
+				targets: [
+					interact.createSnapGrid({
+						x: 1,
+						y: 1,
+					}),
+				],
+				range: Infinity,
 			}),
 		],
 	});

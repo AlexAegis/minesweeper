@@ -60,44 +60,7 @@
 	--seven-segment-display-digit-only-width: 11px;
 }
 
-div.ms-tile {
-	user-select: none;
-
-	border-left-style: solid;
-	border-top-style: solid;
-
-	background-color: var(--tile-grid-color);
-	border-color: var(--tile-border-color);
-	border-width: 1px;
-	text-align: center;
-	font-size: 32px;
-	line-height: 42px;
-
-	&.mine {
-		background-position: 1px 1px;
-	}
-}
-
 button.ms-tile {
-	background-position: 1px 1px;
-
-	&:active {
-		padding: 0;
-	}
-
-	&.mine {
-		background-size: 12px;
-		&.pressed {
-			background-position: 1px 1px;
-		}
-
-		&:not(.pressed) {
-			background-position: 0px 0px;
-		}
-	}
-}
-
-.ms-tile {
 	height: 16px;
 	width: 16px;
 	display: block;
@@ -108,6 +71,24 @@ button.ms-tile {
 	background-position: 2px 2px;
 
 	user-select: none;
+
+	background-size: auto;
+
+	&:active {
+		padding: 0;
+	}
+
+	&.mine {
+		&.pressed {
+			background-position: 1px 1px !important;
+			background-size: 13px;
+		}
+
+		&:not(.pressed) {
+			background-position: 0px 0px !important;
+			background-size: 12px;
+		}
+	}
 
 	&.wrong:not(.flag) {
 		background-color: red;
