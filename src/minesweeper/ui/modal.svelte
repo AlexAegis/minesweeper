@@ -65,7 +65,10 @@
 
 	export function close(event?: MouseEvent) {
 		if ((event?.target as Element)?.className.includes('ms-modal') ?? true) {
-			isOpen = false;
+			// Let stuff clear itself
+			setTimeout(() => {
+				isOpen = false;
+			}, 0);
 		}
 	}
 
