@@ -2,6 +2,7 @@
 	import type { CoordinateLike } from 'src/common';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { desktop$, type ShortcutState } from '../store';
+	import { firable } from './firable.action';
 	import Image from './image.svelte';
 	import { InteractBuilder } from './resizable.function';
 
@@ -9,7 +10,9 @@
 
 	export let selected: boolean = false;
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{
+		drop: CoordinateLike;
+	}>();
 
 	let shortcutElement: HTMLElement;
 	let moveInteract: InteractBuilder;
@@ -23,6 +26,7 @@
 
 	function drop() {
 		dispatch('drop', transientPosition);
+		selected = !selected;
 	}
 
 	onMount(() => {
@@ -37,32 +41,30 @@
 		moveInteract.unsubscribe();
 	});
 
-	let lastTap = 0;
-
 	function spawn(): void {
 		desktop$.internals.actions.spawnProgram.next(shortcutState.program);
 	}
 
-	function dbltap(): void {
-		selected = !selected;
-
-		const tap = new Date().getTime();
-		if (tap - lastTap < 250) {
-			selected = false;
-			spawn();
-		}
-		lastTap = tap;
+	function contextmenu(): void {
+		console.log('COPNTEXT');
 	}
 </script>
 
 <div
 	bind:this={shortcutElement}
+	use:firable={{ draggable: true }}
+	on:alternativefire={() => contextmenu()}
+	on:fire={() => (selected = !selected)}
+	on:startfire={() => {
+		if (!selected) {
+			selected = true;
+		}
+	}}
+	on:doublefire={() => spawn()}
 	class="shortcut"
 	class:selected
 	style:top={`${transientPosition.y}px`}
 	style:left={`${transientPosition.x}px`}
-	on:dblclick={spawn}
-	on:pointerdown={dbltap}
 >
 	<Image class="icon" alt={shortcutState.name} src={shortcutState.icon} />
 	<span class="title">{shortcutState.name}</span>

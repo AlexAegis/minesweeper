@@ -2,7 +2,6 @@ import { asyncScheduler, fromEvent, scheduled, tap } from 'rxjs';
 import packageJson from '../package.json';
 
 import { Scope } from '@tinyslice/core';
-import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
 
 export const MS_TAG = '[minesweeper]';
 export const BROWSER_TAG = '[browser]';
@@ -27,7 +26,8 @@ export const documentPointerup$ = scheduled(
 	asyncScheduler
 );
 
-const plugins = [new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION)];
+// const plugins = [new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION)];
+const plugins = [];
 
 export const rootSlice$ = scope.createRootSlice(
 	{

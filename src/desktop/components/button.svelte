@@ -5,7 +5,12 @@
 	import { documentPointerup$ } from '../../root.store';
 	import { ButtonLook } from './button-look.enum';
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{
+		startFire: void;
+		fire: void;
+		alternativeFire: void;
+		cancelFire: void;
+	}>();
 
 	export let disabled = false;
 	export let appearDisabled = false;

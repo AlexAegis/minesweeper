@@ -3,8 +3,9 @@
 
 	import { Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
+	import type { TitleBarEvents } from './title-bar-events.interface';
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<TitleBarEvents>();
 
 	export let title: string;
 	export let icon: string | undefined = undefined;

@@ -5,12 +5,19 @@
 	import { documentPointerdown$ } from '../../root.store';
 	import { resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
+	import type { TitleBarEvents } from './title-bar-events.interface';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
 	let windowElement: HTMLElement;
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<
+		{
+			activate: void;
+			resize: ResizeData;
+			move: CoordinateLike;
+		} & TitleBarEvents
+	>();
 
 	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 

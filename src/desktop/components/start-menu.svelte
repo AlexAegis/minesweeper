@@ -4,7 +4,7 @@
 	import { Observer } from 'svelte-rxjs-observer';
 	import {
 		debug$,
-		documentPointerdown$,
+		documentPointerup$,
 		packageMetadata,
 		PACKAGE_NAME_AND_VERSION,
 	} from '../../root.store';
@@ -21,7 +21,7 @@
 	$: programKeys$ = dicedPrograms.keys$;
 
 	const closeEffect = desktop$.createEffect(
-		documentPointerdown$.pipe(
+		documentPointerup$.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 				return (
