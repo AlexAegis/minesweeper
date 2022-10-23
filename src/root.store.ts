@@ -1,4 +1,3 @@
-import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
 import { tap } from 'rxjs';
 import packageJson from '../package.json';
 
@@ -17,7 +16,9 @@ export interface RootState {
 
 export const PACKAGE_NAME_AND_VERSION = `${packageMetadata.displayName} (${packageMetadata.version})`;
 
-const plugins = [new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION)];
+const plugins = [
+	/*new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION)*/
+];
 
 export const rootSlice$ = scope.createRootSlice(
 	{

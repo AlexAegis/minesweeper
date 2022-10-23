@@ -1,10 +1,10 @@
 import type { CoordinateLike } from '../core';
 import type { MinesweeperGame } from '../store';
-import type { DesktopProgram, ProcessId } from '../store/desktop.store';
+import type { ProcessId, ProgramName } from '../store/desktop.store';
 
 export interface BaseWindowState {
 	processId: ProcessId;
-	program?: DesktopProgram;
+	program?: ProgramName;
 	title: string;
 	icon: string | undefined;
 	active: boolean;
@@ -28,7 +28,7 @@ export interface ProgramWindowState<ProgramData> extends BaseWindowState {
 }
 
 export interface MineSweeperWindowState extends ProgramWindowState<MinesweeperGame> {
-	program: DesktopProgram.MINESWEEPER;
+	program: ProgramName.MINESWEEPER;
 }
 
 export type WindowState = MineSweeperWindowState | BaseWindowState;

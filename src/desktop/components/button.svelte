@@ -25,6 +25,8 @@
 	let mouseUpListener: Subscription | undefined;
 	let firing = false;
 
+	export let button: HTMLElement | undefined = undefined;
+
 	if (selfPress) {
 		mouseUpListener = fromEvent(document, 'mouseup').subscribe(() => {
 			pressed = false;
@@ -142,6 +144,7 @@
 </script>
 
 <button
+	bind:this={button}
 	{type}
 	class="ms-button {$$props.class ?? ''}"
 	aria-label={$$props['aria-label']}
@@ -188,6 +191,12 @@
 
 <style lang="scss">
 	button {
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		gap: 4px;
+
 		font-size: 18px;
 		line-height: 14px;
 		touch-action: none;

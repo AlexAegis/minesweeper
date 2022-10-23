@@ -1,25 +1,56 @@
 <script lang="ts">
+	import type { ComponentType } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import MinesweeperMenu from '../minesweeper/components/minesweeper-menu.svelte';
 	import Minesweeper from '../minesweeper/minesweeper.svelte';
 	import Button from './components/button.svelte';
+	import DesktopIcon from './components/desktop-icon.svelte';
+	import Empty from './components/empty.svelte';
+	import StartMenu from './components/start-menu.svelte';
 	import Window from './components/window.svelte';
-	import { desktopActions, DesktopProgram, dicedWindows } from './store';
+	import {
+		desktopActions,
+		dicedPrograms,
+		dicedWindows,
+		ProgramName,
+		startMenuOpen$,
+	} from './store';
 
 	import './styles/desktop.scss';
 
-	let keys$ = dicedWindows.keys$;
+	let startButton: HTMLElement;
 
-	const windowComponents: Record<DesktopProgram, any> = {
-		[DesktopProgram.MINESWEEPER]: {
+	$: keys$ = dicedWindows.keys$;
+	$: programKeys$ = dicedPrograms.keys$;
+	interface WindowComponents {
+		menu: ComponentType;
+		content: ComponentType;
+	}
+
+	const windowComponents: Record<ProgramName, WindowComponents> = {
+		[ProgramName.MINESWEEPER]: {
 			menu: MinesweeperMenu,
 			content: Minesweeper,
+		},
+		[ProgramName.UNKNOWN]: {
+			menu: Empty,
+			content: Empty,
 		},
 	};
 </script>
 
 <div class="desktop">
 	<div class="workspace">
+		{#each $programKeys$ as programKey}
+			<Observer observable={dicedPrograms.get(programKey)} let:next>
+				<DesktopIcon
+					title={next.title}
+					icon={next.icon}
+					on:dblclick={() => desktopActions.spawnProgram.next(programKey)}
+				/>
+			</Observer>
+		{/each}
+
 		<slot />
 
 		{#each $keys$ as processId (processId)}
@@ -55,14 +86,26 @@
 			</Observer>
 		{/each}
 	</div>
-</div>
-<div class="taskbar window">
-	<Button>Start</Button>
-	<div>
-		<slot name="taskbar" />
-	</div>
-	<div class="quickbar">
-		<slot name="quickbar" />
+
+	{#if $startMenuOpen$}
+		<StartMenu {startButton} />
+	{/if}
+
+	<div class="taskbar window">
+		<Button
+			bind:button={startButton}
+			class="start"
+			on:fire={() => startMenuOpen$.set(!startMenuOpen$.value)}
+		>
+			<div class="start-logo" />
+			Start
+		</Button>
+		<div>
+			<slot name="taskbar" />
+		</div>
+		<div class="quickbar">
+			<slot name="quickbar" />
+		</div>
 	</div>
 </div>
 
@@ -96,6 +139,19 @@
 
 		.quickbar {
 			margin-left: auto;
+		}
+
+		:global(.start) {
+			padding: 0;
+			min-width: 64px;
+			padding: 8px;
+		}
+
+		.start-logo {
+			width: 16px;
+			height: 14px;
+			image-rendering: pixelated;
+			background-image: var(--asset-start);
 		}
 	}
 </style>

@@ -25,6 +25,8 @@
 		grid-template-columns: 1fr auto 1fr;
 		position: fixed;
 
+		row-gap: 4px;
+
 		align-items: center;
 		justify-items: center;
 
@@ -51,7 +53,7 @@
 			background-image: var(--asset-shortcut);
 			background-repeat: no-repeat;
 			image-rendering: pixelated;
-
+			z-index: 1;
 			grid-row: 1;
 			grid-column: 2;
 			justify-self: start;
@@ -59,12 +61,23 @@
 		}
 
 		&.selected {
-			background-color: blue;
+			.icon {
+				// box-shadow: inset 0 0 0 2000px rgba(var(--selection-rgb), 0.5);
+				filter: contrast(0.5) brightness(1.5) sepia(1) hue-rotate(180deg) contrast(0.8)
+					saturate(4);
+			}
+
+			.title {
+				background-color: rgb(var(--selection-rgb));
+				color: white;
+			}
 		}
 
 		.title {
+			padding: 0 2px 0 2px;
 			user-select: none;
 			font-size: 18px;
+			line-height: 18px;
 			grid-row: 2;
 			grid-column: 1 / -1;
 		}

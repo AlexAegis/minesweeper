@@ -10,40 +10,70 @@ import {
 	type WindowState,
 } from '../components/window-state.interface';
 
+import { capitalize } from '../../common';
 import { rootSlice$, scope } from '../../root.store';
 
 export type ProcessId = string;
 
-export enum DesktopProgram {
+export enum ProgramName {
 	MINESWEEPER = 'minesweeper',
+	UNKNOWN = 'unknown',
 }
 
-export const programSpawnWindowData: Record<DesktopProgram, Partial<BaseWindowState>> = {
-	[DesktopProgram.MINESWEEPER]: { fitContent: true },
-};
-
+export interface ProgramData {
+	name: ProgramName;
+	title: string;
+	icon?: string;
+	initialWindowState: Partial<BaseWindowState>;
+}
 export interface DesktopState {
 	windows: Record<ProcessId, WindowState>;
-	programs: DesktopProgram[];
+	programs: Record<ProgramName, ProgramData>;
 	activeProcessId: ProcessId | undefined;
 	lastSpawned: ProcessId | undefined;
 	nextProcessId: ProcessId;
+	startMenuOpen: boolean;
 }
 
 export const desktopActions = {
-	spawnProgram: scope.createAction<DesktopProgram>('[Desktop] spawn'),
+	spawnProgram: scope.createAction<ProgramName>('[Desktop] spawn'),
 	activateProgram: scope.createAction<ProcessId>('[Desktop] activate'),
 };
 
 export const desktop$ = rootSlice$.addSlice('desktop', {
 	windows: {},
-	programs: Object.values(DesktopProgram),
+	programs: {
+		[ProgramName.MINESWEEPER]: {
+			name: ProgramName.MINESWEEPER,
+			title: capitalize(ProgramName.MINESWEEPER),
+			icon: ProgramName.MINESWEEPER,
+			initialWindowState: {
+				fitContent: true,
+				icon: `assets/desktop/${ProgramName.MINESWEEPER}.png`,
+			},
+		},
+	},
 	activeProcessId: undefined,
 	lastSpawned: undefined,
+	startMenuOpen: true,
 	nextProcessId: '0',
 } as DesktopState);
 
 export const programs$ = desktop$.slice('programs');
+export const startMenuOpen$ = desktop$.slice('startMenuOpen');
+
+export const dicedPrograms = programs$.dice(
+	{
+		name: ProgramName.UNKNOWN,
+		title: ProgramName.UNKNOWN,
+		icon: undefined,
+		initialWindowState: {},
+	} as ProgramData,
+	{
+		getAllKeys: (state) => Object.keys(state) as ProgramName[],
+		getNextKey: () => ProgramName.UNKNOWN,
+	}
+);
 
 const getNextProcessId = (keys: ProcessId[]) =>
 	(keys.map((key) => parseInt(key, 10)).reduce((a, b) => (a > b ? a : b), 0) + 1).toString();
@@ -54,7 +84,7 @@ export const windows$ = desktop$.slice('windows', {
 			const processId = getNextProcessId(Object.keys(state));
 			const spawnedWindow: WindowState = {
 				...initialWindowState,
-				...programSpawnWindowData[program],
+				...desktop$.value.programs[program]?.initialWindowState,
 				processId,
 				program,
 				title: program,
@@ -136,7 +166,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 		});
 
 		let minesweeperGame: MinesweeperGame | undefined;
-		if (program$.value === DesktopProgram.MINESWEEPER) {
+		if (program$.value === ProgramName.MINESWEEPER) {
 			minesweeperGame = createMineSweeperGame(slice, 'programData');
 		}
 
@@ -147,15 +177,15 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 
 export type DicedWindow = ReturnType<typeof dicedWindows['get']>;
 
-export const isProgramSpawned$ = (program: DesktopProgram) =>
+export const isProgramSpawned$ = (program: ProgramName) =>
 	dicedWindows.some$((window) => window.program === program);
 
-export const isMinesweeperSpawned$ = isProgramSpawned$(DesktopProgram.MINESWEEPER);
+export const isMinesweeperSpawned$ = isProgramSpawned$(ProgramName.MINESWEEPER);
 
 windows$.createEffect(
 	isMinesweeperSpawned$.pipe(
 		take(1),
 		filter((is) => !is),
-		map(() => desktopActions.spawnProgram.makePacket(DesktopProgram.MINESWEEPER))
+		map(() => desktopActions.spawnProgram.makePacket(ProgramName.MINESWEEPER))
 	)
 );
