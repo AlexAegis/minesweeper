@@ -3,7 +3,9 @@
 	import { Observer } from 'svelte-rxjs-observer';
 	import MinesweeperMenu from '../minesweeper/components/minesweeper-menu.svelte';
 	import Minesweeper from '../minesweeper/minesweeper.svelte';
+	import { debug$ } from '../root.store';
 	import Button from './components/button.svelte';
+	import Clock from './components/clock.svelte';
 	import DesktopIcon from './components/desktop-icon.svelte';
 	import Empty from './components/empty.svelte';
 	import StartMenu from './components/start-menu.svelte';
@@ -16,7 +18,10 @@
 		startMenuOpen$,
 	} from './store';
 
+	import Image from './components/image.svelte';
 	import './styles/desktop.scss';
+
+	import flagIcon from '../assets/minesweeper/flag.png';
 
 	let startButton: HTMLElement;
 
@@ -105,6 +110,10 @@
 		</div>
 		<div class="quickbar">
 			<slot name="quickbar" />
+			{#if $debug$}
+				<Image height={10} width={10} src={flagIcon} />
+			{/if}
+			<Clock />
 		</div>
 	</div>
 </div>
@@ -138,7 +147,12 @@
 		width: calc(100% - 6px);
 
 		.quickbar {
+			display: flex;
+			gap: 4px;
+			align-items: center;
 			margin-left: auto;
+			border: 1px inset;
+			padding: 0 4px 0 4px;
 		}
 
 		:global(.start) {

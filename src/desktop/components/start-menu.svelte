@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { delay, filter, fromEvent, map } from 'rxjs';
+	import { filter, fromEvent, map } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import { debug$, packageMetadata, PACKAGE_NAME_AND_VERSION } from '../../root.store';
@@ -27,7 +27,6 @@
 							.length > 0)
 				);
 			}),
-			delay(0),
 			map(() => startMenuOpen$.setAction.makePacket(false))
 		)
 	);
@@ -59,7 +58,12 @@
 
 		<Button look={ButtonLook.START_MENU_ITEM} on:fire={() => debug$.set(!debug$.value)}>
 			<Image height={28} width={28} />
-			Enable Debug Mode
+			{#if $debug$}
+				Disable
+			{:else}
+				Enable
+			{/if}
+			Debug Mode
 		</Button>
 
 		<Button

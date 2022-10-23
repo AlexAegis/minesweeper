@@ -3,9 +3,3 @@
 </script>
 
 <Desktop />
-
-<style>
-	:global(.debug-button) {
-		justify-self: flex-end;
-	}
-</style>
