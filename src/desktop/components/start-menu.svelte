@@ -1,25 +1,36 @@
 <script lang="ts">
-	import { filter, fromEvent } from 'rxjs';
+	import { delay, filter, fromEvent, map } from 'rxjs';
 	import { onDestroy } from 'svelte';
-	import { PACKAGE_NAME_AND_VERSION } from '../../root.store';
-	import { startMenuOpen$ } from '../store';
+	import { Observer } from 'svelte-rxjs-observer';
+	import { debug$, packageMetadata, PACKAGE_NAME_AND_VERSION } from '../../root.store';
+	import { desktop$, desktopActions, dicedPrograms, startMenuOpen$ } from '../store';
+	import { ButtonLook } from './button-look.enum';
+	import Button from './button.svelte';
+	import Image from './image.svelte';
 
 	let startMenu: HTMLElement;
 	export let startButton: HTMLElement;
 
-	const clickListener = fromEvent<PointerEvent>(document, 'pointerup')
-		.pipe(
+	$: programKeys$ = dicedPrograms.keys$;
+
+	const closeEffect = desktop$.createEffect(
+		fromEvent<PointerEvent>(document, 'pointerup').pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 				return (
-					!elementsUnderPointer.includes(startMenu) &&
-					!elementsUnderPointer.includes(startButton)
+					(!elementsUnderPointer.includes(startMenu) &&
+						!elementsUnderPointer.includes(startButton)) ||
+					(elementsUnderPointer.includes(startMenu) &&
+						elementsUnderPointer.filter((element) => element.nodeName === 'BUTTON')
+							.length > 0)
 				);
-			})
+			}),
+			delay(0),
+			map(() => startMenuOpen$.setAction.makePacket(false))
 		)
-		.subscribe(() => startMenuOpen$.set(false));
+	);
 
-	onDestroy(() => clickListener.unsubscribe());
+	onDestroy(() => closeEffect.unsubscribe());
 </script>
 
 <div bind:this={startMenu} class="start-menu window">
@@ -27,15 +38,51 @@
 		<div>{PACKAGE_NAME_AND_VERSION}</div>
 	</div>
 	<div class="content">
-		<div class="entry" />
+		<slot />
+
+		{#each $programKeys$ as programKey}
+			<Observer observable={dicedPrograms.get(programKey)} let:next>
+				<Button
+					look={ButtonLook.START_MENU_ITEM}
+					on:fire={() => desktopActions.spawnProgram.next(programKey)}
+					on:alternativeFire={() => console.log('TODO: create icon', programKey)}
+				>
+					<Image alt={next.name} src={next.icon} height={28} width={28} />
+					{next.title}
+				</Button>
+			</Observer>
+		{/each}
+
+		<hr />
+
+		<Button look={ButtonLook.START_MENU_ITEM} on:fire={() => debug$.set(!debug$.value)}>
+			<Image height={28} width={28} />
+			Enable Debug Mode
+		</Button>
+
+		<Button
+			look={ButtonLook.START_MENU_ITEM}
+			on:fire={() => window.open(packageMetadata.homepage, '_blank')}
+		>
+			<Image height={28} width={28} />
+			Github
+		</Button>
+
+		<Button
+			look={ButtonLook.START_MENU_ITEM}
+			on:fire={() => confirm('Sure?') && window.close()}
+		>
+			<Image height={28} width={28} />
+			Shut down...
+		</Button>
 	</div>
 </div>
 
 <style lang="scss">
 	.start-menu {
 		z-index: 1000;
-		height: 360px;
-		width: 200px;
+
+		width: fit-content;
 
 		display: flex;
 
@@ -67,6 +114,7 @@
 		.content {
 			display: flex;
 			flex-direction: column;
+			justify-content: space-between;
 		}
 	}
 </style>

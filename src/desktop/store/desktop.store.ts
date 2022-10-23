@@ -46,7 +46,7 @@ export const desktop$ = rootSlice$.addSlice('desktop', {
 		[ProgramName.MINESWEEPER]: {
 			name: ProgramName.MINESWEEPER,
 			title: capitalize(ProgramName.MINESWEEPER),
-			icon: ProgramName.MINESWEEPER,
+			icon: `assets/desktop/${ProgramName.MINESWEEPER}.png`,
 			initialWindowState: {
 				fitContent: true,
 				icon: `assets/desktop/${ProgramName.MINESWEEPER}.png`,
@@ -55,7 +55,7 @@ export const desktop$ = rootSlice$.addSlice('desktop', {
 	},
 	activeProcessId: undefined,
 	lastSpawned: undefined,
-	startMenuOpen: true,
+	startMenuOpen: false,
 	nextProcessId: '0',
 } as DesktopState);
 

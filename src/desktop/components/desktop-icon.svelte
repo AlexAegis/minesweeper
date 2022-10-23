@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Image from './image.svelte';
+
 	export let title: string;
 	export let icon: string | undefined = undefined;
 	export let selected: boolean = false;
@@ -12,7 +14,7 @@
 	on:click|preventDefault|stopPropagation={() => (selected = !selected)}
 	on:dblclick
 >
-	<div class="icon{icon ? ` ${icon}` : ''}" />
+	<Image class="icon" alt={title} src={icon} />
 	<span class="title">{title}</span>
 	{#if shortcut}
 		<div class="shortcut" />
@@ -34,17 +36,11 @@
 
 		user-select: none;
 
-		.icon {
+		:global(.icon) {
 			width: 28px;
 			height: 28px;
 			grid-row: 1;
 			grid-column: 2;
-
-			&.minesweeper {
-				background-image: var(--asset-minesweeper);
-				background-repeat: no-repeat;
-				image-rendering: pixelated;
-			}
 		}
 
 		.shortcut {

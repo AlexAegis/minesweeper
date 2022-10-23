@@ -162,6 +162,7 @@
 	class:type-thick-but-pressed-thin={look === ButtonLook.THICK_PRESSED_THIN}
 	class:type-title-bar-menu-bar-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
 	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
+	class:type-start-menu-item={look === ButtonLook.START_MENU_ITEM}
 	use:tap
 	on:tap
 	on:tapup
@@ -268,6 +269,17 @@
 		&.type-context-menu-item:hover {
 			background-color: #000084;
 			color: white;
+		}
+
+		&.type-start-menu-item {
+			padding: 8px 0 8px 8px;
+			height: 32px;
+			width: 160px;
+
+			&:hover {
+				background-color: #000084;
+				color: white;
+			}
 		}
 	}
 

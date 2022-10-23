@@ -4,4 +4,5 @@ export enum ButtonLook {
 	THICK_PRESSED_THIN = 'thickPressedThin',
 	TITLE_BAR_MENU_ITEM = 'titleBarMenuItem',
 	CONTEXT_MENU_ITEM = 'contextMenuItem',
+	START_MENU_ITEM = 'startMenuItem',
 }
