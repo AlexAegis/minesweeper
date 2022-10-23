@@ -157,7 +157,7 @@
 		box-sizing: border-box;
 		user-select: none;
 
-		touch-action: none;
+		// touch-action: none;
 
 		.menu {
 			min-height: 20px;

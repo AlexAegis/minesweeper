@@ -3,7 +3,6 @@
 
 	import { Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { tap as tapGesture } from 'svelte-gestures';
 
 	const dispatch = createEventDispatcher();
 
@@ -47,7 +46,7 @@
 	onDestroy(() => sink.unsubscribe());
 </script>
 
-<div class="title-bar" on:dblclick={maximize} use:tapGesture on:tapdown={dbltap}>
+<div class="title-bar" on:dblclick={maximize} on:pointerdown={dbltap}>
 	<div aria-label="title" class="title-bar-text" class:active>
 		{#if icon}
 			<Image class="ms-title-bar-icon" src={icon} alt={title} />
@@ -58,48 +57,18 @@
 
 	<div class="title-bar-controls">
 		{#if showMinimize}
-			<button
-				aria-label="Minimize"
-				use:tapGesture
-				on:click|preventDefault|stopPropagation={minimize}
-				on:tap|preventDefault|stopPropagation
-				on:mousemove|preventDefault|stopPropagation
-				on:mousedown|preventDefault|stopPropagation
-				on:tapup|preventDefault|stopPropagation
-				on:tapdown|preventDefault|stopPropagation
-				on:tapmove|preventDefault|stopPropagation
-				on:dblclick|preventDefault|stopPropagation
-			/>
+			<button aria-label="Minimize" on:click|preventDefault|stopPropagation={minimize} />
 		{/if}
 
 		{#if showMaximize}
 			<button
 				aria-label={maximized ? 'Restore' : 'Maximize'}
-				use:tapGesture
 				on:click|preventDefault|stopPropagation={maximize}
-				on:tap|preventDefault|stopPropagation
-				on:mousemove|preventDefault|stopPropagation
-				on:mousedown|preventDefault|stopPropagation
-				on:tapup|preventDefault|stopPropagation
-				on:tapdown|preventDefault|stopPropagation
-				on:tapmove|preventDefault|stopPropagation
-				on:dblclick|preventDefault|stopPropagation
 				disabled={!resizable}
 			/>
 		{/if}
 		{#if showClose}
-			<button
-				aria-label="Close"
-				use:tapGesture
-				on:click|preventDefault|stopPropagation={close}
-				on:tap|preventDefault|stopPropagation
-				on:mousemove|preventDefault|stopPropagation
-				on:mousedown|preventDefault|stopPropagation
-				on:tapup|preventDefault|stopPropagation
-				on:tapdown|preventDefault|stopPropagation
-				on:tapmove|preventDefault|stopPropagation
-				on:dblclick|preventDefault|stopPropagation
-			/>
+			<button aria-label="Close" on:click|preventDefault|stopPropagation={close} />
 		{/if}
 	</div>
 </div>

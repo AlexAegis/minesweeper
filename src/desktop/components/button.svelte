@@ -2,7 +2,6 @@
 	import { isNonNullable } from '@tinyslice/core';
 	import { fromEvent, Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { tap } from 'svelte-gestures';
 	import { ButtonLook } from './button-look.enum';
 
 	const dispatch = createEventDispatcher();
@@ -59,21 +58,6 @@
 				alternativeFire();
 				if (selfPress) {
 					pressed = true;
-				}
-			}
-		}
-	}
-
-	function tapmove(event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) {
-		if (event.detail.event.pointerType === 'touch') {
-			const elementsUnderFinger = document.elementsFromPoint(
-				event.detail.event.pageX,
-				event.detail.event.pageY
-			);
-			if (!elementsUnderFinger.includes(event.detail.event.target as Element)) {
-				cancelFire();
-				if (selfPress) {
-					pressed = false;
 				}
 			}
 		}
@@ -163,11 +147,6 @@
 	class:type-title-bar-menu-bar-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
 	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
 	class:type-start-menu-item={look === ButtonLook.START_MENU_ITEM}
-	use:tap
-	on:tap
-	on:tapup
-	on:tapdown
-	on:tapmove={tapmove}
 	on:click
 	on:mouseup
 	on:mousedown
@@ -200,7 +179,7 @@
 
 		font-size: 18px;
 		line-height: 14px;
-		touch-action: none;
+		//	touch-action: manipulation;
 		user-select: none;
 		-webkit-user-select: none !important;
 
