@@ -1,8 +1,13 @@
 <script lang="ts">
-	import { filter, fromEvent, map } from 'rxjs';
+	import { filter, map } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
-	import { debug$, packageMetadata, PACKAGE_NAME_AND_VERSION } from '../../root.store';
+	import {
+		debug$,
+		documentPointerdown$,
+		packageMetadata,
+		PACKAGE_NAME_AND_VERSION,
+	} from '../../root.store';
 	import { desktop$, desktopActions, dicedPrograms, startMenuOpen$ } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
@@ -16,7 +21,7 @@
 	$: programKeys$ = dicedPrograms.keys$;
 
 	const closeEffect = desktop$.createEffect(
-		fromEvent<PointerEvent>(document, 'pointerup').pipe(
+		documentPointerdown$.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 				return (

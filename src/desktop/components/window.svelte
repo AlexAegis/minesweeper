@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { asapScheduler, filter, fromEvent, scheduled, Subscription, tap } from 'rxjs';
+	import { filter, Subscription, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import type { CoordinateLike } from '../../common';
+	import { documentPointerdown$ } from '../../root.store';
 	import { resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import TitleBar from './title-bar.svelte';
@@ -106,7 +107,7 @@
 
 		if (transient) {
 			sink.add(
-				scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asapScheduler)
+				documentPointerdown$
 					.pipe(
 						filter((event) => {
 							const elementsUnderPointer = document.elementsFromPoint(

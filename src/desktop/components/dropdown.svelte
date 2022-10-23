@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { asapScheduler, filter, fromEvent, scheduled } from 'rxjs';
+	import { filter } from 'rxjs';
 	import { onDestroy } from 'svelte';
+	import { documentPointerdown$ } from '../../root.store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 
@@ -11,7 +12,7 @@
 
 	let button: HTMLElement;
 
-	const clickListener = scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asapScheduler)
+	const clickListener = documentPointerdown$
 		.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);

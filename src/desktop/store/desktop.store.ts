@@ -4,7 +4,7 @@ import {
 	isNonNullable,
 	isNullish,
 } from '@tinyslice/core';
-import { filter, fromEvent, map, take } from 'rxjs';
+import { filter, map, take } from 'rxjs';
 import type { CoordinateLike } from '../../common';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store';
@@ -16,7 +16,7 @@ import {
 } from '../components/window-state.interface';
 
 import { capitalize } from '../../common';
-import { rootSlice$, scope } from '../../root.store';
+import { documentPointerdown$, rootSlice$, scope } from '../../root.store';
 
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';
 
@@ -151,7 +151,7 @@ export const windows$ = desktop$.slice('windows', {
 });
 
 desktop$.createEffect(
-	fromEvent<PointerEvent>(document, 'pointerdown').pipe(
+	documentPointerdown$.pipe(
 		filter((event) => {
 			const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 			return !elementsUnderPointer.some((element) => element.classList.contains('window'));

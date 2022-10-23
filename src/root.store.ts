@@ -1,4 +1,4 @@
-import { tap } from 'rxjs';
+import { fromEvent, tap } from 'rxjs';
 import packageJson from '../package.json';
 
 import { Scope } from '@tinyslice/core';
@@ -15,6 +15,9 @@ export interface RootState {
 }
 
 export const PACKAGE_NAME_AND_VERSION = `${packageMetadata.displayName} (${packageMetadata.version})`;
+
+export const documentPointerdown$ = fromEvent<PointerEvent>(document, 'pointerdown');
+export const documentPointerup$ = fromEvent<PointerEvent>(document, 'pointerup');
 
 const plugins = [
 	/*new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION)*/
