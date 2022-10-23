@@ -4,7 +4,12 @@
 	const time$ = interval(1000).pipe(
 		startWith(undefined),
 		map(() => new Date()),
-		map((date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
+		map((date) =>
+			date.toLocaleTimeString([...navigator.languages].reverse(), {
+				hour: '2-digit',
+				minute: '2-digit',
+			})
+		)
 	);
 </script>
 
