@@ -6,15 +6,16 @@
 	import { debug$ } from '../root.store';
 	import Button from './components/button.svelte';
 	import Clock from './components/clock.svelte';
-	import DesktopIcon from './components/desktop-icon.svelte';
 	import Empty from './components/empty.svelte';
+	import Shortcut from './components/shortcut.svelte';
 	import StartMenu from './components/start-menu.svelte';
 	import Window from './components/window.svelte';
 	import {
-		desktopActions,
-		dicedPrograms,
+		desktop$,
+		dicedShortcuts,
 		dicedWindows,
 		ProgramName,
+		snapShortcutPosition,
 		startMenuOpen$,
 	} from './store';
 
@@ -26,7 +27,8 @@
 	let startButton: HTMLElement;
 
 	$: keys$ = dicedWindows.keys$;
-	$: programKeys$ = dicedPrograms.keys$;
+	$: shortcutKeys$ = dicedShortcuts.keys$;
+
 	interface WindowComponents {
 		menu: ComponentType;
 		content: ComponentType;
@@ -46,12 +48,14 @@
 
 <div class="desktop">
 	<div class="workspace">
-		{#each $programKeys$ as programKey}
-			<Observer observable={dicedPrograms.get(programKey)} let:next>
-				<DesktopIcon
-					title={next.title}
-					icon={next.icon}
-					on:dblclick={() => desktopActions.spawnProgram.next(programKey)}
+		{#each $shortcutKeys$ as shortcutKey}
+			{@const shortcutSlice = dicedShortcuts.get(shortcutKey)}
+			<Observer observable={shortcutSlice} let:next>
+				<Shortcut
+					shortcutState={next}
+					on:drop={(event) =>
+						shortcutSlice.internals.position$.set(snapShortcutPosition(event.detail))}
+					on:dblclick={() => desktop$.internals.actions.spawnProgram.next(next.program)}
 				/>
 			</Observer>
 		{/each}
@@ -59,24 +63,25 @@
 		<slot />
 
 		{#each $keys$ as processId (processId)}
-			{@const window = dicedWindows.get(processId)}
+			{@const windowSlice = dicedWindows.get(processId)}
 
-			<Observer observable={window} let:next>
+			<Observer observable={windowSlice} let:next>
 				<Window
 					windowState={next}
-					on:activate={() => desktopActions.activateProgram.next(processId)}
-					on:maximize={() => window.internals.windowActions.maximize.next(processId)}
-					on:minimize={() => window.internals.windowActions.minimize.next(processId)}
-					on:restore={() => window.internals.windowActions.restore.next(processId)}
+					on:activate={() => desktop$.internals.actions.activateProgram.next(processId)}
+					on:maximize={() => windowSlice.internals.windowActions.maximize.next(processId)}
+					on:minimize={() => windowSlice.internals.windowActions.minimize.next(processId)}
+					on:restore={() => windowSlice.internals.windowActions.restore.next(processId)}
 					on:close={() => dicedWindows.remove(processId)}
-					on:move={(event) => window.internals.windowActions.move.next(event.detail)}
-					on:resize={(event) => window.internals.windowActions.resize.next(event.detail)}
+					on:move={(event) => windowSlice.internals.windowActions.move.next(event.detail)}
+					on:resize={(event) =>
+						windowSlice.internals.windowActions.resize.next(event.detail)}
 				>
 					<svelte:fragment slot="menu">
 						{#if next.program}
 							<svelte:component
 								this={windowComponents[next.program].menu}
-								internals={window.internals.minesweeperGame}
+								internals={windowSlice.internals.minesweeperGame}
 								windowState={next}
 							/>
 						{/if}
@@ -84,7 +89,7 @@
 					{#if next.program}
 						<svelte:component
 							this={windowComponents[next.program].content}
-							internals={window.internals.minesweeperGame}
+							internals={windowSlice.internals.minesweeperGame}
 						/>
 					{/if}
 				</Window>

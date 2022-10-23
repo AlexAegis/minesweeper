@@ -1,8 +1,11 @@
 import {
 	entitySliceReducerWithPrecompute,
+	getNextKeyStrategy,
+	getObjectKeysAsNumbers,
 	ifLatestFrom,
 	isNonNullable,
 	isNullish,
+	PremadeGetNext,
 } from '@tinyslice/core';
 import { filter, map, take } from 'rxjs';
 import type { CoordinateLike } from '../../common';
@@ -16,7 +19,7 @@ import {
 } from '../components/window-state.interface';
 
 import { capitalize } from '../../common';
-import { documentPointerdown$, rootSlice$, scope } from '../../root.store';
+import { documentPointerdown$, rootSlice$ } from '../../root.store';
 
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';
 
@@ -27,44 +30,112 @@ export enum ProgramName {
 	UNKNOWN = 'unknown',
 }
 
-export interface ProgramData {
+export interface ProgramState {
 	name: ProgramName;
 	title: string;
 	icon?: string;
 	initialWindowState: Partial<BaseWindowState>;
 }
+
+export interface ShortcutState {
+	name: string;
+	icon?: string;
+	program: ProgramName;
+	position: CoordinateLike;
+}
+
 export interface DesktopState {
 	windows: Record<ProcessId, WindowState>;
-	programs: Record<ProgramName, ProgramData>;
+	programs: Record<ProgramName, ProgramState>;
+	shortcuts: Record<string, ShortcutState>;
 	activeProcessId: ProcessId | undefined;
 	lastSpawned: ProcessId | undefined;
 	nextProcessId: ProcessId;
 	startMenuOpen: boolean;
 }
 
-export const desktopActions = {
-	spawnProgram: scope.createAction<ProgramName>('[Desktop] spawn'),
-	activateProgram: scope.createAction<ProcessId | undefined>('[Desktop] activate'),
-};
-
-export const desktop$ = rootSlice$.addSlice('desktop', {
-	windows: {},
-	programs: {
-		[ProgramName.MINESWEEPER]: {
-			name: ProgramName.MINESWEEPER,
-			title: capitalize(ProgramName.MINESWEEPER),
+const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
+	[ProgramName.MINESWEEPER]: {
+		name: ProgramName.MINESWEEPER,
+		title: capitalize(ProgramName.MINESWEEPER),
+		icon: minesweeperIcon,
+		initialWindowState: {
+			fitContent: true,
 			icon: minesweeperIcon,
-			initialWindowState: {
-				fitContent: true,
-				icon: minesweeperIcon,
-			},
 		},
 	},
-	activeProcessId: undefined,
-	lastSpawned: undefined,
-	startMenuOpen: false,
-	nextProcessId: '0',
-} as DesktopState);
+};
+
+export const desktop$ = rootSlice$.addSlice(
+	'desktop',
+	{
+		windows: {},
+		programs: initialInstalledPrograms,
+		shortcuts: Object.values(initialInstalledPrograms).reduce((acc, next, shortcutId) => {
+			acc[shortcutId] = {
+				name: next.title,
+				position: { x: 0, y: shortcutId * 32 },
+				program: next.name,
+				icon: next.icon,
+			};
+
+			return acc;
+		}, {} as Record<string, ShortcutState>),
+		activeProcessId: undefined,
+		lastSpawned: undefined,
+		startMenuOpen: false,
+		nextProcessId: '0',
+	} as DesktopState,
+	{
+		defineInternals: (slice) => {
+			const actions = {
+				spawnProgram: slice.createAction<ProgramName>('spawn'),
+				activateProgram: slice.createAction<ProcessId | undefined>('activate'),
+				moveShortcut: slice.createAction<number[]>('move shortcuts'),
+			};
+
+			return { actions };
+		},
+	}
+);
+
+export const SHORTCUT_HEIGHT = 50;
+export const SHORTCUT_WIDTH = 75;
+
+export const snapShortcutPosition = (position: CoordinateLike): CoordinateLike => {
+	return {
+		x: Math.floor(
+			position.x - ((position.x + SHORTCUT_WIDTH / 2) % SHORTCUT_WIDTH) + SHORTCUT_WIDTH / 2
+		),
+		y: Math.floor(
+			position.y -
+				((position.y + SHORTCUT_HEIGHT / 2) % SHORTCUT_HEIGHT) +
+				SHORTCUT_HEIGHT / 2
+		),
+	};
+};
+
+export const shortcuts$ = desktop$.slice('shortcuts', {
+	reducers: [],
+});
+
+export const dicedShortcuts = shortcuts$.dice(
+	{
+		name: 'undefined',
+		program: ProgramName.UNKNOWN,
+		position: { x: 0, y: 0 },
+		icon: undefined,
+	} as ShortcutState,
+	{
+		getAllKeys: getObjectKeysAsNumbers,
+		getNextKey: getNextKeyStrategy(PremadeGetNext.nextSmallest),
+		defineInternals: (slice) => {
+			const position$ = slice.slice('position');
+
+			return { position$ };
+		},
+	}
+);
 
 export const programs$ = desktop$.slice('programs');
 export const startMenuOpen$ = desktop$.slice('startMenuOpen');
@@ -75,7 +146,7 @@ export const dicedPrograms = programs$.dice(
 		title: ProgramName.UNKNOWN,
 		icon: undefined,
 		initialWindowState: {},
-	} as ProgramData,
+	} as ProgramState,
 	{
 		getAllKeys: (state) => Object.keys(state) as ProgramName[],
 		getNextKey: () => ProgramName.UNKNOWN,
@@ -87,7 +158,7 @@ const getNextProcessId = (keys: ProcessId[]) =>
 
 export const windows$ = desktop$.slice('windows', {
 	reducers: [
-		desktopActions.spawnProgram.reduce((state, program) => {
+		desktop$.internals.actions.spawnProgram.reduce((state, program) => {
 			const processId = getNextProcessId(Object.keys(state));
 			const spawnedWindow: WindowState = {
 				...initialWindowState,
@@ -99,7 +170,7 @@ export const windows$ = desktop$.slice('windows', {
 			};
 			return { ...state, [processId]: spawnedWindow };
 		}),
-		desktopActions.activateProgram.reduce(
+		desktop$.internals.actions.activateProgram.reduce(
 			entitySliceReducerWithPrecompute(
 				(state, payload) => {
 					let windows: WindowState[] = Object.values(state);
@@ -160,7 +231,7 @@ desktop$.createEffect(
 			windows$.internals.activeWindowCount$,
 			(activeWindowCount) => activeWindowCount > 0
 		),
-		map(() => desktopActions.activateProgram.makePacket(undefined))
+		map(() => desktop$.internals.actions.activateProgram.makePacket(undefined))
 	)
 );
 
@@ -243,12 +314,15 @@ export type DicedWindow = ReturnType<typeof dicedWindows['get']>;
 export const isProgramSpawned$ = (program: ProgramName) =>
 	dicedWindows.some$((window) => window.program === program);
 
+export const isShortcutPresent$ = (program: ProgramName) =>
+	dicedShortcuts.some$((shortcut) => shortcut.program === program);
+
 export const isMinesweeperSpawned$ = isProgramSpawned$(ProgramName.MINESWEEPER);
 
 windows$.createEffect(
 	isMinesweeperSpawned$.pipe(
 		take(1),
 		filter((is) => !is),
-		map(() => desktopActions.spawnProgram.makePacket(ProgramName.MINESWEEPER))
+		map(() => desktop$.internals.actions.spawnProgram.makePacket(ProgramName.MINESWEEPER))
 	)
 );

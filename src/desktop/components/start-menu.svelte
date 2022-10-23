@@ -8,7 +8,7 @@
 		packageMetadata,
 		PACKAGE_NAME_AND_VERSION,
 	} from '../../root.store';
-	import { desktop$, desktopActions, dicedPrograms, startMenuOpen$ } from '../store';
+	import { desktop$, dicedPrograms, startMenuOpen$ } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import Image from './image.svelte';
@@ -50,7 +50,7 @@
 			<Observer observable={dicedPrograms.get(programKey)} let:next>
 				<Button
 					look={ButtonLook.START_MENU_ITEM}
-					on:fire={() => desktopActions.spawnProgram.next(programKey)}
+					on:fire={() => desktop$.internals.actions.spawnProgram.next(programKey)}
 					on:alternativeFire={() => console.log('TODO: create icon', programKey)}
 				>
 					<Image alt={next.name} src={next.icon} height={28} width={28} />

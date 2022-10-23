@@ -1,0 +1,132 @@
+<script lang="ts">
+	import type { CoordinateLike } from 'src/common';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { desktop$, type ShortcutState } from '../store';
+	import Image from './image.svelte';
+	import { InteractBuilder } from './resizable.function';
+
+	export let shortcutState: ShortcutState;
+
+	export let selected: boolean = false;
+
+	const dispatch = createEventDispatcher();
+
+	let shortcutElement: HTMLElement;
+	let moveInteract: InteractBuilder;
+
+	$: transientPosition = { ...shortcutState.position };
+
+	function move(delta: CoordinateLike) {
+		transientPosition.x += delta.x;
+		transientPosition.y += delta.y;
+	}
+
+	function drop() {
+		dispatch('drop', transientPosition);
+	}
+
+	onMount(() => {
+		moveInteract = InteractBuilder.from(shortcutElement).movable(move);
+		moveInteract.interactable.on('dragend', (_event: DragEvent): void => {
+			drop();
+		});
+	});
+
+	onDestroy(() => {
+		moveInteract.interactable.off('dragend');
+		moveInteract.unsubscribe();
+	});
+
+	let lastTap = 0;
+
+	function spawn(): void {
+		desktop$.internals.actions.spawnProgram.next(shortcutState.program);
+	}
+
+	function dbltap(): void {
+		selected = !selected;
+
+		const tap = new Date().getTime();
+		if (tap - lastTap < 250) {
+			selected = false;
+			spawn();
+		}
+		lastTap = tap;
+	}
+</script>
+
+<div
+	bind:this={shortcutElement}
+	class="shortcut"
+	class:selected
+	style:top={`${transientPosition.y}px`}
+	style:left={`${transientPosition.x}px`}
+	on:dblclick={spawn}
+	on:pointerdown={dbltap}
+>
+	<Image class="icon" alt={shortcutState.name} src={shortcutState.icon} />
+	<span class="title">{shortcutState.name}</span>
+	<div class="shortcut-symbol" />
+</div>
+
+<style lang="scss">
+	.shortcut {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		position: absolute;
+
+		row-gap: 4px;
+
+		align-items: center;
+		justify-items: center;
+
+		margin: 16px;
+
+		user-select: none;
+		touch-action: none;
+
+		:global(.icon) {
+			width: 28px;
+			height: 28px;
+			grid-row: 1;
+			grid-column: 2;
+		}
+
+		.shortcut-symbol {
+			width: 11px;
+			height: 11px;
+			background-image: var(--asset-shortcut);
+			background-repeat: no-repeat;
+			image-rendering: pixelated;
+			z-index: 1;
+			grid-row: 1;
+			grid-column: 2;
+			justify-self: start;
+			align-self: end;
+		}
+
+		&.selected {
+			:global(.icon) {
+				// box-shadow: inset 0 0 0 2000px rgba(var(--selection-rgb), 0.5);
+				filter: contrast(0.5) brightness(1.5) sepia(1) hue-rotate(180deg) contrast(0.8)
+					saturate(4);
+			}
+
+			.title {
+				background-color: rgb(var(--selection-rgb));
+				color: white;
+			}
+		}
+
+		.title {
+			padding: 0 2px 0 2px;
+			user-select: none;
+			font-size: 18px;
+			line-height: 18px;
+			grid-row: 2;
+			grid-column: 1 / -1;
+
+			color: black;
+		}
+	}
+</style>
