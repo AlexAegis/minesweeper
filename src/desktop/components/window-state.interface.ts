@@ -37,7 +37,7 @@ export const initialWindowState: BaseWindowState = {
 	processId: '-2',
 	title: '...',
 	icon: '',
-	active: false,
+	active: true,
 	height: 100,
 	width: 80,
 	position: {

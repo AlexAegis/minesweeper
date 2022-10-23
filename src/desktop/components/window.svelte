@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { asapScheduler, filter, fromEvent, scheduled, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import type { CoordinateLike } from '../../common';
 	import { resizeWindow } from '../store';
@@ -21,6 +22,34 @@
 
 	$: effectiveResizable = transientState.resizable && !transientState.maximized;
 	$: effectiveMovable = !transientState.maximized;
+
+	const clickListener = scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asapScheduler)
+		.pipe(
+			filter((event) => {
+				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+				return !elementsUnderPointer.includes(windowElement);
+			}),
+			tap(() => deactivate())
+		)
+		.subscribe();
+
+	function activate() {
+		if (!transientState.active) {
+			dispatch('active', true);
+			if (transient) {
+				transientState = { ...transientState, active: true };
+			}
+		}
+	}
+
+	function deactivate() {
+		if (transientState.active) {
+			dispatch('active', false);
+			if (transient) {
+				transientState = { ...transientState, active: false };
+			}
+		}
+	}
 
 	function resize(next: ResizeData) {
 		dispatch('resize', next);
@@ -90,6 +119,7 @@
 	onDestroy(() => {
 		moveInteract.unsubscribe();
 		resizeInteract.unsubscribe();
+		clickListener.unsubscribe();
 	});
 </script>
 
@@ -102,10 +132,12 @@
 	class:non-resizable={!effectiveResizable}
 	class:maximized={transientState.maximized}
 	class:fit-content={transientState.fitContent}
+	class:active={transientState.active}
 	style:top={`${transientState.position.y}px`}
 	style:left={`${transientState.position.x}px`}
 	style:height={`${transientState.height}px`}
 	style:width={`${transientState.width}px`}
+	on:pointerdown={activate}
 >
 	<TitleBar
 		title={transientState.title}

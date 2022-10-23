@@ -46,8 +46,8 @@
 	onDestroy(() => sink.unsubscribe());
 </script>
 
-<div class="title-bar" on:dblclick={maximize} on:pointerdown={dbltap}>
-	<div aria-label="title" class="title-bar-text" class:active>
+<div class="title-bar" class:active on:dblclick={maximize} on:pointerdown={dbltap}>
+	<div aria-label="title" class="title-bar-text">
 		{#if icon}
 			<Image class="ms-title-bar-icon" src={icon} alt={title} />
 		{/if}
@@ -80,6 +80,13 @@
 		touch-action: none;
 		cursor: default;
 
+		&:not(.active) {
+			background: linear-gradient(90deg, #808080, #c0c0c0);
+
+			.title-bar-text {
+				color: #c8c8c8;
+			}
+		}
 		// 98.css
 		.title-bar-text {
 			display: flex;

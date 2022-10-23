@@ -134,27 +134,29 @@ export const resizeWindow = (
 export const dicedWindows = windows$.dice(initialWindowState, {
 	getAllKeys: (state) => Object.keys(state),
 	getNextKey: getNextProcessId,
-	defineInternals: (slice) => {
+	defineInternals: (windowSlice) => {
 		const WINDOW_ACTION = '[window]';
 
 		const windowActions = {
-			maximize: slice.createAction(`${WINDOW_ACTION} maximize`),
-			minimize: slice.createAction(`${WINDOW_ACTION} minimize`),
-			restore: slice.createAction(`${WINDOW_ACTION} restore`),
-			move: slice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
-			resize: slice.createAction<ResizeData>(`${WINDOW_ACTION} resize`),
+			maximize: windowSlice.createAction(`${WINDOW_ACTION} maximize`),
+			minimize: windowSlice.createAction(`${WINDOW_ACTION} minimize`),
+			restore: windowSlice.createAction(`${WINDOW_ACTION} restore`),
+			move: windowSlice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
+			resize: windowSlice.createAction<ResizeData>(`${WINDOW_ACTION} resize`),
 		};
 
-		slice.slice('maximized', {
+		const active$ = windowSlice.slice('active');
+
+		const maximized$ = windowSlice.slice('maximized', {
 			reducers: [
 				windowActions.maximize.reduce(() => true),
 				windowActions.restore.reduce(() => false),
 			],
 		});
 
-		slice.addReducers([windowActions.resize.reduce(resizeWindow)]);
+		windowSlice.addReducers([windowActions.resize.reduce(resizeWindow)]);
 
-		slice.slice('position', {
+		const position$ = windowSlice.slice('position', {
 			reducers: [
 				windowActions.move.reduce((state, payload) => ({
 					x: state.x + payload.x,
@@ -163,16 +165,16 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 			],
 		});
 
-		const program$ = slice.slice('program', {
+		const program$ = windowSlice.slice('program', {
 			reducers: [],
 		});
 
 		let minesweeperGame: MinesweeperGame | undefined;
 		if (program$.value === ProgramName.MINESWEEPER) {
-			minesweeperGame = createMineSweeperGame(slice, 'programData');
+			minesweeperGame = createMineSweeperGame(windowSlice, 'programData');
 		}
 
-		return { windowActions, program$, minesweeperGame };
+		return { windowActions, program$, minesweeperGame, active$, position$, maximized$ };
 	},
 	reducers: [],
 });
