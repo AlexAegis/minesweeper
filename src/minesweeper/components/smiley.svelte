@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { ButtonLook } from '../../desktop/components/button-look.enum';
+	import Button from '../../desktop/components/button.svelte';
 	import type { SmileyState } from '../store';
-	import { ButtonLook } from '../ui/button-look.enum';
-	import Button from '../ui/button.svelte';
 
 	export let smileyState: SmileyState;
 </script>

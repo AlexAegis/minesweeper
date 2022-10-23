@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
-	import type { MinesweeperGame } from '../store';
-	import Panel from '../ui/panel.svelte';
-	import SegmentDisplayPanel from '../ui/segment-display-panel.svelte';
-	import Playfield from './playfield.svelte';
-	import Smiley from './smiley.svelte';
+	import Panel from '../desktop/components/panel.svelte';
+	import SegmentDisplayPanel from '../games/components/segment-display-panel.svelte';
+	import Playfield from './components/playfield.svelte';
+	import Smiley from './components/smiley.svelte';
+	import type { MinesweeperGame } from './store';
+
+	import './styles/minesweeper.scss';
 
 	export let internals: MinesweeperGame;
 

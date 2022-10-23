@@ -1,17 +1,16 @@
 import { isNonNullable, isNullish } from '@tinyslice/core';
 import { filter, map, take } from 'rxjs';
-import type { CoordinateLike } from '../core';
-import type { ResizeData } from '../ui/resizable.function';
+import type { CoordinateLike } from '../../common';
+import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface';
+import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store';
+import type { ResizeData } from '../components/resizable.function';
 import {
 	initialWindowState,
 	type BaseWindowState,
 	type WindowState,
-} from '../ui/window-state.interface';
-import type { MinesweeperGame } from './minesweeper.interface';
-import { createMineSweeperGame } from './minesweeper.store';
+} from '../components/window-state.interface';
 
-import { rootSlice$ } from './root.store';
-import { scope } from './scope';
+import { rootSlice$, scope } from '../../root.store';
 
 export type ProcessId = string;
 

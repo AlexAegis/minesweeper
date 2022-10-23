@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { CoordinateLike } from '../core';
-	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../core/tile-mark.enum';
+	import type { CoordinateLike } from '../../common';
+	import { ButtonLook } from '../../desktop/components/button-look.enum';
+	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../interfaces';
 	import type { TileState } from '../store';
-	import { ButtonLook } from '../ui/button-look.enum';
 
-	import Button from '../ui/button.svelte';
+	import Button from '../../desktop/components/button.svelte';
 
 	const dispatch = createEventDispatcher();
 

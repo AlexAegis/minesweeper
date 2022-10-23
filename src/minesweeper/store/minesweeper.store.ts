@@ -21,25 +21,25 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
+import { Coordinate, shuffle, type CoordinateKey, type CoordinateLike } from '../../common';
+import { debug$, MS_TAG, scope } from '../../root.store';
 import {
-	Coordinate,
 	getNextTileMark,
 	isEmptyTileMark,
 	isFlagTileMark,
 	isQuestionTileMark,
+	isTheSamePreset,
 	TileMark,
-	type CoordinateKey,
-	type CoordinateLike,
-} from '../core';
-import { isTheSamePreset, type GamePreset, type WinData } from '../core/game-preset.interface';
+	type GamePreset,
+	type WinData,
+} from '../interfaces';
 import {
 	GameState,
 	isGameLost,
 	isGameOngoing,
 	isGameReadyToStart,
 	isGameWon,
-} from '../core/game-state.enum';
-import { shuffle } from '../helper';
+} from '../interfaces/game-state.enum';
 import {
 	SmileyState,
 	type Game,
@@ -47,8 +47,6 @@ import {
 	type HighscoreEntry,
 	type TileState,
 } from './minesweeper.interface';
-import { debug$ } from './root.store';
-import { MS_TAG, scope } from './scope';
 
 /**
  * Take all tiles, shuffle them, take the first n amount, those will be the mines

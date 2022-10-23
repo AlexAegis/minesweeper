@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { padArray } from '../helper';
+	import { padArray } from '../../common';
 	import SegmentDisplay from './seven-segment-display.svelte';
+
+	import '../styles/segment-display.scss';
 
 	export let value: number | undefined;
 	export let paddedLength = 3;

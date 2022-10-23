@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { homepage } from '../../../package.json';
 	import Settings from './settings.form.svelte';
 
-	import Button from '../ui/button.svelte';
-	import Modal from '../ui/modal.svelte';
+	import Button from '../../desktop/components/button.svelte';
+	import Modal from '../../desktop/components/modal.svelte';
 	import Highscore from './highscore.svelte';
 
 	let customGameModal: Modal;
@@ -11,12 +10,13 @@
 
 	import { map } from 'rxjs';
 	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
-	import type { GamePreset } from '../core';
+	import type { GamePreset } from '../interfaces';
 	import { CLASSIC_GAME_PRESETS, type MinesweeperGame } from '../store';
 
-	import { ButtonLook } from '../ui/button-look.enum';
-	import Dropdown from '../ui/dropdown.svelte';
-	import type { BaseWindowState } from '../ui/window-state.interface';
+	import { ButtonLook } from '../../desktop/components/button-look.enum';
+	import Dropdown from '../../desktop/components/dropdown.svelte';
+	import type { BaseWindowState } from '../../desktop/components/window-state.interface';
+	import { packageMetadata } from '../../root.store';
 
 	export let windowState: BaseWindowState;
 	export let internals: MinesweeperGame;
@@ -88,7 +88,10 @@
 	</Observer>
 </Dropdown>
 <Dropdown title={'Help'} hotkeyLetter={'H'} bind:active>
-	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => window.open(homepage, '_blank')}>
+	<Button
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => window.open(packageMetadata.homepage, '_blank')}
+	>
 		Github
 	</Button>
 	<hr />

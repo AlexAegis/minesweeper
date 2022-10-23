@@ -20,3 +20,8 @@ technologies such as Svelte and RxJS.
 
 [98.css](https://jdan.github.io/98.css/#intro)
 [XP.css](https://botoxparty.github.io/XP.css/#intro)
+
+## Other art
+
+Pixelart was done by me using [Pixilart](https://www.pixilart.com/alexaegis) and
+reference imagery found either online or from Windows Virtual Machines.

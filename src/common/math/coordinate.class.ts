@@ -1,4 +1,4 @@
-import { random } from '../helper';
+import { random } from '../functions';
 
 export type CoordinateKey = `${number},${number}`;
 

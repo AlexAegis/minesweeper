@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Observable } from 'rxjs';
 	import { createEventDispatcher } from 'svelte';
-	import type { GamePreset } from '../core';
 
-	import Button from '../ui/button.svelte';
+	import Button from '../../desktop/components/button.svelte';
+	import type { GamePreset } from '../interfaces';
 
 	const dispatch = createEventDispatcher();
 

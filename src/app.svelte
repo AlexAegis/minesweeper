@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { debug$ } from './minesweeper/store';
-	import { desktopActions, programs$ } from './minesweeper/store/desktop.store';
-	import Button from './minesweeper/ui/button.svelte';
-	import DesktopIcon from './minesweeper/ui/desktop-icon.svelte';
-	import Desktop from './minesweeper/ui/desktop.svelte';
+	import Button from './desktop/components/button.svelte';
+	import DesktopIcon from './desktop/components/desktop-icon.svelte';
+	import Desktop from './desktop/desktop.svelte';
+	import { desktopActions, programs$ } from './desktop/store/desktop.store';
+	import { debug$ } from './root.store';
 </script>
 
 <Desktop>
 	{#each $programs$ as program}
 		<DesktopIcon
 			title={program}
+			icon={program}
 			on:dblclick={() => desktopActions.spawnProgram.next(program)}
 		/>
 	{/each}

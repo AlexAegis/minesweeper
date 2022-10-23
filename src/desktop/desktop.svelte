@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
-	import MinesweeperMenu from '../components/minesweeper-menu.svelte';
-	import Minesweeper from '../components/minesweeper.svelte';
-	import { desktopActions, DesktopProgram, dicedWindows } from '../store';
-	import Button from './button.svelte';
-	import Window from './window.svelte';
+	import MinesweeperMenu from '../minesweeper/components/minesweeper-menu.svelte';
+	import Minesweeper from '../minesweeper/minesweeper.svelte';
+	import Button from './components/button.svelte';
+	import Window from './components/window.svelte';
+	import { desktopActions, DesktopProgram, dicedWindows } from './store';
+
+	import './styles/desktop.scss';
 
 	let keys$ = dicedWindows.keys$;
 

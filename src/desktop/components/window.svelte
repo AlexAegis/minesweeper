@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-	import type { CoordinateLike } from '../core';
+	import type { CoordinateLike } from '../../common';
 	import { resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import TitleBar from './title-bar.svelte';
@@ -42,7 +42,7 @@
 	}
 
 	function restore() {
-		if (effectiveResizable) {
+		if (transientState.resizable) {
 			dispatch('restore');
 			if (transient) {
 				transientState.maximized = false;
@@ -51,7 +51,7 @@
 	}
 
 	function maximize() {
-		if (effectiveResizable) {
+		if (transientState.resizable) {
 			dispatch('maximize');
 			if (transient) {
 				transientState.maximized = true;
@@ -112,9 +112,9 @@
 		icon={transientState.icon}
 		active={transientState.active}
 		maximized={transientState.maximized}
-		resizable={effectiveResizable}
+		resizable={transientState.resizable}
 		showMinimize={!transient}
-		showMaximize={effectiveResizable}
+		showMaximize={transientState.resizable}
 		showClose={true}
 		on:minimize={minimize}
 		on:restore={restore}
