@@ -13,7 +13,7 @@ export type ResizeListener = (next: ResizeData) => void;
 
 export class InteractBuilder {
 	interactable: Interactable;
-	listeners: string[] = [];
+	toggles: ((toggle: boolean) => void)[] = [];
 	private constructor(private readonly element: HTMLElement) {
 		this.interactable = interact(element);
 	}
@@ -24,24 +24,19 @@ export class InteractBuilder {
 
 	resizable(resize: ResizeListener) {
 		resizable(this.interactable, this.element, resize);
-		this.listeners.push('resize');
+		this.toggles.push((toggle) => this.interactable.resizable(toggle));
 		return this;
 	}
 
 	movable(move: MoveListener) {
 		movable(this.interactable, this.element, move);
-		this.listeners.push('move');
+		this.toggles.push((toggle) => this.interactable.draggable(toggle));
+
 		return this;
 	}
 
-	on() {
-		this.interactable.on(this.listeners);
-		this.interactable.styleCursor(true);
-	}
-
-	off() {
-		this.interactable.off(this.listeners);
-		this.interactable.styleCursor(false);
+	toggle(value: boolean) {
+		this.toggles.forEach((toggle) => toggle(value));
 	}
 
 	unsubscribe() {
@@ -61,7 +56,10 @@ const resizable = (
 		margin: 7, // window padding in px is 3
 		listeners: {
 			move: (event: ResizeEvent) => {
-				if (!event.target.classList.contains('immobile')) {
+				if (
+					!event.target.classList.contains('immobile') &&
+					!event.target.classList.contains('non-resizable')
+				) {
 					const originalWidthStyle = element.style.width;
 					const originalHeightStyle = element.style.height;
 

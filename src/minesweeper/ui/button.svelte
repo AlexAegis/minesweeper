@@ -130,7 +130,6 @@
 		if (!disabled && pressed && !cancelHappened) {
 			cancelHappened = true;
 			cancelLongpress();
-			console.log('cancelFire');
 			dispatch('cancelFire');
 		}
 	}

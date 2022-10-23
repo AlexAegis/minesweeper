@@ -12,6 +12,9 @@
 	export let active: boolean = true;
 	export let maximized: boolean = false;
 	export let resizable: boolean = true;
+	export let showMinimize: boolean = true;
+	export let showMaximize: boolean = true;
+	export let showClose: boolean = true;
 
 	const sink = new Subscription();
 
@@ -54,43 +57,50 @@
 	</div>
 
 	<div class="title-bar-controls">
-		<button
-			aria-label="Minimize"
-			use:tapGesture
-			on:click|preventDefault|stopPropagation={minimize}
-			on:tap|preventDefault|stopPropagation
-			on:mousemove|preventDefault|stopPropagation
-			on:mousedown|preventDefault|stopPropagation
-			on:tapup|preventDefault|stopPropagation
-			on:tapdown|preventDefault|stopPropagation
-			on:tapmove|preventDefault|stopPropagation
-			on:dblclick|preventDefault|stopPropagation
-		/>
-		<button
-			aria-label={maximized ? 'Restore' : 'Maximize'}
-			use:tapGesture
-			on:click|preventDefault|stopPropagation={maximize}
-			on:tap|preventDefault|stopPropagation
-			on:mousemove|preventDefault|stopPropagation
-			on:mousedown|preventDefault|stopPropagation
-			on:tapup|preventDefault|stopPropagation
-			on:tapdown|preventDefault|stopPropagation
-			on:tapmove|preventDefault|stopPropagation
-			on:dblclick|preventDefault|stopPropagation
-			disabled={!resizable}
-		/>
-		<button
-			aria-label="Close"
-			use:tapGesture
-			on:click|preventDefault|stopPropagation={close}
-			on:tap|preventDefault|stopPropagation
-			on:mousemove|preventDefault|stopPropagation
-			on:mousedown|preventDefault|stopPropagation
-			on:tapup|preventDefault|stopPropagation
-			on:tapdown|preventDefault|stopPropagation
-			on:tapmove|preventDefault|stopPropagation
-			on:dblclick|preventDefault|stopPropagation
-		/>
+		{#if showMinimize}
+			<button
+				aria-label="Minimize"
+				use:tapGesture
+				on:click|preventDefault|stopPropagation={minimize}
+				on:tap|preventDefault|stopPropagation
+				on:mousemove|preventDefault|stopPropagation
+				on:mousedown|preventDefault|stopPropagation
+				on:tapup|preventDefault|stopPropagation
+				on:tapdown|preventDefault|stopPropagation
+				on:tapmove|preventDefault|stopPropagation
+				on:dblclick|preventDefault|stopPropagation
+			/>
+		{/if}
+
+		{#if showMaximize}
+			<button
+				aria-label={maximized ? 'Restore' : 'Maximize'}
+				use:tapGesture
+				on:click|preventDefault|stopPropagation={maximize}
+				on:tap|preventDefault|stopPropagation
+				on:mousemove|preventDefault|stopPropagation
+				on:mousedown|preventDefault|stopPropagation
+				on:tapup|preventDefault|stopPropagation
+				on:tapdown|preventDefault|stopPropagation
+				on:tapmove|preventDefault|stopPropagation
+				on:dblclick|preventDefault|stopPropagation
+				disabled={!resizable}
+			/>
+		{/if}
+		{#if showClose}
+			<button
+				aria-label="Close"
+				use:tapGesture
+				on:click|preventDefault|stopPropagation={close}
+				on:tap|preventDefault|stopPropagation
+				on:mousemove|preventDefault|stopPropagation
+				on:mousedown|preventDefault|stopPropagation
+				on:tapup|preventDefault|stopPropagation
+				on:tapdown|preventDefault|stopPropagation
+				on:tapmove|preventDefault|stopPropagation
+				on:dblclick|preventDefault|stopPropagation
+			/>
+		{/if}
 	</div>
 </div>
 
@@ -99,6 +109,7 @@
 	.title-bar {
 		user-select: none;
 		touch-action: none;
+		cursor: default;
 
 		// 98.css
 		.title-bar-text {

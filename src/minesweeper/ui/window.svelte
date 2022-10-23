@@ -19,6 +19,9 @@
 		...windowState,
 	};
 
+	$: effectiveResizable = transientState.resizable && !transientState.maximized;
+	$: effectiveMovable = !transientState.maximized;
+
 	function resize(next: ResizeData) {
 		dispatch('resize', next);
 		if (transient) {
@@ -39,18 +42,20 @@
 	}
 
 	function restore() {
-		dispatch('restore');
-		interact.on();
-		if (transient) {
-			transientState.maximized = false;
+		if (effectiveResizable) {
+			dispatch('restore');
+			if (transient) {
+				transientState.maximized = false;
+			}
 		}
 	}
 
 	function maximize() {
-		dispatch('maximize');
-		interact.off();
-		if (transient) {
-			transientState.maximized = true;
+		if (effectiveResizable) {
+			dispatch('maximize');
+			if (transient) {
+				transientState.maximized = true;
+			}
 		}
 	}
 
@@ -58,10 +63,16 @@
 		dispatch('close');
 	}
 
-	let interact: InteractBuilder;
+	let moveInteract: InteractBuilder;
+	let resizeInteract: InteractBuilder;
+
+	$: resizeInteract?.toggle(effectiveResizable);
+	$: moveInteract?.toggle(effectiveMovable);
 
 	onMount(() => {
-		interact = InteractBuilder.from(windowElement).movable(move).resizable(resize);
+		moveInteract = InteractBuilder.from(windowElement).movable(move);
+		resizeInteract = InteractBuilder.from(windowElement).resizable(resize);
+
 		// Update size on render
 		if (windowState) {
 			if (transient) {
@@ -77,7 +88,8 @@
 	});
 
 	onDestroy(() => {
-		interact.unsubscribe();
+		moveInteract.unsubscribe();
+		resizeInteract.unsubscribe();
 	});
 </script>
 
@@ -86,7 +98,8 @@
 	class="ms-window window pid{transientState.processId} {transientState.program} {$$props.class ??
 		''}"
 	class:invisible={transientState.invisible}
-	class:immobile={transientState.maximized}
+	class:immobile={!effectiveMovable}
+	class:non-resizable={!effectiveResizable}
 	class:maximized={transientState.maximized}
 	class:fit-content={transientState.fitContent}
 	style:top={`${transientState.position.y}px`}
@@ -99,7 +112,10 @@
 		icon={transientState.icon}
 		active={transientState.active}
 		maximized={transientState.maximized}
-		resizable={transientState.resizable}
+		resizable={effectiveResizable}
+		showMinimize={!transient}
+		showMaximize={effectiveResizable}
+		showClose={true}
 		on:minimize={minimize}
 		on:restore={restore}
 		on:maximize={maximize}
@@ -124,10 +140,6 @@
 
 <style lang="scss">
 	.ms-window {
-		&.invisible {
-			opacity: 0;
-		}
-
 		&.fit-content {
 			display: table;
 		}
@@ -135,6 +147,10 @@
 		&:not(.fit-content) {
 			display: flex;
 			flex-direction: column;
+
+			.window-body {
+				height: 100%;
+			}
 		}
 
 		position: absolute;
@@ -172,6 +188,10 @@
 
 			min-width: fit-content;
 			min-height: fit-content;
+		}
+
+		&.invisible {
+			opacity: 0;
 		}
 	}
 </style>

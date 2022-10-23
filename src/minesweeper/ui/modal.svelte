@@ -2,23 +2,15 @@
 	import { interval, map, merge, of, startWith, Subject, switchMap, take } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import type { CoordinateLike } from '../core';
-	import type { BaseWindowState } from './window-state.interface';
+	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
-	export let title: string;
+	export let windowState: Partial<BaseWindowState>;
 
-	let modalWindow: Window;
-
-	let windowState: Partial<BaseWindowState> = {
-		height: 200,
-		icon: undefined,
-		maximized: false,
-		resizable: true,
-		fitContent: true,
-		title,
-	};
+	$: effectiveWindowState = { ...initialWindowState, ...windowState };
 
 	export let isOpen: boolean = false;
+	export let dimmed: boolean = false;
 
 	let errorNotification = new Subject<void>();
 
@@ -57,7 +49,7 @@
 					x: parentWindow?.width ?? document.body.scrollWidth,
 					y: parentWindow?.height ?? document.body.scrollHeight,
 				},
-				{ x: windowState.width ?? 0, y: windowState.height ?? 0 }
+				{ x: effectiveWindowState.width ?? 0, y: effectiveWindowState.height ?? 0 }
 			);
 			windowState.invisible = false;
 		}, 0);
@@ -87,11 +79,12 @@
 	<div
 		class="ms-modal"
 		class:error={$error$}
+		class:dimmed
 		style={$$props.style}
 		on:keypress
 		on:click|preventDefault={backdropClick}
 	>
-		<Window bind:this={modalWindow} {windowState} transient={true} on:close={() => close()}>
+		<Window windowState={effectiveWindowState} transient={true} on:close={() => close()}>
 			<slot />
 		</Window>
 	</div>
@@ -107,7 +100,9 @@
 		top: 0;
 		z-index: 900;
 
-		background-color: rgba(0, 0, 0, 0.05);
+		&.dimmed {
+			background-color: rgba(0, 0, 0, 0.2);
+		}
 
 		&.error {
 			:global(.ms-window) {

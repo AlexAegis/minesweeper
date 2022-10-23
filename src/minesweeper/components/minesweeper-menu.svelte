@@ -95,7 +95,10 @@
 	<Button look={ButtonLook.CONTEXT_MENU_ITEM}>About Minesweeper...</Button>
 </Dropdown>
 
-<Modal title="Custom Field" bind:this={customGameModal}>
+<Modal
+	bind:this={customGameModal}
+	windowState={{ fitContent: true, title: 'Custom Field', resizable: false }}
+>
 	<Settings
 		{presets$}
 		preset={$preset$}
@@ -104,7 +107,10 @@
 	/>
 </Modal>
 
-<Modal title="Highscore" bind:this={highScoreModal}>
+<Modal
+	bind:this={highScoreModal}
+	windowState={{ fitContent: false, title: 'Highscore', height: 240 }}
+>
 	<Highscore {highscoreEntries$} />
 </Modal>
 
