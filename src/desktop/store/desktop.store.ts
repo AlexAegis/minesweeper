@@ -13,6 +13,8 @@ import {
 import { capitalize } from '../../common';
 import { rootSlice$, scope } from '../../root.store';
 
+import minesweeperIcon from '../../assets/desktop/minesweeper.png';
+
 export type ProcessId = string;
 
 export enum ProgramName {
@@ -46,10 +48,10 @@ export const desktop$ = rootSlice$.addSlice('desktop', {
 		[ProgramName.MINESWEEPER]: {
 			name: ProgramName.MINESWEEPER,
 			title: capitalize(ProgramName.MINESWEEPER),
-			icon: `assets/desktop/${ProgramName.MINESWEEPER}.png`,
+			icon: minesweeperIcon,
 			initialWindowState: {
 				fitContent: true,
-				icon: `assets/desktop/${ProgramName.MINESWEEPER}.png`,
+				icon: minesweeperIcon,
 			},
 		},
 	},

@@ -57,7 +57,7 @@
 		}
 
 		&.selected {
-			.icon {
+			:global(.icon) {
 				// box-shadow: inset 0 0 0 2000px rgba(var(--selection-rgb), 0.5);
 				filter: contrast(0.5) brightness(1.5) sepia(1) hue-rotate(180deg) contrast(0.8)
 					saturate(4);

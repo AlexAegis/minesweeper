@@ -11,6 +11,8 @@
 	let startMenu: HTMLElement;
 	export let startButton: HTMLElement;
 
+	import githubIcon from '../../assets/desktop/github.png';
+
 	$: programKeys$ = dicedPrograms.keys$;
 
 	const closeEffect = desktop$.createEffect(
@@ -64,7 +66,7 @@
 			look={ButtonLook.START_MENU_ITEM}
 			on:fire={() => window.open(packageMetadata.homepage, '_blank')}
 		>
-			<Image height={28} width={28} />
+			<Image height={28} width={28} src={githubIcon} />
 			Github
 		</Button>
 
