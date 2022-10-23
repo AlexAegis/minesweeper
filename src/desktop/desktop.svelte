@@ -64,7 +64,7 @@
 			<Observer observable={window} let:next>
 				<Window
 					windowState={next}
-					on:active={(event) => window.internals.active$.set(event.detail)}
+					on:activate={() => desktopActions.activateProgram.next(processId)}
 					on:maximize={() => window.internals.windowActions.maximize.next(processId)}
 					on:minimize={() => window.internals.windowActions.minimize.next(processId)}
 					on:restore={() => window.internals.windowActions.restore.next(processId)}

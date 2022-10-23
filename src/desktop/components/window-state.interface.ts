@@ -21,6 +21,7 @@ export interface BaseWindowState {
 	minHeight: number;
 	fitContent: boolean;
 	invisible: boolean;
+	zIndex: number;
 }
 
 export interface ProgramWindowState<ProgramData> extends BaseWindowState {
@@ -50,4 +51,5 @@ export const initialWindowState: BaseWindowState = {
 	minHeight: 45, // 45: titlebar and menubar together
 	fitContent: false,
 	invisible: false,
+	zIndex: 10,
 };

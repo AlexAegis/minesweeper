@@ -1,5 +1,10 @@
-import { isNonNullable, isNullish } from '@tinyslice/core';
-import { filter, map, take } from 'rxjs';
+import {
+	entitySliceReducerWithPrecompute,
+	ifLatestFrom,
+	isNonNullable,
+	isNullish,
+} from '@tinyslice/core';
+import { filter, fromEvent, map, take } from 'rxjs';
 import type { CoordinateLike } from '../../common';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store';
@@ -39,7 +44,7 @@ export interface DesktopState {
 
 export const desktopActions = {
 	spawnProgram: scope.createAction<ProgramName>('[Desktop] spawn'),
-	activateProgram: scope.createAction<ProcessId>('[Desktop] activate'),
+	activateProgram: scope.createAction<ProcessId | undefined>('[Desktop] activate'),
 };
 
 export const desktop$ = rootSlice$.addSlice('desktop', {
@@ -90,14 +95,74 @@ export const windows$ = desktop$.slice('windows', {
 				processId,
 				program,
 				title: program,
+				zIndex: Object.keys(state).length + 1,
 			};
 			return { ...state, [processId]: spawnedWindow };
 		}),
+		desktopActions.activateProgram.reduce(
+			entitySliceReducerWithPrecompute(
+				(state, payload) => {
+					let windows: WindowState[] = Object.values(state);
+
+					if (payload) {
+						windows = windows.filter(
+							(windowState) => windowState.processId !== payload
+						);
+						windows.sort((a, b) => a.zIndex - b.zIndex);
+						windows.push(state[payload]);
+					}
+
+					const indexMap = windows.reduce((acc, next, i) => {
+						acc.set(next.processId, i + 1);
+						return acc;
+					}, new Map<string, number>());
+
+					return {
+						indexMap,
+					};
+				},
+				(key, windowState, payload, { indexMap }) => {
+					if (payload) {
+						return {
+							...windowState,
+							zIndex: indexMap.get(key) ?? 0,
+							active: windowState.processId === payload,
+						};
+					} else {
+						return {
+							...windowState,
+							active: false,
+						};
+					}
+				}
+			)
+		),
 	],
 	defineInternals: (slice) => {
-		slice.pipe(map((s) => s));
+		const activeWindowCount$ = slice.pipe(
+			map(
+				(windows) =>
+					Object.values(windows).filter((windowState) => windowState.active).length
+			)
+		);
+
+		return { activeWindowCount$ };
 	},
 });
+
+desktop$.createEffect(
+	fromEvent<PointerEvent>(document, 'pointerdown').pipe(
+		filter((event) => {
+			const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+			return !elementsUnderPointer.some((element) => element.classList.contains('window'));
+		}),
+		ifLatestFrom(
+			windows$.internals.activeWindowCount$,
+			(activeWindowCount) => activeWindowCount > 0
+		),
+		map(() => desktopActions.activateProgram.makePacket(undefined))
+	)
+);
 
 export const resizeWindow = (
 	windowState: BaseWindowState,
@@ -145,7 +210,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 			resize: windowSlice.createAction<ResizeData>(`${WINDOW_ACTION} resize`),
 		};
 
-		const active$ = windowSlice.slice('active');
+		windowSlice.addReducers([windowActions.resize.reduce(resizeWindow)]);
 
 		const maximized$ = windowSlice.slice('maximized', {
 			reducers: [
@@ -153,8 +218,6 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 				windowActions.restore.reduce(() => false),
 			],
 		});
-
-		windowSlice.addReducers([windowActions.resize.reduce(resizeWindow)]);
 
 		const position$ = windowSlice.slice('position', {
 			reducers: [
@@ -165,16 +228,12 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 			],
 		});
 
-		const program$ = windowSlice.slice('program', {
-			reducers: [],
-		});
-
 		let minesweeperGame: MinesweeperGame | undefined;
-		if (program$.value === ProgramName.MINESWEEPER) {
+		if (windowSlice.value.program === ProgramName.MINESWEEPER) {
 			minesweeperGame = createMineSweeperGame(windowSlice, 'programData');
 		}
 
-		return { windowActions, program$, minesweeperGame, active$, position$, maximized$ };
+		return { windowActions, minesweeperGame, position$, maximized$ };
 	},
 	reducers: [],
 });

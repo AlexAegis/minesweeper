@@ -1,4 +1,4 @@
-# [Svelte Minesweeper](https://alexaegis.github.io/minesweeper/)
+# [Minesweeper](https://alexaegis.github.io/minesweeper/)
 
 <!-- markdownlint-disable MD013 -->
 

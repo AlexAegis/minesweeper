@@ -76,6 +76,8 @@
 			line-height: 18px;
 			grid-row: 2;
 			grid-column: 1 / -1;
+
+			color: black;
 		}
 	}
 </style>

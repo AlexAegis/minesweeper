@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asapScheduler, filter, fromEvent, scheduled, tap } from 'rxjs';
+	import { asapScheduler, filter, fromEvent, scheduled, Subscription, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import type { CoordinateLike } from '../../common';
 	import { resizeWindow } from '../store';
@@ -23,19 +23,11 @@
 	$: effectiveResizable = transientState.resizable && !transientState.maximized;
 	$: effectiveMovable = !transientState.maximized;
 
-	const clickListener = scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asapScheduler)
-		.pipe(
-			filter((event) => {
-				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
-				return !elementsUnderPointer.includes(windowElement);
-			}),
-			tap(() => deactivate())
-		)
-		.subscribe();
+	const sink = new Subscription();
 
 	function activate() {
 		if (!transientState.active) {
-			dispatch('active', true);
+			dispatch('activate');
 			if (transient) {
 				transientState = { ...transientState, active: true };
 			}
@@ -43,11 +35,8 @@
 	}
 
 	function deactivate() {
-		if (transientState.active) {
-			dispatch('active', false);
-			if (transient) {
-				transientState = { ...transientState, active: false };
-			}
+		if (transient && transientState.active) {
+			transientState = { ...transientState, active: false };
 		}
 	}
 
@@ -114,12 +103,29 @@
 				} as ResizeData);
 			}
 		}
+
+		if (transient) {
+			sink.add(
+				scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asapScheduler)
+					.pipe(
+						filter((event) => {
+							const elementsUnderPointer = document.elementsFromPoint(
+								event.pageX,
+								event.pageY
+							);
+							return !elementsUnderPointer.includes(windowElement);
+						}),
+						tap(() => deactivate())
+					)
+					.subscribe()
+			);
+		}
 	});
 
 	onDestroy(() => {
 		moveInteract.unsubscribe();
 		resizeInteract.unsubscribe();
-		clickListener.unsubscribe();
+		sink.unsubscribe();
 	});
 </script>
 
@@ -137,6 +143,7 @@
 	style:left={`${transientState.position.x}px`}
 	style:height={`${transientState.height}px`}
 	style:width={`${transientState.width}px`}
+	style:z-index={transientState.zIndex}
 	on:pointerdown={activate}
 >
 	<TitleBar

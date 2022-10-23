@@ -9,13 +9,13 @@
 
 	export let active: string | undefined;
 
-	let button: Button;
+	let button: HTMLElement;
 
-	const clickListener = scheduled(fromEvent<PointerEvent>(document, 'pointerup'), asapScheduler)
+	const clickListener = scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asapScheduler)
 		.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
-				return !Array.from(button.$$.root.children).some((child) =>
+				return !Array.from(button.parentElement?.children ?? []).some((child) =>
 					elementsUnderPointer.includes(child)
 				);
 			})
@@ -47,7 +47,7 @@
 </script>
 
 <Button
-	bind:this={button}
+	bind:button
 	look={ButtonLook.TITLE_BAR_MENU_ITEM}
 	active={active === title}
 	disableSelfInset={active === undefined}
