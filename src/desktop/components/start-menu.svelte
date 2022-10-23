@@ -91,13 +91,15 @@
 		width: fit-content;
 
 		display: flex;
+		position: fixed;
+		bottom: 32px;
 
 		.title {
 			display: flex;
 			align-items: flex-end;
 
 			width: 20px;
-			height: 100%;
+
 			background: linear-gradient(black, blue);
 
 			div {
