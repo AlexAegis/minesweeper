@@ -1,5 +1,5 @@
-import type { CoordinateLike } from '../core';
-import type { MinesweeperGame } from '../store';
+import type { CoordinateLike } from '../../common';
+import type { MinesweeperGame } from '../../minesweeper/store';
 import type { ProcessId, ProgramName } from '../store/desktop.store';
 
 export interface BaseWindowState {
