@@ -35,20 +35,8 @@ jobs:
       - name: Install packages
         if: steps.cache-packages.outputs.cache-hit != 'true'
         run: npm install
-      - name: Lint with eslint
-        run: npm run lint:es
-      - name: Lint with svelte-check
-        run: npm run lint:svelte
-      - name: Lint css stylesheets
-        run: npm run lint:css
-      - name: Lint scss stylesheets
-        run: npm run lint:scss
-      - name: Lint markdown
-        run: npm run lint:md
-      - name: Lint markdown with remark
-        run: npm run lint:rmd
-      - name: Lint format
-        run: npm run lint:format
+      - name: Lint
+        run: npm run lint
   test:
     runs-on: ubuntu-latest
     strategy:
