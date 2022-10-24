@@ -71,7 +71,7 @@ const revealEndStateReducer = (
 	tiles: Record<CoordinateKey, TileState>,
 	revealedTileKey: CoordinateKey
 ): Record<CoordinateKey, TileState> =>
-	Object.entries(tiles).reduce((acc, [tileKey, tile]) => {
+	(Object.entries(tiles) as [CoordinateKey, TileState][]).reduce((acc, [tileKey, tile]) => {
 		if (isFlagTileMark(tile.mark) && !tile.isMine) {
 			acc[tileKey] = {
 				...tile,

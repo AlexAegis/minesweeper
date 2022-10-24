@@ -1,0 +1,35 @@
+{
+	"$schema": "https://turborepo.org/schema.json",
+	"pipeline": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"]
+		},
+		"lint": {
+			"outputs": [],
+			"dependsOn": [
+				"lint:es",
+				"lint:svelte",
+				"lint:css",
+				"lint:scss",
+				"lint:md",
+				"lint:rmd",
+				"lint:format"
+			]
+		},
+		"lint:es": { "outputs": [] },
+		"lint:svelte": { "outputs": [] },
+		"lint:css": { "outputs": [] },
+		"lint:scss": { "outputs": [] },
+		"lint:md": { "outputs": [] },
+		"lint:rmd": { "outputs": [] },
+		"lint:format": { "outputs": [] },
+		"test": {
+			"env": ["VITEST"],
+			"outputs": []
+		},
+		"start": {
+			"cache": false
+		}
+	}
+}

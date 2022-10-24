@@ -8,7 +8,7 @@
 
 	export let shortcutState: ShortcutState;
 
-	export let selected: boolean = false;
+	export let selected = false;
 
 	const dispatch = createEventDispatcher<{
 		drop: CoordinateLike;

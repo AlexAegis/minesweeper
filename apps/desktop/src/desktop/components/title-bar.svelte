@@ -9,12 +9,12 @@
 
 	export let title: string;
 	export let icon: string | undefined = undefined;
-	export let active: boolean = true;
-	export let maximized: boolean = false;
-	export let resizable: boolean = true;
-	export let showMinimize: boolean = true;
-	export let showMaximize: boolean = true;
-	export let showClose: boolean = true;
+	export let active = true;
+	export let maximized = false;
+	export let resizable = true;
+	export let showMinimize = true;
+	export let showMaximize = true;
+	export let showClose = true;
 
 	const sink = new Subscription();
 

@@ -1,44 +1,23 @@
 {
-	"extends": "@tsconfig/svelte/tsconfig.json",
-	"include": [
-		"src/**/*.d.ts",
-		"src/**/*.ts",
-		"src/**/*.js",
-		"src/**/*.svelte",
-		"*.config.js",
-		"*.config.ts",
-		"commitlint.config.cjs"
-	],
-	"exclude": [
-		"node_modules/*",
-		"__sapper__/*",
-		"public/*",
-		"package-lock.json",
-		"./jest.config.js",
-		"./lint-staged.config.js",
-		"./svelte.config.js",
-		"commitlint.config.js"
-	],
-	"references": [{ "path": "./tsconfig.node.json" }],
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compileOnSave": false,
 	"compilerOptions": {
-		"target": "esnext",
-		"useDefineForClassFields": true,
-		"module": "esnext",
-		"resolveJsonModule": true,
-		"baseUrl": ".",
-		"rootDir": ".",
-		"allowJs": true,
-		"checkJs": true,
-		"isolatedModules": true,
 		"strict": true,
-		"noImplicitAny": false,
-		"esModuleInterop": true,
+		"rootDir": ".",
+		"sourceMap": true,
+		"declaration": true,
+		"moduleResolution": "node",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"downlevelIteration": true,
-		"lib": ["esnext", "dom"],
+		"importHelpers": true,
+		"target": "es2020",
+		"module": "es2022",
+		"resolveJsonModule": true,
+		"lib": ["es2022", "dom"],
 		"skipLibCheck": true,
-		"skipDefaultLibCheck": true
-	}
+		"skipDefaultLibCheck": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "."
+	},
+	"exclude": ["node_modules", "tmp"]
 }

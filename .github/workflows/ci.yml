@@ -2,9 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [master, staging]
+    branches: '**'
   pull_request:
-    branches: [master, staging]
+    branches: '**'
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_REMOTE_ONLY: true
 
 jobs:
   lint:
@@ -95,9 +100,9 @@ jobs:
       - name: Build
         run: npm run build
   deploy:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    needs: [test, lint, build]
+    needs: [build, test, lint]
     strategy:
       matrix:
         node-version: [16.x]
@@ -122,4 +127,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: apps/desktop/dist

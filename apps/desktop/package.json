@@ -1,0 +1,28 @@
+{
+	"name": "desktop",
+	"type": "module",
+	"scripts": {
+		"start": "vite --host",
+		"build": "vite build",
+		"lint:es": "eslint --max-warnings=0 .",
+		"lint:svelte": "svelte-check --tsconfig ./tsconfig.json",
+		"lint:css": "stylelint --allow-empty-input ./**/*.css",
+		"lint:scss": "stylelint --customSyntax=postcss-scss --allow-empty-input ./**/*.scss",
+		"lint:md": "markdownlint --ignore-path '../../.gitignore' .",
+		"lint:rmd": "remark .",
+		"lint:format": "prettier --check .",
+		"preview": "vite preview",
+		"test": "vitest --passWithNoTests"
+	},
+	"dependencies": {
+		"@tinyslice/core": "^0.6.1",
+		"@tinyslice/hydration-plugin": "^0.6.1",
+		"98.css": "^0.1.18",
+		"interactjs": "^1.10.17",
+		"normalize.css": "^8.0.1",
+		"rxjs": "^7.5.7",
+		"svelte-rxjs-observer": "^0.2.1",
+		"xp.css": "^0.3.0"
+	},
+	"devDependencies": {}
+}

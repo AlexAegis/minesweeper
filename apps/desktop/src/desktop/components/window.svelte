@@ -21,7 +21,7 @@
 
 	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 
-	export let transient: boolean = false;
+	export let transient = false;
 
 	$: transientState = {
 		...initialWindowState,

@@ -9,8 +9,8 @@
 
 	$: effectiveWindowState = { ...initialWindowState, ...windowState };
 
-	export let isOpen: boolean = false;
-	export let dimmed: boolean = false;
+	export let isOpen = false;
+	export let dimmed = false;
 
 	let errorNotification = new Subject<void>();
 

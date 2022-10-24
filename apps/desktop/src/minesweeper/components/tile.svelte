@@ -46,7 +46,6 @@
 			classes.push('flag');
 		} else if (cheating) {
 			classes.push('debug');
-		} else {
 		}
 
 		if (tile.revealed) {

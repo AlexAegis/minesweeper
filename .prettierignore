@@ -1,11 +1,12 @@
 # Add files here to ignore them from prettier formatting
 
-/dist
-/coverage
+dist
+coverage
 .vscode/chrome
 CHANGELOG.md
 package-lock.json
 yarn.lock
 public/build
+
 node_modules
 .nyc_output
