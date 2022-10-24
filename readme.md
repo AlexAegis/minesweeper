@@ -3,6 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 
 [![CI](https://github.com/AlexAegis/minesweeper/workflows/CI/badge.svg)](https://github.com/AlexAegis/minesweeper/actions?query=workflow%3ACI)
+[![Vercel](https://vercelbadge.vercel.app/api/alexaegis/minesweeper)](https://vercel.com/alexaegis/minesweeper)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cdc716a23e1d4528a62c19998dab35d4)](https://www.codacy.com/gh/AlexAegis/minesweeper/dashboard?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/minesweeper&utm_campaign=Badge_Grade)
 [![Svelte](https://img.shields.io/badge/made%20with-svelte-orange)](https://github.com/sveltejs/svelte)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
