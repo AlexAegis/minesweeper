@@ -1,7 +1,7 @@
 <script lang="ts">
+	import type { CoordinateLike } from 'common';
 	import { filter, Subscription, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-	import type { CoordinateLike } from '../../common';
 	import { documentPointerdown$ } from '../../root.store';
 	import { resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';

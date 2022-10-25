@@ -1,0 +1,18 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "../../tsconfig.json",
+	"include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js"],
+	"compilerOptions": {
+		"baseUrl": ".",
+		"rootDir": "src",
+		"outDir": "dist",
+		"importsNotUsedAsValues": "error",
+		"isolatedModules": true,
+		"sourceMap": true,
+		"types": [],
+		"strict": true,
+		"esModuleInterop": true,
+		"allowJs": true,
+		"checkJs": true
+	}
+}

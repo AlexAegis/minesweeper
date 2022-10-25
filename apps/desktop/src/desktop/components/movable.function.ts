@@ -1,6 +1,6 @@
 import type { DragEvent, Element, Interactable } from '@interactjs/types';
+import type { CoordinateLike } from 'common';
 import interact from 'interactjs';
-import type { CoordinateLike } from '../../common';
 
 export type MoveListener = (coord: CoordinateLike) => void;
 export const movable = (

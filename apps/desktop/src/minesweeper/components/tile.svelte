@@ -1,6 +1,6 @@
 <script lang="ts">
+	import type { CoordinateLike } from 'common';
 	import { createEventDispatcher } from 'svelte';
-	import type { CoordinateLike } from '../../common';
 	import { ButtonLook } from '../../desktop/components/button-look.enum';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../interfaces';
 	import type { TileState } from '../store';

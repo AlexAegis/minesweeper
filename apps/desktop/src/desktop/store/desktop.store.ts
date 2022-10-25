@@ -7,8 +7,8 @@ import {
 	isNullish,
 	PremadeGetNext,
 } from '@tinyslice/core';
+import type { CoordinateLike } from 'common';
 import { filter, map, take } from 'rxjs';
-import type { CoordinateLike } from '../../common';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store';
 import type { ResizeData } from '../components/resizable.function';
@@ -18,7 +18,7 @@ import {
 	type WindowState,
 } from '../components/window-state.interface';
 
-import { capitalize } from '../../common';
+import { capitalize } from 'common';
 import { documentPointerdown$, rootSlice$ } from '../../root.store';
 
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';

@@ -17,6 +17,7 @@
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
 		"baseUrl": "."
 	},
 	"exclude": ["node_modules", "tmp"]

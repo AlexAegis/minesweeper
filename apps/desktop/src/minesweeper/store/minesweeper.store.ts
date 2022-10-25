@@ -4,6 +4,7 @@ import {
 	ifLatestFrom,
 	Slice,
 } from '@tinyslice/core';
+import { Coordinate, shuffle, type CoordinateKey, type CoordinateLike } from 'common';
 import {
 	combineLatest,
 	distinctUntilChanged,
@@ -21,7 +22,6 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
-import { Coordinate, shuffle, type CoordinateKey, type CoordinateLike } from '../../common';
 import { debug$, MS_TAG, scope } from '../../root.store';
 import {
 	getNextTileMark,
