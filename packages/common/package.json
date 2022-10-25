@@ -1,8 +1,9 @@
 {
 	"name": "@alexaegis/desktop-common",
 	"type": "module",
-	"main": "src/index.ts",
+	"main": "dist/index.js",
 	"scripts": {
+		"start": "npm run build -- --watch",
 		"build": "vite build",
 		"lint:es": "eslint --max-warnings=0 .",
 		"lint:md": "markdownlint --ignore-path '../../.gitignore' .",
