@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from 'src/common';
+	import type { CoordinateLike } from '@alexaegis/desktop-common';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { desktop$, type ShortcutState } from '../store';
 	import { firable } from './firable.action';

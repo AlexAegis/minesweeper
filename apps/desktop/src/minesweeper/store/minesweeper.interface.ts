@@ -1,4 +1,4 @@
-import type { CoordinateKey } from 'common';
+import type { CoordinateKey } from '@alexaegis/desktop-common';
 import type { GamePreset, GameState, TileMark, WinData } from '../interfaces';
 import type { createMineSweeperGame } from './minesweeper.store';
 

@@ -1,10 +1,15 @@
 import {
+	Coordinate,
+	shuffle,
+	type CoordinateKey,
+	type CoordinateLike,
+} from '@alexaegis/desktop-common';
+import {
 	entitySliceReducer,
 	entitySliceReducerWithPrecompute,
 	ifLatestFrom,
 	Slice,
 } from '@tinyslice/core';
-import { Coordinate, shuffle, type CoordinateKey, type CoordinateLike } from 'common';
 import {
 	combineLatest,
 	distinctUntilChanged,

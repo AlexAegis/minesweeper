@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from 'common';
+	import type { CoordinateLike } from '@alexaegis/desktop-common';
 	import { interval, map, merge, of, startWith, Subject, switchMap, take } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';

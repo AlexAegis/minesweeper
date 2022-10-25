@@ -1,5 +1,5 @@
+import type { CoordinateLike } from '@alexaegis/desktop-common';
 import type { DragEvent, Element, Interactable } from '@interactjs/types';
-import type { CoordinateLike } from 'common';
 import interact from 'interactjs';
 
 export type MoveListener = (coord: CoordinateLike) => void;

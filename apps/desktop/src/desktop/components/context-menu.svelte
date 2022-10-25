@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from 'src/common';
+	import type { CoordinateLike } from '@alexaegis/desktop-common';
 
 	export let position: CoordinateLike;
 </script>

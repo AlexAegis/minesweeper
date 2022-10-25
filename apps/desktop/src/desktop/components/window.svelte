@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from 'common';
+	import type { CoordinateLike } from '@alexaegis/desktop-common';
 	import { filter, Subscription, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { documentPointerdown$ } from '../../root.store';

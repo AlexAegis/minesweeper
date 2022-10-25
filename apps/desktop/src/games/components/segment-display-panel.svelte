@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SegmentDisplay from './seven-segment-display.svelte';
 
-	import { padArray } from 'common';
+	import { padArray } from '@alexaegis/desktop-common';
 	import '../styles/segment-display.scss';
 
 	export let value: number | undefined;

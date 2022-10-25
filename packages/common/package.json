@@ -1,13 +1,10 @@
 {
-	"name": "common",
+	"name": "@alexaegis/desktop-common",
 	"type": "module",
 	"main": "src/index.ts",
 	"scripts": {
-		"build": "tsc",
+		"build": "vite build",
 		"lint:es": "eslint --max-warnings=0 .",
-		"lint:svelte": "svelte-check --tsconfig ./tsconfig.json",
-		"lint:css": "stylelint --allow-empty-input ./**/*.css",
-		"lint:scss": "stylelint --customSyntax=postcss-scss --allow-empty-input ./**/*.scss",
 		"lint:md": "markdownlint --ignore-path '../../.gitignore' .",
 		"lint:rmd": "remark .",
 		"lint:format": "prettier --check .",

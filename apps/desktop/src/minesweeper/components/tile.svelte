@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from 'common';
+	import type { CoordinateLike } from '@alexaegis/desktop-common';
 	import { createEventDispatcher } from 'svelte';
 	import { ButtonLook } from '../../desktop/components/button-look.enum';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../interfaces';
