@@ -1,3 +1,4 @@
+import type { CoordinateLike } from '@alexaegis/desktop-common';
 import {
 	entitySliceReducerWithPrecompute,
 	getNextKeyStrategy,
@@ -7,7 +8,6 @@ import {
 	isNullish,
 	PremadeGetNext,
 } from '@tinyslice/core';
-import type { CoordinateLike } from 'common';
 import { filter, map, take } from 'rxjs';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store';

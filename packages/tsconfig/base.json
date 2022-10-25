@@ -1,15 +1,22 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Base",
 	"compileOnSave": false,
 	"compilerOptions": {
 		"strict": true,
-		"rootDir": ".",
+		"composite": false,
+		"rootDir": "../../",
 		"sourceMap": true,
 		"declaration": true,
+		"declarationMap": true,
+		"noUnusedLocals": false,
 		"moduleResolution": "node",
+		"esModuleInterop": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
+		"inlineSources": false,
+		"isolatedModules": true,
 		"target": "es2020",
 		"module": "es2022",
 		"resolveJsonModule": true,
@@ -18,6 +25,10 @@
 		"skipDefaultLibCheck": true,
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
+		"importsNotUsedAsValues": "error",
+		"checkJs": true,
+		"preserveWatchOutput": true,
+
 		"baseUrl": "."
 	},
 	"exclude": ["node_modules", "tmp"]
