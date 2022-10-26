@@ -7,12 +7,23 @@ on:
     branches: '**'
 
 env:
+  DEPLOY_ARTIFACT_DIR: 'apps/desktop/dist'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
   TURBO_REMOTE_ONLY: true
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   lint:
+    name: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,36 +39,37 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: setup node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install packages
+      - name: install
         if: steps.cache-packages.outputs.cache-hit != 'true'
         run: npm install
-      - name: Lint
+      - name: lint
         run: npm run lint
   test:
+    name: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [16.x]
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - name: Cache
+      - name: cache
         id: cache-packages
         uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: setup node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install packages
+      - name: install
         if: steps.cache-packages.outputs.cache-hit != 'true'
         run: npm install
       - name: Test
@@ -68,51 +80,46 @@ jobs:
       matrix:
         node-version: [16.x]
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - name: Cache
+      - name: cache
         id: cache-packages
         uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: setup node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install packages
+      - name: install
         if: steps.cache-packages.outputs.cache-hit != 'true'
         run: npm install
-      - name: Build
-        run: npm run build
+      - name: build
+        run: BASE_HREF="/${{ github.event.repository.name }}/" npm run build
+      - name: prepare pages (use index.html as 404.html)
+        if: github.ref_name == ${{ github.event.repository.default_branch }} && github.event_name != 'pull_request'
+        run: |
+          cp ${{ env.DEPLOY_ARTIFACT_DIR }}/index.html ${{ env.DEPLOY_ARTIFACT_DIR }}/404.html
+      - name: setup pages
+        uses: actions/configure-pages@v2
+        if: github.ref_name == ${{ github.event.repository.default_branch }} && github.event_name != 'pull_request'
+      - name: upload artifact
+        uses: actions/upload-pages-artifact@v1
+        if: github.ref_name == ${{ github.event.repository.default_branch }} && github.event_name != 'pull_request'
+        with:
+          path: ${{ env.DEPLOY_ARTIFACT_DIR }}
   deploy:
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    name: deploy
+    if: github.ref_name == ${{ github.event.repository.default_branch }} && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: [build, test, lint]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: Cache
-        id: cache-packages
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Build
-        run: BASE_HREF="/${{ github.event.repository.name }}/" npm run build
-      - name: Use index.html as 404.html
-        run: |
-          cp apps/desktop/dist/index.html apps/desktop/dist/404.html
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: apps/desktop/dist
+      - name: deploy to github pages
+        id: deployment
+        uses: actions/deploy-pages@v1
