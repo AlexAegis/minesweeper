@@ -24,7 +24,8 @@
 		"lint:format": { "outputs": [] },
 		"test": {
 			"env": ["VITEST"],
-			"outputs": []
+			"outputs": [],
+			"dependsOn": ["build"]
 		},
 		"start": {
 			"cache": false
