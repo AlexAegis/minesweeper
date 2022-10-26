@@ -10,8 +10,7 @@
 			"dependsOn": [
 				"lint:es",
 				"lint:svelte",
-				"lint:css",
-				"lint:scss",
+				"lint:style",
 				"lint:md",
 				"lint:rmd",
 				"lint:format"
@@ -19,8 +18,7 @@
 		},
 		"lint:es": { "outputs": [] },
 		"lint:svelte": { "outputs": [] },
-		"lint:css": { "outputs": [] },
-		"lint:scss": { "outputs": [] },
+		"lint:style": { "outputs": [] },
 		"lint:md": { "outputs": [] },
 		"lint:rmd": { "outputs": [] },
 		"lint:format": { "outputs": [] },

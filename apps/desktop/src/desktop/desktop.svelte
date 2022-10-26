@@ -24,10 +24,5 @@
 		display: flex;
 		flex-direction: column;
 		height: calc(100% - 32px);
-
-		.workspace {
-			height: 100%;
-			width: 100%;
-		}
 	}
 </style>

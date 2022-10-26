@@ -9,10 +9,10 @@
 	let highScoreModal: Modal;
 
 	import { map } from 'rxjs';
-	import Observer from 'svelte-rxjs-observer/src/observer.svelte';
 	import type { GamePreset } from '../interfaces';
 	import { CLASSIC_GAME_PRESETS, type MinesweeperGame } from '../store';
 
+	import { Observer } from 'svelte-rxjs-observer';
 	import { ButtonLook } from '../../desktop/components/button-look.enum';
 	import Dropdown from '../../desktop/components/dropdown.svelte';
 	import type { BaseWindowState } from '../../desktop/components/window-state.interface';

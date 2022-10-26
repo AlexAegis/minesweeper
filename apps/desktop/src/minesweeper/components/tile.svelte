@@ -84,6 +84,3 @@
 	on:cancelFire={cancelFire}
 	style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 />
-
-<style lang="scss">
-</style>

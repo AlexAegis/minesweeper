@@ -5,11 +5,11 @@ body {
 	-webkit-touch-callout: none !important;
 
 	&.w98 {
-		background-color: rgb(59, 110, 165);
+		background-color: rgb(59 110 165);
 	}
 
-	&.wXP {
-		background-color: rgb(231, 71, 255);
+	&.wxp {
+		background-color: rgb(231 71 255);
 	}
 }
 
@@ -19,7 +19,6 @@ button {
 
 hr {
 	width: 90%;
-
 	align-self: center;
 	margin-bottom: 3px;
 }
@@ -30,11 +29,8 @@ hr {
 	border-style: none;
 	border-spacing: 3px;
 	border-width: 3px;
-	background-color: rgb(192, 192, 192);
-}
-
-.panel {
 	outline-width: 0;
+	background-color: rgb(192 192 192);
 }
 
 .inset {

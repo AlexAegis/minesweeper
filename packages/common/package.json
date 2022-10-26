@@ -9,7 +9,7 @@
 		"lint:md": "markdownlint --ignore-path '../../.gitignore' .",
 		"lint:rmd": "remark .",
 		"lint:format": "prettier --check .",
-		"test": "vitest --passWithNoTests"
+		"test": "vitest --passWithNoTests --coverage --run"
 	},
 	"dependencies": {
 		"rxjs": "^7.5.7"

@@ -2,7 +2,9 @@
 	"editor.formatOnSave": true,
 	"editor.autoIndent": "full",
 	"editor.tabCompletion": "off",
-	"liveServer.settings.root": "dist/",
+	"liveServer.settings.root": "apps/desktop/dist",
+	"stylelint.enable": true,
+	"stylelint.validate": ["css", "scss", "postcss"],
 	"editor.rulers": [
 		{
 			"color": "#bdbdbd11",
@@ -49,5 +51,7 @@
 			"fileMatch": ["typedoc.json"],
 			"url": "https://json.schemastore.org/typedoc"
 		}
-	]
+	],
+	"vitest.enable": true,
+	"vitest.commandLine": "npm run test -- -- "
 }

@@ -6,23 +6,21 @@
 		"build": "vite build",
 		"lint:es": "eslint --max-warnings=0 .",
 		"lint:svelte": "svelte-check --tsconfig ./tsconfig.json",
-		"lint:css": "stylelint --allow-empty-input ./**/*.css",
-		"lint:scss": "stylelint --customSyntax=postcss-scss --allow-empty-input ./**/*.scss",
+		"lint:style": "stylelint --allow-empty-input src/**/*.{css,scss}",
 		"lint:md": "markdownlint --ignore-path '../../.gitignore' .",
 		"lint:rmd": "remark .",
 		"lint:format": "prettier --check .",
 		"preview": "vite preview",
-		"test": "vitest --passWithNoTests"
+		"test": "vitest --passWithNoTests --coverage --run"
 	},
 	"dependencies": {
 		"@alexaegis/desktop-common": "*",
-		"@tinyslice/core": "^0.6.1",
-		"@tinyslice/hydration-plugin": "^0.6.1",
+		"@tinyslice/core": "^0.6.4",
 		"98.css": "^0.1.18",
 		"interactjs": "^1.10.17",
 		"normalize.css": "^8.0.1",
 		"rxjs": "^7.5.7",
-		"svelte-rxjs-observer": "^0.2.1",
+		"svelte-rxjs-observer": "^0.3.0",
 		"xp.css": "^0.3.0"
 	},
 	"devDependencies": {}

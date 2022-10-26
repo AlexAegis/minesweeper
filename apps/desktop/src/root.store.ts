@@ -3,6 +3,8 @@ import packageJson from '../../../package.json';
 
 import { Scope, TinySlicePlugin } from '@tinyslice/core';
 
+import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
+
 export const MS_TAG = '[minesweeper]';
 export const BROWSER_TAG = '[browser]';
 
@@ -26,10 +28,9 @@ export const documentPointerup$ = scheduled(
 	asyncScheduler
 );
 
-//const plugins: TinySlicePlugin<RootState>[] = [
-//	new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION),
-//];
-const plugins: TinySlicePlugin<RootState>[] = [];
+const plugins: TinySlicePlugin<RootState>[] = [
+	new TinySliceHydrationPlugin<RootState>(PACKAGE_NAME_AND_VERSION),
+];
 
 export const rootSlice$ = scope.createRootSlice(
 	{

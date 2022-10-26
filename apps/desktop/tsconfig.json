@@ -1,9 +1,10 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "@alexaegis/tsconfig/svelte",
-	"include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte"],
-	"references": [{ "path": "./tsconfig.spec.json" }],
+	"references": [{ "path": "./tsconfig.spec.json" }, { "path": "./tsconfig.app.json" }],
 	"compilerOptions": {
 		"outDir": "dist"
-	}
+	},
+	"files": [],
+	"include": []
 }

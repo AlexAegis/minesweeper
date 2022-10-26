@@ -15,6 +15,8 @@ export default defineConfig({
 	plugins: [
 		dts({
 			insertTypesEntry: true,
+			tsConfigFilePath: 'tsconfig.lib.json',
+			entryRoot: 'src',
 		}),
 		viteStaticCopy({
 			targets: [
@@ -26,7 +28,7 @@ export default defineConfig({
 					},
 				},
 				{
-					src: 'readme.md',
+					src: '*.md',
 					dest: '.',
 				},
 			],

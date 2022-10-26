@@ -1,27 +1,26 @@
+@use 'sass:list';
+
 .minesweeper {
 	--border-color-light-og: #fff;
 	--border-color-dark-og: #888;
 	--panel-border-color: #eee;
 	--tile-border-color: #a6a6a6;
 	--tile-grid-color-triplet: 192, 192, 192; // 192
-	--tile-grid-color: rgb(192, 192, 192); // #c0c0c0
-
+	--tile-grid-color: rgb(192 192 192); // #c0c0c0
 	--tile-0-color: #a0a0a0;
-	--tile-1-color: #0000ff;
+	--tile-1-color: #00f;
 	--tile-2-color: #008100;
 	--tile-3-color: #ff1300;
 	--tile-4-color: #000083;
 	--tile-5-color: #810500;
 	--tile-6-color: #2a9494;
-	--tile-7-color: #000000;
+	--tile-7-color: #000;
 	--tile-8-color: #808080;
 	--tile-9-color: #ffd22e;
-
 	--tile-debug-veil: linear-gradient(
-		rgba(var(--tile-grid-color-triplet), 0.8),
-		rgba(var(--tile-grid-color-triplet), 0.8)
+		rgb(var(--tile-grid-color-triplet) 0.8),
+		rgb(var(--tile-grid-color-triplet) 0.8)
 	);
-
 	--asset-smiley-click: url('../../assets/minesweeper/smiley-click-small.png');
 	--asset-smiley-lost: url('../../assets/minesweeper/smiley-lost-small.png');
 	--asset-smiley-ongoing: url('../../assets/minesweeper/smiley-ongoing-small.png');
@@ -56,25 +55,11 @@ button.ms-tile {
 	image-rendering: pixelated;
 	background-repeat: no-repeat;
 	background-position: 2px 2px;
-
 	user-select: none;
-
 	background-size: auto;
 
 	&:active {
 		padding: 0;
-	}
-
-	&.mine {
-		&.pressed {
-			background-position: 1px 1px !important;
-			background-size: 13px;
-		}
-
-		&:not(.pressed) {
-			background-position: 0px 0px !important;
-			background-size: 12px;
-		}
 	}
 
 	&.wrong:not(.flag) {
@@ -83,10 +68,11 @@ button.ms-tile {
 
 	&.flag {
 		&.revealed,
-		&:not(.debug):not(.wrong) {
+		&:not(.debug, .wrong) {
 			background-image: var(--asset-flag);
 		}
-		&.debug:not(.revealed):not(.wrong) {
+
+		&.debug:not(.revealed, .wrong) {
 			background-image: var(--tile-debug-veil), var(--asset-flag);
 		}
 
@@ -96,6 +82,7 @@ button.ms-tile {
 				background-position: 1px 1px;
 				background-image: var(--asset-not-mine);
 			}
+
 			&.debug:not(.revealed) {
 				background-position: 1px 1px;
 				background-image: var(--tile-debug-veil), var(--asset-not-mine);
@@ -108,6 +95,7 @@ button.ms-tile {
 		&:not(.debug) {
 			background-image: var(--asset-question-mark);
 		}
+
 		&.debug:not(.revealed) {
 			background-image: var(--tile-debug-veil), var(--asset-question-mark);
 		}
@@ -118,8 +106,19 @@ button.ms-tile {
 		&:not(.debug) {
 			background-image: var(--asset-mine);
 		}
+
 		&.debug:not(.revealed) {
 			background-image: var(--tile-debug-veil), var(--asset-mine);
+		}
+
+		&.pressed {
+			background-position: 1px 1px !important;
+			background-size: 13px;
+		}
+
+		&:not(.pressed) {
+			background-position: 0 0 !important;
+			background-size: 12px;
 		}
 	}
 
@@ -129,13 +128,16 @@ button.ms-tile {
 
 	@for $i from 2 through 10 {
 		&-#{$i - 1} {
-			color: nth($tile-colors, $i);
+			color: list.nth($tile-colors, $i);
 
 			&.revealed,
 			&:not(.debug) {
+				/* stylelint-disable-next-line custom-property-pattern */
 				background-image: var(--asset-number-#{$i - 1});
 			}
+
 			&.debug:not(.revealed) {
+				/* stylelint-disable-next-line custom-property-pattern */
 				background-image: var(--tile-debug-veil), var(--asset-number-#{$i - 1});
 			}
 		}

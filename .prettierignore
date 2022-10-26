@@ -2,8 +2,10 @@
 
 dist
 coverage
+.cache
 .vscode/chrome
 CHANGELOG.md
+.svelte-kit
 package-lock.json
 yarn.lock
 public/build
