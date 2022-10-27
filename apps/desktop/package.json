@@ -16,7 +16,7 @@
 	"main": "src/main.ts",
 	"dependencies": {
 		"@alexaegis/desktop-common": "*",
-		"@tinyslice/core": "^0.6.4",
+		"@tinyslice/core": "^0.7.0",
 		"98.css": "^0.1.18",
 		"interactjs": "^1.10.17",
 		"normalize.css": "^8.0.1",
