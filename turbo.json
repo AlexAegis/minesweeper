@@ -3,7 +3,7 @@
 	"pipeline": {
 		"build": {
 			"env": ["BASE_HREF"],
-			"dependsOn": ["^build"],
+			"dependsOn": ["^build", ".next/**"],
 			"outputs": ["dist/**"]
 		},
 		"lint": {
@@ -29,6 +29,9 @@
 			"dependsOn": ["build"]
 		},
 		"start": {
+			"cache": false
+		},
+		"dev": {
 			"cache": false
 		}
 	}
