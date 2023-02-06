@@ -1,17 +1,17 @@
 @font-face {
-	font-family: 'Tahoma8px';
-	src: url('fonts/tahoma-8px-regular.woff') format('woff');
+	font-family: 'fs-tahoma-8px';
+	src: url('fonts/fs-tahoma-8px/fs-tahoma-8px.woff2') format('woff2');
 }
 
 body {
 	margin: 0;
 	height: 100vh;
-	font-family: 'Tahoma8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
 /*
-   Patch 98.css
+ * Patch 98.css
  */
 button {
-	font-family: 'Tahoma8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
 }
