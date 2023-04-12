@@ -1,6 +1,6 @@
 import type { CoordinateKey } from '@alexaegis/desktop-common';
-import type { GamePreset, GameState, TileMark, WinData } from '../interfaces';
-import type { createMineSweeperGame } from './minesweeper.store';
+import type { GamePreset, GameState, TileMark, WinData } from '../interfaces/index.js';
+import type { createMineSweeperGame } from './minesweeper.store.js';
 
 export interface Game {
 	presets: Record<string, GamePreset>;

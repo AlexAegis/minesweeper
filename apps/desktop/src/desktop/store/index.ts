@@ -1,1 +1,1 @@
-export * from './desktop.store';
+export * from './desktop.store.js';

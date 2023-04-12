@@ -16,6 +16,8 @@ export enum PresetKeys {
 	EXPERT = 'expert',
 }
 
-export function isTheSamePreset(a: GamePreset, b: GamePreset): boolean {
-	return a && b && a.height === b.height && a.width === b.width && a.mineCount === b.mineCount;
+export function isTheSamePreset(a: GamePreset | undefined, b: GamePreset | undefined): boolean {
+	return (
+		!!a && !!b && a.height === b.height && a.width === b.width && a.mineCount === b.mineCount
+	);
 }

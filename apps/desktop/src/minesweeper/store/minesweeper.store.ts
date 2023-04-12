@@ -5,19 +5,20 @@ import {
 	type CoordinateLike,
 } from '@alexaegis/desktop-common';
 import {
+	Slice,
 	entitySliceReducer,
 	entitySliceReducerWithPrecompute,
 	ifLatestFrom,
-	Slice,
+	isNonNullable,
 } from '@tinyslice/core';
 import {
+	Observable,
 	combineLatest,
 	distinctUntilChanged,
 	filter,
 	fromEvent,
 	map,
 	merge,
-	Observable,
 	of,
 	shareReplay,
 	startWith,
@@ -27,31 +28,31 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
-import { debug$, MS_TAG, scope } from '../../root.store';
-import {
-	getNextTileMark,
-	isEmptyTileMark,
-	isFlagTileMark,
-	isQuestionTileMark,
-	isTheSamePreset,
-	TileMark,
-	type GamePreset,
-	type WinData,
-} from '../interfaces';
+import { MS_TAG, debug$, scope } from '../../root.store.js';
 import {
 	GameState,
 	isGameLost,
 	isGameOngoing,
 	isGameReadyToStart,
 	isGameWon,
-} from '../interfaces/game-state.enum';
+} from '../interfaces/game-state.enum.js';
+import {
+	TileMark,
+	getNextTileMark,
+	isEmptyTileMark,
+	isFlagTileMark,
+	isQuestionTileMark,
+	isTheSamePreset,
+	type GamePreset,
+	type WinData,
+} from '../interfaces/index.js';
 import {
 	SmileyState,
 	type Game,
 	type GameInstance,
 	type HighscoreEntry,
 	type TileState,
-} from './minesweeper.interface';
+} from './minesweeper.interface.js';
 
 /**
  * Take all tiles, shuffle them, take the first n amount, those will be the mines
@@ -61,9 +62,9 @@ const selectNRandomTiles = (
 	safeCoordinate: CoordinateLike,
 	amount: number
 ): CoordinateLike[] => {
-	const tilesCopy = [
-		...tiles.filter((tile) => tile.x !== safeCoordinate.x || tile.y !== safeCoordinate.y),
-	];
+	const tilesCopy = tiles.filter(
+		(tile) => tile.x !== safeCoordinate.x || tile.y !== safeCoordinate.y
+	);
 	shuffle(tilesCopy);
 	return tilesCopy.splice(0, amount).map((tile) => ({ x: tile.x, y: tile.y } as CoordinateLike));
 };
@@ -76,7 +77,9 @@ const revealEndStateReducer = (
 	tiles: Record<CoordinateKey, TileState>,
 	revealedTileKey: CoordinateKey
 ): Record<CoordinateKey, TileState> =>
-	(Object.entries(tiles) as [CoordinateKey, TileState][]).reduce((acc, [tileKey, tile]) => {
+	(Object.entries(tiles) as [CoordinateKey, TileState][]).reduce<
+		Record<CoordinateKey, TileState>
+	>((acc, [tileKey, tile]) => {
 		if (isFlagTileMark(tile.mark) && !tile.isMine) {
 			acc[tileKey] = {
 				...tile,
@@ -95,7 +98,7 @@ const revealEndStateReducer = (
 			acc[tileKey] = { ...tile, disabled: true };
 		}
 		return acc;
-	}, {} as Record<CoordinateKey, TileState>);
+	}, {});
 
 const initialTile: TileState = {
 	x: 0,
@@ -178,7 +181,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 
 	const minesweeperActions = {
 		cheating: cheating$.setAction,
-		resetGame: game$.createAction<GamePreset | void>(`${MS_TAG} reset`),
+		resetGame: game$.createAction<GamePreset | undefined>(`${MS_TAG} reset`),
 		startGame: game$.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
 			`${MS_TAG} start game`
 		),
@@ -192,6 +195,8 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		},
 		clickActions: {
 			cancelFire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
+			// TODO: remove this ignore
+			// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 			globalCancel: game$.createAction<void>(`${MS_TAG} ${CLICK_TAG} global cancel`),
 			startFire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} start fire`),
 			fire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} fire`),
@@ -219,7 +224,8 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					};
 				} else if ('debug' in state) {
 					const nextState = { ...state };
-					delete nextState.debug;
+					// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+					delete nextState['debug'];
 					return nextState;
 				} else {
 					return state;
@@ -243,15 +249,16 @@ export const createMineSweeperGame = <ParentSlice, T>(
 
 				for (const mineCoordinate of mines) {
 					const mineKey = Coordinate.keyOf(mineCoordinate);
-					tiles[mineKey] = { ...tiles[mineKey], isMine: true };
+					const tile = tiles[mineKey];
+					if (tile) {
+						tiles[mineKey] = { ...tile, isMine: true };
 
-					for (const mineNeighbour of getNeighbouringCoordinateKeys(
-						tiles,
-						mineCoordinate
-					)) {
-						const tile = tiles[mineNeighbour];
-						if (tile) {
-							if (!tile.isMine) {
+						for (const mineNeighbour of getNeighbouringCoordinateKeys(
+							tiles,
+							mineCoordinate
+						)) {
+							const tile = tiles[mineNeighbour];
+							if (tile && !tile.isMine) {
 								tiles[mineNeighbour] = { ...tile, value: tile.value + 1 };
 							}
 						}
@@ -294,10 +301,10 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	);
 
 	const gameWidthArray$ = gameSettings$.pipe(
-		map((settings) => [...Array(settings.width).keys()])
+		map((settings) => [...Array.from({ length: settings.width }).keys()])
 	);
 	const gameHeightArray$ = gameSettings$.pipe(
-		map((settings) => [...Array(settings.height).keys()])
+		map((settings) => [...Array.from({ length: settings.height }).keys()])
 	);
 
 	const winHistory$ = game$.slice('history', {
@@ -318,7 +325,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					const seconds = winEntry.time / 1000;
 					const minutes = Math.floor(seconds / 60);
 					const remainingSeconds = seconds % 60;
-					const timeStamp = `${minutes ? minutes + 'm ' : ''}${remainingSeconds}s`;
+					const timeStamp = `${
+						minutes ? minutes.toString() + 'm ' : ''
+					}${remainingSeconds}s`;
 					return {
 						title: presetName ?? 'Custom',
 						description: `${winEntry.cheated ? 'Debug ' : ''}size: ${
@@ -374,7 +383,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		tiles: Record<CoordinateKey, TileState>,
 		coordinate: CoordinateLike
 	): TileState[] =>
-		getNeighbouringCoordinateKeys(tiles, coordinate).map((tileKey) => tiles[tileKey]);
+		getNeighbouringCoordinateKeys(tiles, coordinate)
+			.map((tileKey) => tiles[tileKey])
+			.filter(isNonNullable);
 
 	/**
 	 * Collects all tiles that either have no neighbouring mines or a neighbour of such tile
@@ -385,6 +396,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		checked: Set<CoordinateKey> = new Set()
 	): CoordinateKey[] => {
 		const tile = tiles[key];
+		if (!tile) {
+			return [];
+		}
 
 		if (checked.has(key)) {
 			return [];
@@ -398,10 +412,10 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					spillOnSafeTiles(tiles, neighbour, checked)
 				),
 			];
-		} else if (!tile.isMine) {
-			return [key];
-		} else {
+		} else if (tile.isMine) {
 			return [];
+		} else {
+			return [key];
 		}
 	};
 
@@ -417,11 +431,11 @@ export const createMineSweeperGame = <ParentSlice, T>(
 						const isSameTile = Coordinate.keyOf(payload) === key;
 						const isANeighbour = neighbours.includes(key);
 
-						if (!tile.revealed && isEmptyTileMark(tile.mark)) {
-							if (isSameTile || (isANeighbour && sourceTile.revealed)) {
-								return { ...tile, pressed: true };
-							}
-						}
+						return !tile.revealed &&
+							isEmptyTileMark(tile.mark) &&
+							(isSameTile || (isANeighbour && sourceTile?.revealed))
+							? { ...tile, pressed: true }
+							: undefined;
 					}
 				)
 			),
@@ -457,12 +471,10 @@ export const createMineSweeperGame = <ParentSlice, T>(
 							.map((coord) => Coordinate.keyOf(coord)),
 					}),
 					(key, tile, _payload, { revealedTileCoordKey, pressedNeighbourkeys }) => {
-						if (
-							(revealedTileCoordKey === key && tile.pressed) ||
+						return (revealedTileCoordKey === key && tile.pressed) ||
 							pressedNeighbourkeys.includes(key)
-						) {
-							return { ...tile, pressed: false };
-						}
+							? { ...tile, pressed: false }
+							: undefined;
 					}
 				)
 			),
@@ -489,7 +501,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 						const canRevealNeighbours =
 							neighbouringMines === flaggedNeighbours &&
 							uncertainNeighbours === 0 &&
-							isEmptyTileMark(revealedTile.mark);
+							isEmptyTileMark(revealedTile?.mark);
 
 						const checked = new Set<CoordinateKey>();
 						const spill = spillOnSafeTiles(state, revealedTileKey, checked);
@@ -513,11 +525,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 						{ spill, canRevealNeighbours, revealedTileKey, neighbourKeys }
 					) => {
 						if (!tile.revealed && (revealedTileKey === key || spill.includes(key))) {
-							if (isEmptyTileMark(tile.mark)) {
-								return { ...tile, revealed: true, pressed: false };
-							} else {
-								return { ...tile, pressed: false };
-							}
+							return isEmptyTileMark(tile.mark)
+								? { ...tile, revealed: true, pressed: false }
+								: { ...tile, pressed: false };
 						} else if (
 							canRevealNeighbours &&
 							neighbourKeys.includes(key) &&
@@ -526,23 +536,21 @@ export const createMineSweeperGame = <ParentSlice, T>(
 							return { ...tile, revealed: true, pressed: false };
 						} else if (tile.pressed) {
 							return { ...tile, pressed: false };
+						} else {
+							return undefined;
 						}
 					}
 				)
 			),
 			minesweeperActions.clickActions.globalCancel.reduce(
 				entitySliceReducer((_key, tile) => {
-					if (tile.pressed) {
-						return { ...tile, pressed: false };
-					} else {
-						return tile;
-					}
+					return tile.pressed ? { ...tile, pressed: false } : tile;
 				})
 			),
 		],
 	});
 
-	const dicedTiles = tilesSlice$.dice(initialTile as TileState, {
+	const dicedTiles = tilesSlice$.dice(initialTile, {
 		getAllKeys: (slice) => Object.keys(slice) as `${number},${number}`[],
 		getNextKey: (_keys) => '0,0',
 	});
@@ -567,12 +575,15 @@ export const createMineSweeperGame = <ParentSlice, T>(
 				return SmileyState.SURPRISED;
 			} else {
 				switch (gameState) {
-					case GameState.WON:
+					case GameState.WON: {
 						return SmileyState.COOL;
-					case GameState.LOST:
+					}
+					case GameState.LOST: {
 						return SmileyState.DEAD;
-					default:
+					}
+					default: {
 						return SmileyState.SMILING;
+					}
 				}
 			}
 		})

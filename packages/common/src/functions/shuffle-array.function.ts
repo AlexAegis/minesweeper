@@ -1,3 +1,5 @@
+import { isNotNullish } from '@alexaegis/common';
+
 export function shuffle<T>(array: T[]): T[] {
 	let currentIndex = array.length;
 
@@ -9,8 +11,11 @@ export function shuffle<T>(array: T[]): T[] {
 
 		// And swap it with the current element.
 		const temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
+		const randomValue = array[randomIndex];
+		if (isNotNullish(temporaryValue) && isNotNullish(randomValue)) {
+			array[currentIndex] = randomValue;
+			array[randomIndex] = temporaryValue;
+		}
 	}
 
 	return array;

@@ -37,8 +37,10 @@
 	});
 
 	onDestroy(() => {
-		moveInteract.interactable.off('dragend');
-		moveInteract.unsubscribe();
+		if (moveInteract) {
+			moveInteract.interactable.off('dragend');
+			moveInteract.unsubscribe();
+		}
 	});
 
 	function spawn(): void {
@@ -51,24 +53,24 @@
 </script>
 
 <div
-	bind:this={shortcutElement}
-	use:firable={{ draggable: true }}
-	on:alternativefire={() => contextmenu()}
-	on:fire={() => (selected = !selected)}
-	on:startfire={() => {
+	bind:this="{shortcutElement}"
+	use:firable="{{ draggable: true }}"
+	on:alternativefire="{() => contextmenu()}"
+	on:fire="{() => (selected = !selected)}"
+	on:startfire="{() => {
 		if (!selected) {
 			selected = true;
 		}
-	}}
-	on:doublefire={() => spawn()}
+	}}"
+	on:doublefire="{() => spawn()}"
 	class="shortcut"
-	class:selected
-	style:top={`${transientPosition.y}px`}
-	style:left={`${transientPosition.x}px`}
+	class:selected="{selected}"
+	style:top="{`${transientPosition.y}px`}"
+	style:left="{`${transientPosition.x}px`}"
 >
-	<Image class="icon" alt={shortcutState.name} src={shortcutState.icon} />
+	<Image class="icon" alt="{shortcutState.name}" src="{shortcutState.icon}" />
 	<span class="title">{shortcutState.name}</span>
-	<div class="shortcut-symbol" />
+	<div class="shortcut-symbol"></div>
 </div>
 
 <style lang="scss">

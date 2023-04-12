@@ -3,14 +3,15 @@ import type { DragEvent, Element, Interactable } from '@interactjs/types';
 import interact from 'interactjs';
 
 export type MoveListener = (coord: CoordinateLike) => void;
+
 export const movable = (
 	interactable: Interactable,
 	element: HTMLElement,
 	moved: MoveListener
 ): Interactable => {
-	const titleBar = element.getElementsByClassName('title-bar').item(0);
+	const titleBar = element.querySelectorAll('.title-bar').item(0);
 	return interactable.draggable({
-		allowFrom: titleBar ? (titleBar as Element) : element,
+		allowFrom: titleBar as Element,
 		modifiers: [
 			interact.modifiers.snap({
 				targets: [
@@ -19,7 +20,7 @@ export const movable = (
 						y: 2,
 					}),
 				],
-				range: Infinity,
+				range: Number.POSITIVE_INFINITY,
 			}),
 		],
 		listeners: {

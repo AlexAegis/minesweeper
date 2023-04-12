@@ -9,17 +9,17 @@ import {
 	PremadeGetNext,
 } from '@tinyslice/core';
 import { filter, map, take } from 'rxjs';
-import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface';
-import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store';
-import type { ResizeData } from '../components/resizable.function';
+import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface.js';
+import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store.js';
+import type { ResizeData } from '../components/resizable.function.js';
 import {
 	initialWindowState,
 	type BaseWindowState,
 	type WindowState,
-} from '../components/window-state.interface';
+} from '../components/window-state.interface.js';
 
 import { capitalize } from '@alexaegis/desktop-common';
-import { documentPointerdown$, rootSlice$ } from '../../root.store';
+import { documentPointerdown$, rootSlice$ } from '../../root.store.js';
 
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';
 
@@ -33,13 +33,13 @@ export enum ProgramName {
 export interface ProgramState {
 	name: ProgramName;
 	title: string;
-	icon?: string;
+	icon?: string | undefined;
 	initialWindowState: Partial<BaseWindowState>;
 }
 
 export interface ShortcutState {
 	name: string;
-	icon?: string;
+	icon?: string | undefined;
 	program: ProgramName;
 	position: CoordinateLike;
 }
@@ -71,16 +71,19 @@ export const desktop$ = rootSlice$.addSlice(
 	{
 		windows: {},
 		programs: initialInstalledPrograms,
-		shortcuts: Object.values(initialInstalledPrograms).reduce((acc, next, shortcutId) => {
-			acc[shortcutId] = {
-				name: next.title,
-				position: { x: 0, y: shortcutId * 32 },
-				program: next.name,
-				icon: next.icon,
-			};
+		shortcuts: Object.values(initialInstalledPrograms).reduce<Record<string, ShortcutState>>(
+			(acc, next, shortcutId) => {
+				acc[shortcutId] = {
+					name: next.title,
+					position: { x: 0, y: shortcutId * 32 },
+					program: next.name,
+					icon: next.icon,
+				};
 
-			return acc;
-		}, {} as Record<string, ShortcutState>),
+				return acc;
+			},
+			{}
+		),
 		activeProcessId: undefined,
 		lastSpawned: undefined,
 		startMenuOpen: false,
@@ -154,7 +157,9 @@ export const dicedPrograms = programs$.dice(
 );
 
 const getNextProcessId = (keys: ProcessId[]) =>
-	(keys.map((key) => parseInt(key, 10)).reduce((a, b) => (a > b ? a : b), 0) + 1).toString();
+	(
+		keys.map((key) => Number.parseInt(key, 10)).reduce((a, b) => (a > b ? a : b), 0) + 1
+	).toString();
 
 export const windows$ = desktop$.slice('windows', {
 	reducers: [
@@ -162,7 +167,7 @@ export const windows$ = desktop$.slice('windows', {
 			const processId = getNextProcessId(Object.keys(state));
 			const spawnedWindow: WindowState = {
 				...initialWindowState,
-				...desktop$.value.programs[program]?.initialWindowState,
+				...desktop$.value.programs[program].initialWindowState,
 				processId,
 				program,
 				title: program,
@@ -180,7 +185,10 @@ export const windows$ = desktop$.slice('windows', {
 							(windowState) => windowState.processId !== payload
 						);
 						windows.sort((a, b) => a.zIndex - b.zIndex);
-						windows.push(state[payload]);
+						const windowState = state[payload];
+						if (windowState) {
+							windows.push(windowState);
+						}
 					}
 
 					const indexMap = windows.reduce((acc, next, i) => {
@@ -193,18 +201,16 @@ export const windows$ = desktop$.slice('windows', {
 					};
 				},
 				(key, windowState, payload, { indexMap }) => {
-					if (payload) {
-						return {
-							...windowState,
-							zIndex: indexMap.get(key) ?? 0,
-							active: windowState.processId === payload,
-						};
-					} else {
-						return {
-							...windowState,
-							active: false,
-						};
-					}
+					return payload
+						? {
+								...windowState,
+								zIndex: indexMap.get(key) ?? 0,
+								active: windowState.processId === payload,
+						  }
+						: {
+								...windowState,
+								active: false,
+						  };
 				}
 			)
 		),
@@ -309,7 +315,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 	reducers: [],
 });
 
-export type DicedWindow = ReturnType<typeof dicedWindows['get']>;
+export type DicedWindow = ReturnType<(typeof dicedWindows)['get']>;
 
 export const isProgramSpawned$ = (program: ProgramName) =>
 	dicedWindows.some$((window) => window.program === program);

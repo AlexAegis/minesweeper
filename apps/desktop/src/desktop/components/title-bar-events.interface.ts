@@ -1,6 +1,6 @@
 export interface TitleBarEvents {
-	minimize: void;
-	restore: void;
-	maximize: void;
-	close: void;
+	minimize: undefined;
+	restore: undefined;
+	maximize: undefined;
+	close: undefined;
 }

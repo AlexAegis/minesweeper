@@ -1,2 +1,2 @@
-export * from './minesweeper.interface';
-export * from './minesweeper.store';
+export * from './minesweeper.interface.js';
+export * from './minesweeper.store.js';

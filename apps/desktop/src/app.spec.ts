@@ -1,4 +1,4 @@
-import { render, RenderResult } from '@testing-library/svelte';
+import { render, type RenderResult } from '@testing-library/svelte';
 import { beforeEach, describe, expect, it } from 'vitest';
 import App from './app.svelte';
 

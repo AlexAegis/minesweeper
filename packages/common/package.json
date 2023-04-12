@@ -1,18 +1,54 @@
 {
 	"name": "@alexaegis/desktop-common",
+	"version": "3.1.1",
+	"keywords": [
+		"@alexaegis/setup-depcheck",
+		"@alexaegis/setup-eslint",
+		"@alexaegis/setup-prettier",
+		"@alexaegis/setup-remark",
+		"@alexaegis/setup-ts-node",
+		"@alexaegis/setup-vite-lib",
+		"@alexaegis/setup-vitest-node"
+	],
 	"type": "module",
-	"main": "dist/index.js",
 	"scripts": {
-		"start": "npm run build -- --watch",
-		"build": "vite build",
-		"lint:es": "eslint --max-warnings=0 .",
-		"lint:md": "markdownlint --ignore-path '../../.gitignore' .",
+		"build": "turbo run build-lib_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"build-lib_": "vite build",
+		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:depcheck_": "depcheck",
+		"lint:es": "turbo run lint:es_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
+		"lint:format": "turbo run lint:format_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:format_": "prettier --check .",
+		"lint:md": "turbo run lint:md_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:md_": "remark --frail --no-stdout --silently-ignore *.md docs/**/*.md",
 		"lint:rmd": "remark .",
-		"lint:format": "prettier --check .",
-		"test": "vitest --passWithNoTests --coverage --run"
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:tsc_": "tsc --noEmit",
+		"format": "prettier --write .",
+		"start": "npm run build -- --watch",
+		"test": "turbo run test_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"test_": "vitest --passWithNoTests --coverage --run",
+		"test:watch": "vitest --passWithNoTests --coverage"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./readme": "./readme.md"
 	},
 	"dependencies": {
-		"rxjs": "^7.5.7"
+		"@alexaegis/common": "^0.1.3"
 	},
-	"devDependencies": {}
+	"devDependencies": {
+		"@alexaegis/eslint-config-vitest": "^0.1.7",
+		"@alexaegis/ts": "^0.1.7",
+		"@alexaegis/vite": "^0.1.7",
+		"@alexaegis/vitest": "^0.1.7",
+		"@types/node": "^18.15.11",
+		"vite": "^4.2.1",
+		"vitest": "^0.30.1"
+	}
 }

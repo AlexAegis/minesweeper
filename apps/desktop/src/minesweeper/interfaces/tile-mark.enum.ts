@@ -4,9 +4,9 @@ export enum TileMark {
 	QUESTION = '?',
 }
 
-export const isEmptyTileMark = (mark: TileMark): mark is TileMark.EMTPY => mark === TileMark.EMTPY;
-export const isFlagTileMark = (mark: TileMark): mark is TileMark.FLAG => mark === TileMark.FLAG;
-export const isQuestionTileMark = (mark: TileMark): mark is TileMark.QUESTION =>
+export const isEmptyTileMark = (mark?: TileMark): mark is TileMark.EMTPY => mark === TileMark.EMTPY;
+export const isFlagTileMark = (mark?: TileMark): mark is TileMark.FLAG => mark === TileMark.FLAG;
+export const isQuestionTileMark = (mark?: TileMark): mark is TileMark.QUESTION =>
 	mark === TileMark.QUESTION;
 
 export const getNextTileMark = (mark?: TileMark): TileMark => {

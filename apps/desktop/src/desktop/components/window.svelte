@@ -13,7 +13,7 @@
 
 	const dispatch = createEventDispatcher<
 		{
-			activate: void;
+			activate: undefined;
 			resize: ResizeData;
 			move: CoordinateLike;
 		} & TitleBarEvents
@@ -131,42 +131,43 @@
 	});
 
 	onDestroy(() => {
-		moveInteract.unsubscribe();
-		resizeInteract.unsubscribe();
+		moveInteract?.unsubscribe();
+		resizeInteract?.unsubscribe();
 		sink.unsubscribe();
 	});
 </script>
 
 <div
-	bind:this={windowElement}
-	class="ms-window window pid{transientState.processId} {transientState.program} {$$props.class ??
-		''}"
-	class:invisible={transientState.invisible}
-	class:immobile={!effectiveMovable}
-	class:non-resizable={!effectiveResizable}
-	class:maximized={transientState.maximized}
-	class:fit-content={transientState.fitContent}
-	class:active={transientState.active}
-	style:top={`${transientState.position.y}px`}
-	style:left={`${transientState.position.x}px`}
-	style:height={`${transientState.height}px`}
-	style:width={`${transientState.width}px`}
-	style:z-index={transientState.zIndex}
-	on:pointerdown={activate}
+	bind:this="{windowElement}"
+	class="ms-window window pid{transientState.processId} {transientState.program} {$$props[
+		'class'
+	] ?? ''}"
+	class:invisible="{transientState.invisible}"
+	class:immobile="{!effectiveMovable}"
+	class:non-resizable="{!effectiveResizable}"
+	class:maximized="{transientState.maximized}"
+	class:fit-content="{transientState.fitContent}"
+	class:active="{transientState.active}"
+	style:top="{`${transientState.position.y}px`}"
+	style:left="{`${transientState.position.x}px`}"
+	style:height="{`${transientState.height}px`}"
+	style:width="{`${transientState.width}px`}"
+	style:z-index="{transientState.zIndex}"
+	on:pointerdown="{activate}"
 >
 	<TitleBar
-		title={transientState.title}
-		icon={transientState.icon}
-		active={transientState.active}
-		maximized={transientState.maximized}
-		resizable={transientState.resizable}
-		showMinimize={!transient}
-		showMaximize={transientState.resizable}
-		showClose={true}
-		on:minimize={minimize}
-		on:restore={restore}
-		on:maximize={maximize}
-		on:close={close}
+		title="{transientState.title}"
+		icon="{transientState.icon}"
+		active="{transientState.active}"
+		maximized="{transientState.maximized}"
+		resizable="{transientState.resizable}"
+		showMinimize="{!transient}"
+		showMaximize="{transientState.resizable}"
+		showClose="{true}"
+		on:minimize="{minimize}"
+		on:restore="{restore}"
+		on:maximize="{maximize}"
+		on:close="{close}"
 	/>
 	{#if $$slots.menu}
 		<div class="menu">

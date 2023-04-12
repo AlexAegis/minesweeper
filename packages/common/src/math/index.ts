@@ -1,1 +1,1 @@
-export * from './coordinate.class';
+export * from './coordinate.class.js';

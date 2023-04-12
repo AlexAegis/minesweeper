@@ -1,4 +1,4 @@
-import { random } from '../functions';
+import { random } from '../functions/index.js';
 
 export type CoordinateKey = `${number},${number}`;
 
@@ -25,14 +25,10 @@ export class Coordinate implements CoordinateLike {
 		}
 	}
 
-	public static keyOf(coordinateLike: CoordinateLike): CoordinateKey;
-	public static keyOf(x: number, y: number): CoordinateKey;
-	public static keyOf(x: number | CoordinateLike, y?: number): CoordinateKey {
-		if (typeof x === 'number') {
-			return `${x},${y ?? 0}`;
-		} else {
-			return `${x.x},${x.y}`;
-		}
+	public static keyOf(this: void, coordinateLike: CoordinateLike): CoordinateKey;
+	public static keyOf(this: void, x: number, y: number): CoordinateKey;
+	public static keyOf(this: void, x: number | CoordinateLike, y?: number): CoordinateKey {
+		return typeof x === 'number' ? `${x},${y ?? 0}` : `${x.x},${x.y}`;
 	}
 
 	public static random(xMin: number, xMax: number, yMin: number, yMax: number): Coordinate {
@@ -61,11 +57,9 @@ export class Coordinate implements CoordinateLike {
 	public equal(x: Coordinate): boolean;
 	public equal(x: number, y: number): boolean;
 	public equal(x: number | Coordinate, y?: number): boolean {
-		if (typeof x === 'number') {
-			return this.x === x && this.y === y;
-		} else {
-			return this.x === x.x && this.y === x.y;
-		}
+		return typeof x === 'number'
+			? this.x === x && this.y === y
+			: this.x === x.x && this.y === x.y;
 	}
 
 	public static equal(a: CoordinateLike, b: CoordinateLike): boolean {

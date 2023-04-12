@@ -1,6 +1,10 @@
-import type { Interactable, ResizeEvent } from '@interactjs/types';
+import type { ResizeEvent } from '@interactjs/actions/resize/plugin';
+import type { Interactable } from '@interactjs/core/Interactable';
+
 import interact from 'interactjs';
-import { movable, type MoveListener } from './movable.function';
+import { movable, type MoveListener } from './movable.function.js';
+
+// declare const interact: (element: HTMLElement) => Interactable;
 
 export interface ResizeData {
 	height: number | undefined;
@@ -36,7 +40,7 @@ export class InteractBuilder {
 	}
 
 	toggle(value: boolean) {
-		this.toggles.forEach((toggle) => toggle(value));
+		for (const toggle of this.toggles) toggle(value);
 	}
 
 	unsubscribe() {
@@ -69,13 +73,13 @@ const resizable = (
 					const targetWidth = Math.round(event.rect.width);
 					const targetHeight = Math.round(event.rect.height);
 
-					element.style.width = targetWidth + 'px';
+					element.style.width = targetWidth.toString() + 'px';
 					const nextWidth = element.offsetWidth;
 
 					const widthChanged = originalWidth !== nextWidth;
 					element.style.width = originalWidthStyle;
 
-					element.style.height = targetHeight + 'px';
+					element.style.height = targetHeight.toString() + 'px';
 					const nextHeight = element.offsetHeight;
 					const heightChanged = originalHeight !== nextHeight;
 					element.style.height = originalHeightStyle;
@@ -119,7 +123,7 @@ const resizable = (
 						y: 1,
 					}),
 				],
-				range: Infinity,
+				range: Number.POSITIVE_INFINITY,
 			}),
 		],
 	});

@@ -1,7 +1,7 @@
-import { asyncScheduler, fromEvent, scheduled, tap } from 'rxjs';
+import { asyncScheduler, fromEvent, mergeMap, of, scheduled } from 'rxjs';
 import packageJson from '../../../package.json';
 
-import { Scope, TinySlicePlugin } from '@tinyslice/core';
+import { Scope, type TinySlicePlugin } from '@tinyslice/core';
 
 import { TinySliceHydrationPlugin } from '@tinyslice/hydration-plugin';
 
@@ -45,9 +45,9 @@ export const debug$ = rootSlice$.slice('debug');
 
 scope.createEffect(
 	debug$.pipe(
-		tap((debug) => {
+		mergeMap((debug) => {
 			if (debug) {
-				rootSlice$.loadAndSetPlugins(
+				return rootSlice$.loadAndSetPlugins(
 					() =>
 						import('@tinyslice/devtools-plugin').then(
 							(plugin) =>
@@ -67,6 +67,7 @@ scope.createEffect(
 				);
 			} else {
 				rootSlice$.setPlugins(plugins);
+				return of();
 			}
 		})
 	)

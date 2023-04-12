@@ -1,6 +1,6 @@
 import type { CoordinateLike } from '@alexaegis/desktop-common';
-import type { MinesweeperGame } from '../../minesweeper/store';
-import type { ProcessId, ProgramName } from '../store/desktop.store';
+import type { MinesweeperGame } from '../../minesweeper/store/index.js';
+import type { ProcessId, ProgramName } from '../store/desktop.store.js';
 
 export interface BaseWindowState {
 	processId: ProcessId;
