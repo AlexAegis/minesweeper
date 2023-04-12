@@ -498,7 +498,7 @@ jobs:
       ]
     strategy:
       matrix:
-        artifact: []
+        artifact: ['desktop-common']
     steps:
       - name: checkout
         uses: actions/checkout@v3

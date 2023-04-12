@@ -129,7 +129,7 @@ importers:
         version: 0.1.20
       '@alexaegis/desktop-common':
         specifier: ^3.1.1
-        version: link:../../packages/common
+        version: link:../../packages/desktop-common
       '@testing-library/svelte':
         specifier: ^3.2.2
         version: 3.2.2(svelte@3.58.0)
@@ -207,7 +207,7 @@ importers:
         specifier: ^0.30.1
         version: 0.30.1
 
-  packages/common:
+  packages/desktop-common:
     dependencies:
       '@alexaegis/common':
         specifier: ^0.1.3
@@ -329,7 +329,7 @@ packages:
     resolution: {integrity: sha512-yPTcrxPaTdj9VxmMgEvG5bGCxTiIWz1Oc50HbKIpcJd4bKtBUo71CB25ATnl+T51jCiawt2p37zCwyh2IFznXw==}
     engines: {node: '>=18.13.0'}
     dependencies:
-      '@alexaegis/common': 0.1.1
+      '@alexaegis/common': 0.1.3
       '@alexaegis/logging': 0.1.3
       js-yaml: 4.1.0
     optionalDependencies:
@@ -367,7 +367,7 @@ packages:
     resolution: {integrity: sha512-8fYdRfmyus2BQ4f76iErb74loH8eecj9gUy9cEj6K4wIy1UoevyvkzhBse5Qi/aKPHV/+o27HSzp9QDahLxhOQ==}
     engines: {node: '>=18.13.0'}
     dependencies:
-      '@alexaegis/common': 0.1.1
+      '@alexaegis/common': 0.1.3
       tslog: 4.8.2
     dev: true
 
@@ -778,8 +778,8 @@ packages:
     resolution: {integrity: sha512-T3zoD0d/Zy2CBA+49uosvN8WL9gPiZK74cTMd3dKBUXcU4zMkJAAepgq5zF1jEeUwhAjgu5CNx2A0jTmSx2O2Q==}
     engines: {node: '>=18.13.0'}
     dependencies:
-      '@alexaegis/common': 0.1.1
-      '@alexaegis/fs': 0.1.1
+      '@alexaegis/common': 0.1.3
+      '@alexaegis/fs': 0.1.3
       '@alexaegis/logging': 0.1.3
       '@schemastore/package': 0.0.8
       globby: 13.1.4
@@ -2979,7 +2979,7 @@ packages:
       js-string-escape: 1.0.1
       lodash: 4.17.21
       md5-hex: 3.0.1
-      semver: 7.3.8
+      semver: 7.4.0
       well-known-symbols: 2.0.0
     dev: true
 
