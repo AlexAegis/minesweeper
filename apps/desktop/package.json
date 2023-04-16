@@ -56,11 +56,11 @@
 		"svelte-rxjs-observer": "^0.3.0"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.1.7",
-		"@alexaegis/stylelint-config": "^0.1.7",
-		"@alexaegis/ts": "^0.1.7",
-		"@alexaegis/vite": "^0.1.7",
-		"@alexaegis/vitest": "^0.1.7",
+		"@alexaegis/eslint-config-vitest": "^0.1.8",
+		"@alexaegis/stylelint-config": "^0.1.8",
+		"@alexaegis/ts": "^0.1.8",
+		"@alexaegis/vite": "^0.1.8",
+		"@alexaegis/vitest": "^0.1.8",
 		"@interactjs/types": "^1.10.17",
 		"@tinyslice/devtools-plugin": "^0.7.0",
 		"@tsconfig/svelte": "^4.0.1",
@@ -68,7 +68,7 @@
 		"concurrently": "^8.0.1",
 		"nodemon": "^2.0.22",
 		"postcss-scss": "^4.0.6",
-		"stylelint": "15.4.0",
+		"stylelint": "^15.5.0",
 		"svelte-preprocess": "^5.0.3",
 		"vite": "^4.2.1",
 		"vitest": "^0.30.1"
