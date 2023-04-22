@@ -9,5 +9,5 @@
 		"outDir": "dist/out-tsc"
 	},
 	"include": [".*", "*.json", "**/*.json"],
-	"exclude": ["node_modules", "dist", "coverage", "packages", "apps", "libs"]
+	"exclude": ["node_modules", "dist", "coverage", "packages", "apps", "libs", "solutions"]
 }
