@@ -4,7 +4,7 @@
 	export let position: CoordinateLike;
 </script>
 
-<div class="context-menu window" style:top={`${position.y}px`} style:left={`${position.x}px`}>
+<div class="context-menu window" style:top="{`${position.y}px`}" style:left="{`${position.x}px`}">
 	<slot />
 </div>
 

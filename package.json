@@ -50,7 +50,7 @@
 		"lint:style": "turbo run lint:style_ --concurrency 6 --cache-dir .cache/turbo",
 		"lint:style:css": "turbo run lint:style:css_ --concurrency 6 --cache-dir .cache/turbo",
 		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 6 --cache-dir .cache/turbo",
-		"lint:svelte": "turbo run lint:svelte",
+		"lint:svelte": "turbo run lint:svelte_ --concurrency 6 --cache-dir .cache/turbo",
 		"lint:tsc": "turbo run lint:tsc_ --concurrency 6 --cache-dir .cache/turbo",
 		"ce": "turbo run ce_ --concurrency 6 --cache-dir .cache/turbo",
 		"format": "prettier --write .",

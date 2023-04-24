@@ -49,19 +49,19 @@
 </script>
 
 <Button
-	bind:button
-	look={ButtonLook.TITLE_BAR_MENU_ITEM}
-	active={active === title}
-	disableSelfInset={active === undefined}
-	on:pointerenter={pointerenter}
-	on:click={click}
-	{hotkeyLetter}
+	bind:button="{button}"
+	look="{ButtonLook.TITLE_BAR_MENU_ITEM}"
+	active="{active === title}"
+	disableSelfInset="{active === undefined}"
+	on:pointerenter="{pointerenter}"
+	on:click="{click}"
+	hotkeyLetter="{hotkeyLetter}"
 >
 	{title}
 	{#if active === title}
 		<div
 			class="dropdown window"
-			on:click|preventDefault|stopPropagation={itemClick}
+			on:click|preventDefault|stopPropagation="{itemClick}"
 			on:keypress
 		>
 			<slot />

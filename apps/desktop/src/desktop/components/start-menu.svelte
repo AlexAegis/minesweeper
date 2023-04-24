@@ -3,10 +3,10 @@
 	import { onDestroy } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import {
+		PACKAGE_NAME_AND_VERSION,
 		debug$,
 		documentPointerup$,
 		packageMetadata,
-		PACKAGE_NAME_AND_VERSION,
 	} from '../../root.store';
 	import { desktop$, dicedPrograms, startMenuOpen$ } from '../store';
 	import { ButtonLook } from './button-look.enum';
@@ -39,7 +39,7 @@
 	onDestroy(() => closeEffect.unsubscribe());
 </script>
 
-<div bind:this={startMenu} class="start-menu window">
+<div bind:this="{startMenu}" class="start-menu window">
 	<div class="title">
 		<div>{PACKAGE_NAME_AND_VERSION}</div>
 	</div>
@@ -47,13 +47,13 @@
 		<slot />
 
 		{#each $programKeys$ as programKey}
-			<Observer observable={dicedPrograms.get(programKey)} let:next>
+			<Observer observable="{dicedPrograms.get(programKey)}" let:next>
 				<Button
-					look={ButtonLook.START_MENU_ITEM}
-					on:fire={() => desktop$.internals.actions.spawnProgram.next(programKey)}
-					on:alternativeFire={() => console.log('TODO: create icon', programKey)}
+					look="{ButtonLook.START_MENU_ITEM}"
+					on:fire="{() => desktop$.internals.actions.spawnProgram.next(programKey)}"
+					on:alternativeFire="{() => console.log('TODO: create icon', programKey)}"
 				>
-					<Image alt={next.name} src={next.icon} height={28} width={28} />
+					<Image alt="{next.name}" src="{next.icon}" height="{28}" width="{28}" />
 					{next.title}
 				</Button>
 			</Observer>
@@ -61,8 +61,8 @@
 
 		<hr />
 
-		<Button look={ButtonLook.START_MENU_ITEM} on:fire={() => debug$.set(!debug$.value)}>
-			<Image height={28} width={28} />
+		<Button look="{ButtonLook.START_MENU_ITEM}" on:fire="{() => debug$.set(!debug$.value)}">
+			<Image height="{28}" width="{28}" />
 			{#if $debug$}
 				Disable
 			{:else}
@@ -72,18 +72,18 @@
 		</Button>
 
 		<Button
-			look={ButtonLook.START_MENU_ITEM}
-			on:fire={() => window.open(packageMetadata.homepage, '_blank')}
+			look="{ButtonLook.START_MENU_ITEM}"
+			on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
 		>
-			<Image height={28} width={28} src={githubIcon} />
+			<Image height="{28}" width="{28}" src="{githubIcon}" />
 			Github
 		</Button>
 
 		<Button
-			look={ButtonLook.START_MENU_ITEM}
-			on:fire={() => confirm('Sure?') && window.close()}
+			look="{ButtonLook.START_MENU_ITEM}"
+			on:fire="{() => confirm('Sure?') && window.close()}"
 		>
-			<Image height={28} width={28} />
+			<Image height="{28}" width="{28}" />
 			Shut down...
 		</Button>
 	</div>

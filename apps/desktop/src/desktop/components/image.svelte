@@ -8,20 +8,20 @@
 
 {#if src}
 	<img
-		class={$$props.class ?? ''}
-		style={$$props.style ?? ''}
-		style:height={height ? `${height}px` : undefined}
-		style:width={width ? `${width}px` : undefined}
-		draggable={false}
-		aria-label={alt}
-		{src}
-		{alt}
+		class="{$$props['class'] ?? ''}"
+		style="{$$props['style'] ?? ''}"
+		style:height="{height ? `${height}px` : undefined}"
+		style:width="{width ? `${width}px` : undefined}"
+		draggable="{false}"
+		aria-label="{alt}"
+		src="{src}"
+		alt="{alt}"
 	/>
 {:else}
 	<div
-		style:height={height ? `${height}px` : undefined}
-		style:width={width ? `${width}px` : undefined}
-	/>
+		style:height="{height ? `${height}px` : undefined}"
+		style:width="{width ? `${width}px` : undefined}"
+	></div>
 {/if}
 
 <style>

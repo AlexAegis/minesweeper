@@ -78,13 +78,13 @@
 {#if isOpen}
 	<div
 		class="ms-modal"
-		class:error={$error$}
-		class:dimmed
-		style={$$props.style}
+		class:error="{$error$}"
+		class:dimmed="{dimmed}"
+		style="{$$props.style}"
 		on:keypress
-		on:click|preventDefault={backdropClick}
+		on:click|preventDefault="{backdropClick}"
 	>
-		<Window windowState={effectiveWindowState} transient={true} on:close={() => close()}>
+		<Window windowState="{effectiveWindowState}" transient="{true}" on:close="{() => close()}">
 			<slot />
 		</Window>
 	</div>

@@ -134,25 +134,25 @@
 </script>
 
 <button
-	bind:this={button}
-	{type}
+	bind:this="{button}"
+	type="{type}"
 	class="ms-button {$$props.class ?? ''}"
-	aria-label={$$props['aria-label']}
-	style={$$props.style}
-	class:disabled={disabled || appearDisabled}
-	class:hotkey-letter={!!hotkeyLetter}
-	class:active
-	class:selfPress
-	class:pressed
-	class:toggleable={toggled !== undefined}
-	class:toggleable-context={look === ButtonLook.CONTEXT_MENU_ITEM}
-	class:type-none={look === undefined}
-	class:type-any={look !== undefined}
-	class:type-thick={look === ButtonLook.THICK}
-	class:type-thick-but-pressed-thin={look === ButtonLook.THICK_PRESSED_THIN}
-	class:type-title-bar-menu-bar-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
-	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
-	class:type-start-menu-item={look === ButtonLook.START_MENU_ITEM}
+	aria-label="{$$props['aria-label']}"
+	style="{$$props.style}"
+	class:disabled="{disabled || appearDisabled}"
+	class:hotkey-letter="{!!hotkeyLetter}"
+	class:active="{active}"
+	class:selfPress="{selfPress}"
+	class:pressed="{pressed}"
+	class:toggleable="{toggled !== undefined}"
+	class:toggleable-context="{look === ButtonLook.CONTEXT_MENU_ITEM}"
+	class:type-none="{look === undefined}"
+	class:type-any="{look !== undefined}"
+	class:type-thick="{look === ButtonLook.THICK}"
+	class:type-thick-but-pressed-thin="{look === ButtonLook.THICK_PRESSED_THIN}"
+	class:type-title-bar-menu-bar-item="{look === ButtonLook.TITLE_BAR_MENU_ITEM}"
+	class:type-context-menu-item="{look === ButtonLook.CONTEXT_MENU_ITEM}"
+	class:type-start-menu-item="{look === ButtonLook.START_MENU_ITEM}"
 	on:click
 	on:mouseup
 	on:mousedown
@@ -161,12 +161,12 @@
 	on:contextmenu|preventDefault
 	on:pointercancel
 	on:pointerenter
-	on:pointerup={pointerup}
-	on:pointerdown={pointerdown}
-	on:pointerleave={pointerleave}
+	on:pointerup="{pointerup}"
+	on:pointerdown="{pointerdown}"
+	on:pointerleave="{pointerleave}"
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
-		<span class="icon" class:checkmark={toggled} />
+		<span class="icon" class:checkmark="{toggled}"></span>
 		<span>
 			<slot />
 		</span>
