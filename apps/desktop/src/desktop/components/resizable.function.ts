@@ -51,7 +51,7 @@ export class InteractBuilder {
 const resizable = (
 	interactable: Interactable,
 	element: HTMLElement,
-	resized: ResizeListener
+	resized: ResizeListener,
 ): Interactable => {
 	return interactable.resizable({
 		edges: { left: true, right: true, bottom: true, top: true },

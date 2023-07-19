@@ -38,7 +38,7 @@ export interface FirableOptions {
  */
 export function firable(
 	node: HTMLElement,
-	options?: FirableOptions
+	options?: FirableOptions,
 ): ActionReturn<FirableOptions, FirableEvents> {
 	const bufferTime = 200;
 
@@ -51,21 +51,23 @@ export function firable(
 	const rightclick$ = pointerup$.pipe(filter((event) => event.button === 2));
 
 	const pointerdownPrimary$ = pointerdown$.pipe(
-		filter((event) => event.button === 0 || event.button === 1 || event.pointerType === 'touch')
+		filter(
+			(event) => event.button === 0 || event.button === 1 || event.pointerType === 'touch',
+		),
 	);
 
 	const longpress$ = pointerdownPrimary$.pipe(
 		switchMap((event) =>
 			timer(bufferTime).pipe(
 				takeUntil(merge(pointerup$, pointermove$, pointerleave$)),
-				map(() => event)
-			)
-		)
+				map(() => event),
+			),
+		),
 	);
 
 	const alternativeFire$ = merge(longpress$, rightclick$).pipe(
 		throttleTime(bufferTime),
-		map((event) => new CustomEvent('alternativeFire', event))
+		map((event) => new CustomEvent('alternativeFire', event)),
 	);
 
 	let canceller$ = pointerleave$;
@@ -75,19 +77,19 @@ export function firable(
 
 	const cancelFire$ = pointerdown$.pipe(
 		switchMap(() => canceller$.pipe(take(1), takeUntil(merge(pointerup$, alternativeFire$)))),
-		map((event) => new CustomEvent('cancelFire', event))
+		map((event) => new CustomEvent('cancelFire', event)),
 	);
 
 	const bufferedFire$ = pointerdownPrimary$.pipe(
 		buffer(merge(pointerdownPrimary$, alternativeFire$).pipe(debounceTime(bufferTime))),
 		takeUntil(merge(alternativeFire$, cancelFire$)),
 		repeat(),
-		share()
+		share(),
 	);
 
 	const startFire$ = pointerdownPrimary$.pipe(
 		throttleTime(bufferTime),
-		map((event) => new CustomEvent('startFire', event))
+		map((event) => new CustomEvent('startFire', event)),
 	);
 
 	// Fires if only 1 event is emitted within a time period
@@ -97,7 +99,7 @@ export function firable(
 		take(1),
 		map((clicks) => clicks[0]),
 		repeat(),
-		map((event) => new CustomEvent('fire', event))
+		map((event) => new CustomEvent('fire', event)),
 	);
 
 	// Fires if 2 events are emittedwithin a time period
@@ -105,9 +107,9 @@ export function firable(
 		takeUntil(merge(alternativeFire$, cancelFire$)),
 		filter((clicks) => clicks.length > 1),
 		take(1),
-		map((clicks) => clicks[clicks.length - 1]),
+		map((clicks) => clicks.at(-1)),
 		repeat(),
-		map((event) => new CustomEvent('doubleFire', event))
+		map((event) => new CustomEvent('doubleFire', event)),
 	);
 
 	const sink = new Subscription();
@@ -116,7 +118,11 @@ export function firable(
 	sink.add(doubleFire$.subscribe((event) => node.dispatchEvent(event)));
 	sink.add(alternativeFire$.subscribe((event) => node.dispatchEvent(event)));
 	sink.add(cancelFire$.subscribe((event) => node.dispatchEvent(event)));
-	sink.add(contextmenu$.subscribe((event) => event.preventDefault()));
+	sink.add(
+		contextmenu$.subscribe((event) => {
+			event.preventDefault();
+		}),
+	);
 
 	return {
 		update: (updatedParameter) => {

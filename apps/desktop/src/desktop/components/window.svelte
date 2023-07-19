@@ -89,11 +89,30 @@
 		dispatch('close');
 	}
 
-	let moveInteract: InteractBuilder;
-	let resizeInteract: InteractBuilder;
+	let moveInteract: InteractBuilder | undefined;
+	let resizeInteract: InteractBuilder | undefined;
 
 	$: resizeInteract?.toggle(effectiveResizable);
 	$: moveInteract?.toggle(effectiveMovable);
+
+	if (transient) {
+		sink.add(
+			documentPointerdown$
+				.pipe(
+					filter((event) => {
+						const elementsUnderPointer = document.elementsFromPoint(
+							event.pageX,
+							event.pageY,
+						);
+						return !elementsUnderPointer.includes(windowElement);
+					}),
+					tap(() => {
+						deactivate();
+					}),
+				)
+				.subscribe(),
+		);
+	}
 
 	onMount(() => {
 		moveInteract = InteractBuilder.from(windowElement).movable(move);
@@ -110,23 +129,6 @@
 					width: windowElement.scrollWidth,
 				} as ResizeData);
 			}
-		}
-
-		if (transient) {
-			sink.add(
-				documentPointerdown$
-					.pipe(
-						filter((event) => {
-							const elementsUnderPointer = document.elementsFromPoint(
-								event.pageX,
-								event.pageY
-							);
-							return !elementsUnderPointer.includes(windowElement);
-						}),
-						tap(() => deactivate())
-					)
-					.subscribe()
-			);
 		}
 	});
 
@@ -188,9 +190,22 @@
 
 <style lang="scss">
 	.ms-window {
+		position: absolute;
+		box-sizing: border-box;
+		user-select: none;
+
+		// touch-action: none;
+
+
+		.window-body {
+			overflow: auto;
+			margin: 0;
+		}
+
 		&.fit-content {
 			display: table;
 		}
+
 
 		&:not(.fit-content) {
 			display: flex;
@@ -201,24 +216,13 @@
 			}
 		}
 
-		position: absolute;
-		box-sizing: border-box;
-		user-select: none;
-
-		// touch-action: none;
-
 		.menu {
 			min-height: 20px;
 			display: flex;
 
-			:global(button:first-letter) {
+			:global(button::first-letter) {
 				text-transform: uppercase;
 			}
-		}
-
-		.window-body {
-			overflow: auto;
-			margin: 0;
 		}
 
 		&.maximized {
@@ -226,14 +230,12 @@
 			width: 100% !important;
 			top: 0 !important;
 			left: 0 !important;
-
 			transform: none !important;
 		}
 
 		&:not(.maximized) {
 			height: fit-content;
 			width: fit-content;
-
 			min-width: fit-content;
 			min-height: fit-content;
 		}

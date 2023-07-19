@@ -18,11 +18,13 @@
 
 <div class="taskbar window">
 	<Button
-		bind:button={startButton}
+		bind:button="{startButton}"
 		class="start"
-		on:fire={() => startMenuOpen$.set(!startMenuOpen$.value)}
+		on:fire="{() => {
+			startMenuOpen$.set(!startMenuOpen$.value);
+		}}"
 	>
-		<div class="start-logo" />
+		<div class="start-logo"></div>
 		Start
 	</Button>
 	<div>
@@ -31,7 +33,7 @@
 	<div class="quickbar">
 		<slot name="quickbar" />
 		{#if $debug$}
-			<Image height={10} width={10} src={flagIcon} />
+			<Image height="{10}" width="{10}" src="{flagIcon}" />
 		{/if}
 		<Clock />
 	</div>
@@ -43,11 +45,10 @@
 		justify-content: space-between;
 
 		--taskbar-height: 26px;
+
 		height: var(--taskbar-height);
-
 		position: fixed;
-
-		bottom: 0px;
+		bottom: 0;
 		width: calc(100% - 6px);
 
 		.quickbar {
@@ -56,11 +57,10 @@
 			align-items: center;
 			margin-left: auto;
 			border: 1px inset;
-			padding: 0 4px 0 4px;
+			padding: 0 4px;
 		}
 
 		:global(.start) {
-			padding: 0;
 			min-width: 64px;
 			padding: 8px;
 		}

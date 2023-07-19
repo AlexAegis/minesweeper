@@ -6,20 +6,20 @@
 	import { ButtonLook } from './button-look.enum';
 
 	const dispatch = createEventDispatcher<{
-		startFire: void;
-		fire: void;
-		alternativeFire: void;
-		cancelFire: void;
+		startFire: undefined;
+		fire: undefined;
+		alternativeFire: undefined;
+		cancelFire: undefined;
 	}>();
 
 	export let disabled = false;
 	export let appearDisabled = false;
 	export let pressed = false;
 	export let longpressTime = 250;
-	export let type: 'button' | 'menu' | 'submit' | 'reset' = 'button';
+	export let type: 'button' | 'submit' | 'reset' = 'button';
 	export let look: ButtonLook | undefined = undefined;
 
-	export let selfPress = true;
+	export let selfPress: boolean | undefined = true;
 	export let hotkeyLetter: string | undefined = undefined;
 	export let toggled: boolean | undefined = undefined;
 	export let active: boolean | undefined = undefined;
@@ -135,15 +135,15 @@
 
 <button
 	bind:this="{button}"
-	type="{type}"
-	class="ms-button {$$props.class ?? ''}"
+	{type}
 	aria-label="{$$props['aria-label']}"
-	style="{$$props.style}"
+	class="ms-button {$$props['class'] ?? ''}"
+	style="{$$props['style'] ?? ''}"
 	class:disabled="{disabled || appearDisabled}"
 	class:hotkey-letter="{!!hotkeyLetter}"
-	class:active="{active}"
-	class:selfPress="{selfPress}"
-	class:pressed="{pressed}"
+	class:active
+	class:selfPress
+	class:pressed
 	class:toggleable="{toggled !== undefined}"
 	class:toggleable-context="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-none="{look === undefined}"
@@ -179,27 +179,22 @@
 	button {
 		display: flex;
 		align-items: center;
-		flex-direction: row;
-		flex-wrap: nowrap;
+		flex-flow: row nowrap;
 		gap: 4px;
-
 		font-size: 18px;
 		line-height: 14px;
-		//	touch-action: manipulation;
-		user-select: none;
-		-webkit-user-select: none !important;
 
+		//	touch-action: manipulation;
+		user-select: none !important;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-
 		image-rendering: pixelated;
 		background-repeat: no-repeat;
 		color: black;
-
 		background-position-x: var(--background-image-positon, 1px);
 		background-position-y: var(--background-image-positon, 1px);
 
-		&.pressed:not(.disableSelfInset) {
+		&.pressed:not(.disable-self-inset) {
 			background-position-x: calc(var(--background-image-positon, 1px) + 1px);
 			background-position-y: calc(var(--background-image-positon, 1px) + 1px);
 		}
@@ -226,16 +221,16 @@
 		}
 
 		&.hotkey-letter {
-			&:first-letter {
+			&::first-letter {
 				text-decoration: underline !important;
 			}
 		}
 
-		&:first-letter {
+		&::first-letter {
 			text-transform: uppercase;
 		}
 
-		:first-letter {
+		::first-letter {
 			text-transform: uppercase;
 		}
 
@@ -246,7 +241,7 @@
 		}
 
 		&.type-title-bar-menu-bar-item {
-			padding: 2px 12px 4px 12px;
+			padding: 2px 12px 4px;
 		}
 
 		&.active,
@@ -274,7 +269,6 @@
 		border-width: 2px;
 		border-left-style: solid;
 		border-top-style: solid;
-
 		border-color: var(--panel-border-color);
 	}
 

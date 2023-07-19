@@ -7,7 +7,7 @@ export type MoveListener = (coord: CoordinateLike) => void;
 export const movable = (
 	interactable: Interactable,
 	element: HTMLElement,
-	moved: MoveListener
+	moved: MoveListener,
 ): Interactable => {
 	const titleBar = element.querySelectorAll('.title-bar').item(0);
 	return interactable.draggable({

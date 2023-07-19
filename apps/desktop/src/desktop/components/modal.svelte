@@ -20,17 +20,17 @@
 				of(true),
 				interval(60).pipe(
 					take(6),
-					map((_, i) => i % 2 === 0)
-				)
-			)
+					map((_, i) => i % 2 === 0),
+				),
+			),
 		),
-		startWith(false)
+		startWith(false),
 	);
 
 	const centerOf = (
 		position: CoordinateLike,
 		size: CoordinateLike,
-		sizeOfTarget?: CoordinateLike
+		sizeOfTarget?: CoordinateLike,
 	): CoordinateLike => {
 		return {
 			x: position.x + Math.floor(size.x / 2) - Math.floor((sizeOfTarget?.x ?? 0) / 2),
@@ -49,14 +49,14 @@
 					x: parentWindow?.width ?? document.body.scrollWidth,
 					y: parentWindow?.height ?? document.body.scrollHeight,
 				},
-				{ x: effectiveWindowState.width ?? 0, y: effectiveWindowState.height ?? 0 }
+				{ x: effectiveWindowState.width, y: effectiveWindowState.height },
 			);
 			windowState.invisible = false;
 		}, 0);
 	}
 
 	export function close(event?: MouseEvent) {
-		if ((event?.target as Element)?.className.includes('ms-modal') ?? true) {
+		if ((event?.target as Element).className.includes('ms-modal')) {
 			// Let stuff clear itself
 			setTimeout(() => {
 				isOpen = false;
@@ -65,7 +65,7 @@
 	}
 
 	export function backdropClick(event: MouseEvent) {
-		if ((event?.target as Element)?.className.includes('ms-modal')) {
+		if ((event.target as Element).className.includes('ms-modal')) {
 			errorNotification.next();
 		}
 	}
@@ -78,13 +78,22 @@
 {#if isOpen}
 	<div
 		class="ms-modal"
+		role="button"
+		aria-roledescription="closes the modal"
+		tabindex="-1"
 		class:error="{$error$}"
-		class:dimmed="{dimmed}"
-		style="{$$props.style}"
+		class:dimmed
+		style="{$$props['style']}"
 		on:keypress
 		on:click|preventDefault="{backdropClick}"
 	>
-		<Window windowState="{effectiveWindowState}" transient="{true}" on:close="{() => close()}">
+		<Window
+			windowState="{effectiveWindowState}"
+			transient="{true}"
+			on:close="{() => {
+				close();
+			}}"
+		>
 			<slot />
 		</Window>
 	</div>
@@ -101,7 +110,7 @@
 		z-index: 900;
 
 		&.dimmed {
-			background-color: rgba(0, 0, 0, 0.2);
+			background-color: rgb(0 0 0 / 20%);
 		}
 
 		&.error {

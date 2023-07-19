@@ -82,7 +82,7 @@ export const desktop$ = rootSlice$.addSlice(
 
 				return acc;
 			},
-			{}
+			{},
 		),
 		activeProcessId: undefined,
 		lastSpawned: undefined,
@@ -99,7 +99,7 @@ export const desktop$ = rootSlice$.addSlice(
 
 			return { actions };
 		},
-	}
+	},
 );
 
 export const SHORTCUT_HEIGHT = 50;
@@ -108,12 +108,12 @@ export const SHORTCUT_WIDTH = 75;
 export const snapShortcutPosition = (position: CoordinateLike): CoordinateLike => {
 	return {
 		x: Math.floor(
-			position.x - ((position.x + SHORTCUT_WIDTH / 2) % SHORTCUT_WIDTH) + SHORTCUT_WIDTH / 2
+			position.x - ((position.x + SHORTCUT_WIDTH / 2) % SHORTCUT_WIDTH) + SHORTCUT_WIDTH / 2,
 		),
 		y: Math.floor(
 			position.y -
 				((position.y + SHORTCUT_HEIGHT / 2) % SHORTCUT_HEIGHT) +
-				SHORTCUT_HEIGHT / 2
+				SHORTCUT_HEIGHT / 2,
 		),
 	};
 };
@@ -137,7 +137,7 @@ export const dicedShortcuts = shortcuts$.dice(
 
 			return { position$ };
 		},
-	}
+	},
 );
 
 export const programs$ = desktop$.slice('programs');
@@ -153,7 +153,7 @@ export const dicedPrograms = programs$.dice(
 	{
 		getAllKeys: (state) => Object.keys(state) as ProgramName[],
 		getNextKey: () => ProgramName.UNKNOWN,
-	}
+	},
 );
 
 const getNextProcessId = (keys: ProcessId[]) =>
@@ -182,7 +182,7 @@ export const windows$ = desktop$.slice('windows', {
 
 					if (payload) {
 						windows = windows.filter(
-							(windowState) => windowState.processId !== payload
+							(windowState) => windowState.processId !== payload,
 						);
 						windows.sort((a, b) => a.zIndex - b.zIndex);
 						const windowState = state[payload];
@@ -211,16 +211,16 @@ export const windows$ = desktop$.slice('windows', {
 								...windowState,
 								active: false,
 						  };
-				}
-			)
+				},
+			),
 		),
 	],
 	defineInternals: (slice) => {
 		const activeWindowCount$ = slice.pipe(
 			map(
 				(windows) =>
-					Object.values(windows).filter((windowState) => windowState.active).length
-			)
+					Object.values(windows).filter((windowState) => windowState.active).length,
+			),
 		);
 
 		return { activeWindowCount$ };
@@ -235,15 +235,15 @@ desktop$.createEffect(
 		}),
 		ifLatestFrom(
 			windows$.internals.activeWindowCount$,
-			(activeWindowCount) => activeWindowCount > 0
+			(activeWindowCount) => activeWindowCount > 0,
 		),
-		map(() => desktop$.internals.actions.activateProgram.makePacket(undefined))
-	)
+		map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
+	),
 );
 
 export const resizeWindow = (
 	windowState: BaseWindowState,
-	resizeData: ResizeData
+	resizeData: ResizeData,
 ): BaseWindowState => {
 	if (isNullish(resizeData.height) && isNullish(resizeData.width)) {
 		return windowState;
@@ -329,6 +329,6 @@ windows$.createEffect(
 	isMinesweeperSpawned$.pipe(
 		take(1),
 		filter((is) => !is),
-		map(() => desktop$.internals.actions.spawnProgram.makePacket(ProgramName.MINESWEEPER))
-	)
+		map(() => desktop$.internals.actions.spawnProgram.makePacket(ProgramName.MINESWEEPER)),
+	),
 );

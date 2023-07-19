@@ -55,16 +55,20 @@
 <div
 	bind:this="{shortcutElement}"
 	use:firable="{{ draggable: true }}"
-	on:alternativefire="{() => contextmenu()}"
+	on:alternativefire="{() => {
+		contextmenu();
+	}}"
 	on:fire="{() => (selected = !selected)}"
 	on:startfire="{() => {
 		if (!selected) {
 			selected = true;
 		}
 	}}"
-	on:doublefire="{() => spawn()}"
+	on:doublefire="{() => {
+		spawn();
+	}}"
 	class="shortcut"
-	class:selected="{selected}"
+	class:selected
 	style:top="{`${transientPosition.y}px`}"
 	style:left="{`${transientPosition.x}px`}"
 >
@@ -78,14 +82,10 @@
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
 		position: absolute;
-
 		row-gap: 4px;
-
 		align-items: center;
 		justify-items: center;
-
 		margin: 16px;
-
 		user-select: none;
 		touch-action: none;
 
@@ -109,6 +109,16 @@
 			align-self: end;
 		}
 
+		.title {
+			padding: 0 2px;
+			user-select: none;
+			font-size: 18px;
+			line-height: 18px;
+			grid-row: 2;
+			grid-column: 1 / -1;
+			color: black;
+		}
+
 		&.selected {
 			:global(.icon) {
 				// box-shadow: inset 0 0 0 2000px rgba(var(--selection-rgb), 0.5);
@@ -122,15 +132,6 @@
 			}
 		}
 
-		.title {
-			padding: 0 2px 0 2px;
-			user-select: none;
-			font-size: 18px;
-			line-height: 18px;
-			grid-row: 2;
-			grid-column: 1 / -1;
 
-			color: black;
-		}
 	}
 </style>

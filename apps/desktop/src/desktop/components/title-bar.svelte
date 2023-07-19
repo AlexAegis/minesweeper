@@ -37,20 +37,28 @@
 	let lastTap = 0;
 
 	function dbltap() {
-		const tap = new Date().getTime();
+		const tap = Date.now();
 		if (tap - lastTap < 250) {
 			maximize();
 		}
 		lastTap = tap;
 	}
 
-	onDestroy(() => sink.unsubscribe());
+	onDestroy(() => {
+		sink.unsubscribe();
+	});
 </script>
 
-<div class="title-bar" class:active on:dblclick={maximize} on:pointerdown={dbltap}>
+<div
+	class="title-bar"
+	class:active
+	on:dblclick="{maximize}"
+	on:pointerdown="{dbltap}"
+	role="presentation"
+>
 	<div aria-label="title" class="title-bar-text">
 		{#if icon}
-			<Image class="ms-title-bar-icon" src={icon} alt={title} />
+			<Image class="ms-title-bar-icon" src="{icon}" alt="{title}" />
 		{/if}
 		{title}
 		<slot />
@@ -58,18 +66,19 @@
 
 	<div class="title-bar-controls">
 		{#if showMinimize}
-			<button aria-label="Minimize" on:click|preventDefault|stopPropagation={minimize} />
+			<button aria-label="Minimize" on:click|preventDefault|stopPropagation="{minimize}"
+			></button>
 		{/if}
 
 		{#if showMaximize}
 			<button
-				aria-label={maximized ? 'Restore' : 'Maximize'}
-				on:click|preventDefault|stopPropagation={maximize}
-				disabled={!resizable}
-			/>
+				aria-label="{maximized ? 'Restore' : 'Maximize'}"
+				on:click|preventDefault|stopPropagation="{maximize}"
+				disabled="{!resizable}"
+			></button>
 		{/if}
 		{#if showClose}
-			<button aria-label="Close" on:click|preventDefault|stopPropagation={close} />
+			<button aria-label="Close" on:click|preventDefault|stopPropagation="{close}"></button>
 		{/if}
 	</div>
 </div>
@@ -81,13 +90,6 @@
 		touch-action: none;
 		cursor: default;
 
-		&:not(.active) {
-			background: linear-gradient(90deg, #808080, #c0c0c0);
-
-			.title-bar-text {
-				color: #c8c8c8;
-			}
-		}
 		// 98.css
 		.title-bar-text {
 			display: flex;
@@ -96,8 +98,16 @@
 			text-transform: capitalize;
 		}
 
+		&:not(.active) {
+			background: linear-gradient(90deg, #808080, #c0c0c0);
+
+			.title-bar-text {
+				color: #c8c8c8;
+			}
+		}
+
 		:global(.ms-title-bar-icon) {
-			filter: drop-shadow(0px 0px 8px rgba(180, 180, 255, 0.8));
+			filter: drop-shadow(0 0 8px rgb(180 180 255 / 80%));
 			max-height: 13px;
 		}
 	}

@@ -1,0 +1,7 @@
+{
+	"$schema": "https://raw.githubusercontent.com/raineorshine/npm-check-updates/main/src/types/RunOptions.json?mark=managed-by-autotool",
+	"dep": ["prod", "dev", "optional", "packageManager"],
+	"peer": true,
+	"deep": true,
+	"upgrade": true
+}

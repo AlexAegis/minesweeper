@@ -16,16 +16,16 @@ export interface RootState {
 	debug: boolean;
 }
 
-export const PACKAGE_NAME_AND_VERSION = `${packageMetadata.displayName} (${packageMetadata.version})`;
+export const PACKAGE_NAME_AND_VERSION = `${packageMetadata.name} (${packageMetadata.version})`;
 
 export const documentPointerdown$ = scheduled(
 	fromEvent<PointerEvent>(document, 'pointerdown'),
-	asyncScheduler
+	asyncScheduler,
 );
 
 export const documentPointerup$ = scheduled(
 	fromEvent<PointerEvent>(document, 'pointerup'),
-	asyncScheduler
+	asyncScheduler,
 );
 
 const plugins: TinySlicePlugin<RootState>[] = [
@@ -38,7 +38,7 @@ export const rootSlice$ = scope.createRootSlice(
 	} as RootState,
 	{
 		plugins,
-	}
+	},
 );
 
 export const debug$ = rootSlice$.slice('debug');
@@ -53,7 +53,7 @@ scope.createEffect(
 							(plugin) =>
 								new plugin.TinySliceDevtoolPlugin({
 									name: PACKAGE_NAME_AND_VERSION,
-								})
+								}),
 						),
 					() =>
 						import('@tinyslice/logger-plugin').then(
@@ -62,13 +62,13 @@ scope.createEffect(
 									onlyTimers: true,
 									disableGrouping: false,
 									ignoreActions: [/.*timer.*/, /.*move.*/, /.*resize.*/],
-								})
-						)
+								}),
+						),
 				);
 			} else {
 				rootSlice$.setPlugins(plugins);
 				return of();
 			}
-		})
-	)
+		}),
+	),
 );

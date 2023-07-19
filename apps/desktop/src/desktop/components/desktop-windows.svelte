@@ -32,13 +32,27 @@
 	<Observer observable="{windowSlice}" let:next>
 		<Window
 			windowState="{next}"
-			on:activate="{() => desktop$.internals.actions.activateProgram.next(processId)}"
-			on:maximize="{() => windowSlice.internals.windowActions.maximize.next(processId)}"
-			on:minimize="{() => windowSlice.internals.windowActions.minimize.next(processId)}"
-			on:restore="{() => windowSlice.internals.windowActions.restore.next(processId)}"
-			on:close="{() => dicedWindows.remove(processId)}"
-			on:move="{(event) => windowSlice.internals.windowActions.move.next(event.detail)}"
-			on:resize="{(event) => windowSlice.internals.windowActions.resize.next(event.detail)}"
+			on:activate="{() => {
+				desktop$.internals.actions.activateProgram.next(processId);
+			}}"
+			on:maximize="{() => {
+				windowSlice.internals.windowActions.maximize.next(processId);
+			}}"
+			on:minimize="{() => {
+				windowSlice.internals.windowActions.minimize.next(processId);
+			}}"
+			on:restore="{() => {
+				windowSlice.internals.windowActions.restore.next(processId);
+			}}"
+			on:close="{() => {
+				dicedWindows.remove(processId);
+			}}"
+			on:move="{(event) => {
+				windowSlice.internals.windowActions.move.next(event.detail);
+			}}"
+			on:resize="{(event) => {
+				windowSlice.internals.windowActions.resize.next(event.detail);
+			}}"
 		>
 			<svelte:fragment slot="menu">
 				{#if next.program}

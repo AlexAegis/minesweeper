@@ -1,4 +1,5 @@
 <script lang="ts">
+	/** eslint-disable @typescript-eslint/no-confusing-void-expression */
 	import { onDestroy, onMount } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import Panel from '../desktop/components/panel.svelte';
@@ -14,37 +15,47 @@
 	$: cheating$ = internals.cheating$;
 	$: cheating = $cheating$;
 
-	onMount(() => internals.game$.unpause());
-	onDestroy(() => internals.game$.pause());
+	onMount(() => {
+		internals.game$.unpause();
+	});
+	onDestroy(() => {
+		internals.game$.pause();
+	});
 </script>
 
 <div class="game">
 	<Panel class="game panel inset padded">
-		<Observer observable={internals.remainingMines$} let:next>
-			<SegmentDisplayPanel value={next} paddedLength={3} />
+		<Observer observable="{internals.remainingMines$}" let:next>
+			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />
 		</Observer>
-		<Observer observable={internals.smileyState$} let:next>
+		<Observer observable="{internals.smileyState$}" let:next>
 			<Smiley
-				on:click={() => internals.minesweeperActions.resetGame.next()}
-				smileyState={next}
+				on:click="{() => {
+					internals.minesweeperActions.resetGame.next(undefined);
+				}}"
+				smileyState="{next}"
 			/>
 		</Observer>
-		<Observer observable={internals.elapsedSeconds$} let:next>
-			<SegmentDisplayPanel value={next} paddedLength={3} />
+		<Observer observable="{internals.elapsedSeconds$}" let:next>
+			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />
 		</Observer>
 	</Panel>
 
 	<Playfield
 		class="panel inset"
-		dicedTiles={internals.dicedTiles}
+		dicedTiles="{internals.dicedTiles}"
 		{cheating}
-		on:startFire={(event) =>
-			internals.minesweeperActions.clickActions.startFire.next(event.detail)}
-		on:fire={(event) => internals.minesweeperActions.clickActions.fire.next(event.detail)}
-		on:alternativeFire={(event) =>
-			internals.minesweeperActions.clickActions.alternativeFire.next(event.detail)}
-		on:cancelFire={(event) =>
-			internals.minesweeperActions.clickActions.cancelFire.next(event.detail)}
+		on:startFire="{(event) =>
+			internals.minesweeperActions.clickActions.startFire.next(event.detail)}"
+		on:fire="{(event) => {
+			internals.minesweeperActions.clickActions.fire.next(event.detail);
+		}}"
+		on:alternativeFire="{(event) => {
+			internals.minesweeperActions.clickActions.alternativeFire.next(event.detail);
+		}}"
+		on:cancelFire="{(event) => {
+			internals.minesweeperActions.clickActions.cancelFire.next(event.detail);
+		}}"
 	/>
 </div>
 
@@ -53,14 +64,10 @@
 		display: flex;
 		flex-direction: column;
 		padding: var(--game-area-padding);
-
 		border-width: var(--game-area-border-width);
 		border-color: var(--border-color-light-og);
-		border-top-style: outset;
-		border-left-style: outset;
+		border-style: outset;
 
 		// These borders are not present on the XP version
-		border-right-style: outset;
-		border-bottom-style: outset;
 	}
 </style>

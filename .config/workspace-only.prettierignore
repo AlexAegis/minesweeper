@@ -1,5 +1,12 @@
 # managed-by-autotool
-# Add files here to ignore them from prettier formatting
+# This file is used when formatting the workspace itself
+
+packages
+apps
+libs
+solutions
+
+# Regular ignores from the main prettierignore file, prettier can't use multiple ignore files
 
 # node
 node_modules
@@ -10,7 +17,7 @@ yarn.lock
 # build artifacts
 dist
 public/build
-build
+public/index.js
 .svelte-kit
 typedoc
 

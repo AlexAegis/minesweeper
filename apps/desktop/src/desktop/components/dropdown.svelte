@@ -16,28 +16,26 @@
 		.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
-				return !Array.from(button.parentElement?.children ?? []).some((child) =>
-					elementsUnderPointer.includes(child)
+				return ![...(button.parentElement?.children ?? [])].some((child) =>
+					elementsUnderPointer.includes(child),
 				);
 			}),
-			tap(() => (active = undefined))
+			tap(() => (active = undefined)),
 		)
 		.subscribe();
 
 	function itemClick(event: MouseEvent) {
 		if (
-			(event.target as Element)?.nodeName !== 'HR' &&
-			(event.target as Element)?.nodeName !== 'DIV'
+			(event.target as Element).nodeName !== 'HR' &&
+			(event.target as Element).nodeName !== 'DIV'
 		) {
 			active = undefined;
 		}
 	}
 
 	function pointerenter(event: PointerEvent): void {
-		if (event.pointerType === 'mouse') {
-			if (active !== undefined && active !== title) {
-				active = title;
-			}
+		if (event.pointerType === 'mouse' && active !== undefined && active !== title) {
+			active = title;
 		}
 	}
 
@@ -45,21 +43,24 @@
 		active = active === title ? undefined : title;
 	}
 
-	onDestroy(() => clickListener.unsubscribe());
+	onDestroy(() => {
+		clickListener.unsubscribe();
+	});
 </script>
 
 <Button
-	bind:button="{button}"
+	bind:button
 	look="{ButtonLook.TITLE_BAR_MENU_ITEM}"
 	active="{active === title}"
-	disableSelfInset="{active === undefined}"
+	disable-self-inset="{active === undefined}"
 	on:pointerenter="{pointerenter}"
 	on:click="{click}"
-	hotkeyLetter="{hotkeyLetter}"
+	{hotkeyLetter}
 >
 	{title}
 	{#if active === title}
 		<div
+			role="presentation"
 			class="dropdown window"
 			on:click|preventDefault|stopPropagation="{itemClick}"
 			on:keypress
@@ -77,7 +78,6 @@
 		min-width: 150px;
 		flex-direction: column;
 		margin-left: -12px;
-
 		z-index: 100;
 		padding: 2px;
 	}

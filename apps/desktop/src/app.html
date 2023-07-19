@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=2" />
+
+		<meta name="viewport" content="width=device-width" />
 		<title>Minesweeper</title>
 		<meta name="Description" content="Minesweeper" />
 		<link
@@ -12,11 +13,12 @@
 			type="font/woff"
 			crossorigin
 		/>
-
 		<link rel="icon" type="image/png" href="minesweeper.png" />
 		<link rel="stylesheet" type="text/css" href="global.css" />
-		<script type="module" src="/src/main.ts"></script>
-	</head>
 
-	<body class="w98"></body>
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents" class="h-full overflow-hidden">%sveltekit.body%</div>
+	</body>
 </html>

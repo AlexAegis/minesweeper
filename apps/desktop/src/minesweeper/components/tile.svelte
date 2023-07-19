@@ -7,7 +7,12 @@
 
 	import Button from '../../desktop/components/button.svelte';
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{
+		startFire: CoordinateLike;
+		cancelFire: CoordinateLike;
+		fire: CoordinateLike;
+		alternativeFire: CoordinateLike;
+	}>();
 
 	export let tile: TileState;
 
@@ -73,14 +78,14 @@
 
 <Button
 	class="ms-tile {tileClass}"
-	pressed={tile.pressed || tile.revealed}
-	disabled={tile.disabled}
-	appearDisabled={tile.revealed}
-	selfPress={false}
-	look={ButtonLook.THICK_PRESSED_THIN}
-	on:fire={fire}
-	on:startFire={startFire}
-	on:alternativeFire={alternativeFire}
-	on:cancelFire={cancelFire}
+	pressed="{tile.pressed || tile.revealed}"
+	disabled="{tile.disabled}"
+	appearDisabled="{tile.revealed}"
+	selfPress="{false}"
+	look="{ButtonLook.THICK_PRESSED_THIN}"
+	on:fire="{fire}"
+	on:startFire="{startFire}"
+	on:alternativeFire="{alternativeFire}"
+	on:cancelFire="{cancelFire}"
 	style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 />

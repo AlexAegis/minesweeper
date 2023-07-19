@@ -14,8 +14,8 @@
 		style:width="{width ? `${width}px` : undefined}"
 		draggable="{false}"
 		aria-label="{alt}"
-		src="{src}"
-		alt="{alt}"
+		{src}
+		{alt}
 	/>
 {:else}
 	<div

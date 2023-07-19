@@ -1,0 +1,36 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema?mark=managed-by-autotool",
+	"sort": [
+		"name",
+		"description",
+		"version",
+		"license",
+		"private",
+		{
+			"key": "archetype",
+			"order": ["platform", "framework", "language", "kind", "bundler", "testing"]
+		},
+		"keywords",
+		"author",
+		"homepage",
+		{
+			"key": "repository",
+			"order": ["url", "type", "directory"]
+		},
+		"bugs",
+		"type",
+		"config",
+		"publishConfig",
+		".*",
+		"engines",
+		"packageManager",
+		"workspaces",
+		{ "key": "scripts", "order": ["build.*", "lint.*", "test.*"] },
+		{ "key": "exports", "order": [{ "key": ".*", "order": ["types", ".*", "default"] }] },
+		"bin",
+		"dependencies",
+		"peerDependencies",
+		"optionalDependencies",
+		"devDependencies"
+	]
+}

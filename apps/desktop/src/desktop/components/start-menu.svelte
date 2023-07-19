@@ -28,15 +28,16 @@
 					(!elementsUnderPointer.includes(startMenu) &&
 						!elementsUnderPointer.includes(startButton)) ||
 					(elementsUnderPointer.includes(startMenu) &&
-						elementsUnderPointer.filter((element) => element.nodeName === 'BUTTON')
-							.length > 0)
+						elementsUnderPointer.some((element) => element.nodeName === 'BUTTON'))
 				);
 			}),
-			map(() => startMenuOpen$.setAction.makePacket(false))
-		)
+			map(() => startMenuOpen$.setAction.makePacket(false)),
+		),
 	);
 
-	onDestroy(() => closeEffect.unsubscribe());
+	onDestroy(() => {
+		closeEffect.unsubscribe();
+	});
 </script>
 
 <div bind:this="{startMenu}" class="start-menu window">
@@ -50,8 +51,12 @@
 			<Observer observable="{dicedPrograms.get(programKey)}" let:next>
 				<Button
 					look="{ButtonLook.START_MENU_ITEM}"
-					on:fire="{() => desktop$.internals.actions.spawnProgram.next(programKey)}"
-					on:alternativeFire="{() => console.log('TODO: create icon', programKey)}"
+					on:fire="{() => {
+						desktop$.internals.actions.spawnProgram.next(programKey);
+					}}"
+					on:alternativeFire="{() => {
+						console.log('TODO: create icon', programKey);
+					}}"
 				>
 					<Image alt="{next.name}" src="{next.icon}" height="{28}" width="{28}" />
 					{next.title}
@@ -61,7 +66,12 @@
 
 		<hr />
 
-		<Button look="{ButtonLook.START_MENU_ITEM}" on:fire="{() => debug$.set(!debug$.value)}">
+		<Button
+			look="{ButtonLook.START_MENU_ITEM}"
+			on:fire="{() => {
+				debug$.set(!debug$.value);
+			}}"
+		>
 			<Image height="{28}" width="{28}" />
 			{#if $debug$}
 				Disable
@@ -81,7 +91,9 @@
 
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
-			on:fire="{() => confirm('Sure?') && window.close()}"
+			on:fire="{() => {
+				confirm('Sure?') && window.close();
+			}}"
 		>
 			<Image height="{28}" width="{28}" />
 			Shut down...
@@ -92,9 +104,7 @@
 <style lang="scss">
 	.start-menu {
 		z-index: 1000;
-
 		width: fit-content;
-
 		display: flex;
 		position: fixed;
 		bottom: 32px;
@@ -102,9 +112,7 @@
 		.title {
 			display: flex;
 			align-items: flex-end;
-
 			width: 20px;
-
 			background: linear-gradient(black, blue);
 
 			div {
@@ -119,6 +127,7 @@
 				transform: rotate(180deg);
 				text-orientation: sideways;
 				width: 100%;
+
 				/* margin-top: 8px; */
 				padding: 4px;
 			}

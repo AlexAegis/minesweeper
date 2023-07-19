@@ -1,33 +1,43 @@
 {
 	"name": "@alexaegis/desktop-common",
+	"description": "common code",
 	"version": "3.1.1",
+	"archetype": {
+		"platform": "web",
+		"framework": "vite",
+		"language": "ts",
+		"kind": "lib"
+	},
 	"keywords": [
-		"@alexaegis/setup-depcheck",
-		"@alexaegis/setup-eslint",
-		"@alexaegis/setup-prettier",
-		"@alexaegis/setup-remark",
-		"@alexaegis/setup-ts-node",
-		"@alexaegis/setup-vite-lib",
-		"@alexaegis/setup-vitest-node"
+		"managed-by-autotool"
 	],
 	"type": "module",
 	"scripts": {
-		"build": "turbo run build-lib_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"build": "turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"build-lib_": "vite build",
-		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:depcheck_": "depcheck",
-		"lint:es": "turbo run lint:es_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
-		"lint:format": "turbo run lint:format_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"lint:format_": "prettier --check .",
-		"lint:md": "turbo run lint:md_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"lint:md_": "remark --frail --no-stdout --silently-ignore *.md docs/**/*.md",
+		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
+		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
 		"lint:rmd": "remark .",
-		"lint:tsc": "turbo run lint:tsc_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input **/*.css",
+		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input **/*.html ",
+		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input **/*.scss",
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:tsc_": "tsc --noEmit",
-		"format": "prettier --write .",
+		"all": "turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
 		"start": "npm run build -- --watch",
-		"test": "turbo run test_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"test_": "vitest --passWithNoTests --coverage --run",
 		"test:watch": "vitest --passWithNoTests --coverage"
 	},
@@ -35,20 +45,23 @@
 		".": {
 			"types": "./src/index.ts",
 			"import": "./dist/index.js",
-			"require": "./dist/index.cjs"
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.js"
 		},
 		"./readme": "./readme.md"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.1.4"
+		"@alexaegis/common": "^0.4.5"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.2.0",
-		"@alexaegis/ts": "^0.2.0",
-		"@alexaegis/vite": "^0.2.0",
-		"@alexaegis/vitest": "^0.2.0",
-		"@types/node": "^18.15.13",
-		"vite": "^4.3.1",
-		"vitest": "^0.30.1"
+		"@alexaegis/eslint-config-vitest": "^0.5.5",
+		"@alexaegis/stylelint-config": "^0.5.5",
+		"@alexaegis/ts": "^0.5.5",
+		"@alexaegis/vite": "^0.5.5",
+		"@alexaegis/vitest": "^0.5.5",
+		"@types/node": "^20.4.2",
+		"stylelint": "^15.10.2",
+		"vite": "^4.4.4",
+		"vitest": "^0.33.0"
 	}
 }
