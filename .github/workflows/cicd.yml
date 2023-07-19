@@ -1,3 +1,5 @@
+# managed-by-autotool
+
 name: cicd
 
 on:
@@ -7,11 +9,10 @@ on:
     branches: '**'
 
 env:
-  PAGES_DEPLOY_ARTIFACT_DIR: 'apps/desktop/build'
-  PAGES_DEPLOY_ARTIFACT_BUILDING_JOB: 'build'
   TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   TURBO_REMOTE_ONLY: true
+  BUILD_REASON: 'publish' # publint would like to see the .d.ts files
 
 permissions:
   contents: read
@@ -70,27 +71,27 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         with:
           fetch-depth: 1
       - name: setup node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         with:
           node-version: ${{ matrix.node-version }}
       - name: pnpm setup
         uses: pnpm/action-setup@v2
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         with:
           run_install: false
       - name: get pnpm store directory
         id: pnpm-cache
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       - name: cache
         id: cache
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         uses: actions/cache@v3
         with:
           path: |
@@ -100,35 +101,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-
       - name: install
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         run: pnpm install
       - name: typedoc
-        if: env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+        if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         run: pnpm run typedoc
       - name: prepare pages (use index.html as 404.html)
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
         run: |
-          cp ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
+          cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
         uses: actions/configure-pages@v2
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
       - name: upload artifact
         uses: actions/upload-pages-artifact@v1
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
           github.ref_name == github.event.repository.default_branch && 
           github.event_name != 'pull_request'
         with:
-          path: ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}
+          path: ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}
   test:
     name: test
     runs-on: ubuntu-latest
@@ -171,7 +172,6 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage/lcov.info
-          language: typescript
       - name: upload coverage result to codecov
         uses: codecov/codecov-action@v3
         with:
@@ -179,28 +179,28 @@ jobs:
           directory: coverage
       - name: prepare pages (use index.html as 404.html)
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
         run: |
-          cp ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
+          cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
         uses: actions/configure-pages@v2
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
       - name: upload artifact
         uses: actions/upload-pages-artifact@v1
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
           github.ref_name == github.event.repository.default_branch && 
           github.event_name != 'pull_request'
         with:
-          path: ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}
+          path: ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}
   build:
     name: build
     runs-on: ubuntu-latest
@@ -238,39 +238,41 @@ jobs:
         run: pnpm install
       - name: build
         env:
-          BASE_HREF: '/${{ github.event.repository.name }}/'
+          BASE_HREF: '/${{ github.event.repository.name }}'
+          PLATFORM: 'github-pages'
         run: pnpm run build
       - name: publint
         run: pnpm run publint
       - name: prepare pages (use index.html as 404.html)
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
         run: |
-          cp ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
+          cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
         uses: actions/configure-pages@v2
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
       - name: upload artifact
         uses: actions/upload-pages-artifact@v1
         if: |
-          env.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
+          vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
+          vars.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
           github.ref_name == github.event.repository.default_branch && 
           github.event_name != 'pull_request'
         with:
-          path: ${{ env.PAGES_DEPLOY_ARTIFACT_DIR }}
-  deploy:
-    name: deploy
+          path: ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}
+  deploy-github-pages:
+    name: deploy github pages
     if: |
       github.ref_name == github.event.repository.default_branch && 
-      github.event_name != 'pull_request'
+      github.event_name != 'pull_request' &&
+      vars.PAGES_DEPLOY_ARTIFACT_DIR
     runs-on: ubuntu-latest
     needs: [build, test, lint, typedoc]
     environment:
@@ -280,9 +282,6 @@ jobs:
       - name: deploy to github pages
         uses: actions/deploy-pages@v1
         id: deployment
-        if: |
-          env.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
-          env.PAGES_DEPLOY_ARTIFACT_DIR != null
   collect:
     runs-on: ubuntu-latest
     outputs:
@@ -339,7 +338,7 @@ jobs:
       - name: |
           build ${{ matrix.package.package_name }}@${{ matrix.package.package_version }}
         run: |
-          npx turbo run build-lib_ --filter="${{ matrix.package.package_name }}" --concurrency 16 --cache-dir=.cache/turbo
+          npx turbo run build-lib_ --force --filter="${{ matrix.package.package_name }}" --concurrency 16 --cache-dir=.cache/turbo
       - name: |
           publint ${{ matrix.package.package_name }}@${{ matrix.package.package_version }}
         run: |

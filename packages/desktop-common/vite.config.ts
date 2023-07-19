@@ -5,5 +5,9 @@ import { defineConfig } from 'vite';
 
 // default config for node libraries
 export default defineConfig({
-	plugins: [pakk()],
+	plugins: [
+		pakk({
+			dts: process.env['BUILD_REASON'] === 'publish',
+		}),
+	],
 });

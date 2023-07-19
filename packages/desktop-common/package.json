@@ -26,14 +26,14 @@
 		"lint:rmd": "remark .",
 		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input **/*.css",
+		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input '**/*.css'",
 		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input **/*.html ",
+		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
 		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input **/*.scss",
+		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
 		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:tsc_": "tsc --noEmit",
-		"all": "turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
+		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
 		"start": "npm run build -- --watch",
@@ -51,17 +51,17 @@
 		"./readme": "./readme.md"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.4.5"
+		"@alexaegis/common": "^0.5.0"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.5.5",
-		"@alexaegis/stylelint-config": "^0.5.5",
-		"@alexaegis/ts": "^0.5.5",
-		"@alexaegis/vite": "^0.5.5",
-		"@alexaegis/vitest": "^0.5.5",
-		"@types/node": "^20.4.2",
+		"@alexaegis/eslint-config-vitest": "^0.5.12",
+		"@alexaegis/stylelint-config": "^0.5.12",
+		"@alexaegis/ts": "^0.5.12",
+		"@alexaegis/vite": "^0.5.12",
+		"@alexaegis/vitest": "^0.5.12",
+		"@types/node": "^20.4.4",
 		"stylelint": "^15.10.2",
-		"vite": "^4.4.4",
+		"vite": "^4.4.6",
 		"vitest": "^0.33.0"
 	}
 }

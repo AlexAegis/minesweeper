@@ -14,7 +14,8 @@
 			on:drop="{(event) => {
 				shortcutSlice.internals.position$.set(snapShortcutPosition(event.detail));
 			}}"
-			on:dblclick="{() => {
+			on:dblclick="{(event) => {
+				event.target;
 				desktop$.internals.actions.spawnProgram.next(next.program);
 			}}"
 		/>
