@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { filter, tap } from 'rxjs';
 	import { onDestroy } from 'svelte';
-	import { documentPointerup$ } from '../../root.store';
+	import { documentPointerUp$ } from '../../root.store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 
@@ -12,7 +12,7 @@
 
 	let button: HTMLElement;
 
-	const clickListener = documentPointerup$
+	const clickListener = documentPointerUp$
 		.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);

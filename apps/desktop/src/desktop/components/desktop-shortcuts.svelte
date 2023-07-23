@@ -3,7 +3,7 @@
 	import { desktop$, dicedShortcuts, snapShortcutPosition } from '../store';
 	import Shortcut from './shortcut.svelte';
 
-	$: shortcutKeys$ = dicedShortcuts.keys$;
+	const shortcutKeys$ = dicedShortcuts.keys$;
 </script>
 
 {#each $shortcutKeys$ as shortcutKey}

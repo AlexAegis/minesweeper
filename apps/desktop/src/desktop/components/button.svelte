@@ -2,7 +2,7 @@
 	import { isNonNullable } from '@tinyslice/core';
 	import type { Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { documentPointerup$ } from '../../root.store';
+	import { documentPointerUp$ } from '../../root.store';
 	import { ButtonLook } from './button-look.enum';
 
 	const dispatch = createEventDispatcher<{
@@ -33,7 +33,7 @@
 	export let button: HTMLElement | undefined = undefined;
 
 	if (selfPress) {
-		mouseUpListener = documentPointerup$.subscribe(() => {
+		mouseUpListener = documentPointerUp$.subscribe(() => {
 			pressed = false;
 			cancelLongpress();
 		});

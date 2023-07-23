@@ -5,6 +5,7 @@
 
 		<meta name="viewport" content="width=device-width" />
 		<title>Minesweeper</title>
+
 		<meta name="Description" content="Minesweeper" />
 		<link
 			rel="preload"
@@ -13,12 +14,13 @@
 			type="font/woff"
 			crossorigin
 		/>
+		<!--<link rel="stylesheet" href="https://unpkg.com/98.css" />-->
 		<link rel="icon" type="image/png" href="minesweeper.png" />
 		<link rel="stylesheet" type="text/css" href="global.css" />
 
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
+	<body data-sveltekit-preload-data="hover" class="w98">
 		<div style="display: contents" class="h-full overflow-hidden">%sveltekit.body%</div>
 	</body>
 </html>

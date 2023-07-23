@@ -5,7 +5,7 @@
 	import {
 		PACKAGE_NAME_AND_VERSION,
 		debug$,
-		documentPointerup$,
+		documentPointerUp$,
 		packageMetadata,
 	} from '../../root.store';
 	import { desktop$, dicedPrograms, startMenuOpen$ } from '../store';
@@ -21,7 +21,7 @@
 	$: programKeys$ = dicedPrograms.keys$;
 
 	const closeEffect = desktop$.createEffect(
-		documentPointerup$.pipe(
+		documentPointerUp$.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 				return (
@@ -131,6 +131,10 @@
 				/* margin-top: 8px; */
 				padding: 4px;
 			}
+		}
+
+		hr {
+			margin-top: auto;
 		}
 
 		.content {

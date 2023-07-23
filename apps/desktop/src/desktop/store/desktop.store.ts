@@ -3,7 +3,6 @@ import {
 	entitySliceReducerWithPrecompute,
 	getNextKeyStrategy,
 	getObjectKeysAsNumbers,
-	ifLatestFrom,
 	isNonNullable,
 	isNullish,
 	PremadeGetNext,
@@ -19,7 +18,7 @@ import {
 } from '../components/window-state.interface.js';
 
 import { capitalize } from '@alexaegis/desktop-common';
-import { documentPointerdown$, rootSlice$ } from '../../root.store.js';
+import { rootSlice$ } from '../../root.store.js';
 
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';
 
@@ -226,9 +225,9 @@ export const windows$ = desktop$.slice('windows', {
 		return { activeWindowCount$ };
 	},
 });
-
+/*
 desktop$.createEffect(
-	documentPointerdown$.pipe(
+	documentPointerDown$.pipe(
 		filter((event) => {
 			const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 			return !elementsUnderPointer.some((element) => element.classList.contains('window'));
@@ -240,7 +239,7 @@ desktop$.createEffect(
 		map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
 	),
 );
-
+*/
 export const resizeWindow = (
 	windowState: BaseWindowState,
 	resizeData: ResizeData,

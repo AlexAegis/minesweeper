@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@alexaegis/desktop-common';
-	import { filter, Subscription, tap } from 'rxjs';
+	import { Subscription, filter, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-	import { documentPointerdown$ } from '../../root.store';
+
+	import { documentPointerDown$ } from '../../root.store';
 	import { resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import type { TitleBarEvents } from './title-bar-events.interface';
@@ -97,7 +98,7 @@
 
 	if (transient) {
 		sink.add(
-			documentPointerdown$
+			documentPointerDown$
 				.pipe(
 					filter((event) => {
 						const elementsUnderPointer = document.elementsFromPoint(

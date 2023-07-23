@@ -12,9 +12,9 @@
 	export let isOpen = false;
 	export let dimmed = false;
 
-	let errorNotification = new Subject<void>();
+	const errorNotification = new Subject<void>();
 
-	let error$ = errorNotification.pipe(
+	const errorFlash$ = errorNotification.pipe(
 		switchMap(() =>
 			merge(
 				of(true),
@@ -55,13 +55,11 @@
 		}, 0);
 	}
 
-	export function close(event?: MouseEvent) {
-		if ((event?.target as Element).className.includes('ms-modal')) {
-			// Let stuff clear itself
-			setTimeout(() => {
-				isOpen = false;
-			}, 0);
-		}
+	export function close(_event?: CustomEvent<undefined>) {
+		// Let stuff clear itself
+		setTimeout(() => {
+			isOpen = false;
+		}, 0);
 	}
 
 	export function backdropClick(event: MouseEvent) {
@@ -81,19 +79,13 @@
 		role="button"
 		aria-roledescription="closes the modal"
 		tabindex="-1"
-		class:error="{$error$}"
+		class:error="{$errorFlash$}"
 		class:dimmed
 		style="{$$props['style']}"
 		on:keypress
 		on:click|preventDefault="{backdropClick}"
 	>
-		<Window
-			windowState="{effectiveWindowState}"
-			transient="{true}"
-			on:close="{() => {
-				close();
-			}}"
-		>
+		<Window windowState="{effectiveWindowState}" transient="{true}" on:close="{close}">
 			<slot />
 		</Window>
 	</div>

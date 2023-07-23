@@ -36,7 +36,6 @@
 		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
-		"start": "npm run build -- --watch",
 		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"test_": "vitest --passWithNoTests --coverage --run",
 		"test:watch": "vitest --passWithNoTests --coverage"

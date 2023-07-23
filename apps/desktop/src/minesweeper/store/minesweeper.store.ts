@@ -16,7 +16,6 @@ import {
 	combineLatest,
 	distinctUntilChanged,
 	filter,
-	fromEvent,
 	map,
 	merge,
 	of,
@@ -28,7 +27,14 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
-import { MS_TAG, debug$, scope } from '../../root.store.js';
+import {
+	MS_TAG,
+	debug$,
+	documentMouseLeave$,
+	documentPointerDown$,
+	documentPointerUp$,
+	scope,
+} from '../../root.store.js';
 import {
 	GameState,
 	isGameLost,
@@ -591,10 +597,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 
 	/**
 	 * Unpress all buttons if the mouse releases
-	 * TODO: reevaluate
 	 */
 	game$.createEffect(
-		merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave')).pipe(
+		merge(documentPointerUp$, documentMouseLeave$).pipe(
 			map(() => minesweeperActions.clickActions.globalCancel.makePacket()),
 			map(() => undefined),
 		),
@@ -653,7 +658,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 * This will make the timer always jump ahead a second if you refresh as
 	 * without a mousedown event the initial time to tick is 0.
 	 */
-	const timeElapseTickrate$ = fromEvent(document, 'mousedown').pipe(
+	const timeElapseTickrate$ = documentPointerDown$.pipe(
 		take(1),
 		map(() => TIME_TICKRATE_MS),
 		startWith(0),
