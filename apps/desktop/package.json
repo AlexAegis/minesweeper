@@ -38,6 +38,7 @@
 		"dev": "concurrently npm:watch-deps npm:start",
 		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
 		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
+		"kit:sync": "svelte-kit sync",
 		"postinstall": "svelte-kit sync # pakk:not-distributed",
 		"preview": "vite preview",
 		"start": "TARGET_ENV='local' vite",
@@ -60,15 +61,15 @@
 		"svelte-rxjs-observer": "^0.5.0"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-svelte": "^0.5.12",
-		"@alexaegis/eslint-config-vitest": "^0.5.12",
-		"@alexaegis/prettier-config": "^0.5.12",
+		"@alexaegis/eslint-config-svelte": "^0.6.0",
+		"@alexaegis/eslint-config-vitest": "^0.6.0",
+		"@alexaegis/prettier-config": "^0.6.0",
 		"@alexaegis/prettier-config-svelte": "^0.5.4",
-		"@alexaegis/stylelint-config": "^0.5.12",
-		"@alexaegis/svelte-config": "^0.5.12",
-		"@alexaegis/ts": "^0.5.12",
-		"@alexaegis/vite": "^0.5.12",
-		"@alexaegis/vitest": "^0.5.12",
+		"@alexaegis/stylelint-config": "^0.6.0",
+		"@alexaegis/svelte-config": "^0.6.0",
+		"@alexaegis/ts": "^0.6.0",
+		"@alexaegis/vite": "^0.6.0",
+		"@alexaegis/vitest": "^0.6.0",
 		"@interactjs/types": "^1.10.17",
 		"@sveltejs/kit": "^1.22.3",
 		"@tinyslice/devtools-plugin": "^0.8.0",
@@ -80,7 +81,7 @@
 		"svelte": "^4.1.1",
 		"svelte-check": "^3.4.6",
 		"svelte-preprocess": "^5.0.4",
-		"vite": "^4.4.6",
+		"vite": "^4.4.7",
 		"vitest": "^0.33.0"
 	}
 }

@@ -3,6 +3,8 @@
 	"extends": "@alexaegis/ts/base",
 	"compilerOptions": {
 		"rootDir": ".",
+		"allowJs": false,
+		"checkJs": false,
 		"outDir": ".cache/tsc"
 	},
 	"include": ["*", ".*", "*.json", "**/*.json"],

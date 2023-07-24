@@ -156,3 +156,8 @@ vitest.config.ts.*
 dist*
 tmp*
 .parcel-cache
+
+## Platforms
+
+# Vercel
+.vercel

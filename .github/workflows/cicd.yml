@@ -172,6 +172,7 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage/lcov.info
+          language: ${{ vars.CODACY_REPORT_LANGUAGE }}
       - name: upload coverage result to codecov
         uses: codecov/codecov-action@v3
         with:
