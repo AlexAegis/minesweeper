@@ -122,7 +122,9 @@
 			"outputs": [".svelte-kit/**", "build/**", "dist/**"]
 		},
 		"dev": {
-			"cache": false
+			"cache": false,
+			"passThroughEnv": ["BUILD_REASON"],
+			"persistent": true
 		},
 		"format_": {
 			"cache": false,
@@ -222,7 +224,8 @@
 		},
 		"start": {
 			"cache": false,
-			"passThroughEnv": ["BUILD_REASON"]
+			"passThroughEnv": ["BUILD_REASON"],
+			"persistent": true
 		},
 		"test_": {
 			"dependsOn": ["^build-lib_"],

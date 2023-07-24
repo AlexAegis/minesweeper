@@ -53,11 +53,11 @@
 		"@alexaegis/common": "^0.5.0"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.6.0",
-		"@alexaegis/stylelint-config": "^0.6.0",
-		"@alexaegis/ts": "^0.6.0",
-		"@alexaegis/vite": "^0.6.0",
-		"@alexaegis/vitest": "^0.6.0",
+		"@alexaegis/eslint-config-vitest": "^0.6.1",
+		"@alexaegis/stylelint-config": "^0.6.1",
+		"@alexaegis/ts": "^0.6.1",
+		"@alexaegis/vite": "^0.6.1",
+		"@alexaegis/vitest": "^0.6.1",
 		"@types/node": "^20.4.4",
 		"stylelint": "^15.10.2",
 		"vite": "^4.4.7",
