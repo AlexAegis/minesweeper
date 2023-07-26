@@ -1,0 +1,37 @@
+# managed-by-autotool
+# Add files here to ignore them from prettier formatting
+
+# node
+node_modules
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# build artifacts
+dist
+public/build
+build
+.svelte-kit
+typedoc
+
+# test artifacts
+coverage
+.vscode/chrome
+.nyc_output
+vite.config.ts.*
+vitest.config.ts.*
+
+# turbo
+.turbo
+
+# rust
+target
+*.lock
+
+# python
+.pytest_cache
+
+# others
+.cache
+.benchmark
+CHANGELOG.md

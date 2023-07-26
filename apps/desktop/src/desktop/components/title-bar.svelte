@@ -98,11 +98,27 @@
 			text-transform: capitalize;
 		}
 
-		&:not(.active) {
-			background: linear-gradient(90deg, #808080, #c0c0c0);
+		&.active {
+			background: linear-gradient(
+				90deg,
+				var(--win-window-title-bar-active-start),
+				var(--win-window-title-bar-active-end)
+			);
 
 			.title-bar-text {
-				color: #c8c8c8;
+				color: var(--win-window-title-bar-active-text);
+			}
+		}
+
+		&:not(.active) {
+			background: linear-gradient(
+				90deg,
+				var(--win-window-title-bar-inactive-start),
+				var(--win-window-title-bar-inactive-end)
+			);
+
+			.title-bar-text {
+				color: var(--win-window-title-bar-inactive-text);
 			}
 		}
 

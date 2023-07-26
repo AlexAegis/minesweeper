@@ -1,0 +1,12 @@
+# managed-by-autotool
+
+package-lock.json
+node_modules
+vite.config.ts.*
+vitest.config.ts.*
+shims
+typedoc
+
+# sveltekit
+.svelte-kit
+build

@@ -17,7 +17,7 @@ import {
 	type WindowState,
 } from '../components/window-state.interface.js';
 
-import { capitalize } from '@alexaegis/desktop-common';
+import { capitalize } from '@alexaegis/common';
 import { rootSlice$ } from '../../root.store.js';
 
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';

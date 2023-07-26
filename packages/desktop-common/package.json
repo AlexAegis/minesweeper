@@ -50,7 +50,7 @@
 		"./readme": "./readme.md"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.5.0"
+		"@alexaegis/common": "^0.5.1"
 	},
 	"devDependencies": {
 		"@alexaegis/eslint-config-vitest": "^0.6.1",
@@ -58,7 +58,7 @@
 		"@alexaegis/ts": "^0.6.1",
 		"@alexaegis/vite": "^0.6.1",
 		"@alexaegis/vitest": "^0.6.1",
-		"@types/node": "^20.4.4",
+		"@types/node": "^20.4.5",
 		"stylelint": "^15.10.2",
 		"vite": "^4.4.7",
 		"vitest": "^0.33.0"

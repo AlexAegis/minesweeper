@@ -1,4 +1,4 @@
-import { random } from '../functions/index.js';
+import { random } from '@alexaegis/common';
 
 export type CoordinateKey = `${number},${number}`;
 

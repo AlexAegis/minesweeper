@@ -1,15 +1,10 @@
-import {
-	Coordinate,
-	shuffle,
-	type CoordinateKey,
-	type CoordinateLike,
-} from '@alexaegis/desktop-common';
+import { isNotNullish, shuffleArray } from '@alexaegis/common';
+import { Coordinate, type CoordinateKey, type CoordinateLike } from '@alexaegis/desktop-common';
 import {
 	Slice,
 	entitySliceReducer,
 	entitySliceReducerWithPrecompute,
 	ifLatestFrom,
-	isNonNullable,
 } from '@tinyslice/core';
 import {
 	Observable,
@@ -71,7 +66,7 @@ const selectNRandomTiles = (
 	const tilesCopy = tiles.filter(
 		(tile) => tile.x !== safeCoordinate.x || tile.y !== safeCoordinate.y,
 	);
-	shuffle(tilesCopy);
+	shuffleArray(tilesCopy);
 	return tilesCopy.splice(0, amount).map((tile) => ({ x: tile.x, y: tile.y }) as CoordinateLike);
 };
 
@@ -391,7 +386,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	): TileState[] =>
 		getNeighbouringCoordinateKeys(tiles, coordinate)
 			.map((tileKey) => tiles[tileKey])
-			.filter(isNonNullable);
+			.filter(isNotNullish);
 
 	/**
 	 * Collects all tiles that either have no neighbouring mines or a neighbour of such tile

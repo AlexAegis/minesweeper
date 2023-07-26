@@ -1,6 +1,5 @@
 <script lang="ts">
-	import '98.css/dist/98.css';
-	import '../app.scss';
+	import '@alexaegis/winds/winds';
 	import Desktop from '../desktop/desktop.svelte';
 </script>
 

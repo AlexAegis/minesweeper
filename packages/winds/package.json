@@ -1,0 +1,90 @@
+{
+	"name": "@alexaegis/winds",
+	"description": "A Windows 2000 style Design System for Svelte based on 98.css",
+	"version": "3.1.1",
+	"archetype": {
+		"platform": "web",
+		"framework": "svelte",
+		"language": "ts",
+		"kind": "lib"
+	},
+	"keywords": [
+		"98.css",
+		"css",
+		"managed-by-autotool",
+		"svelte"
+	],
+	"type": "module",
+	"scripts": {
+		"build": "turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"build-lib_": "pakk --svelte --target-package-json-kind development && svelte-package --input src && pakk --svelte --target-package-json-kind distribution",
+		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:depcheck_": "depcheck",
+		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
+		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
+		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
+		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input '**/*.css'",
+		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
+		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
+		"lint:svelte": "turbo run lint:svelte_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"lint:tsc_": "tsc --noEmit",
+		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
+		"preview": "vite preview",
+		"start": "TARGET_ENV='local' vite",
+		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/winds",
+		"test_": "vitest --passWithNoTests --coverage --run",
+		"test:watch": "vitest --passWithNoTests --coverage"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.js",
+			"svelte": "./src/index.js",
+			"default": "./src/index.js"
+		},
+		"./fs-tahoma-8px": "./static/fonts/fs-tahoma-8px/fs-tahoma-8px.woff2",
+		"./license": "./static/fonts/fs-tahoma-8px/license.txt",
+		"./readme": "./static/fonts/fs-tahoma-8px/readme.txt",
+		"./scss": {
+			"types": "./src/scss.ts",
+			"import": "./src/scss.js",
+			"svelte": "./src/scss.js",
+			"default": "./src/scss.js"
+		},
+		"./winds": "./static/winds.scss"
+	},
+	"dependencies": {
+		"98.css": "^0.1.20",
+		"normalize.css": "^8.0.1"
+	},
+	"devDependencies": {
+		"@alexaegis/eslint-config-svelte": "^0.6.1",
+		"@alexaegis/eslint-config-vitest": "^0.6.1",
+		"@alexaegis/prettier-config": "^0.6.1",
+		"@alexaegis/stylelint-config": "^0.6.1",
+		"@alexaegis/svelte-config": "^0.6.1",
+		"@alexaegis/ts": "^0.6.1",
+		"@alexaegis/vitest": "^0.6.1",
+		"@pakk/cli": "^0.5.0",
+		"@sveltejs/package": "^2.2.0",
+		"@types/node": "^20.4.5",
+		"autoprefixer": "^10.4.14",
+		"postcss": "^8.4.27",
+		"stylelint": "^15.10.2",
+		"svelte": "^4.1.1",
+		"svelte-check": "^3.4.6",
+		"svelte-preprocess": "^5.0.4",
+		"vitest": "^0.33.0"
+	}
+}
