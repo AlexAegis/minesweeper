@@ -42,7 +42,7 @@
 		--win-3d-objects-color-h: 40;
 		--win-3d-objects-color-s: 12%;
 		--win-3d-objects-color-l: 81%;
-		--win-3d-objects-darkest-color: #404040; // This is always fix in the standard theme
+		--win-shadow-color: #404040; // #404040 = rgb(64 64 64) This is always fix in the standard theme
 		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
 		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black
 		--win-active-title-bar-color: #0a246a;
@@ -54,6 +54,11 @@
 		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
 		--win-font-color: #000;
 		--win-start-menu-highlight-color: #0a246a;
+
+		button {
+			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
+				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
+		}
 	}
 
 	&-scheme-classic {
@@ -65,7 +70,7 @@
 		--win-3d-objects-color-h: 160;
 		--win-3d-objects-color-s: 0%;
 		--win-3d-objects-color-l: 75.25%; // Evaluates to rgb(192 192 192) #C0C0C0
-		--win-3d-objects-darkest-color: #000; // This is always fix in the classic theme
+		--win-shadow-color: #000; // This is always fix in the classic theme
 		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
 		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black
 		--win-active-title-bar-color: #000080;
@@ -77,6 +82,20 @@
 		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
 		--win-font-color: #000;
 		--win-start-menu-highlight-color: #00007f;
+	}
+
+	button {
+		cursor: pointer;
+
+		&:active {
+			border-top: 1px solid var(--win-shadow-color);
+			border-left: 1px solid var(--win-shadow-color);
+		}
+
+		&:not(:active) {
+			border-bottom: 1px solid var(--win-shadow-color);
+			border-right: 1px solid var(--win-shadow-color);
+		}
 	}
 
 	.window {
@@ -98,8 +117,8 @@
 
 		&.inset {
 			// 	&:not(.shallow) {
-			// 		border-top: 1px solid var(--win-3d-objects-darkest-color);
-			// 		border-left: 1px solid var(--win-3d-objects-darkest-color);
+			// 		border-top: 1px solid var(--win-shadow-color);
+			// 		border-left: 1px solid var(--win-shadow-color);
 			// 	}
 
 			&:not(.deep) {
@@ -122,8 +141,8 @@
 
 			//	&:not(.shallow) {
 			//		// Borders are used for the deepest shadows for buttons, so when a click
-			//		border-bottom: 1px solid var(--win-3d-objects-darkest-color);
-			//		border-right: 1px solid var(--win-3d-objects-darkest-color);
+			//		border-bottom: 1px solid var(--win-shadow-color);
+			//		border-right: 1px solid var(--win-shadow-color);
 			//	}
 
 			&:not(.deep) {
@@ -133,7 +152,7 @@
 
 				// shadow when the deepest shadow is not done using a border
 				// box-shadow:
-				// 	inset -1px -1px var(--win-3d-objects-darkest-color),
+				// 	inset -1px -1px var(--win-shadow-color),
 				// 	inset 1px 1px var(--win-3d-objects-color-lighter-1),
 				// 	inset -2px -2px var(--win-3d-objects-color-darker-1);
 			}
@@ -154,18 +173,6 @@
 			box-sizing: border-box;
 		}
 	}
-
-	button {
-		&:active {
-			border-top: 1px solid var(--win-3d-objects-darkest-color);
-			border-left: 1px solid var(--win-3d-objects-darkest-color);
-		}
-
-		&:not(:active) {
-			border-bottom: 1px solid var(--win-3d-objects-darkest-color);
-			border-right: 1px solid var(--win-3d-objects-darkest-color);
-		}
-	}
 }
 
 body {
@@ -176,11 +183,6 @@ body {
 	margin: 0;
 	-webkit-touch-callout: none !important;
 	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
-}
-
-button {
-	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important; // Patch 98.css
-	cursor: pointer;
 }
 
 hr {

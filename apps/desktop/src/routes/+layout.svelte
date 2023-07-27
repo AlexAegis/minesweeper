@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { WindsGlobal } from '@alexaegis/winds';
+	import { W2kGlobal } from '@alexaegis/w2k';
 	import Desktop from '../desktop/desktop.svelte';
 	import { activeSchemeKind$ } from '../desktop/store';
 </script>
@@ -13,4 +13,4 @@
 <Desktop>
 	<slot />
 </Desktop>
-<WindsGlobal />
+<W2kGlobal />

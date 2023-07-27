@@ -1,6 +1,6 @@
 <script>
 	import font from '../../static/fonts/fs-tahoma-8px/fs-tahoma-8px.woff2';
-	import '../../static/winds.scss';
+	import '../../static/w2k.scss';
 </script>
 
 <svelte:head>

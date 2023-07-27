@@ -51,7 +51,7 @@
 	"dependencies": {
 		"@alexaegis/common": "^0.5.1",
 		"@alexaegis/desktop-common": "^3.1.1",
-		"@alexaegis/winds": "workspace:^",
+		"@alexaegis/w2k": "workspace:^",
 		"@testing-library/svelte": "^4.0.3",
 		"@tinyslice/core": "^0.8.0",
 		"@tinyslice/hydration-plugin": "^0.8.0",
