@@ -15,23 +15,37 @@
 	);
 
 	// These calculates match the actual win behavior
-	--win-3d-objects-color-l-darker-1: calc(var(--win-3d-objects-color-l) * 2 / 3);
+	--win-3d-objects-color-l-darker-1: calc(var(--win-3d-objects-shade-source-l) * (0.66));
 	--win-3d-objects-color-l-darker-2: calc(var(--win-3d-objects-color-l-darker-1) * 2 / 3);
 	--win-3d-objects-color-l-darker-3: calc(var(--win-3d-objects-color-l-darker-2) * 2 / 3);
-	--win-3d-objects-color-l-ligher-1: calc(var(--win-3d-objects-color-l) / 2 * 3);
+	--win-3d-objects-color-l-ligher-1: calc(var(--win-3d-objects-shade-source-l) / 2 * 3);
 	--win-3d-objects-color-l-ligher-2: calc(var(--win-3d-objects-color-l-ligher-1) / 2 * 3);
 	--win-3d-objects-color-darker-1: hsl(
-		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-darker-1)
 	);
 	--win-3d-objects-color-lighter-1: hsl(
-		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-ligher-1)
 	);
 	--win-3d-objects-color-lighter-2: hsl(
-		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-ligher-2)
 	);
+
+	&.custom-scheme {
+		// Only custom schemes shde with their actual object color
+		--win-3d-objects-shade-source-h: var(--win-3d-objects-color-h);
+		--win-3d-objects-shade-source-s: var(--win-3d-objects-color-s);
+		--win-3d-objects-shade-source-l: var(--win-3d-objects-color-l);
+	}
+
+	&:not(.custom-scheme) {
+		// rgb(192 192 192) #C0C0C0
+		--win-3d-objects-shade-source-h: 160;
+		--win-3d-objects-shade-source-s: 0%;
+		--win-3d-objects-shade-source-l: 75.33%;
+	}
 
 	&-scheme-standard {
 		// All values and names were picked from Windows 2000 Standard Scheme
@@ -69,7 +83,7 @@
 		// --win-3d-objects-color: rgb(192 192 192); // #C0C0C0 = rgb(192 192 192)
 		--win-3d-objects-color-h: 160;
 		--win-3d-objects-color-s: 0%;
-		--win-3d-objects-color-l: 75.25%; // Evaluates to rgb(192 192 192) #C0C0C0
+		--win-3d-objects-color-l: 75.33%; // Evaluates to rgb(192 192 192) #C0C0C0
 		--win-shadow-color: #000; // This is always fix in the classic theme
 		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
 		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black

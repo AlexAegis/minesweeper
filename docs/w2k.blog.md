@@ -79,6 +79,51 @@ Windowd 98, this shadow color is pure black!
 
 ![w2k classic scheme start button](./reference/w2k-classic-scheme-start-button.png)
 
+#### Not always
+
+When using the standard theme, the `3D Object` color is `rgb(212, 208, 201)`,
+but the darker edge color is `rgb(123, 123, 123)`, and not `rgb(151, 142, 123)`!
+
+![w2k standard scheme 3d color](./reference/w2k-standard-scheme-3d-color.png)
+
+Except if you make a custom scheme out of it! If you change the color a little,
+hit Apply, then change it back, 3D edges will also be colored!
+
+![w2k standard scheme 3d color custom](./reference/w2k-standard-scheme-3d-color-custom.png)
+
+Hard to see the difference? Lets zoom in:
+
+![w2k standard scheme 3d color zoomed](./reference/w2k-standard-scheme-3d-color-zoomed.png)
+![w2k standard scheme 3d color zoomed](./reference/w2k-standard-scheme-3d-color-custom-zoomed.png)
+
+> Left: Standard, unmodified. Right: Custom replica of Standard. This is still
+> all within the Windows NT 2000 VM.
+
+To accomodate for this, I added an intermediate variable for the shade
+calculations called `shade-source`, and a `.custom-scheme` class selector. When
+present, the `shade-source` is the actual `3d-objects-color`, but if not, it's
+the default `3D Objects` color of the classic theme/Windows 98.
+
+> For easier lightness adjustments for the different shades of this color, the
+> variables are defined as components of a `hsl` color.
+
+```scss
+.w2k {
+  &.custom-scheme {
+    --win-3d-objects-shade-source-h: var(--win-3d-objects-color-h);
+    --win-3d-objects-shade-source-s: var(--win-3d-objects-color-s);
+    --win-3d-objects-shade-source-l: var(--win-3d-objects-color-l);
+  }
+
+  &:not(.custom-scheme) {
+    // rgb(192 192 192) #C0C0C0
+    --win-3d-objects-shade-source-h: 160;
+    --win-3d-objects-shade-source-s: 0%;
+    --win-3d-objects-shade-source-l: 75.33%;
+  }
+}
+```
+
 ### Fonts
 
 Windows 98 and Windows 2000's classic scheme both uses `Microsoft Sans Serif`
