@@ -96,26 +96,26 @@
 		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
 		--win-font-color: #000;
 		--win-start-menu-highlight-color: #00007f;
-	}
 
-	button {
-		cursor: pointer;
-
-		&:active {
-			border-top: 1px solid var(--win-shadow-color);
-			border-left: 1px solid var(--win-shadow-color);
-		}
-
-		&:not(:active) {
-			border-bottom: 1px solid var(--win-shadow-color);
-			border-right: 1px solid var(--win-shadow-color);
+		button {
+			// TODO: Remove tahoma-8px from here, but fix the sizes of MS Sans Serif
+			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
+				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
 		}
 	}
 
+	// Elements that should have 2px edges and shadows
 	.window {
 		background-color: var(--win-3d-objects-color);
+		box-shadow:
+			inset -1px -1px var(--win-shadow-color),
+			inset 1px 1px var(--win-3d-objects-color),
+			inset -2px -2px var(--win-3d-objects-color-darker-1),
+			inset 2px 2px var(--win-3d-objects-color-lighter-2);
 	}
 
+	// Elements that should only have 1px edges and shadows
+	button,
 	.panel {
 		box-sizing: border-box;
 		border: #eee;
@@ -128,55 +128,33 @@
 		border-bottom: 2px;
 		outline-width: 0;
 		background-color: var(--win-3d-objects-color);
+		padding: 1px;
 
 		&.inset {
-			// 	&:not(.shallow) {
-			// 		border-top: 1px solid var(--win-shadow-color);
-			// 		border-left: 1px solid var(--win-shadow-color);
-			// 	}
-
-			&:not(.deep) {
-				box-shadow:
-					inset -1px -1px var(--win-3d-objects-color-lighter-1),
-					inset 1px 1px var(--win-3d-objects-color-darker-1);
-			}
-
-			&.deep {
-				box-shadow:
-					inset 2px 2px var(--win-3d-objects-color-darker-1),
-					inset -1px -1px var(--win-3d-objects-color-lighter-1),
-					inset 1px 1px var(--win-3d-objects-color-darker-1),
-					inset -2px -2px var(--win-3d-objects-color-lighter-1);
-			}
+			box-shadow:
+				inset -1px -1px var(--win-3d-objects-color-lighter-1),
+				inset 1px 1px var(--win-3d-objects-color-darker-1);
 		}
 
 		&.outset {
-			padding: 1px;
+			box-shadow:
+				inset 1px 1px var(--win-3d-objects-color-lighter-1),
+				inset -1px -1px var(--win-3d-objects-color-darker-1);
+		}
+	}
 
-			//	&:not(.shallow) {
-			//		// Borders are used for the deepest shadows for buttons, so when a click
-			//		border-bottom: 1px solid var(--win-shadow-color);
-			//		border-right: 1px solid var(--win-shadow-color);
-			//	}
+	button {
+		cursor: pointer;
 
-			&:not(.deep) {
-				box-shadow:
-					inset 1px 1px var(--win-3d-objects-color-lighter-1),
-					inset -1px -1px var(--win-3d-objects-color-darker-1);
-
-				// shadow when the deepest shadow is not done using a border
-				// box-shadow:
-				// 	inset -1px -1px var(--win-shadow-color),
-				// 	inset 1px 1px var(--win-3d-objects-color-lighter-1),
-				// 	inset -2px -2px var(--win-3d-objects-color-darker-1);
+		&:not(.flat) {
+			&:active {
+				border-top: 1px solid var(--win-shadow-color);
+				border-left: 1px solid var(--win-shadow-color);
 			}
 
-			&.deep {
-				box-shadow:
-					inset 2px 2px var(--win-3d-objects-color-lighter-1),
-					inset -1px -1px var(--win-3d-objects-color-darker-1),
-					inset 1px 1px var(--win-3d-objects-color-lighter-1),
-					inset -2px -2px var(--win-3d-objects-color-darker-1);
+			&:not(:active) {
+				border-bottom: 1px solid var(--win-shadow-color);
+				border-right: 1px solid var(--win-shadow-color);
 			}
 		}
 	}

@@ -56,6 +56,7 @@
 		{#each $programKeys$ as programKey}
 			<Observer observable="{dicedPrograms.get(programKey)}" let:next>
 				<Button
+					class="flat"
 					look="{ButtonLook.START_MENU_ITEM}"
 					on:fire="{() => {
 						desktop$.internals.actions.spawnProgram.next(programKey);
@@ -74,6 +75,7 @@
 
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
+			class="flat"
 			on:fire="{() => {
 				debug$.set(!debug$.value);
 			}}"
@@ -89,6 +91,7 @@
 
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
+			class="flat"
 			on:fire="{() => {
 				toggleActiveSchemeKindAction.next(undefined);
 			}}"
@@ -105,6 +108,7 @@
 
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
+			class="flat"
 			on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
 		>
 			<Image height="{28}" width="{28}" src="{githubIcon}" />
@@ -113,6 +117,7 @@
 
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
+			class="flat"
 			on:fire="{() => {
 				confirm('Sure?') && window.close();
 			}}"
