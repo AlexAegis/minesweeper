@@ -74,11 +74,11 @@
 	.dropdown {
 		display: flex;
 		position: absolute;
-		top: 43px;
+		top: 41px;
 		min-width: 150px;
 		flex-direction: column;
-		margin-left: -12px;
+		margin-left: -11px;
 		z-index: 100;
-		padding: 2px;
+		padding: 3px;
 	}
 </style>

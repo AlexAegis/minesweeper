@@ -73,7 +73,7 @@
 		}
 
 		:global(.start) {
-		//	height: 22px;
+			//	height: 22px;
 			min-height: 22px;
 			min-width: 0;
 			padding: 4px;

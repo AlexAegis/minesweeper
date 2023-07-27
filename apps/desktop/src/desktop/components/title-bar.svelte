@@ -93,14 +93,17 @@
 		// Part of scheme
 		font-weight: bold;
 
-
-
 		// 98.css
 		.title-bar-text {
 			display: flex;
 			gap: 2px;
-			align-items: center;
+			height: 14px;
 			text-transform: capitalize;
+			align-items: flex-end;
+
+			:global(img) {
+				align-self: center;
+			}
 		}
 
 		&.active {

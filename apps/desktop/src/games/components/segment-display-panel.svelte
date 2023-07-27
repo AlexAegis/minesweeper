@@ -27,7 +27,7 @@
 	}
 </script>
 
-<div class="segment-display">
+<div class="segment-display panel inset">
 	{#each numbers as number}
 		<SegmentDisplay value="{number}" />
 	{/each}
@@ -37,6 +37,5 @@
 	.segment-display {
 		display: flex;
 		background-color: black;
-		border-style: inset;
 	}
 </style>

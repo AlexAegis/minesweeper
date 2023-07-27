@@ -15,5 +15,6 @@
 		z-index: 2000;
 		width: 200px;
 		min-height: 16px;
+		padding: 1px;
 	}
 </style>

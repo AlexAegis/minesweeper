@@ -138,7 +138,7 @@
 	bind:this="{button}"
 	{type}
 	aria-label="{$$props['aria-label']}"
-	class="panel {$$props['class'] ?? ''}"
+	class="{$$props['class'] ?? ''}"
 	class:outset="{!pressed}"
 	class:inset="{pressed}"
 	style="{$$props['style'] ?? ''}"
@@ -147,13 +147,15 @@
 	class:active
 	class:selfPress
 	class:pressed
+	class:flat="{look === ButtonLook.CONTEXT_MENU_ITEM ||
+		look === ButtonLook.START_MENU_ITEM ||
+		look === ButtonLook.TITLE_BAR_MENU_ITEM}"
 	class:toggleable="{toggled !== undefined}"
 	class:toggleable-context="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-none="{look === undefined}"
-	class:type-any="{look !== undefined}"
 	class:type-thick="{look === ButtonLook.THICK}"
 	class:type-thick-but-pressed-thin="{look === ButtonLook.THICK_PRESSED_THIN}"
-	class:type-title-bar-menu-bar-item="{look === ButtonLook.TITLE_BAR_MENU_ITEM}"
+	class:type-title-bar-menu-item="{look === ButtonLook.TITLE_BAR_MENU_ITEM}"
 	class:type-context-menu-item="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-start-menu-item="{look === ButtonLook.START_MENU_ITEM}"
 	on:click
@@ -180,20 +182,9 @@
 
 <style lang="scss">
 	button {
-		display: flex;
-		align-items: center;
-		flex-flow: row nowrap;
-		gap: 4px;
-		font-size: 18px;
-		line-height: 14px;
-
 		//	touch-action: manipulation;
-		user-select: none !important;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		image-rendering: pixelated;
+
 		background-repeat: no-repeat;
-		color: var(--win-font-color);
 		background-position-x: var(--background-image-positon, 1px);
 		background-position-y: var(--background-image-positon, 1px);
 
@@ -202,15 +193,11 @@
 			background-position-y: calc(var(--background-image-positon, 1px) + 1px);
 		}
 
-		&.toggleable-context {
-			display: flex;
-			gap: 8px;
-			align-items: center;
-		}
-
-		&.disabled {
-			cursor: default;
-		}
+		// &.toggleable-context {
+		// 	display: flex;
+		// 	gap: 8px;
+		// 	align-items: center;
+		// }
 
 		.icon {
 			width: 7px;
@@ -223,35 +210,10 @@
 			}
 		}
 
-		&.hotkey-letter {
-			&::first-letter {
-				text-decoration: underline !important;
-			}
-		}
-
-		&::first-letter {
-			text-transform: uppercase;
-		}
-
-		::first-letter {
-			text-transform: uppercase;
-		}
-
 		&.type-context-menu-item {
 			width: 100%;
 			height: 20px;
 			text-align: left;
-		}
-
-		&.type-title-bar-menu-bar-item {
-			padding: 2px 12px 4px;
-		}
-
-		&.active,
-		&.type-title-bar-menu-bar-item:hover,
-		&.type-context-menu-item:hover {
-			background-color: var(--win-start-menu-highlight-color);
-			color: white;
 		}
 
 		&.type-start-menu-item {
@@ -260,8 +222,8 @@
 			width: 160px;
 
 			&:hover {
-				background-color: var(--win-start-menu-highlight-color);
-				color: white;
+				//	background-color: var(--win-start-menu-highlight-color);
+				// 	color: white;
 			}
 		}
 	}
@@ -295,12 +257,5 @@
 		border-width: 1px;
 		background-position-x: 2px;
 		background-position-y: 2px;
-	}
-
-	.type-any {
-		box-shadow: none !important;
-		min-width: 1px !important;
-		min-height: 1px !important;
-		outline: none;
 	}
 </style>
