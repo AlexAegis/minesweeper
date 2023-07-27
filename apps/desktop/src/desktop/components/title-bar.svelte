@@ -90,6 +90,11 @@
 		touch-action: none;
 		cursor: default;
 
+		// Part of scheme
+		font-weight: bold;
+
+
+
 		// 98.css
 		.title-bar-text {
 			display: flex;
@@ -101,24 +106,24 @@
 		&.active {
 			background: linear-gradient(
 				90deg,
-				var(--win-window-title-bar-active-start),
-				var(--win-window-title-bar-active-end)
+				var(--win-active-title-bar-color),
+				var(--win-active-title-bar-color-2)
 			);
 
 			.title-bar-text {
-				color: var(--win-window-title-bar-active-text);
+				color: var(--win-active-title-bar-font-color);
 			}
 		}
 
 		&:not(.active) {
 			background: linear-gradient(
 				90deg,
-				var(--win-window-title-bar-inactive-start),
-				var(--win-window-title-bar-inactive-end)
+				var(--win-inactive-title-bar-color),
+				var(--win-inactive-title-bar-color-2)
 			);
 
 			.title-bar-text {
-				color: var(--win-window-title-bar-inactive-text);
+				color: var(--win-inactive-title-bar-font-color);
 			}
 		}
 

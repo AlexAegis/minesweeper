@@ -3,11 +3,11 @@ import {
 	entitySliceReducerWithPrecompute,
 	getNextKeyStrategy,
 	getObjectKeysAsNumbers,
-	isNonNullable,
+	ifLatestFrom,
 	isNullish,
 	PremadeGetNext,
 } from '@tinyslice/core';
-import { filter, map, take } from 'rxjs';
+import { filter, map, take, tap } from 'rxjs';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface.js';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store.js';
 import type { ResizeData } from '../components/resizable.function.js';
@@ -17,9 +17,10 @@ import {
 	type WindowState,
 } from '../components/window-state.interface.js';
 
-import { capitalize } from '@alexaegis/common';
-import { rootSlice$ } from '../../root.store.js';
+import { capitalize, isNotNullish } from '@alexaegis/common';
+import { documentPointerDown$, rootSlice$ } from '../../root.store.js';
 
+import { browser } from '$app/environment';
 import minesweeperIcon from '../../assets/desktop/minesweeper.png';
 
 export type ProcessId = string;
@@ -43,6 +44,10 @@ export interface ShortcutState {
 	position: CoordinateLike;
 }
 
+export interface DesktopScheme {
+	kind: 'w2k' | 'w98'; // They define some some aspects like darkest shadow color, and start icon
+}
+
 export interface DesktopState {
 	windows: Record<ProcessId, WindowState>;
 	programs: Record<ProgramName, ProgramState>;
@@ -51,6 +56,7 @@ export interface DesktopState {
 	lastSpawned: ProcessId | undefined;
 	nextProcessId: ProcessId;
 	startMenuOpen: boolean;
+	activeScheme: DesktopScheme;
 }
 
 const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
@@ -87,6 +93,9 @@ export const desktop$ = rootSlice$.addSlice(
 		lastSpawned: undefined,
 		startMenuOpen: false,
 		nextProcessId: '0',
+		activeScheme: {
+			kind: 'w2k',
+		},
 	} as DesktopState,
 	{
 		defineInternals: (slice) => {
@@ -120,6 +129,26 @@ export const snapShortcutPosition = (position: CoordinateLike): CoordinateLike =
 export const shortcuts$ = desktop$.slice('shortcuts', {
 	reducers: [],
 });
+
+export const activeScheme$ = desktop$.slice('activeScheme');
+export const toggleActiveSchemeKindAction = desktop$.createAction('toggleKind');
+export const activeSchemeKind$ = activeScheme$.slice('kind', {
+	reducers: [toggleActiveSchemeKindAction.reduce((state) => (state === 'w2k' ? 'w98' : 'w2k'))],
+});
+
+if (browser) {
+	activeSchemeKind$.createEffect(
+		activeSchemeKind$.pipe(
+			tap((kind) => {
+				if (kind === 'w2k') {
+					document.body.classList.replace('w2k-scheme-classic', 'w2k-scheme-standard');
+				} else {
+					document.body.classList.replace('w2k-scheme-standard', 'w2k-scheme-classic');
+				}
+			}),
+		),
+	);
+}
 
 export const dicedShortcuts = shortcuts$.dice(
 	{
@@ -225,7 +254,7 @@ export const windows$ = desktop$.slice('windows', {
 		return { activeWindowCount$ };
 	},
 });
-/*
+
 desktop$.createEffect(
 	documentPointerDown$.pipe(
 		filter((event) => {
@@ -239,7 +268,7 @@ desktop$.createEffect(
 		map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
 	),
 );
-*/
+
 export const resizeWindow = (
 	windowState: BaseWindowState,
 	resizeData: ResizeData,
@@ -249,7 +278,7 @@ export const resizeWindow = (
 	} else {
 		const nextWindowState = { ...windowState };
 
-		if (isNonNullable(resizeData.width) && resizeData.width >= nextWindowState.minWidth) {
+		if (isNotNullish(resizeData.width) && resizeData.width >= nextWindowState.minWidth) {
 			nextWindowState.width = resizeData.width;
 			if (resizeData.moveX) {
 				nextWindowState.position = {
@@ -259,7 +288,7 @@ export const resizeWindow = (
 			}
 		}
 
-		if (isNonNullable(resizeData.height) && resizeData.height >= nextWindowState.minHeight) {
+		if (isNotNullish(resizeData.height) && resizeData.height >= nextWindowState.minHeight) {
 			nextWindowState.height = resizeData.height;
 			if (resizeData.moveY) {
 				nextWindowState.position = {
@@ -324,10 +353,15 @@ export const isShortcutPresent$ = (program: ProgramName) =>
 
 export const isMinesweeperSpawned$ = isProgramSpawned$(ProgramName.MINESWEEPER);
 
-windows$.createEffect(
-	isMinesweeperSpawned$.pipe(
-		take(1),
-		filter((is) => !is),
-		map(() => desktop$.internals.actions.spawnProgram.makePacket(ProgramName.MINESWEEPER)),
-	),
-);
+if (browser) {
+	// Initialize a fresh instance of minesweeper if there isn't one already.
+	// It's done in the browser only because otherwise it would pre-render it
+	// even when it's not needed
+	windows$.createEffect(
+		isMinesweeperSpawned$.pipe(
+			take(1),
+			filter((is) => !is),
+			map(() => desktop$.internals.actions.spawnProgram.makePacket(ProgramName.MINESWEEPER)),
+		),
+	);
+}

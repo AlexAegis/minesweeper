@@ -8,7 +8,13 @@
 		documentPointerUp$,
 		packageMetadata,
 	} from '../../root.store';
-	import { desktop$, dicedPrograms, startMenuOpen$ } from '../store';
+	import {
+		activeSchemeKind$,
+		desktop$,
+		dicedPrograms,
+		startMenuOpen$,
+		toggleActiveSchemeKindAction,
+	} from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import Image from './image.svelte';
@@ -83,6 +89,22 @@
 
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
+			on:fire="{() => {
+				toggleActiveSchemeKindAction.next(undefined);
+			}}"
+		>
+			<Image height="{28}" width="{28}" />
+			Switch to
+			{#if $activeSchemeKind$ === 'w98'}
+				w2k
+			{:else}
+				w98
+			{/if}
+			theme
+		</Button>
+
+		<Button
+			look="{ButtonLook.START_MENU_ITEM}"
 			on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
 		>
 			<Image height="{28}" width="{28}" src="{githubIcon}" />
@@ -103,17 +125,18 @@
 
 <style lang="scss">
 	.start-menu {
-		z-index: 1000;
 		width: fit-content;
 		display: flex;
 		position: fixed;
-		bottom: 32px;
+		bottom: calc(var(--win-taskbar-height) - 4px);
+		left: 2px;
+		z-index: 2;
 
 		.title {
 			display: flex;
 			align-items: flex-end;
 			width: 20px;
-			background: linear-gradient(black, blue);
+			background: linear-gradient(180deg, black 0%, black 33%, blue 100%);
 
 			div {
 				color: white;
@@ -141,6 +164,18 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
+		}
+
+		animation: move-up 0.15s;
+
+		@keyframes move-up {
+			from {
+				translate: 0 200px; /* Starting position below the viewport */
+			}
+
+			to {
+				translate: 0; /* Ending position at the bottom of the container */
+			}
 		}
 	}
 </style>

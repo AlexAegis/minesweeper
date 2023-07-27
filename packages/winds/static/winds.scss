@@ -5,33 +5,174 @@
 	src: url('fonts/fs-tahoma-8px/fs-tahoma-8px.woff2') format('woff2');
 }
 
-.windows-scheme-standard {
-	// Colors picked from Windows 2000 Standard Scheme
-	--win-background-color: #3a6ea5;
-	--win-window-title-bar-active-start: #000080;
-	--win-window-title-bar-active-end: #a6caf0;
-	--win-window-title-bar-inactive-start: #808080;
-	--win-window-title-bar-inactive-end: #c0c0c0;
-	--win-window-title-bar-active-text: #fff;
-	--win-window-title-bar-inactive-text: #c8c8c8;
-}
+// All values and names were picked from Windows 2000
+.w2k {
+	--win-start-button-width: 54px; // + 1 the bo
+	--win-taskbar-height: 28px; // with box-sizing: border-box;
+	--win-taskbar-element-height: 20px;
+	--win-3d-objects-color: hsl(
+		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s) var(--win-3d-objects-color-l)
+	);
 
-.windows-scheme-classic {
-	// Colors picked from Windows 2000 Classic Scheme
-	--win-background-color: #008080; // Not actually part of the scheme, Windows 2000 under the the classic scheme uses the same background color as the standard scheme #3a6ea5
-	--win-window-title-bar-active-start: #000080;
-	--win-window-title-bar-active-end: #1084d0;
-	--win-window-title-bar-inactive-start: #808080;
-	--win-window-title-bar-inactive-end: #b5b5b5;
-	--win-window-title-bar-active-text: #fff;
-	--win-window-title-bar-inactive-text: #c8c8c8;
+	// These calculates match the actual win behavior
+	--win-3d-objects-color-l-darker-1: calc(var(--win-3d-objects-color-l) * 2 / 3);
+	--win-3d-objects-color-l-darker-2: calc(var(--win-3d-objects-color-l-darker-1) * 2 / 3);
+	--win-3d-objects-color-l-darker-3: calc(var(--win-3d-objects-color-l-darker-2) * 2 / 3);
+	--win-3d-objects-color-l-ligher-1: calc(var(--win-3d-objects-color-l) / 2 * 3);
+	--win-3d-objects-color-l-ligher-2: calc(var(--win-3d-objects-color-l-ligher-1) / 2 * 3);
+	--win-3d-objects-color-darker-1: hsl(
+		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+			var(--win-3d-objects-color-l-darker-1)
+	);
+	--win-3d-objects-color-lighter-1: hsl(
+		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+			var(--win-3d-objects-color-l-ligher-1)
+	);
+	--win-3d-objects-color-lighter-2: hsl(
+		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+			var(--win-3d-objects-color-l-ligher-2)
+	);
+
+	&-scheme-standard {
+		// All values and names were picked from Windows 2000 Standard Scheme
+		--win-desktop-color: #3a6ea5;
+
+		// Used for all panels, everything that can be inset or outset, determines their background-color and outline colors
+		// --win-3d-objects-color: rgb(212 208 200); // #d4d0c8 = rgb(212 208 200)
+		--win-3d-objects-color-h: 40;
+		--win-3d-objects-color-s: 12%;
+		--win-3d-objects-color-l: 81%;
+		--win-3d-objects-darkest-color: #404040; // This is always fix in the standard theme
+		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
+		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black
+		--win-active-title-bar-color: #0a246a;
+		--win-active-title-bar-color-2: #a6caf0;
+		--win-inactive-title-bar-color: #808080;
+		--win-inactive-title-bar-color-2: #c0c0c0;
+		--win-active-title-bar-font-color: #fff;
+		--win-inactive-title-bar-font-color: #c8c8c8;
+		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
+		--win-font-color: #000;
+		--win-start-menu-highlight-color: #0a246a;
+	}
+
+	&-scheme-classic {
+		// Colors picked from Windows 2000 Classic Scheme
+		--win-desktop-color: #008080;
+
+		// Used for all panels, everything that can be inset or outset, determines their background-color and outline colors
+		// --win-3d-objects-color: rgb(192 192 192); // #C0C0C0 = rgb(192 192 192)
+		--win-3d-objects-color-h: 160;
+		--win-3d-objects-color-s: 0%;
+		--win-3d-objects-color-l: 75.25%; // Evaluates to rgb(192 192 192) #C0C0C0
+		--win-3d-objects-darkest-color: #000; // This is always fix in the classic theme
+		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
+		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black
+		--win-active-title-bar-color: #000080;
+		--win-active-title-bar-color-2: #1084d0;
+		--win-inactive-title-bar-color: #808080;
+		--win-inactive-title-bar-color-2: #b5b5b5;
+		--win-active-title-bar-font-color: #fff;
+		--win-inactive-title-bar-font-color: #c8c8c8;
+		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
+		--win-font-color: #000;
+		--win-start-menu-highlight-color: #00007f;
+	}
+
+	.window {
+		background-color: var(--win-3d-objects-color);
+	}
+
+	.panel {
+		box-sizing: border-box;
+		border: #eee;
+		border-style: none;
+		border-spacing: 3px;
+		border-width: 3px;
+		border-left: 1px;
+		border-top: 1px;
+		border-right: 2px;
+		border-bottom: 2px;
+		outline-width: 0;
+		background-color: var(--win-3d-objects-color);
+
+		&.inset {
+			// 	&:not(.shallow) {
+			// 		border-top: 1px solid var(--win-3d-objects-darkest-color);
+			// 		border-left: 1px solid var(--win-3d-objects-darkest-color);
+			// 	}
+
+			&:not(.deep) {
+				box-shadow:
+					inset -1px -1px var(--win-3d-objects-color-lighter-1),
+					inset 1px 1px var(--win-3d-objects-color-darker-1);
+			}
+
+			&.deep {
+				box-shadow:
+					inset 2px 2px var(--win-3d-objects-color-darker-1),
+					inset -1px -1px var(--win-3d-objects-color-lighter-1),
+					inset 1px 1px var(--win-3d-objects-color-darker-1),
+					inset -2px -2px var(--win-3d-objects-color-lighter-1);
+			}
+		}
+
+		&.outset {
+			padding: 1px;
+
+			//	&:not(.shallow) {
+			//		// Borders are used for the deepest shadows for buttons, so when a click
+			//		border-bottom: 1px solid var(--win-3d-objects-darkest-color);
+			//		border-right: 1px solid var(--win-3d-objects-darkest-color);
+			//	}
+
+			&:not(.deep) {
+				box-shadow:
+					inset 1px 1px var(--win-3d-objects-color-lighter-1),
+					inset -1px -1px var(--win-3d-objects-color-darker-1);
+
+				// shadow when the deepest shadow is not done using a border
+				// box-shadow:
+				// 	inset -1px -1px var(--win-3d-objects-darkest-color),
+				// 	inset 1px 1px var(--win-3d-objects-color-lighter-1),
+				// 	inset -2px -2px var(--win-3d-objects-color-darker-1);
+			}
+
+			&.deep {
+				box-shadow:
+					inset 2px 2px var(--win-3d-objects-color-lighter-1),
+					inset -1px -1px var(--win-3d-objects-color-darker-1),
+					inset 1px 1px var(--win-3d-objects-color-lighter-1),
+					inset -2px -2px var(--win-3d-objects-color-darker-1);
+			}
+		}
+	}
+
+	.taskbar {
+		> * {
+			height: var(--win-taskbar-element-height);
+			box-sizing: border-box;
+		}
+	}
+
+	button {
+		&:active {
+			border-top: 1px solid var(--win-3d-objects-darkest-color);
+			border-left: 1px solid var(--win-3d-objects-darkest-color);
+		}
+
+		&:not(:active) {
+			border-bottom: 1px solid var(--win-3d-objects-darkest-color);
+			border-right: 1px solid var(--win-3d-objects-darkest-color);
+		}
+	}
 }
 
 body {
 	display: block;
 	height: 100vh;
 	overscroll-behavior: none;
-	background-color: var(--win-background-color);
+	background-color: var(--win-desktop-color);
 	margin: 0;
 	-webkit-touch-callout: none !important;
 	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
@@ -43,31 +184,20 @@ button {
 }
 
 hr {
-	width: 90%;
+	width: calc(100% - 4px);
+	box-sizing: border-box;
 	align-self: center;
 	margin-bottom: 3px;
-}
-
-.panel {
-	display: block;
-	border: #eee;
-	border-style: none;
-	border-spacing: 3px;
-	border-width: 3px;
-	outline-width: 0;
-	background-color: rgb(192 192 192);
+	margin-left: 2px;
+	margin-right: 2px;
+	outline: 0;
+	border: 0;
+	height: 2px;
+	box-shadow:
+		inset 0 1px var(--win-3d-objects-color-darker-1),
+		inset 0 2px var(--win-3d-objects-color-lighter-1);
 }
 
 .padded {
 	padding: 3px;
-}
-
-.inset {
-	border-style: inset;
-	outline-style: inset;
-}
-
-.outset {
-	border-style: outset;
-	outline-style: outset;
 }

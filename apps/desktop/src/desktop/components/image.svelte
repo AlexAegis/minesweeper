@@ -12,6 +12,8 @@
 		style="{$$props['style'] ?? ''}"
 		style:height="{height ? `${height}px` : undefined}"
 		style:width="{width ? `${width}px` : undefined}"
+		style:min-height="{height ? `${height}px` : undefined}"
+		style:min-width="{width ? `${width}px` : undefined}"
 		draggable="{false}"
 		aria-label="{alt}"
 		{src}
@@ -21,6 +23,8 @@
 	<div
 		style:height="{height ? `${height}px` : undefined}"
 		style:width="{width ? `${width}px` : undefined}"
+		style:min-height="{height ? `${height}px` : undefined}"
+		style:min-width="{width ? `${width}px` : undefined}"
 	></div>
 {/if}
 

@@ -48,7 +48,7 @@
 	}
 
 	function contextmenu(): void {
-		console.log('COPNTEXT');
+		console.log('CONTEXT');
 	}
 </script>
 
@@ -73,14 +73,14 @@
 	style:left="{`${transientPosition.x}px`}"
 >
 	<Image class="icon" alt="{shortcutState.name}" src="{shortcutState.icon}" />
-	<span class="title">{shortcutState.name}</span>
 	<div class="shortcut-symbol"></div>
+	<div class="title">{shortcutState.name}</div>
 </div>
 
 <style lang="scss">
 	.shortcut {
 		display: grid;
-		grid-template-columns: 1fr auto 1fr;
+		grid-template-columns: 1fr 28px 1fr;
 		position: absolute;
 		row-gap: 4px;
 		align-items: center;
@@ -88,6 +88,7 @@
 		margin: 16px;
 		user-select: none;
 		touch-action: none;
+		cursor: pointer;
 
 		:global(.icon) {
 			width: 28px;
@@ -114,24 +115,24 @@
 			user-select: none;
 			font-size: 18px;
 			line-height: 18px;
+			min-height: 18px;
+			min-width: 30px;
+			max-width: calc(2 * 40px);
+			word-wrap: break-word;
 			grid-row: 2;
 			grid-column: 1 / -1;
-			color: black;
+			color: var(--win-desktop-font-color)
 		}
 
 		&.selected {
 			:global(.icon) {
-				// box-shadow: inset 0 0 0 2000px rgba(var(--selection-rgb), 0.5);
-				filter: contrast(0.5) brightness(1.5) sepia(1) hue-rotate(180deg) contrast(0.8)
-					saturate(4);
+				filter: contrast(0.75) brightness(0.4) sepia(3.6) hue-rotate(180deg) saturate(2);
 			}
 
 			.title {
-				background-color: rgb(var(--selection-rgb));
-				color: white;
+				background-color: rgb(var(--win-selection-rgb));
+				color: var(--win-desktop-selected-font-color); // Always
 			}
 		}
-
-
 	}
 </style>

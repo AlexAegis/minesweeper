@@ -53,6 +53,7 @@
 	}
 
 	function pointerup(e: PointerEvent): void {
+		e.stopImmediatePropagation(); // This messes with the styling
 		if (firing && !longpressHappened && !cancelHappened) {
 			cancelLongpress();
 			if (e.button === 0 || e.button === 1) {
@@ -137,7 +138,9 @@
 	bind:this="{button}"
 	{type}
 	aria-label="{$$props['aria-label']}"
-	class="ms-button {$$props['class'] ?? ''}"
+	class="panel {$$props['class'] ?? ''}"
+	class:outset="{!pressed}"
+	class:inset="{pressed}"
 	style="{$$props['style'] ?? ''}"
 	class:disabled="{disabled || appearDisabled}"
 	class:hotkey-letter="{!!hotkeyLetter}"
@@ -190,7 +193,7 @@
 		text-overflow: ellipsis;
 		image-rendering: pixelated;
 		background-repeat: no-repeat;
-		color: black;
+		color: var(--win-font-color);
 		background-position-x: var(--background-image-positon, 1px);
 		background-position-y: var(--background-image-positon, 1px);
 
@@ -247,7 +250,7 @@
 		&.active,
 		&.type-title-bar-menu-bar-item:hover,
 		&.type-context-menu-item:hover {
-			background-color: #000084;
+			background-color: var(--win-start-menu-highlight-color);
 			color: white;
 		}
 
@@ -257,7 +260,7 @@
 			width: 160px;
 
 			&:hover {
-				background-color: #000084;
+				background-color: var(--win-start-menu-highlight-color);
 				color: white;
 			}
 		}
