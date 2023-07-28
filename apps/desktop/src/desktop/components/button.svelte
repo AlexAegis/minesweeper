@@ -215,47 +215,5 @@
 			height: 20px;
 			text-align: left;
 		}
-
-		&.type-start-menu-item {
-			padding: 8px 0 8px 8px;
-			height: 32px;
-			width: 160px;
-
-			&:hover {
-				//	background-color: var(--win-start-menu-highlight-color);
-				// 	color: white;
-			}
-		}
-	}
-
-	.type-thick-but-pressed-thin,
-	.type-thick {
-		border-spacing: 2px;
-		border-width: 2px;
-		border-left-style: solid;
-		border-top-style: solid;
-		border-color: var(--panel-border-color);
-	}
-
-	.type-thick:active {
-		padding: 2px 1px 1px 2px;
-	}
-
-	.type-thick-but-pressed-thin:not(.pressed),
-	.type-thick:not(.pressed) {
-		border-style: outset;
-	}
-
-	.type-thick.pressed {
-		border-style: inset;
-	}
-
-	.type-thick-but-pressed-thin.pressed {
-		border-left-style: solid;
-		border-top-style: solid;
-		border-color: var(--tile-border-color);
-		border-width: 1px;
-		background-position-x: 2px;
-		background-position-y: 2px;
 	}
 </style>

@@ -44,101 +44,125 @@
 	--smiley-border-width: 3px;
 	--smiley-top-left-padding: 2px;
 	--smiley-bottom-right-padding: 1px;
-}
 
-button.ms-tile {
-	height: 16px;
-	width: 16px;
-	display: block;
-	box-sizing: border-box;
-	padding: 0;
-	image-rendering: pixelated;
-	background-repeat: no-repeat;
-	background-position: 2px 2px;
-	user-select: none;
-	background-size: auto;
-
-	&:active {
+	button.ms-tile {
+		height: 16px;
+		width: 16px;
+		margin: 0;
+		border: 0;
+		border-bottom: 0;
+		border-right: 0;
+		display: block;
+		box-sizing: border-box;
 		padding: 0;
-	}
+		image-rendering: pixelated;
+		background-repeat: no-repeat;
+		background-position: 2px 2px;
+		user-select: none;
+		background-size: auto;
+		background-position-x: 3px;
+		background-position-y: 3px;
 
-	&.wrong:not(.flag) {
-		background-color: red;
-	}
-
-	&.flag {
-		&.revealed,
-		&:not(.debug, .wrong) {
-			background-image: var(--asset-flag);
+		&.pressed,
+		&.revealed {
+			box-shadow: none; // inset -1px -1px var(--win-3d-objects-color-darker-1) !important;
+			border-color: var(--win-3d-objects-color-darker-1);
+			border-width: 1px;
+			border-left-style: solid;
+			border-top-style: solid;
 		}
 
-		&.debug:not(.revealed, .wrong) {
-			background-image: var(--tile-debug-veil), var(--asset-flag);
+		&:not(.pressed, .revealed) {
+			border: 0;
+			box-shadow:
+				inset -1px -1px var(--win-3d-objects-color-darker-1),
+				inset 1px 1px var(--win-3d-objects-color-lighter-1),
+				inset -2px -2px var(--win-3d-objects-color-darker-1),
+				inset 2px 2px var(--win-3d-objects-color-lighter-1);
 		}
 
-		&.wrong {
+		&:active {
+			padding: 0;
+		}
+
+		&.wrong:not(.flag) {
+			background-color: red;
+		}
+
+		&.flag {
+			&.revealed,
+			&:not(.debug, .wrong) {
+				background-image: var(--asset-flag);
+			}
+
+			&.debug:not(.revealed, .wrong) {
+				background-image: var(--tile-debug-veil), var(--asset-flag);
+			}
+
+			&.wrong {
+				&.revealed,
+				&:not(.debug) {
+					background-position: 1px 1px;
+					background-image: var(--asset-not-mine);
+				}
+
+				&.debug:not(.revealed) {
+					background-position: 1px 1px;
+					background-image: var(--tile-debug-veil), var(--asset-not-mine);
+				}
+			}
+		}
+
+		&.question-mark {
 			&.revealed,
 			&:not(.debug) {
-				background-position: 1px 1px;
-				background-image: var(--asset-not-mine);
+				background-image: var(--asset-question-mark);
 			}
 
 			&.debug:not(.revealed) {
-				background-position: 1px 1px;
-				background-image: var(--tile-debug-veil), var(--asset-not-mine);
+				background-image: var(--tile-debug-veil), var(--asset-question-mark);
 			}
 		}
-	}
 
-	&.question-mark {
-		&.revealed,
-		&:not(.debug) {
-			background-image: var(--asset-question-mark);
-		}
-
-		&.debug:not(.revealed) {
-			background-image: var(--tile-debug-veil), var(--asset-question-mark);
-		}
-	}
-
-	&.mine {
-		&.revealed,
-		&:not(.debug) {
-			background-image: var(--asset-mine);
-		}
-
-		&.debug:not(.revealed) {
-			background-image: var(--tile-debug-veil), var(--asset-mine);
-		}
-
-		&.pressed {
-			background-position: 1px 1px !important;
-			background-size: 13px;
-		}
-
-		&:not(.pressed) {
-			background-position: 0 0 !important;
-			background-size: 12px;
-		}
-	}
-
-	$tile-colors: var(--tile-0-color), var(--tile-1-color), var(--tile-2-color), var(--tile-3-color),
-		var(--tile-4-color), var(--tile-5-color), var(--tile-6-color), var(--tile-7-color),
-		var(--tile-8-color), var(--tile-9-color);
-
-	@for $i from 2 through 10 {
-		&-#{$i - 1} {
-			color: list.nth($tile-colors, $i);
-
+		&.mine {
 			&.revealed,
 			&:not(.debug) {
-				/* stylelint-disable-next-line custom-property-pattern */
-				background-image: var(--asset-number-#{$i - 1});
+				background-image: var(--asset-mine);
 			}
 
 			&.debug:not(.revealed) {
-				/* stylelint-disable-next-line custom-property-pattern */
-				background-image: var(--tile-debug-veil), var(--asset-number-#{$i - 1});
+				background-image: var(--tile-debug-veil), var(--asset-mine);
+			}
+
+			&.pressed {
+				background-position: 1px 1px !important;
+				background-size: 13px;
+			}
+
+			&:not(.pressed) {
+				background-position: 0 0 !important;
+				background-size: 12px;
+			}
+		}
+
+		$tile-colors: var(--tile-0-color), var(--tile-1-color), var(--tile-2-color),
+			var(--tile-3-color), var(--tile-4-color), var(--tile-5-color), var(--tile-6-color),
+			var(--tile-7-color), var(--tile-8-color), var(--tile-9-color);
+
+		@for $i from 2 through 10 {
+			&-#{$i - 1} {
+				color: list.nth($tile-colors, $i);
+
+				&.revealed,
+				&:not(.debug) {
+					/* stylelint-disable-next-line custom-property-pattern */
+					background-image: var(--asset-number-#{$i - 1});
+				}
+
+				&.debug:not(.revealed) {
+					/* stylelint-disable-next-line custom-property-pattern */
+					background-image: var(--tile-debug-veil), var(--asset-number-#{$i - 1});
+				}
 			}
 		}
 	}

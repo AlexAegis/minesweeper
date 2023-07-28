@@ -1,24 +1,16 @@
 <script lang="ts">
 	import { debug$ } from '../../root.store';
-	import { activeSchemeKind$, startMenuOpen$ } from '../store';
-	import Button from './button.svelte';
+	import { startMenuOpen$ } from '../store';
 	import Clock from './clock.svelte';
-	import StartMenu from './start-menu.svelte';
 
 	import Image from './image.svelte';
 
-	import w2kStartIcon from '../../assets/desktop/w2k-start.png';
-	import w98StartIcon from '../../assets/desktop/w98-start.png';
-
-	import { map } from 'rxjs';
 	import flagIcon from '../../assets/minesweeper/flag.png';
+	import StartButton from './start-button.svelte';
+	import StartMenu from './start-menu.svelte';
 	import TaskbarSeparator from './taskbar-separator.svelte';
 
 	let startButton: HTMLElement;
-
-	const startIcon$ = activeSchemeKind$.pipe(
-		map((kind) => (kind === 'w2k' ? w2kStartIcon : w98StartIcon)),
-	);
 </script>
 
 {#if $startMenuOpen$}
@@ -26,16 +18,7 @@
 {/if}
 
 <div class="taskbar panel">
-	<Button
-		bind:button="{startButton}"
-		class="start"
-		on:fire="{() => {
-			startMenuOpen$.set(!startMenuOpen$.value);
-		}}"
-	>
-		<Image height="{14}" src="{$startIcon$}" />
-	</Button>
-
+	<StartButton bind:startButton />
 	<TaskbarSeparator />
 	<slot name="taskbar" />
 
@@ -68,12 +51,11 @@
 			gap: 4px;
 			align-items: center;
 			margin-left: auto;
-			padding: 0 4px;
+			padding: 0 3px;
 			height: 22px;
 		}
 
 		:global(.start) {
-			//	height: 22px;
 			min-height: 22px;
 			min-width: 0;
 			padding: 4px;

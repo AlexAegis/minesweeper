@@ -106,14 +106,14 @@
 		}
 
 		&.error {
-			:global(.ms-window) {
+			:global(.program-window) {
 				:global(.title-bar) {
 					filter: brightness(1.2);
 				}
 			}
 		}
 
-		:global(.ms-window) {
+		:global(.program-window) {
 			position: relative;
 			z-index: 1000;
 		}

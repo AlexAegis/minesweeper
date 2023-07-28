@@ -22,6 +22,14 @@
 		width: fit-content;
 		height: fit-content;
 		margin: auto;
-		background-color: #a6a6a6; // same as border color to avoid color bleed
+		padding: 0;
+		padding: 3px;
+		box-shadow:
+			inset -1px -1px var(--win-3d-objects-color-lighter-2),
+			inset 1px 1px var(--win-3d-objects-color-darker-1),
+			inset -2px -2px var(--win-3d-objects-color-lighter-2),
+			inset 2px 2px var(--win-3d-objects-color-darker-1),
+			inset -3px -3px var(--win-3d-objects-color-lighter-2),
+			inset 3.25px 3.25px var(--win-3d-objects-color-darker-1) !important;
 	}
 </style>

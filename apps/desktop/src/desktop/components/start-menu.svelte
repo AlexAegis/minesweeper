@@ -115,6 +115,8 @@
 			Github
 		</Button>
 
+		<hr />
+
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
 			class="flat"

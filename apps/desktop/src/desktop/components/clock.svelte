@@ -27,11 +27,16 @@
 	});
 </script>
 
-<span>{$time$}</span>
+<span class="clock">{$time$}</span>
 
 <style lang="scss">
-	span {
-		padding-top: 1px;
-		line-height: 17px;
+	// The clocks last pixel is 16 pixel away from the edge of its panel,
+	// the font has an extra empty pixel at the end, -3 px because of the panels padding (was measured by disabling the clock and checking where the last icon stops)
+	.clock {
+		font-size: 16px;
+		margin: 5px 12px 5px 13px;
+		line-height: 8px;
+		padding-top: 1.5px;
+		padding-bottom: 0.5px;
 	}
 </style>

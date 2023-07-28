@@ -32,6 +32,8 @@
 		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-ligher-2)
 	);
+	--win-start-menu-item-height: 32px;
+	--win-start-menu-item-width: 227px;
 
 	&.custom-scheme {
 		// Only custom schemes shde with their actual object color
@@ -104,7 +106,7 @@
 		}
 	}
 
-	// Elements that should have 2px edges and shadows
+	// Elements that should have 2px edges and shadows, outset
 	.window {
 		background-color: var(--win-3d-objects-color);
 		box-shadow:
@@ -112,6 +114,19 @@
 			inset 1px 1px var(--win-3d-objects-color),
 			inset -2px -2px var(--win-3d-objects-color-darker-1),
 			inset 2px 2px var(--win-3d-objects-color-lighter-2);
+	}
+
+	// Elements that should have 2px edges and shadows, inset
+	input[type='email'],
+	input[type='number'],
+	input[type='password'],
+	input[type='text'],
+	select {
+		box-shadow:
+			inset -1px -1px var(--win-3d-objects-color-lighter-2),
+			inset 1px 1px var(--win-3d-objects-color-darker-1),
+			inset -2px -2px var(--win-3d-objects-color),
+			inset 2px 2px var(--win-shadow-color);
 	}
 
 	// Elements that should only have 1px edges and shadows
@@ -174,7 +189,8 @@
 		// Regular
 		&:not(.type-title-bar-menu-item) {
 			&:active,
-			.pressed {
+			&.pressed,
+			&.active {
 				border-top: 1px solid var(--win-shadow-color);
 				border-left: 1px solid var(--win-shadow-color);
 				box-shadow:
@@ -182,7 +198,7 @@
 					inset 1px 1px var(--win-3d-objects-color-darker-1);
 			}
 
-			&:not(:active) {
+			&:not(:active, .active, .pressed) {
 				border-bottom: 1px solid var(--win-shadow-color);
 				border-right: 1px solid var(--win-shadow-color);
 				box-shadow:
@@ -222,6 +238,12 @@
 					border-right: 1px solid rgb(1 1 1 / 0%);
 				}
 			}
+		}
+
+		&.type-start-menu-item {
+			padding: 8px 0 8px 8px;
+			height: var(--win-start-menu-item-height);
+			width: var(--win-start-menu-item-width);
 		}
 
 		&.type-context-menu-item,
@@ -290,9 +312,7 @@ hr {
 	width: calc(100% - 4px);
 	box-sizing: border-box;
 	align-self: center;
-	margin-bottom: 3px;
-	margin-left: 2px;
-	margin-right: 2px;
+	margin: 3px 2px;
 	outline: 0;
 	border: 0;
 	height: 2px;

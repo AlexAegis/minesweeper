@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ButtonLook } from '../../desktop/components/button-look.enum';
 	import Button from '../../desktop/components/button.svelte';
 	import type { SmileyState } from '../store';
 
@@ -7,7 +6,7 @@
 </script>
 
 <div class="ms-smiley {smileyState}">
-	<Button on:click aria-label="Restart" look="{ButtonLook.THICK}" />
+	<Button on:click aria-label="Restart" />
 </div>
 
 <style lang="scss">
@@ -30,21 +29,32 @@
 	.ms-smiley {
 		width: 25px;
 		height: 25px;
-		background-color: var(--tile-border-color);
-		border-color: var(--tile-border-color);
-		border-style: solid;
-		border-width: 1px;
-
-		--background-image-positon: 2px;
 
 		:global(button) {
-			padding: 2px 1px 1px 2px;
+			--background-image-positon: 4px;
 
-			// seamless color
-			outline-offset: 0;
-			outline: var(--tile-border-color) solid 1px !important;
 			width: 100%;
 			height: 100%;
+			border: 0 !important;
+			margin: 0 !important;
+		}
+
+		:global(button:not(.pressed)) {
+			box-shadow:
+				-1px -1px var(--win-3d-objects-color-darker-1),
+				inset -1px -1px var(--win-3d-objects-color-darker-1),
+				inset 1px 1px var(--win-3d-objects-color-lighter-2),
+				inset -2px -2px var(--win-3d-objects-color-darker-1),
+				inset 2px 2px var(--win-3d-objects-color-lighter-2),
+				inset -3px -3px var(--win-3d-objects-color-darker-1),
+				inset 3px 3px var(--win-3d-objects-color-lighter-2) !important;
+		}
+
+		:global(button.pressed) {
+			box-shadow:
+				-1px -1px var(--win-3d-objects-color-darker-1),
+				inset -1px -1px var(--win-3d-objects-color-darker-1),
+				inset 1px 1px var(--win-3d-objects-color-darker-1) !important;
 		}
 	}
 </style>

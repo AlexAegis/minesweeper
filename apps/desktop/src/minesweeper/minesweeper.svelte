@@ -24,7 +24,7 @@
 </script>
 
 <div class="game">
-	<Panel class="game panel inset padded">
+	<Panel class="stats panel inset">
 		<Observer observable="{internals.remainingMines$}" let:next>
 			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />
 		</Observer>
@@ -63,11 +63,25 @@
 	.game {
 		display: flex;
 		flex-direction: column;
-		padding: var(--game-area-padding);
-		border-width: var(--game-area-border-width);
-		border-color: var(--border-color-light-og);
-		border-style: outset;
+		padding: calc(var(--game-area-border-width) + var(--game-area-padding));
+		box-shadow:
+			inset 1px 1px var(--win-3d-objects-color-lighter-1),
+			inset -1px -1px var(--win-3d-objects-color-darker-1),
+			inset 2px 2px var(--win-3d-objects-color-lighter-1),
+			inset -2px -2px var(--win-3d-objects-color-darker-1),
+			inset 3px 3px var(--win-3d-objects-color-lighter-1),
+			inset -3px -3px var(--win-3d-objects-color-darker-1) !important;
 
 		// These borders are not present on the XP version
+	}
+
+	:global(.game .stats) {
+		display: flex;
+		padding: 6px;
+		box-shadow:
+			inset -1px -1px var(--win-3d-objects-color-lighter-2),
+			inset 1px 1px var(--win-3d-objects-color-darker-1),
+			inset -2px -2px var(--win-3d-objects-color-lighter-2),
+			inset 2px 2px var(--win-3d-objects-color-darker-1) !important;
 	}
 </style>

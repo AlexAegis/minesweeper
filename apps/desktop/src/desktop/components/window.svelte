@@ -142,7 +142,7 @@
 
 <div
 	bind:this="{windowElement}"
-	class="ms-window window pid{transientState.processId} {transientState.program} {$$props[
+	class="program-window window pid{transientState.processId} {transientState.program} {$$props[
 		'class'
 	] ?? ''}"
 	class:invisible="{transientState.invisible}"
@@ -190,13 +190,12 @@
 </div>
 
 <style lang="scss">
-	.ms-window {
+	.program-window {
 		position: absolute;
 		box-sizing: border-box;
 		user-select: none;
 
 		// touch-action: none;
-
 
 		.window-body {
 			overflow: auto;
@@ -206,7 +205,6 @@
 		&.fit-content {
 			display: table;
 		}
-
 
 		&:not(.fit-content) {
 			display: flex;

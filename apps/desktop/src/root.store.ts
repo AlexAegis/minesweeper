@@ -29,7 +29,7 @@ const documentMouseLeaveSubject$ = new Subject<PointerEvent>();
 
 export const documentPointerDown$ = documentPointerDownSubject$.asObservable();
 export const documentPointerUp$ = documentPointerUpSubject$.asObservable();
-export const documentMouseLeave$ = documentPointerUpSubject$.asObservable();
+export const documentMouseLeave$ = documentMouseLeaveSubject$.asObservable();
 
 if (browser) {
 	scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asyncScheduler)
