@@ -51,7 +51,12 @@
 		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-ligher-3)
 	);
-	--win-start-menu-item-height: 32px;
+	--win-large-icon-size: 32px;
+	--win-shortcut-size: 72px;
+	--win-shortcut-margin: 1px; // icons appear to be 2 away from screen edges but 3 px away from eachother, I assume the icons have a 1px margin, and there is a gap of 1px on the desktop grid as well as 1px padding
+	--win-desktop-shortcut-gap: 1px; // On top of the margin, this is also the padding of the workspace
+	--win-start-menu-item-height: var(--win-large-icon-size);
+	--win-absolute-distance-between-shortcuts: 76px; // Not used, a measurement between the corners of 2 shortcut icons Including the corner pixels, true both vertically and horizontally
 	--win-start-menu-item-width: 227px;
 	--win-title-bar-icon-minimize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAADklEQVQI12NgwAbqQAgAA40A/e5DMQMAAAAASUVORK5CYII=');
 	--win-title-bar-icon-maximize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAEklEQVQI12P438AARA0Y6H8DAJLoCn7HPTdBAAAAAElFTkSuQmCC');
@@ -531,6 +536,135 @@
 		> * {
 			height: var(--win-taskbar-element-height);
 			box-sizing: border-box;
+		}
+	}
+
+	.shortcut {
+		display: grid;
+		width: var(--win-shortcut-size);
+		height: var(--win-shortcut-size);
+		grid-template-columns: auto var(--win-large-icon-size) auto;
+		grid-template-rows: var(--win-large-icon-size) auto;
+		position: absolute;
+		row-gap: 4px; // When the icon is selected, the distance between the blue highlight and the shortcut icon is 4px
+		align-items: start;
+		justify-items: center;
+		margin: var(--win-shortcut-margin);
+		user-select: none;
+		touch-action: none;
+		cursor: pointer;
+		z-index: 1; // When another shortcut is selected, an unselected one should get behind
+
+		.icon {
+			width: var(--win-large-icon-size);
+			height: var(--win-large-icon-size);
+			grid-row: 1;
+			grid-column: 2;
+		}
+
+		.shortcut-symbol {
+			width: 11px;
+			height: 11px;
+			background-image: var(--asset-shortcut);
+			background-repeat: no-repeat;
+			image-rendering: pixelated;
+			z-index: 1;
+			grid-row: 1;
+			grid-column: 2;
+			justify-self: start;
+			align-self: end;
+		}
+
+		.title {
+			box-sizing: border-box;
+			padding: 0 1px 0 2px;
+			user-select: none;
+			font-size: 16px;
+			line-height: 14px;
+			min-height: 15px;
+			min-width: 30px;
+			max-width: var(--win-shortcut-size);
+			grid-row: 2;
+			grid-column: 1 / -1;
+			color: var(--win-desktop-font-color);
+
+			// Only one line of text is shown, until the shortcut is selected
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+
+		&.selected,
+		&.focus,
+		&:focus {
+			.title {
+				text-overflow: unset;
+				white-space: break-spaces;
+				overflow: visible;
+				word-wrap: break-word;
+			}
+		}
+
+		&.selected {
+			z-index: 2; // When a shortcut is selected, it should appear in front of non-selected ones
+
+			.icon {
+				filter: contrast(0.85) brightness(0.66) sepia(1) hue-rotate(180deg) saturate(1.25);
+			}
+
+			.title {
+				background-color: rgb(var(--win-selection-rgb));
+				color: var(--win-desktop-selected-font-color); // Always
+			}
+		}
+
+		&:focus,
+		&.focus {
+			.title {
+				outline: #ff0 dotted 1px;
+				outline-offset: -1px;
+			}
+		}
+	}
+
+	.desktop {
+		overscroll-behavior: none;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		height: calc(100% - var(--win-taskbar-height));
+
+		.workspace {
+			padding: var(--win-desktop-shortcut-gap);
+			box-sizing: border-box;
+			width: 100%;
+			height: 100%;
+
+			&:not(.free-placement) {
+				display: grid;
+				grid-auto-flow: column;
+				gap: var(--win-desktop-shortcut-gap);
+				grid-template-columns: repeat(
+					auto-fit,
+					calc(var(--win-shortcut-size) + var(--win-shortcut-margin) * 2)
+				);
+				grid-template-rows: repeat(
+					auto-fit,
+					calc(var(--win-shortcut-size) + var(--win-shortcut-margin) * 2)
+				);
+
+				.shortcut {
+					position: relative;
+				}
+			}
+
+			&.free-placement {
+				display: block;
+
+				.shortcut {
+					position: absolute;
+				}
+			}
 		}
 	}
 }

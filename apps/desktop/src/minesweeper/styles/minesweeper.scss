@@ -31,7 +31,7 @@
 	--asset-mine: url('../../assets/minesweeper/mine.png');
 
 	@for $i from 1 through 10 {
-		--asset-number-#{$i - 1}: url('../../assets/minesweeper/#{$i - 1}.png');
+		--asset-number-#{$i - 1}: url('../../assets/minesweeper/#{$i - 1}-min.png');
 	}
 
 	// These dimensions were taken from the Windows XP SP3 version of Minesweeper
