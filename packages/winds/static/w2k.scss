@@ -551,6 +551,8 @@ body.w2k {
 	}
 
 	.taskbar {
+		z-index: 1000;
+
 		> * {
 			height: var(--win-taskbar-element-height);
 			box-sizing: border-box;
@@ -689,11 +691,10 @@ body.w2k {
 	}
 
 	.start-menu {
-		width: fit-content;
 		display: flex;
 		position: fixed;
-		bottom: calc(var(--win-taskbar-height) - 4px);
 		left: 2px;
+		bottom: calc(var(--win-taskbar-height) - 4px);
 		z-index: 2;
 
 		.banner {
@@ -739,6 +740,28 @@ body.w2k {
 			to {
 				translate: 0; /* Ending position at the bottom of the container */
 			}
+		}
+	}
+
+	.start-menu-container,
+	.start-menu {
+		width: fit-content;
+		overflow: hidden;
+		z-index: 100000;
+	}
+
+	.start-menu-container {
+		display: block;
+		position: absolute;
+		left: 2px;
+		bottom: calc(var(--win-taskbar-height) - 4px);
+		height: fit-content;
+
+		// The container is optional, so the defaults expect that, this just resets it
+		.start-menu {
+			position: relative;
+			bottom: 0;
+			left: 0;
 		}
 	}
 

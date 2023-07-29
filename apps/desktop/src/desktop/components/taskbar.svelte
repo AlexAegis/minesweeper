@@ -1,21 +1,16 @@
 <script lang="ts">
 	import { debug$ } from '../../root.store';
-	import { startMenuOpen$ } from '../store';
+	// import { startMenuOpen$ } from '../store';
 	import Clock from './clock.svelte';
 
 	import Image from './image.svelte';
 
 	import flagIcon from '../../assets/minesweeper/flag.png';
 	import StartButton from './start-button.svelte';
-	import StartMenu from './start-menu.svelte';
 	import TaskbarSeparator from './taskbar-separator.svelte';
 
 	let startButton: HTMLElement;
 </script>
-
-{#if $startMenuOpen$}
-	<StartMenu {startButton} />
-{/if}
 
 <div class="taskbar panel">
 	<StartButton bind:startButton />

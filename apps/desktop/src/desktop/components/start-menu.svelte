@@ -52,103 +52,105 @@
 	const iconSize = 32;
 </script>
 
-<div bind:this="{startMenu}" class="start-menu window">
-	<div class="banner">
-		<div>{PACKAGE_NAME_AND_VERSION}</div>
-	</div>
-	<div class="content">
-		<slot />
+<div class="start-menu-container">
+	<div bind:this="{startMenu}" class="start-menu window">
+		<div class="banner">
+			<div>{PACKAGE_NAME_AND_VERSION}</div>
+		</div>
+		<div class="content">
+			<slot />
 
-		{#each $programKeys$ as programKey}
-			<Observer observable="{dicedPrograms.get(programKey)}" let:next>
-				<Button
-					class="flat"
-					look="{ButtonLook.START_MENU_ITEM}"
-					on:fire="{() => {
-						desktop$.internals.actions.spawnProgram.next(programKey);
-					}}"
-					on:alternativeFire="{() => {
-						console.log('TODO: create icon', programKey);
-					}}"
-				>
-					<Image
-						alt="{next.name}"
-						src="{next.icon}"
-						height="{iconSize}"
-						width="{iconSize}"
-					/>
-					{next.title}
-				</Button>
-			</Observer>
-		{/each}
+			{#each $programKeys$ as programKey}
+				<Observer observable="{dicedPrograms.get(programKey)}" let:next>
+					<Button
+						class="flat"
+						look="{ButtonLook.START_MENU_ITEM}"
+						on:fire="{() => {
+							desktop$.internals.actions.spawnProgram.next(programKey);
+						}}"
+						on:alternativeFire="{() => {
+							console.log('TODO: create icon', programKey);
+						}}"
+					>
+						<Image
+							alt="{next.name}"
+							src="{next.icon}"
+							height="{iconSize}"
+							width="{iconSize}"
+						/>
+						{next.title}
+					</Button>
+				</Observer>
+			{/each}
 
-		<hr />
+			<hr />
 
-		<Button
-			look="{ButtonLook.START_MENU_ITEM}"
-			class="flat"
-			on:fire="{() => {
-				alert('Under Construction');
-			}}"
-		>
-			<Image height="{iconSize}" width="{iconSize}" src="{programsIcon}" />
-			Programs
-		</Button>
+			<Button
+				look="{ButtonLook.START_MENU_ITEM}"
+				class="flat"
+				on:fire="{() => {
+					alert('Under Construction');
+				}}"
+			>
+				<Image height="{iconSize}" width="{iconSize}" src="{programsIcon}" />
+				Programs
+			</Button>
 
-		<Button
-			look="{ButtonLook.START_MENU_ITEM}"
-			class="flat"
-			on:fire="{() => {
-				toggleActiveSchemeKindAction.next(undefined);
-			}}"
-		>
-			<Image height="{iconSize}" width="{iconSize}" src="{displaySettingsIcon}" />
-			Switch to
-			{#if $activeSchemeKind$ === 'w98'}
-				w2k
-			{:else}
-				w98
-			{/if}
-			theme
-		</Button>
+			<Button
+				look="{ButtonLook.START_MENU_ITEM}"
+				class="flat"
+				on:fire="{() => {
+					toggleActiveSchemeKindAction.next(undefined);
+				}}"
+			>
+				<Image height="{iconSize}" width="{iconSize}" src="{displaySettingsIcon}" />
+				Switch to
+				{#if $activeSchemeKind$ === 'w98'}
+					w2k
+				{:else}
+					w98
+				{/if}
+				theme
+			</Button>
 
-		<Button
-			look="{ButtonLook.START_MENU_ITEM}"
-			class="flat"
-			on:fire="{() => {
-				debug$.set(!debug$.value);
-			}}"
-		>
-			<Image height="{iconSize}" width="{iconSize}" src="{scanIcon}" />
-			{#if $debug$}
-				Disable
-			{:else}
-				Enable
-			{/if}
-			Debug Mode
-		</Button>
+			<Button
+				look="{ButtonLook.START_MENU_ITEM}"
+				class="flat"
+				on:fire="{() => {
+					debug$.set(!debug$.value);
+				}}"
+			>
+				<Image height="{iconSize}" width="{iconSize}" src="{scanIcon}" />
+				{#if $debug$}
+					Disable
+				{:else}
+					Enable
+				{/if}
+				Debug Mode
+			</Button>
 
-		<Button
-			look="{ButtonLook.START_MENU_ITEM}"
-			class="flat"
-			on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
-		>
-			<Image height="{iconSize}" width="{iconSize}" src="{githubIcon}" />
-			Github
-		</Button>
+			<Button
+				look="{ButtonLook.START_MENU_ITEM}"
+				class="flat"
+				on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
+			>
+				<Image height="{iconSize}" width="{iconSize}" src="{githubIcon}" />
+				Github
+			</Button>
 
-		<hr />
+			<hr />
 
-		<Button
-			look="{ButtonLook.START_MENU_ITEM}"
-			class="flat"
-			on:fire="{() => {
-				confirm('Sure?') && window.close();
-			}}"
-		>
-			<Image height="{iconSize}" width="{iconSize}" src="{shutdownIcon}" />
-			Shut down...
-		</Button>
+			<Button
+				look="{ButtonLook.START_MENU_ITEM}"
+				class="flat"
+				on:fire="{() => {
+					confirm('Sure?') && window.close();
+				}}"
+			>
+				<Image height="{iconSize}" width="{iconSize}" src="{shutdownIcon}" />
+				Shut down...
+			</Button>
+		</div>
 	</div>
 </div>
 

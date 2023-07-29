@@ -8,6 +8,7 @@
 	import w98StartIcon from '../../assets/desktop/w98-start.png';
 
 	import { map } from 'rxjs';
+	import StartMenu from './start-menu.svelte';
 
 	export let startButton: HTMLElement;
 
@@ -15,6 +16,10 @@
 		map((kind) => (kind === 'w2k' ? w2kStartIcon : w98StartIcon)),
 	);
 </script>
+
+{#if $startMenuOpen$}
+	<StartMenu {startButton} />
+{/if}
 
 <Button
 	bind:button="{startButton}"
@@ -25,4 +30,3 @@
 >
 	<Image height="{14}" src="{$startIcon$}" />
 </Button>
-{$startMenuOpen$ ? 'active' : ''}
