@@ -9,13 +9,19 @@
 
 	export let title: string;
 	export let icon: string | undefined = undefined;
-	export let active = true;
-	export let maximized = false;
-	export let resizable = true;
-	export let showMinimize = true;
-	export let showMaximize = true;
-	export let showClose = true;
+	export let active: boolean | undefined = true;
+	export let maximized: boolean | undefined = false;
+	export let resizable: boolean | undefined = true;
+	export let showMinimize: boolean | undefined = true;
+	export let minimizeEnabled: boolean | undefined = true;
+	export let showMaximize: boolean | undefined = true;
+	export let maximizeEnabled: boolean | undefined = true;
+	export let showClose: boolean | undefined = true;
+	export let closeEnabled: boolean | undefined = true;
+	export let showHelp: boolean | undefined = false;
+	export let helpEnabled: boolean | undefined = true;
 
+	console.log('resizable', resizable);
 	const sink = new Subscription();
 
 	function minimize() {
@@ -28,6 +34,10 @@
 		} else {
 			dispatch('maximize');
 		}
+	}
+
+	function help() {
+		dispatch('help');
 	}
 
 	function close() {
@@ -66,7 +76,10 @@
 
 	<div class="title-bar-controls">
 		{#if showMinimize}
-			<button aria-label="Minimize" on:click|preventDefault|stopPropagation="{minimize}"
+			<button
+				aria-label="Minimize"
+				disabled="{!minimizeEnabled}"
+				on:click|preventDefault|stopPropagation="{minimize}"
 			></button>
 		{/if}
 
@@ -74,65 +87,24 @@
 			<button
 				aria-label="{maximized ? 'Restore' : 'Maximize'}"
 				on:click|preventDefault|stopPropagation="{maximize}"
-				disabled="{!resizable}"
+				disabled="{!maximizeEnabled || !resizable}"
 			></button>
 		{/if}
+
+		{#if showHelp}
+			<button
+				aria-label="Help"
+				on:click|preventDefault|stopPropagation="{help}"
+				disabled="{!helpEnabled}"
+			></button>
+		{/if}
+
 		{#if showClose}
-			<button aria-label="Close" on:click|preventDefault|stopPropagation="{close}"></button>
+			<button
+				aria-label="Close"
+				on:click|preventDefault|stopPropagation="{close}"
+				disabled="{!closeEnabled}"
+			></button>
 		{/if}
 	</div>
 </div>
-
-<style lang="scss">
-	// 98.css
-	.title-bar {
-		user-select: none;
-		touch-action: none;
-		cursor: default;
-
-		// Part of scheme
-		font-weight: bold;
-
-		// 98.css
-		.title-bar-text {
-			display: flex;
-			gap: 2px;
-			height: 14px;
-			text-transform: capitalize;
-			align-items: flex-end;
-
-			:global(img) {
-				align-self: center;
-			}
-		}
-
-		&.active {
-			background: linear-gradient(
-				90deg,
-				var(--win-active-title-bar-color),
-				var(--win-active-title-bar-color-2)
-			);
-
-			.title-bar-text {
-				color: var(--win-active-title-bar-font-color);
-			}
-		}
-
-		&:not(.active) {
-			background: linear-gradient(
-				90deg,
-				var(--win-inactive-title-bar-color),
-				var(--win-inactive-title-bar-color-2)
-			);
-
-			.title-bar-text {
-				color: var(--win-inactive-title-bar-font-color);
-			}
-		}
-
-		:global(.ms-title-bar-icon) {
-			filter: drop-shadow(0 0 8px rgb(180 180 255 / 80%));
-			max-height: 13px;
-		}
-	}
-</style>

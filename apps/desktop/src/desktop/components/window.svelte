@@ -93,7 +93,7 @@
 	let moveInteract: InteractBuilder | undefined;
 	let resizeInteract: InteractBuilder | undefined;
 
-	$: resizeInteract?.toggle(effectiveResizable);
+	$: resizeInteract?.toggle(effectiveResizable ?? true);
 	$: moveInteract?.toggle(effectiveMovable);
 
 	if (transient) {
@@ -160,13 +160,18 @@
 >
 	<TitleBar
 		title="{transientState.title}"
-		icon="{transientState.icon}"
+		icon="{transientState.titleBarIcon}"
 		active="{transientState.active}"
 		maximized="{transientState.maximized}"
 		resizable="{transientState.resizable}"
-		showMinimize="{!transient}"
-		showMaximize="{transientState.resizable}"
-		showClose="{true}"
+		showMinimize="{transientState.showMinimize ?? !transient}"
+		minimizeEnabled="{transientState.minimizeEnabled}"
+		showMaximize="{transientState.showMaximize}"
+		maximizeEnabled="{transientState.maximizeEnabled}"
+		showClose="{transientState.showClose}"
+		closeEnabled="{transientState.closeEnabled}"
+		showHelp="{transientState.showHelp}"
+		helpEnabled="{transientState.helpEnabled}"
 		on:minimize="{minimize}"
 		on:restore="{restore}"
 		on:maximize="{maximize}"

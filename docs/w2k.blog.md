@@ -130,3 +130,31 @@ Windows 98 and Windows 2000's classic scheme both uses `Microsoft Sans Serif`
 (Which is provided by `98.css`) as the default font, but Windows 2000's standard
 scheme uses `Tahoma`. For this font I've found a good, pixelated recreation:
 [fs Tahoma 8px by ETHproductions](https://fontstruct.com/fontstructions/show/735108)
+
+### minesweeper
+
+#### Why not borders with style inset/outset?
+
+While they are similar, you can't control the difference between the shadowy and
+lit parts of such a border. And the luminance difference in the Windows UI is
+much larger. If I set the border color to the 1 lighter version of the 3D Object
+color, the darker side won't match. I could set the shadowed sides colors to a
+darker color, but the way the browser calculates how dark it should ba based on
+a base color is, again, different. (Using the lighter shade of the base shade as
+the base color, shadow color that is lighter then supposed to be. using the base
+shade itself results in a darker shadow color.)
+
+Instead of figuring out the ratio, I just continued to use box shadows, just
+like in 98.css. This too can't be pixel perfect either.
+
+This is how it looks like in Windows 2000:
+![w2k minesweeper](./reference/w2k-minesweeper-top.png)
+
+And this is my replica: ![aa minesweeper](./reference/aa-minesweeper-top.png)
+
+Notice how the two lit and shadowy edges meet in the corner, they merge into
+their middle color which should be the same color as the original shade base
+color. Unfortunately I couldn't replicate this with the `box-shadow` hack. I
+tried using transparent black/white to replicate the target color but because -
+for the pixelated look - I use stacked shadows, the transparent shadows would
+add up. That, and if the shadow is transparent it can't be pure white.

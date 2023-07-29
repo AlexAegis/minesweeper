@@ -21,9 +21,9 @@
 		display: grid;
 		width: fit-content;
 		height: fit-content;
-		margin: auto;
 		padding: 0;
 		padding: 3px;
+		margin: 0;
 		box-shadow:
 			inset -1px -1px var(--win-3d-objects-color-lighter-2),
 			inset 1px 1px var(--win-3d-objects-color-darker-1),

@@ -10,8 +10,14 @@
 	--win-start-button-width: 54px; // + 1 the bo
 	--win-taskbar-height: 28px; // with box-sizing: border-box;
 	--win-taskbar-element-height: 20px;
+
+	// These two variables are re-declared on the default schemes so that parts of the ui can have a forced scheme. But it's inconvenient for custom schemes to declare these again, and those can't be used for forced styles anyway since it's runtime data.
 	--win-3d-objects-color: hsl(
 		var(--win-3d-objects-color-h) var(--win-3d-objects-color-s) var(--win-3d-objects-color-l)
+	);
+	--win-3d-objects-shade-source-color: hsl(
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
+			var(--win-3d-objects-shade-source-l)
 	);
 
 	// These calculates match the actual win behavior
@@ -20,9 +26,18 @@
 	--win-3d-objects-color-l-darker-3: calc(var(--win-3d-objects-color-l-darker-2) * 2 / 3);
 	--win-3d-objects-color-l-ligher-1: calc(var(--win-3d-objects-shade-source-l) / 2 * 3);
 	--win-3d-objects-color-l-ligher-2: calc(var(--win-3d-objects-color-l-ligher-1) / 2 * 3);
+	--win-3d-objects-color-l-ligher-3: calc(var(--win-3d-objects-color-l-ligher-2) / 2 * 3);
 	--win-3d-objects-color-darker-1: hsl(
 		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-darker-1)
+	);
+	--win-3d-objects-color-darker-2: hsl(
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
+			var(--win-3d-objects-color-l-darker-2)
+	);
+	--win-3d-objects-color-darker-3: hsl(
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
+			var(--win-3d-objects-color-l-darker-3)
 	);
 	--win-3d-objects-color-lighter-1: hsl(
 		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
@@ -32,8 +47,17 @@
 		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
 			var(--win-3d-objects-color-l-ligher-2)
 	);
+	--win-3d-objects-color-lighter-3: hsl(
+		var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
+			var(--win-3d-objects-color-l-ligher-3)
+	);
 	--win-start-menu-item-height: 32px;
 	--win-start-menu-item-width: 227px;
+	--win-title-bar-icon-minimize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAADklEQVQI12NgwAbqQAgAA40A/e5DMQMAAAAASUVORK5CYII=');
+	--win-title-bar-icon-maximize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAEklEQVQI12P438AARA0Y6H8DAJLoCn7HPTdBAAAAAElFTkSuQmCC');
+	--win-title-bar-icon-close: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAHElEQVQI12NgYGBIbGAwZmCQY2DgAZPGYBEGBgAhOwJxp5nQ3QAAAABJRU5ErkJggg==');
+	--win-title-bar-icon-help: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAFklEQVQI12OQY2AwBiM2BgYeMGKAMgANngC7z1BwaQAAAABJRU5ErkJggg==');
+	--win-title-bar-icon-restore: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAACXBIWXMAABk5AAAZOQEmJYyZAAAAOklEQVQYlZ2Q0QoAMAgCr9H//3J7GgtJGLsnwVIwuBQzsYxhmZIKIMXsOo54qkv9aomlRxN/dW4jADbgSQgUTlPGKAAAAABJRU5ErkJggg==');
 
 	&.custom-scheme {
 		// Only custom schemes shde with their actual object color
@@ -54,15 +78,14 @@
 		--win-desktop-color: #3a6ea5;
 
 		// Used for all panels, everything that can be inset or outset, determines their background-color and outline colors
-		// --win-3d-objects-color: rgb(212 208 200); // #d4d0c8 = rgb(212 208 200)
 		--win-3d-objects-color-h: 40;
 		--win-3d-objects-color-s: 12%;
 		--win-3d-objects-color-l: 81%;
 		--win-shadow-color: #404040; // #404040 = rgb(64 64 64) This is always fix in the standard theme
 		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
 		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black
-		--win-active-title-bar-color: #0a246a;
-		--win-active-title-bar-color-2: #a6caf0;
+		--win-active-title-bar-color: rgb(10 36 106); // #0a246a
+		--win-active-title-bar-color-2: rgb(166 202 240); // #a6caf0
 		--win-inactive-title-bar-color: #808080;
 		--win-inactive-title-bar-color-2: #c0c0c0;
 		--win-active-title-bar-font-color: #fff;
@@ -70,6 +93,28 @@
 		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
 		--win-font-color: #000;
 		--win-start-menu-highlight-color: #0a246a;
+		--win-title-bar-padding: 2px;
+		--win-title-bar-icon-size: 24px;
+
+		// The darkest part lasts as long as the title bar icon does
+		--win-title-bar-gradient: linear-gradient(
+			90deg,
+			var(--win-active-title-bar-color),
+			var(--win-active-title-bar-color)
+				calc((var(--win-title-bar-padding) * 2) + var(--win-title-bar-icon-size)),
+			var(--win-active-title-bar-color-2)
+		);
+
+		// These are redeclared here so other parts of the UI can have a forced scheme (Like Minesweeper always looks Classic) The declaration directly on the .w2k class is needed for custom schemes
+		// #d4d0c8 = rgb(212 208 200)
+		--win-3d-objects-color: hsl(
+			var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+				var(--win-3d-objects-color-l)
+		);
+		--win-3d-objects-shade-source-color: hsl(
+			var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
+				var(--win-3d-objects-shade-source-l)
+		);
 
 		button {
 			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
@@ -82,15 +127,14 @@
 		--win-desktop-color: #008080;
 
 		// Used for all panels, everything that can be inset or outset, determines their background-color and outline colors
-		// --win-3d-objects-color: rgb(192 192 192); // #C0C0C0 = rgb(192 192 192)
 		--win-3d-objects-color-h: 160;
 		--win-3d-objects-color-s: 0%;
 		--win-3d-objects-color-l: 75.33%; // Evaluates to rgb(192 192 192) #C0C0C0
 		--win-shadow-color: #000; // This is always fix in the classic theme
 		--win-desktop-font-color: #fff; // On light win-backgrounds should turn to black
 		--win-desktop-selected-font-color: #fff; // On light win-selection should turn to black
-		--win-active-title-bar-color: #000080;
-		--win-active-title-bar-color-2: #1084d0;
+		--win-active-title-bar-color: rgb(0 0 128); // #000080;
+		--win-active-title-bar-color-2: rgb(16 132 208); // #1084d0
 		--win-inactive-title-bar-color: #808080;
 		--win-inactive-title-bar-color-2: #b5b5b5;
 		--win-active-title-bar-font-color: #fff;
@@ -99,34 +143,22 @@
 		--win-font-color: #000;
 		--win-start-menu-highlight-color: #00007f;
 
+		// These are redeclared here so other parts of the UI can have a forced scheme (Like Minesweeper always looks Classic) The declaration directly on the .w2k class is needed for custom schemes
+		// #c0c0c0 = rgb(192 192 192)
+		--win-3d-objects-color: hsl(
+			var(--win-3d-objects-color-h) var(--win-3d-objects-color-s)
+				var(--win-3d-objects-color-l)
+		);
+		--win-3d-objects-shade-source-color: hsl(
+			var(--win-3d-objects-shade-source-h) var(--win-3d-objects-shade-source-s)
+				var(--win-3d-objects-shade-source-l)
+		);
+
 		button {
 			// TODO: Remove tahoma-8px from here, but fix the sizes of MS Sans Serif
 			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
 				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
 		}
-	}
-
-	// Elements that should have 2px edges and shadows, outset
-	.window {
-		background-color: var(--win-3d-objects-color);
-		box-shadow:
-			inset -1px -1px var(--win-shadow-color),
-			inset 1px 1px var(--win-3d-objects-color),
-			inset -2px -2px var(--win-3d-objects-color-darker-1),
-			inset 2px 2px var(--win-3d-objects-color-lighter-2);
-	}
-
-	// Elements that should have 2px edges and shadows, inset
-	input[type='email'],
-	input[type='number'],
-	input[type='password'],
-	input[type='text'],
-	select {
-		box-shadow:
-			inset -1px -1px var(--win-3d-objects-color-lighter-2),
-			inset 1px 1px var(--win-3d-objects-color-darker-1),
-			inset -2px -2px var(--win-3d-objects-color),
-			inset 2px 2px var(--win-shadow-color);
 	}
 
 	// Elements that should only have 1px edges and shadows
@@ -145,26 +177,6 @@
 		background: var(--win-3d-objects-color);
 		background-color: var(--win-3d-objects-color);
 		padding: 1px;
-	}
-
-	.panel {
-		&:not(.outset),
-		&.inset {
-			box-shadow:
-				inset -1px -1px var(--win-3d-objects-color-lighter-1),
-				inset 1px 1px var(--win-3d-objects-color-darker-1);
-		}
-
-		&.outset,
-		&:not(.inset) {
-			box-shadow:
-				inset 1px 1px var(--win-3d-objects-color-lighter-1),
-				inset -1px -1px var(--win-3d-objects-color-darker-1);
-		}
-
-		&.padded {
-			padding: 4px;
-		}
 	}
 
 	button {
@@ -209,8 +221,10 @@
 
 		// Maybe rename this to window menu item?
 		&.type-title-bar-menu-item {
-			height: 19px;
-			padding: 2px 10px;
+			height: 18px;
+			padding: 2px 6px;
+			padding: 4px 5px 4px 6px; // matches the W2000 reference with 8px line height
+			line-height: 8px;
 			display: block; // ::first-letter only works with block type elements
 
 			> ::first-letter {
@@ -223,9 +237,14 @@
 				box-shadow: inset -1px -1px var(--win-3d-objects-color-lighter-1);
 				border-top: 1px solid var(--win-3d-objects-color-darker-1);
 				border-left: 1px solid var(--win-3d-objects-color-darker-1);
+				border-bottom: none;
+				border-right: none;
 			}
 
 			&:not(:active, .active) {
+				border-top: none;
+				border-left: none;
+
 				&:hover {
 					box-shadow: inset 1px 1px var(--win-3d-objects-color-lighter-1);
 					border-bottom: 1px solid var(--win-3d-objects-color-darker-1);
@@ -272,21 +291,239 @@
 		}
 	}
 
-	.window:not(.active):has(.title-bar) {
-		button {
-			color: var(--win-inactive-title-bar-color);
+	.title-bar {
+		user-select: none;
+		touch-action: none;
+		cursor: default;
+		padding: 2px;
+		font-weight: bold;
+
+		// 98.css
+		.title-bar-text {
+			display: flex;
+			gap: 2px;
+			height: 14px;
+			text-transform: capitalize;
+			align-items: flex-end;
+
+			img {
+				align-self: center;
+			}
+		}
+
+		&.active {
+			background: var(--win-title-bar-gradient);
+
+			.title-bar-text {
+				color: var(--win-active-title-bar-font-color);
+			}
+		}
+
+		&:not(.active) {
+			background: linear-gradient(
+				90deg,
+				var(--win-inactive-title-bar-color),
+				var(--win-inactive-title-bar-color-2)
+			);
+
+			.title-bar-text {
+				color: var(--win-inactive-title-bar-font-color);
+			}
+		}
+
+		.title-bar-controls {
+			button {
+				content: '';
+				margin-top: 0;
+				margin-bottom: 0;
+				min-width: 16px;
+				min-height: 14px;
+				image-rendering: pixelated;
+
+				&[aria-label='Minimize'] {
+					&:not([disabled]) {
+						background: var(--win-title-bar-icon-minimize);
+						background-repeat: no-repeat;
+						background-position: bottom 2px left 3px;
+						background-color: var(--win-3d-objects-color);
+					}
+
+					&[disabled] {
+						background: none;
+						background-color: var(--win-3d-objects-color);
+
+						&::after {
+							content: '';
+							background: var(--win-title-bar-icon-minimize);
+							background-position: bottom 1px left 2px;
+							background-repeat: no-repeat;
+
+							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+							width: 12px;
+							height: 11px;
+							position: absolute;
+						}
+					}
+				}
+
+				&[aria-label='Maximize'] {
+					&:not([disabled]) {
+						background: var(--win-title-bar-icon-maximize);
+						background-repeat: no-repeat;
+						background-position: bottom 2px left 3px;
+						background-color: var(--win-3d-objects-color);
+					}
+
+					&[disabled] {
+						background: none;
+						background-color: var(--win-3d-objects-color);
+
+						&::after {
+							content: '';
+							background: var(--win-title-bar-icon-maximize);
+							background-position: bottom 1px left 2px;
+							background-repeat: no-repeat;
+
+							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+							width: 12px;
+							height: 11px;
+							position: absolute;
+						}
+					}
+				}
+
+				&[aria-label='Close'] {
+					&:not([disabled]) {
+						background: var(--win-title-bar-icon-close);
+						background-repeat: no-repeat;
+						background-position: bottom 2px left 3px;
+						background-color: var(--win-3d-objects-color);
+					}
+
+					&[disabled] {
+						background: none;
+						background-color: var(--win-3d-objects-color);
+
+						&::after {
+							content: '';
+							background: var(--win-title-bar-icon-close);
+							background-position: bottom 1px left 2px;
+							background-repeat: no-repeat;
+
+							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+							width: 12px;
+							height: 11px;
+							position: absolute;
+						}
+					}
+				}
+
+				&[aria-label='Restore'] {
+					&:not([disabled]) {
+						background: var(--win-title-bar-icon-restore);
+						background-repeat: no-repeat;
+						background-position: bottom 2px left 3px;
+						background-color: var(--win-3d-objects-color);
+					}
+
+					&[disabled] {
+						background: none;
+						background-color: var(--win-3d-objects-color);
+
+						&::after {
+							content: '';
+							background: var(--win-title-bar-icon-restore);
+							background-position: bottom 1px left 2px;
+							background-repeat: no-repeat;
+
+							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+							width: 12px;
+							height: 11px;
+							position: absolute;
+						}
+					}
+				}
+
+				&[aria-label='Help'] {
+					&:not([disabled]) {
+						background: var(--win-title-bar-icon-help);
+						background-repeat: no-repeat;
+						background-position: bottom 2px left 3px;
+						background-color: var(--win-3d-objects-color);
+					}
+
+					&[disabled] {
+						background: none;
+						background-color: var(--win-3d-objects-color);
+
+						&::after {
+							content: '';
+							background: var(--win-title-bar-icon-help);
+							background-position: bottom 1px left 2px;
+							background-repeat: no-repeat;
+
+							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+							width: 12px;
+							height: 11px;
+							position: absolute;
+						}
+					}
+				}
+			}
 		}
 	}
 
-	.title-bar {
-		padding: 2px;
+	// Elements that should have 2px edges and shadows, outset
+	.window {
+		background-color: var(--win-3d-objects-color);
+		box-shadow:
+			inset -1px -1px var(--win-shadow-color),
+			inset 1px 1px var(--win-3d-objects-color),
+			inset -2px -2px var(--win-3d-objects-color-darker-1),
+			inset 2px 2px var(--win-3d-objects-color-lighter-2);
+	}
 
-		/* stylelint-disable-next-line no-descending-specificity */
-		.title-bar-controls button {
-			min-width: 16px;
-			min-height: 14px;
-			margin-top: 0;
-			margin-bottom: 0;
+	// Elements that should have 2px edges and shadows, inset
+	input[type='email'],
+	input[type='number'],
+	input[type='password'],
+	input[type='text'],
+	select {
+		box-shadow:
+			inset -1px -1px var(--win-3d-objects-color-lighter-2),
+			inset 1px 1px var(--win-3d-objects-color-darker-1),
+			inset -2px -2px var(--win-3d-objects-color),
+			inset 2px 2px var(--win-shadow-color);
+	}
+
+	.panel {
+		&:not(.outset),
+		&.inset {
+			box-shadow:
+				inset -1px -1px var(--win-3d-objects-color-lighter-1),
+				inset 1px 1px var(--win-3d-objects-color-darker-1);
+		}
+
+		&.outset,
+		&:not(.inset) {
+			box-shadow:
+				inset 1px 1px var(--win-3d-objects-color-lighter-1),
+				inset -1px -1px var(--win-3d-objects-color-darker-1);
+		}
+
+		&.padded {
+			padding: 4px;
+		}
+	}
+
+	.window:not(.active):has(.title-bar) {
+		button {
+			color: var(--win-inactive-title-bar-color);
 		}
 	}
 

@@ -12,8 +12,10 @@ import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interf
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store.js';
 import type { ResizeData } from '../components/resizable.function.js';
 import {
+	defaultCommonProgramWindowPreferences,
 	initialWindowState,
 	type BaseWindowState,
+	type CommonProgramWindowPreferences,
 	type WindowState,
 } from '../components/window-state.interface.js';
 
@@ -21,7 +23,8 @@ import { capitalize, isNotNullish } from '@alexaegis/common';
 import { documentPointerDown$, rootSlice$ } from '../../root.store.js';
 
 import { browser } from '$app/environment';
-import minesweeperIcon from '../../assets/desktop/minesweeper.png';
+import minesweeperIconLarge from '../../assets/minesweeper/minesweeper-icon-large.png';
+import minesweeperIconSmall from '../../assets/minesweeper/minesweeper-icon-small.png';
 
 export type ProcessId = string;
 
@@ -30,10 +33,17 @@ export enum ProgramName {
 	UNKNOWN = 'unknown',
 }
 
-export interface ProgramState {
-	name: ProgramName;
+export interface ProgramState extends CommonProgramWindowPreferences {
 	title: string;
+	name: ProgramName;
+	/**
+	 * Should be 48*48
+	 */
 	icon?: string | undefined;
+	/**
+	 * Should be 24*24
+	 */
+	titleBarIcon?: string | undefined;
 	initialWindowState: Partial<BaseWindowState>;
 }
 
@@ -61,12 +71,15 @@ export interface DesktopState {
 
 const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 	[ProgramName.MINESWEEPER]: {
+		...defaultCommonProgramWindowPreferences,
 		name: ProgramName.MINESWEEPER,
 		title: capitalize(ProgramName.MINESWEEPER),
-		icon: minesweeperIcon,
+		icon: minesweeperIconLarge,
+		titleBarIcon: minesweeperIconSmall,
+		resizable: false,
 		initialWindowState: {
 			fitContent: true,
-			icon: minesweeperIcon,
+			titleBarIcon: minesweeperIconSmall,
 		},
 	},
 };
@@ -82,7 +95,7 @@ export const desktop$ = rootSlice$.addSlice(
 					name: next.title,
 					position: { x: 0, y: shortcutId * 32 },
 					program: next.name,
-					icon: next.icon,
+					icon: next.icon ?? next.titleBarIcon,
 				};
 
 				return acc;

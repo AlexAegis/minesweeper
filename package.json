@@ -117,7 +117,7 @@
 		"commit-and-tag-version": "^11.2.2",
 		"commitlint": "^17.6.7",
 		"depcheck": "^1.4.3",
-		"eslint": "^8.45.0",
+		"eslint": "^8.46.0",
 		"husky": "^8.0.3",
 		"lint-staged": "^13.2.3",
 		"npm-check-updates": "^16.10.17",

@@ -23,8 +23,8 @@
 	});
 </script>
 
-<div class="game">
-	<Panel class="stats panel inset">
+<div class="game w2k-scheme-classic">
+	<Panel class="stats">
 		<Observer observable="{internals.remainingMines$}" let:next>
 			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />
 		</Observer>
@@ -61,16 +61,18 @@
 
 <style lang="scss">
 	.game {
+		background: var(--win-3d-objects-color);
 		display: flex;
+		align-items: center;
+		gap: 6px;
 		flex-direction: column;
-		padding: calc(var(--game-area-border-width) + var(--game-area-padding));
+		padding: calc(var(--game-area-border-width) + var(--game-area-padding))
+			var(--game-area-padding) var(--game-area-padding)
+			calc(var(--game-area-border-width) + var(--game-area-padding));
 		box-shadow:
-			inset 1px 1px var(--win-3d-objects-color-lighter-1),
-			inset -1px -1px var(--win-3d-objects-color-darker-1),
-			inset 2px 2px var(--win-3d-objects-color-lighter-1),
-			inset -2px -2px var(--win-3d-objects-color-darker-1),
-			inset 3px 3px var(--win-3d-objects-color-lighter-1),
-			inset -3px -3px var(--win-3d-objects-color-darker-1) !important;
+			inset 1.05px 1.05px var(--win-3d-objects-color-lighter-1),
+			inset 2.05px 2.05px var(--win-3d-objects-color-lighter-1),
+			inset 3.05px 3.05px var(--win-3d-objects-color-lighter-1) !important;
 
 		// These borders are not present on the XP version
 	}
@@ -78,10 +80,12 @@
 	:global(.game .stats) {
 		display: flex;
 		padding: 6px;
+		width: calc(100% - 1px);
+		background: var(--win-3d-objects-color);
 		box-shadow:
-			inset -1px -1px var(--win-3d-objects-color-lighter-2),
-			inset 1px 1px var(--win-3d-objects-color-darker-1),
-			inset -2px -2px var(--win-3d-objects-color-lighter-2),
-			inset 2px 2px var(--win-3d-objects-color-darker-1) !important;
+			inset -1.05px -1.05px var(--win-3d-objects-color-lighter-1),
+			inset 1.05px 1.05px var(--win-3d-objects-color-darker-1),
+			inset -2.05px -2.05px var(--win-3d-objects-color-lighter-1),
+			inset 2.05px 2.05px var(--win-3d-objects-color-darker-1) !important;
 	}
 </style>

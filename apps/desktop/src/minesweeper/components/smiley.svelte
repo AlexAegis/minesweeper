@@ -15,15 +15,15 @@
 	}
 
 	:global(.lost).ms-smiley :global(button) {
-		background-image: var(--asset-smiley-lost);
+		background-image: var(--asset-smiley-lose);
 	}
 
 	:global(.ongoing).ms-smiley :global(button) {
-		background-image: var(--asset-smiley-ongoing);
+		background-image: var(--asset-smiley-neutral);
 	}
 
 	:global(.won).ms-smiley :global(button) {
-		background-image: var(--asset-smiley-won);
+		background-image: var(--asset-smiley-win);
 	}
 
 	.ms-smiley {
@@ -45,9 +45,7 @@
 				inset -1px -1px var(--win-3d-objects-color-darker-1),
 				inset 1px 1px var(--win-3d-objects-color-lighter-2),
 				inset -2px -2px var(--win-3d-objects-color-darker-1),
-				inset 2px 2px var(--win-3d-objects-color-lighter-2),
-				inset -3px -3px var(--win-3d-objects-color-darker-1),
-				inset 3px 3px var(--win-3d-objects-color-lighter-2) !important;
+				inset 2px 2px var(--win-3d-objects-color-lighter-2) !important;
 		}
 
 		:global(button.pressed) {

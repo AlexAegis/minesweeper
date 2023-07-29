@@ -75,7 +75,7 @@
 		"@alexaegis/vitest": "^0.6.1",
 		"@interactjs/types": "^1.10.17",
 		"@sveltejs/adapter-auto": "^2.1.0",
-		"@sveltejs/adapter-static": "^2.0.2",
+		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/adapter-vercel": "^3.0.2",
 		"@sveltejs/kit": "^1.22.3",
 		"@tinyslice/devtools-plugin": "^0.8.0",

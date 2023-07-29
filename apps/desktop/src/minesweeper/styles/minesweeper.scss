@@ -21,15 +21,14 @@
 		rgb(var(--tile-grid-color-triplet) 0.8),
 		rgb(var(--tile-grid-color-triplet) 0.8)
 	);
-	--asset-smiley-click: url('../../assets/minesweeper/smiley-click-small.png');
-	--asset-smiley-lost: url('../../assets/minesweeper/smiley-lost-small.png');
-	--asset-smiley-ongoing: url('../../assets/minesweeper/smiley-ongoing-small.png');
-	--asset-smiley-won: url('../../assets/minesweeper/smiley-won-small.png');
+	--asset-smiley-click: url('../../assets/minesweeper/minesweeper-smiley-click.png');
+	--asset-smiley-lose: url('../../assets/minesweeper/minesweeper-smiley-lose.png');
+	--asset-smiley-neutral: url('../../assets/minesweeper/minesweeper-smiley-neutral.png');
+	--asset-smiley-win: url('../../assets/minesweeper/minesweeper-smiley-win.png');
 	--asset-flag: url('../../assets/minesweeper/flag.png');
 	--asset-not-mine: url('../../assets/minesweeper/not-mine.png');
 	--asset-question-mark: url('../../assets/minesweeper/question-mark.png');
 	--asset-mine: url('../../assets/minesweeper/mine.png');
-	--asset-checkmark: url('../../assets/minesweeper/checkmark.png');
 
 	@for $i from 1 through 10 {
 		--asset-number-#{$i - 1}: url('../../assets/minesweeper/#{$i - 1}.png');
