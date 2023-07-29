@@ -23,8 +23,9 @@
 
 <Button
 	bind:button="{startButton}"
-	class="start {$startMenuOpen$ ? 'active' : ''}"
-	on:click="{() => {
+	class="start"
+	bind:active="{$startMenuOpen$}"
+	on:startFire="{() => {
 		startMenuOpen$.set(!startMenuOpen$.value);
 	}}"
 >

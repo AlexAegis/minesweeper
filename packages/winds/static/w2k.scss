@@ -215,8 +215,24 @@ body.w2k {
 		margin-bottom: 1px;
 		margin-top: 1px;
 
+		&.custom {
+			min-width: unset;
+			height: unset;
+			width: unset;
+			min-height: unset;
+		}
+
+		&[disabled]:not(.custom) {
+			background-color: blue !important;
+		}
+
 		// Regular
-		&:not(.type-title-bar-menu-item) {
+		&:not(.type-title-bar-menu-item, .type-start-menu-item, .type-context-menu-item, .custom) {
+			min-width: 75px;
+			height: 23px;
+			padding-left: 6px;
+			padding-right: 6px;
+
 			&:active,
 			&.pressed,
 			&.active {
@@ -292,6 +308,8 @@ body.w2k {
 		&.type-start-menu-item {
 			border: none !important;
 			box-shadow: none !important;
+			margin-bottom: 0;
+			margin-top: 0;
 
 			::first-letter {
 				text-transform: uppercase;
@@ -361,6 +379,8 @@ body.w2k {
 				margin-bottom: 0;
 				min-width: 16px;
 				min-height: 14px;
+				width: 16px;
+				height: 14px;
 				image-rendering: pixelated;
 
 				&[aria-label='Minimize'] {

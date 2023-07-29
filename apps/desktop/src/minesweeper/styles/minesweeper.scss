@@ -1,12 +1,7 @@
 @use 'sass:list';
 
 .minesweeper {
-	--border-color-light-og: #fff;
-	--border-color-dark-og: #888;
-	--panel-border-color: #eee;
-	--tile-border-color: #a6a6a6;
-	--tile-grid-color-triplet: 192, 192, 192;
-	--tile-grid-color: rgb(192 192 192);
+	--tile-grid-color: var(--win-3d-objects-shade-source-color);
 	--tile-0-color: #a0a0a0;
 	--tile-1-color: #00f;
 	--tile-2-color: #008100;
@@ -18,8 +13,9 @@
 	--tile-8-color: #808080;
 	--tile-9-color: #ffd22e;
 	--tile-debug-veil: linear-gradient(
-		rgb(var(--tile-grid-color-triplet) 0.8),
-		rgb(var(--tile-grid-color-triplet) 0.8)
+		to right,
+		var(--win-3d-objects-shade-source-color),
+		var(--win-3d-objects-shade-source-color)
 	);
 	--asset-smiley-click: url('../../assets/minesweeper/minesweeper-smiley-click-min.png');
 	--asset-smiley-lose: url('../../assets/minesweeper/minesweeper-smiley-lose-min.png');
@@ -44,7 +40,7 @@
 	--smiley-top-left-padding: 2px;
 	--smiley-bottom-right-padding: 1px;
 
-	button.ms-tile {
+	button.minesweeper-tile {
 		height: 16px;
 		width: 16px;
 		margin: 0;
@@ -55,12 +51,20 @@
 		box-sizing: border-box;
 		padding: 0;
 		image-rendering: pixelated;
-		background-repeat: no-repeat;
+		background-repeat: no-repeat !important;
 		background-position: 2px 2px;
 		user-select: none;
 		background-size: auto;
 		background-position-x: 3px;
 		background-position-y: 3px;
+
+		--debug-veil-size: calc(100% - 3.85px);
+		--debug-veil-position-left: 2px;
+
+		&.pressed {
+			--debug-veil-size: 100%;
+			--debug-veil-position-left: 0px;
+		}
 
 		&.pressed,
 		&.revealed {
@@ -94,52 +98,51 @@
 				background-image: var(--asset-flag);
 			}
 
-			&.debug:not(.revealed, .wrong) {
-				background-image: var(--tile-debug-veil), var(--asset-flag);
-			}
-
 			&.wrong {
 				&.revealed,
 				&:not(.debug) {
 					background-position: 1px 1px;
 					background-image: var(--asset-not-mine);
 				}
-
-				&.debug:not(.revealed) {
-					background-position: 1px 1px;
-					background-image: var(--tile-debug-veil), var(--asset-not-mine);
-				}
 			}
 		}
 
 		&.question-mark {
-			&.revealed,
-			&:not(.debug) {
+			&:not(.revealed) {
 				background-image: var(--asset-question-mark);
-			}
-
-			&.debug:not(.revealed) {
-				background-image: var(--tile-debug-veil), var(--asset-question-mark);
 			}
 		}
 
 		&.mine {
-			&.revealed,
-			&:not(.debug) {
+			&.revealed {
 				background-image: var(--asset-mine);
 			}
 
 			&.debug:not(.revealed) {
-				background-image: var(--tile-debug-veil), var(--asset-mine);
+				background: var(--asset-mine);
+				background-position: 2px 2px;
+				background-size: 13px;
+
+				&::after {
+					content: '';
+					display: block;
+					position: relative;
+					top: 0;
+					left: var(--debug-veil-position-left);
+					width: var(--debug-veil-size);
+					height: var(--debug-veil-size);
+					opacity: 0.8;
+					background: var(--tile-debug-veil);
+				}
 			}
 
 			&.pressed {
-				background-position: 1px 1px !important;
+				background-position: 1px 1px;
 				background-size: 13px;
 			}
 
 			&:not(.pressed) {
-				background-position: 0 0 !important;
+				background-position: 0 0;
 				background-size: 12px;
 			}
 		}
@@ -160,7 +163,23 @@
 
 				&.debug:not(.revealed) {
 					/* stylelint-disable-next-line custom-property-pattern */
-					background-image: var(--tile-debug-veil), var(--asset-number-#{$i - 1});
+					background-image: var(--asset-number-#{$i - 1});
+
+					&::after {
+						content: '';
+						display: block;
+						position: relative;
+						top: 0;
+						left: 2px;
+						width: calc(100% - 4px);
+						height: calc(100% - 4px);
+						opacity: 0.8;
+						background: var(--tile-debug-veil);
+					}
+				}
+
+				&.pressed:not(.revealed) {
+					background-position: 3px 3px;
 				}
 			}
 		}

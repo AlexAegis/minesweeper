@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@alexaegis/desktop-common';
 	import { createEventDispatcher } from 'svelte';
-	import { ButtonLook } from '../../desktop/components/button-look.enum';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../interfaces';
 	import type { TileState } from '../store';
 
@@ -39,7 +38,7 @@
 	}
 
 	function getValueClass(tile: TileState): string {
-		return `ms-tile-${tile.value}`;
+		return `minesweeper-tile-${tile.value}`;
 	}
 
 	function getTileClassList(tile: TileState, cheating: boolean): string {
@@ -77,12 +76,11 @@
 </script>
 
 <Button
-	class="ms-tile {tileClass}"
+	class="minesweeper-tile custom {tileClass}"
 	pressed="{tile.pressed || tile.revealed}"
 	disabled="{tile.disabled}"
 	appearDisabled="{tile.revealed}"
 	selfPress="{false}"
-	look="{ButtonLook.THICK_PRESSED_THIN}"
 	on:fire="{fire}"
 	on:startFire="{startFire}"
 	on:alternativeFire="{alternativeFire}"

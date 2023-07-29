@@ -77,7 +77,7 @@
 		top: 41px;
 		min-width: 150px;
 		flex-direction: column;
-		margin-left: -11px;
+		margin-left: -7px;
 		z-index: 100;
 		padding: 3px;
 	}

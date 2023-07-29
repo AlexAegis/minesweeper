@@ -118,5 +118,9 @@
 	bind:this="{highScoreModal}"
 	windowState="{{ fitContent: false, title: 'Highscore', height: 240 }}"
 >
-	<Highscore {highscoreEntries$} />
+	<Highscore
+		{highscoreEntries$}
+		isClearingEnabled="{internals !== undefined}"
+		on:clear="{() => internals.winHistory$.set([])}"
+	/>
 </Modal>

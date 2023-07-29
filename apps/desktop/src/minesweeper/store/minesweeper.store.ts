@@ -196,9 +196,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		},
 		clickActions: {
 			cancelFire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} cancel`),
-			// TODO: remove this ignore
-			// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-			globalCancel: game$.createAction<void>(`${MS_TAG} ${CLICK_TAG} global cancel`),
+			globalCancel: game$.createAction<undefined>(`${MS_TAG} ${CLICK_TAG} global cancel`),
 			startFire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} start fire`),
 			fire: game$.createAction<CoordinateLike>(`${MS_TAG} ${CLICK_TAG} fire`),
 			alternativeFire: game$.createAction<CoordinateLike>(
@@ -331,7 +329,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 					}${remainingSeconds}s`;
 					return {
 						title: presetName ?? 'Custom',
-						description: `${winEntry.cheated ? 'Debug ' : ''}size: ${
+						description: `${winEntry.cheated ? 'Cheater ' : ''}size: ${
 							winEntry.preset.height
 						}*${winEntry.preset.width}, mines: ${winEntry.preset.mineCount}`,
 						timeStamp,
@@ -595,7 +593,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	 */
 	game$.createEffect(
 		merge(documentPointerUp$, documentMouseLeave$).pipe(
-			map(() => minesweeperActions.clickActions.globalCancel.makePacket()),
+			map(() => minesweeperActions.clickActions.globalCancel.makePacket(undefined)),
 			map(() => undefined),
 		),
 	);
@@ -700,9 +698,9 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		),
 	);
 
+	// If you enable cheats even once during a game, it will be marked as a cheating game
 	game$.createEffect(
 		cheating$.pipe(
-			ifLatestFrom(cheated$, (cheated) => !cheated),
 			filter((cheating) => cheating),
 			map(() => cheated$.setAction.makePacket(true)),
 		),
@@ -716,6 +714,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		smileyState$,
 		remainingMines$,
 		highscoreEntries$,
+		winHistory$,
 		presets$,
 		isGameSettingsAPreset$,
 		gameWidthArray$,

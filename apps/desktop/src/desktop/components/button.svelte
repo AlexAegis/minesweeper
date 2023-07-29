@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { isNonNullable } from '@tinyslice/core';
+	import { isNotNullish } from '@alexaegis/common';
 	import type { Subscription } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
 	import { documentPointerUp$ } from '../../root.store';
@@ -15,7 +15,7 @@
 	export let disabled = false;
 	export let appearDisabled = false;
 	export let pressed = false;
-	export let longpressTime = 250;
+	export let longpressTime = 275;
 	export let type: 'button' | 'submit' | 'reset' = 'button';
 	export let look: ButtonLook | undefined = undefined;
 
@@ -53,7 +53,6 @@
 	}
 
 	function pointerup(e: PointerEvent): void {
-		e.stopImmediatePropagation(); // This messes with the styling
 		if (firing && !longpressHappened && !cancelHappened) {
 			cancelLongpress();
 			if (e.button === 0 || e.button === 1) {
@@ -84,7 +83,7 @@
 
 	function cancelLongpress() {
 		firing = false;
-		if (isNonNullable(longpressTimeout)) {
+		if (isNotNullish(longpressTimeout)) {
 			window.clearTimeout(longpressTimeout);
 			longpressTimeout = undefined;
 		}
@@ -137,6 +136,7 @@
 <button
 	bind:this="{button}"
 	{type}
+	{disabled}
 	aria-label="{$$props['aria-label']}"
 	class="{$$props['class'] ?? ''}"
 	class:outset="{!pressed}"
@@ -154,7 +154,6 @@
 	class:toggleable-context="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-none="{look === undefined}"
 	class:type-thick="{look === ButtonLook.THICK}"
-	class:type-thick-but-pressed-thin="{look === ButtonLook.THICK_PRESSED_THIN}"
 	class:type-title-bar-menu-item="{look === ButtonLook.TITLE_BAR_MENU_ITEM}"
 	class:type-context-menu-item="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-start-menu-item="{look === ButtonLook.START_MENU_ITEM}"

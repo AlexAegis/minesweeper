@@ -6,7 +6,7 @@
 </script>
 
 <div class="ms-smiley {smileyState}">
-	<Button on:click aria-label="Restart" />
+	<Button on:click aria-label="Restart" class="custom" />
 </div>
 
 <style lang="scss">

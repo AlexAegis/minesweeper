@@ -153,9 +153,3 @@
 		</div>
 	</div>
 </div>
-
-<style lang="scss">
-	hr {
-		margin-top: auto;
-	}
-</style>

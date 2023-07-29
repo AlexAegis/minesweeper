@@ -230,7 +230,7 @@
 		}
 
 		&.maximized {
-			height: 100% !important;
+			height: calc(100% - var(--win-taskbar-height)) !important;
 			width: 100% !important;
 			top: 0 !important;
 			left: 0 !important;

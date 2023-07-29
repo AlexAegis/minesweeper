@@ -63,7 +63,7 @@
 	}
 
 	export function backdropClick(event: MouseEvent) {
-		if ((event.target as Element).className.includes('ms-modal')) {
+		if ((event.target as Element).className.includes('modal')) {
 			errorNotification.next();
 		}
 	}
@@ -75,7 +75,7 @@
 
 {#if isOpen}
 	<div
-		class="ms-modal"
+		class="modal-backdrop"
 		role="button"
 		aria-roledescription="closes the modal"
 		tabindex="-1"
@@ -92,11 +92,11 @@
 {/if}
 
 <style lang="scss">
-	.ms-modal {
+	.modal-backdrop {
 		position: absolute;
 		position: fixed;
-		height: 100%;
-		width: 100%;
+		height: 100svh;
+		width: 100svw;
 		left: 0;
 		top: 0;
 		z-index: 900;
