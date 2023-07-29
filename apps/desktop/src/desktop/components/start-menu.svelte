@@ -23,6 +23,10 @@
 	export let startButton: HTMLElement;
 
 	import githubIcon from '../../assets/desktop/github.png';
+	import displaySettingsIcon from '../../assets/desktop/w2k-display-settings-icon-large.png';
+	import programsIcon from '../../assets/desktop/w2k-programs-icon-large.png';
+	import scanIcon from '../../assets/desktop/w2k-scan-icon-large.png';
+	import shutdownIcon from '../../assets/desktop/w2k-shutdown-icon-large.png';
 
 	$: programKeys$ = dicedPrograms.keys$;
 
@@ -44,10 +48,12 @@
 	onDestroy(() => {
 		closeEffect.unsubscribe();
 	});
+
+	const iconSize = 32;
 </script>
 
 <div bind:this="{startMenu}" class="start-menu window">
-	<div class="title">
+	<div class="banner">
 		<div>{PACKAGE_NAME_AND_VERSION}</div>
 	</div>
 	<div class="content">
@@ -65,7 +71,12 @@
 						console.log('TODO: create icon', programKey);
 					}}"
 				>
-					<Image alt="{next.name}" src="{next.icon}" height="{28}" width="{28}" />
+					<Image
+						alt="{next.name}"
+						src="{next.icon}"
+						height="{iconSize}"
+						width="{iconSize}"
+					/>
 					{next.title}
 				</Button>
 			</Observer>
@@ -77,16 +88,11 @@
 			look="{ButtonLook.START_MENU_ITEM}"
 			class="flat"
 			on:fire="{() => {
-				debug$.set(!debug$.value);
+				alert('Under Construction');
 			}}"
 		>
-			<Image height="{28}" width="{28}" />
-			{#if $debug$}
-				Disable
-			{:else}
-				Enable
-			{/if}
-			Debug Mode
+			<Image height="{iconSize}" width="{iconSize}" src="{programsIcon}" />
+			Programs
 		</Button>
 
 		<Button
@@ -96,7 +102,7 @@
 				toggleActiveSchemeKindAction.next(undefined);
 			}}"
 		>
-			<Image height="{28}" width="{28}" />
+			<Image height="{iconSize}" width="{iconSize}" src="{displaySettingsIcon}" />
 			Switch to
 			{#if $activeSchemeKind$ === 'w98'}
 				w2k
@@ -109,9 +115,25 @@
 		<Button
 			look="{ButtonLook.START_MENU_ITEM}"
 			class="flat"
+			on:fire="{() => {
+				debug$.set(!debug$.value);
+			}}"
+		>
+			<Image height="{iconSize}" width="{iconSize}" src="{scanIcon}" />
+			{#if $debug$}
+				Disable
+			{:else}
+				Enable
+			{/if}
+			Debug Mode
+		</Button>
+
+		<Button
+			look="{ButtonLook.START_MENU_ITEM}"
+			class="flat"
 			on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
 		>
-			<Image height="{28}" width="{28}" src="{githubIcon}" />
+			<Image height="{iconSize}" width="{iconSize}" src="{githubIcon}" />
 			Github
 		</Button>
 
@@ -124,65 +146,14 @@
 				confirm('Sure?') && window.close();
 			}}"
 		>
-			<Image height="{28}" width="{28}" />
+			<Image height="{iconSize}" width="{iconSize}" src="{shutdownIcon}" />
 			Shut down...
 		</Button>
 	</div>
 </div>
 
 <style lang="scss">
-	.start-menu {
-		width: fit-content;
-		display: flex;
-		position: fixed;
-		bottom: calc(var(--win-taskbar-height) - 4px);
-		left: 2px;
-		z-index: 2;
-
-		.title {
-			display: flex;
-			align-items: flex-end;
-			width: 20px;
-			background: linear-gradient(180deg, black 0%, black 33%, blue 100%);
-
-			div {
-				color: white;
-				overflow: hidden;
-				justify-self: end;
-				align-self: end;
-				font-weight: bold;
-				flex-flow: nowrap;
-				text-overflow: ellipsis;
-				writing-mode: vertical-lr;
-				transform: rotate(180deg);
-				text-orientation: sideways;
-				width: 100%;
-
-				/* margin-top: 8px; */
-				padding: 4px;
-			}
-		}
-
-		hr {
-			margin-top: auto;
-		}
-
-		.content {
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-		}
-
-		animation: move-up 0.15s;
-
-		@keyframes move-up {
-			from {
-				translate: 0 200px; /* Starting position below the viewport */
-			}
-
-			to {
-				translate: 0; /* Ending position at the bottom of the container */
-			}
-		}
+	hr {
+		margin-top: auto;
 	}
 </style>

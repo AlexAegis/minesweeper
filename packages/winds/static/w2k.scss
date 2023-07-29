@@ -63,6 +63,19 @@
 	--win-title-bar-icon-close: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAHElEQVQI12NgYGBIbGAwZmCQY2DgAZPGYBEGBgAhOwJxp5nQ3QAAAABJRU5ErkJggg==');
 	--win-title-bar-icon-help: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAFklEQVQI12OQY2AwBiM2BgYeMGKAMgANngC7z1BwaQAAAABJRU5ErkJggg==');
 	--win-title-bar-icon-restore: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAACXBIWXMAABk5AAAZOQEmJYyZAAAAOklEQVQYlZ2Q0QoAMAgCr9H//3J7GgtJGLsnwVIwuBQzsYxhmZIKIMXsOo54qkv9aomlRxN/dW4jADbgSQgUTlPGKAAAAABJRU5ErkJggg==');
+	--win-title-bar-padding: 2px;
+	--win-title-bar-icon-size: 24px;
+	--win-start-menu-static-items-height: calc(
+		var(--win-start-menu-item-height) * 4 + 12px
+	); // the 12px is the 2 hr's in the start menu, both with 2px height and 2-2 px vertical margins
+	// The darkest part lasts as long as the title bar icon does
+	--win-title-bar-gradient: linear-gradient(
+		90deg,
+		var(--win-active-title-bar-color),
+		var(--win-active-title-bar-color)
+			calc((var(--win-title-bar-padding) * 2) + var(--win-title-bar-icon-size)),
+		var(--win-active-title-bar-color-2)
+	);
 
 	&.custom-scheme {
 		// Only custom schemes shde with their actual object color
@@ -98,17 +111,6 @@
 		--win-selection-rgb: 10, 36, 106; // #0a246a icon, text highlight color
 		--win-font-color: #000;
 		--win-start-menu-highlight-color: #0a246a;
-		--win-title-bar-padding: 2px;
-		--win-title-bar-icon-size: 24px;
-
-		// The darkest part lasts as long as the title bar icon does
-		--win-title-bar-gradient: linear-gradient(
-			90deg,
-			var(--win-active-title-bar-color),
-			var(--win-active-title-bar-color)
-				calc((var(--win-title-bar-padding) * 2) + var(--win-title-bar-icon-size)),
-			var(--win-active-title-bar-color-2)
-		);
 
 		// These are redeclared here so other parts of the UI can have a forced scheme (Like Minesweeper always looks Classic) The declaration directly on the .w2k class is needed for custom schemes
 		// #d4d0c8 = rgb(212 208 200)
@@ -190,7 +192,7 @@
 		align-items: center;
 		flex-flow: row nowrap;
 		gap: 4px;
-		font-size: 18px;
+		font-size: 16px;
 		line-height: 14px;
 		cursor: pointer;
 		color: var(--win-font-color);
@@ -265,9 +267,15 @@
 		}
 
 		&.type-start-menu-item {
-			padding: 8px 0 8px 8px;
+			padding: 0 2px;
+			margin: 0;
 			height: var(--win-start-menu-item-height);
 			width: var(--win-start-menu-item-width);
+
+			img {
+				height: var(--win-large-icon-size);
+				width: var(--win-large-icon-size);
+			}
 		}
 
 		&.type-context-menu-item,
@@ -580,6 +588,7 @@
 			padding: 0 1px 0 2px;
 			user-select: none;
 			font-size: 16px;
+			text-align: center;
 			line-height: 14px;
 			min-height: 15px;
 			min-width: 30px;
@@ -588,7 +597,8 @@
 			grid-column: 1 / -1;
 			color: var(--win-desktop-font-color);
 
-			// Only one line of text is shown, until the shortcut is selected
+			// Only max two line of text should be shown, until the shortcut is selected
+			// But the browser ellipsis can't do that. (There's a webkit only feature called line-clamp but I don't want to use non-standard features)
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			overflow: hidden;
@@ -667,6 +677,73 @@
 			}
 		}
 	}
+
+	.start-menu {
+		width: fit-content;
+		display: flex;
+		position: fixed;
+		bottom: calc(var(--win-taskbar-height) - 4px);
+		left: 2px;
+		z-index: 2;
+
+		.banner {
+			display: flex;
+			align-items: flex-end;
+			width: 20px;
+			background: linear-gradient(
+				0deg,
+				blue 0%,
+				black var(--win-start-menu-static-items-height),
+				black 100%
+			);
+
+			div {
+				color: white;
+				overflow: hidden;
+				justify-self: end;
+				align-self: end;
+				font-weight: bold;
+				flex-flow: nowrap;
+				text-overflow: ellipsis;
+				writing-mode: vertical-lr;
+				transform: rotate(180deg);
+				text-orientation: sideways;
+				width: 100%;
+				padding: 4px;
+			}
+		}
+
+		.content {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		animation: move-up 0.15s;
+
+		@keyframes move-up {
+			from {
+				translate: 0 200px; /* Starting position below the viewport */
+			}
+
+			to {
+				translate: 0; /* Ending position at the bottom of the container */
+			}
+		}
+	}
+
+	hr {
+		width: calc(100% - 4px);
+		box-sizing: border-box;
+		align-self: center;
+		margin: 3px 2px;
+		outline: 0;
+		border: 0;
+		height: 2px;
+		box-shadow:
+			inset 0 1px var(--win-3d-objects-color-darker-1),
+			inset 0 2px var(--win-3d-objects-color-lighter-1);
+	}
 }
 
 body {
@@ -677,17 +754,4 @@ body {
 	margin: 0;
 	-webkit-touch-callout: none !important;
 	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
-}
-
-hr {
-	width: calc(100% - 4px);
-	box-sizing: border-box;
-	align-self: center;
-	margin: 3px 2px;
-	outline: 0;
-	border: 0;
-	height: 2px;
-	box-shadow:
-		inset 0 1px var(--win-3d-objects-color-darker-1),
-		inset 0 2px var(--win-3d-objects-color-lighter-1);
 }

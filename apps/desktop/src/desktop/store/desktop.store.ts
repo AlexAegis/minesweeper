@@ -23,6 +23,7 @@ import { capitalize, isNotNullish } from '@alexaegis/common';
 import { documentPointerDown$, rootSlice$ } from '../../root.store.js';
 
 import { browser } from '$app/environment';
+import cheeseTerminatorIconLarge from '../../assets/desktop/w31-cheese-terminator-icon-large.png';
 import minesweeperIconLarge from '../../assets/minesweeper/minesweeper-icon-large.png';
 import minesweeperIconSmall from '../../assets/minesweeper/minesweeper-icon-small.png';
 
@@ -30,6 +31,7 @@ export type ProcessId = string;
 
 export enum ProgramName {
 	MINESWEEPER = 'minesweeper',
+	CHEESE_TERMINATOR = 'cheese-terminator',
 	UNKNOWN = 'unknown',
 }
 
@@ -80,6 +82,18 @@ const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 		initialWindowState: {
 			fitContent: true,
 			titleBarIcon: minesweeperIconSmall,
+		},
+	},
+	[ProgramName.CHEESE_TERMINATOR]: {
+		...defaultCommonProgramWindowPreferences,
+		name: ProgramName.CHEESE_TERMINATOR,
+		title: 'Cheese Terminator',
+		icon: cheeseTerminatorIconLarge,
+		titleBarIcon: cheeseTerminatorIconLarge,
+		resizable: false,
+		initialWindowState: {
+			fitContent: true,
+			titleBarIcon: cheeseTerminatorIconLarge,
 		},
 	},
 };
@@ -148,20 +162,6 @@ export const toggleActiveSchemeKindAction = desktop$.createAction('toggleKind');
 export const activeSchemeKind$ = activeScheme$.slice('kind', {
 	reducers: [toggleActiveSchemeKindAction.reduce((state) => (state === 'w2k' ? 'w98' : 'w2k'))],
 });
-
-if (browser) {
-	activeSchemeKind$.createEffect(
-		activeSchemeKind$.pipe(
-			tap((kind) => {
-				if (kind === 'w2k') {
-					document.body.classList.replace('w2k-scheme-classic', 'w2k-scheme-standard');
-				} else {
-					document.body.classList.replace('w2k-scheme-standard', 'w2k-scheme-classic');
-				}
-			}),
-		),
-	);
-}
 
 export const dicedShortcuts = shortcuts$.dice(
 	{
@@ -375,6 +375,30 @@ if (browser) {
 			take(1),
 			filter((is) => !is),
 			map(() => desktop$.internals.actions.spawnProgram.makePacket(ProgramName.MINESWEEPER)),
+		),
+	);
+
+	activeSchemeKind$.createEffect(
+		activeSchemeKind$.pipe(
+			tap((kind) => {
+				if (kind === 'w2k') {
+					document.body.classList.replace('w2k-scheme-classic', 'w2k-scheme-standard');
+				} else {
+					document.body.classList.replace('w2k-scheme-standard', 'w2k-scheme-classic');
+				}
+			}),
+		),
+	);
+
+	desktop$.createEffect(
+		programs$.pipe(
+			take(1),
+			map((a) => {
+				console.log('programs', a);
+				return programs$.updateAction.makePacket({
+					...initialInstalledPrograms,
+				});
+			}),
 		),
 	);
 }

@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { W2kGlobal } from '@alexaegis/w2k';
+	import minesweeperIconLarge from '../assets/minesweeper/minesweeper-icon-large.png';
 	import Desktop from '../desktop/desktop.svelte';
-	import { activeSchemeKind$ } from '../desktop/store';
 </script>
 
-<svelte:body
-	class="w98 w2k"
-	class:w2k-scheme-standard="{$activeSchemeKind$ === 'w2k'}"
-	class:w2k-scheme-classic="{$activeSchemeKind$ === 'w98'}"
-/>
+<svelte:head>
+	<link rel="icon" type="image/png" href="{minesweeperIconLarge}" />
+	<title>Minesweeper</title>
+	<meta name="Description" content="Minesweeper" />
+</svelte:head>
+
+<W2kGlobal />
 
 <Desktop>
 	<slot />
 </Desktop>
-<W2kGlobal />
