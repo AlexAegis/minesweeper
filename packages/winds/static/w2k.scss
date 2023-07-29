@@ -5,6 +5,16 @@
 	src: url('fonts/fs-tahoma-8px/fs-tahoma-8px.woff2') format('woff2');
 }
 
+body.w2k {
+	display: block;
+	height: 100svh;
+	overscroll-behavior: none;
+	background-color: var(--win-desktop-color);
+	margin: 0;
+	-webkit-touch-callout: none !important;
+	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
 // All values and names were picked from Windows 2000
 .w2k {
 	--win-start-button-width: 54px; // + 1 the bo
@@ -744,14 +754,4 @@
 			inset 0 1px var(--win-3d-objects-color-darker-1),
 			inset 0 2px var(--win-3d-objects-color-lighter-1);
 	}
-}
-
-body {
-	display: block;
-	height: 100vh;
-	overscroll-behavior: none;
-	background-color: var(--win-desktop-color);
-	margin: 0;
-	-webkit-touch-callout: none !important;
-	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
 }

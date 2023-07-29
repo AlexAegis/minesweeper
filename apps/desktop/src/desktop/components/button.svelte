@@ -182,8 +182,7 @@
 
 <style lang="scss">
 	button {
-		//	touch-action: manipulation;
-
+		touch-action: manipulation;
 		background-repeat: no-repeat;
 		background-position-x: var(--background-image-positon, 1px);
 		background-position-y: var(--background-image-positon, 1px);
@@ -193,11 +192,11 @@
 			background-position-y: calc(var(--background-image-positon, 1px) + 1px);
 		}
 
-		// &.toggleable-context {
-		// 	display: flex;
-		// 	gap: 8px;
-		// 	align-items: center;
-		// }
+		&.toggleable-context {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
 
 		.icon {
 			width: 7px;
