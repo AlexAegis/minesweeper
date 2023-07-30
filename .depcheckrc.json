@@ -1,5 +1,5 @@
 {
-	"$schema": "https://json.schemastore.org/typings?mark=managed-by-autotool",
+	"$schema": "https://json.schemastore.org/typings?mark=managed-by-autoto",
 	"ignores": [
 		"@alexaegis/autotool-plugin-*",
 		"@alexaegis/coverage-tools",
@@ -33,6 +33,7 @@
 		"stylelint-config-*",
 		"svelte",
 		"svelte-check",
+		"svelte-preprocess",
 		"ts-node",
 		"turbo-ignore",
 		"typedoc",
