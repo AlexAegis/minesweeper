@@ -165,7 +165,7 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1
       '@alexaegis/desktop-common':
-        specifier: ^3.1.1
+        specifier: ^4.0.0
         version: link:../../packages/desktop-common
       '@alexaegis/w2k':
         specifier: workspace:^

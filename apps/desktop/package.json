@@ -1,7 +1,7 @@
 {
 	"name": "@alexaegis/desktop",
 	"description": "a windows 95 style desktop environment for the browser",
-	"version": "3.1.1",
+	"version": "4.0.0",
 	"archetype": {
 		"platform": "web",
 		"framework": "sveltekit",
@@ -50,7 +50,7 @@
 	},
 	"dependencies": {
 		"@alexaegis/common": "^0.5.1",
-		"@alexaegis/desktop-common": "^3.1.1",
+		"@alexaegis/desktop-common": "^4.0.0",
 		"@alexaegis/w2k": "workspace:^",
 		"@testing-library/svelte": "^4.0.3",
 		"@tinyslice/core": "^0.8.0",
