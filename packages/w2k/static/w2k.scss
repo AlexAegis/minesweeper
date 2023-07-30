@@ -647,9 +647,18 @@ body.w2k {
 		gap: 1px;
 		width: 100%;
 		box-sizing: border-box;
+
+		// There's an extra shadow downwards to when the taskbar is nudged up the bottom side still looks like part of the taskbar
 		box-shadow:
 			inset 0 1px var(--win-3d-objects-color),
-			inset 0 2px var(--win-3d-objects-color-lighter-1) !important;
+			inset 0 2px var(--win-3d-objects-color-lighter-1),
+			0 2px var(--win-3d-objects-color) !important;
+
+		// Value chosen by a fair dice roll (Big dice)
+		@media screen and (width >=1000px) {
+			// When not zoomed in, the buttons on the taskbar appear touching the bottom of the screen, so I nudge them up a little
+			margin-bottom: 1px;
+		}
 
 		.quickbar {
 			display: flex;
