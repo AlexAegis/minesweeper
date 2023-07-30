@@ -21,6 +21,7 @@
 	export let look: ButtonLook | undefined = undefined;
 	export let icon: string | undefined = undefined;
 	export let label: string | undefined = undefined;
+	export let title: string | undefined = undefined;
 
 	export let selfPress: boolean | undefined = true;
 	export let hotkeyLetter: string | undefined = undefined;
@@ -140,6 +141,7 @@
 	bind:this="{button}"
 	{type}
 	{disabled}
+	{title}
 	aria-label="{$$props['aria-label']}"
 	class="{$$props['class'] ?? ''}"
 	class:outset="{!pressed}"

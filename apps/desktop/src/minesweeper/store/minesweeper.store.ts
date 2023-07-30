@@ -167,6 +167,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			history: [],
 			presets: CLASSIC_GAME_PRESETS,
 			cheating: false,
+			forcedClassicScheme: true,
 		} as Game,
 		{
 			defineInternals: () => {
@@ -179,6 +180,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	const CLICK_TAG = '[click]';
 
 	const cheating$ = game$.slice('cheating');
+	const forcedClassicScheme$ = game$.slice('forcedClassicScheme');
 
 	const minesweeperActions = {
 		cheating: cheating$.setAction,
@@ -716,6 +718,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		minesweeperActions,
 		game$,
 		cheating$,
+		forcedClassicScheme$,
 		smileyState$,
 		remainingMines$,
 		highscoreEntries$,

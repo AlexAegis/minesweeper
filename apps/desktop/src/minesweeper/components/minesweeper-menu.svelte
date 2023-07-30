@@ -76,7 +76,7 @@
 			on:click="{() => {
 				internals.minesweeperActions.cheating.next(!next);
 			}}"
-			toggled="{$cheating$}"
+			toggled="{next}"
 		>
 			{#if !next}
 				Enable
@@ -84,6 +84,19 @@
 				Disable
 			{/if}
 			Cheats
+		</Button>
+	</Observer>
+
+	<Observer observable="{internals.forcedClassicScheme$}" let:next>
+		<Button
+			look="{ButtonLook.CONTEXT_MENU_ITEM}"
+			on:click="{() => {
+				internals.forcedClassicScheme$.set(!next);
+			}}"
+			toggled="{next}"
+			title="Regardless of your UI scheme, Minesweeper always looked like the 98/Classic scheme. Here you can turn it off and see how it would like with the system scheme."
+		>
+			Force Classic Scheme
 		</Button>
 	</Observer>
 

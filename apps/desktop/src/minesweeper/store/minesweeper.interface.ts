@@ -7,6 +7,7 @@ export interface Game {
 	instance: GameInstance;
 	history: WinData[];
 	cheating: boolean;
+	forcedClassicScheme: boolean;
 }
 
 export enum FieldState {
