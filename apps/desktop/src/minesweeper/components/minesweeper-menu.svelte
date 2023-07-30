@@ -7,24 +7,30 @@
 
 	let customGameModal: Modal;
 	let highScoreModal: Modal;
+	let aboutModal: Modal;
 
 	import { map } from 'rxjs';
 	import type { GamePreset } from '../interfaces';
 	import { CLASSIC_GAME_PRESETS, type MinesweeperGame } from '../store';
 
+	import { createEventDispatcher } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import { ButtonLook } from '../../desktop/components/button-look.enum';
 	import Dropdown from '../../desktop/components/dropdown.svelte';
 	import type { BaseWindowState } from '../../desktop/components/window-state.interface';
 	import { packageMetadata } from '../../root.store';
+	import AboutMinesweeper from './about-minesweeper.svelte';
 
 	export let windowState: BaseWindowState;
 	export let internals: MinesweeperGame;
+
+	let dispatch = createEventDispatcher<{ close: undefined }>();
 
 	$: preset$ = internals.gameSettings$.pipe(map((settings) => ({ ...settings })));
 	$: isGameSettingsNotAPreset$ = internals.isGameSettingsNotAPreset$;
 	$: presets$ = internals.presets$;
 	$: highscoreEntries$ = internals.highscoreEntries$;
+	$: cheating$ = internals.cheating$;
 
 	let active: string | undefined;
 
@@ -38,7 +44,6 @@
 	<Button
 		look="{ButtonLook.CONTEXT_MENU_ITEM}"
 		on:click="{() => internals.minesweeperActions.resetGame.next(undefined)}"
-		contextHasToggleable="{true}"
 	>
 		New
 	</Button>
@@ -48,7 +53,6 @@
 			<Button
 				look="{ButtonLook.CONTEXT_MENU_ITEM}"
 				toggled="{next}"
-				contextHasToggleable="{true}"
 				on:click="{() => {
 					internals.minesweeperActions.resetGame.next(preset);
 				}}"
@@ -57,22 +61,14 @@
 			</Button>
 		</Observer>
 	{/each}
-
 	<Button
 		look="{ButtonLook.CONTEXT_MENU_ITEM}"
 		on:click="{() => customGameModal.open(windowState)}"
 		toggled="{$isGameSettingsNotAPreset$}"
-		contextHasToggleable="{true}"
 	>
 		Custom...
 	</Button>
-	<Button
-		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => highScoreModal.open(windowState)}"
-		contextHasToggleable="{true}"
-	>
-		Highscore
-	</Button>
+	<hr />
 
 	<Observer observable="{internals.cheating$}" let:next>
 		<Button
@@ -80,7 +76,7 @@
 			on:click="{() => {
 				internals.minesweeperActions.cheating.next(!next);
 			}}"
-			contextHasToggleable="{true}"
+			toggled="{$cheating$}"
 		>
 			{#if !next}
 				Enable
@@ -90,6 +86,25 @@
 			Cheats
 		</Button>
 	</Observer>
+
+	<hr />
+
+	<Button
+		look="{ButtonLook.CONTEXT_MENU_ITEM}"
+		on:click="{() => highScoreModal.open(windowState)}"
+	>
+		Best times...
+	</Button>
+	<hr />
+
+	<Button
+		look="{ButtonLook.CONTEXT_MENU_ITEM}"
+		on:click="{() => {
+			dispatch('close');
+		}}"
+	>
+		Quit
+	</Button>
 </Dropdown>
 <Dropdown title="{'Help'}" hotkeyLetter="{'H'}" bind:active>
 	<Button
@@ -99,7 +114,9 @@
 		Github
 	</Button>
 	<hr />
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}">About Minesweeper...</Button>
+	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => aboutModal.open(windowState)}"
+		>About Minesweeper...</Button
+	>
 </Dropdown>
 
 <Modal
@@ -123,4 +140,11 @@
 		isClearingEnabled="{internals !== undefined}"
 		on:clear="{() => internals.winHistory$.set([])}"
 	/>
+</Modal>
+
+<Modal
+	bind:this="{aboutModal}"
+	windowState="{{ fitContent: true, title: 'About', resizable: true }}"
+>
+	<AboutMinesweeper />
 </Modal>

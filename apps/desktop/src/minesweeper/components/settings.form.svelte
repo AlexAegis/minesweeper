@@ -50,7 +50,7 @@
 			</div>
 		</div>
 		<div class="actions">
-			<Button type="submit" on:click="{ok}">Ok</Button>
+			<Button type="submit" on:click="{ok}">OK</Button>
 			<Button on:click="{cancel}">Cancel</Button>
 		</div>
 	</form>

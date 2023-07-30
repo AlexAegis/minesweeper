@@ -155,7 +155,7 @@
 	style:left="{`${transientState.position.x}px`}"
 	style:height="{`${transientState.height}px`}"
 	style:width="{`${transientState.width}px`}"
-	style:z-index="{transientState.zIndex}"
+	style:z-index="{1000 + transientState.zIndex}"
 	on:pointerdown="{activate}"
 >
 	<TitleBar

@@ -181,37 +181,12 @@
 
 <style lang="scss">
 	button {
-		touch-action: manipulation;
-		background-repeat: no-repeat;
 		background-position-x: var(--background-image-positon, 1px);
 		background-position-y: var(--background-image-positon, 1px);
 
-		&.pressed:not(.disable-self-inset) {
+		&.pressed:not(.fixmeselector) {
 			background-position-x: calc(var(--background-image-positon, 1px) + 1px);
 			background-position-y: calc(var(--background-image-positon, 1px) + 1px);
-		}
-
-		&.toggleable-context {
-			display: flex;
-			gap: 8px;
-			align-items: center;
-		}
-
-		.icon {
-			width: 7px;
-			height: 7px;
-
-			&.checkmark {
-				background-image: var(--asset-checkmark);
-				image-rendering: pixelated;
-				background-repeat: no-repeat;
-			}
-		}
-
-		&.type-context-menu-item {
-			width: 100%;
-			height: 20px;
-			text-align: left;
 		}
 	}
 </style>

@@ -198,6 +198,8 @@ body.w2k {
 
 	button {
 		user-select: none !important;
+		touch-action: manipulation;
+		background-repeat: no-repeat;
 		display: flex;
 		align-items: center;
 		flex-flow: row nowrap;
@@ -222,8 +224,45 @@ body.w2k {
 			min-height: unset;
 		}
 
+		&.toggleable-context {
+			display: flex;
+			gap: 6px;
+			align-items: center;
+		}
+
+		.icon {
+			margin-left: 3px;
+			width: 7px;
+			height: 7px;
+
+			&.checkmark {
+				background-image: var(--asset-checkmark);
+				image-rendering: pixelated;
+				background-repeat: no-repeat;
+			}
+		}
+
 		&[disabled]:not(.custom) {
-			background-color: blue !important;
+			// 	background-color: blue !important;
+			background: none;
+
+			// filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+			color: var(--win-3d-objects-color-darker-1);
+			text-shadow: 1px 1px 0 var(--win-3d-objects-color-lighter-1) !important; // !important because it's also set in 98.css for the slight on-click movement, but here that movement is done with borders
+
+			&::before {
+				content: '';
+
+				// background: var(--win-title-bar-icon-restore);
+				background-position: bottom 1px left 2px;
+				background-repeat: no-repeat;
+
+				// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+				filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+				width: 12px;
+				height: 11px;
+				position: absolute;
+			}
 		}
 
 		// Regular
@@ -233,22 +272,32 @@ body.w2k {
 			padding-left: 6px;
 			padding-right: 6px;
 
-			&:active,
-			&.pressed,
-			&.active {
-				border-top: 1px solid var(--win-shadow-color);
-				border-left: 1px solid var(--win-shadow-color);
-				box-shadow:
-					inset -1px -1px var(--win-3d-objects-color-lighter-1),
-					inset 1px 1px var(--win-3d-objects-color-darker-1);
-			}
-
-			&:not(:active, .active, .pressed) {
+			&:disabled {
 				border-bottom: 1px solid var(--win-shadow-color);
 				border-right: 1px solid var(--win-shadow-color);
 				box-shadow:
 					inset 1px 1px var(--win-3d-objects-color-lighter-1),
 					inset -1px -1px var(--win-3d-objects-color-darker-1);
+			}
+
+			&:not(:disabled) {
+				&:active,
+				&.pressed,
+				&.active {
+					border-top: 1px solid var(--win-shadow-color);
+					border-left: 1px solid var(--win-shadow-color);
+					box-shadow:
+						inset -1px -1px var(--win-3d-objects-color-lighter-1),
+						inset 1px 1px var(--win-3d-objects-color-darker-1);
+				}
+
+				&:not(:active, .active, .pressed) {
+					border-bottom: 1px solid var(--win-shadow-color);
+					border-right: 1px solid var(--win-shadow-color);
+					box-shadow:
+						inset 1px 1px var(--win-3d-objects-color-lighter-1),
+						inset -1px -1px var(--win-3d-objects-color-darker-1);
+				}
 			}
 		}
 
@@ -304,6 +353,12 @@ body.w2k {
 			}
 		}
 
+		&.type-context-menu-item {
+			width: 100%;
+			height: 17px;
+			text-align: left;
+		}
+
 		&.type-context-menu-item,
 		&.type-start-menu-item {
 			border: none !important;
@@ -318,17 +373,166 @@ body.w2k {
 			&:hover {
 				background-color: var(--win-start-menu-highlight-color);
 				color: white;
-			}
-		}
 
-		&.type-context-menu-item:hover {
-			.checkmark {
-				filter: invert(1);
+				.checkmark {
+					filter: invert(1);
+				}
 			}
 		}
 
 		&.disabled {
 			cursor: default;
+		}
+
+		&[aria-label='Minimize'],
+		&[aria-label='Maximize'],
+		&[aria-label='Close'],
+		&[aria-label='Restore'],
+		&[aria-label='Help'] {
+			content: '';
+			margin-top: 0;
+			margin-bottom: 0;
+			min-width: 16px;
+			min-height: 14px;
+			width: 16px;
+			height: 14px;
+			image-rendering: pixelated;
+			padding: 1px;
+		}
+
+		&[aria-label='Minimize'] {
+			&:not([disabled]) {
+				background: var(--win-title-bar-icon-minimize);
+				background-repeat: no-repeat;
+				background-position: bottom 2px left 3px;
+				background-color: var(--win-3d-objects-color);
+			}
+
+			&[disabled] {
+				background: none;
+				background-color: var(--win-3d-objects-color);
+
+				&::after {
+					content: '';
+					background: var(--win-title-bar-icon-minimize);
+					background-position: bottom 1px left 2px;
+					background-repeat: no-repeat;
+
+					// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+					filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+					width: 12px;
+					height: 11px;
+					position: absolute;
+				}
+			}
+		}
+
+		&[aria-label='Maximize'] {
+			&:not([disabled]) {
+				background: var(--win-title-bar-icon-maximize);
+				background-repeat: no-repeat;
+				background-position: bottom 2px left 3px;
+				background-color: var(--win-3d-objects-color);
+			}
+
+			&[disabled] {
+				background: none;
+				background-color: var(--win-3d-objects-color);
+
+				&::after {
+					content: '';
+					background: var(--win-title-bar-icon-maximize);
+					background-position: bottom 1px left 2px;
+					background-repeat: no-repeat;
+
+					// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+					filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+					width: 12px;
+					height: 11px;
+					position: absolute;
+				}
+			}
+		}
+
+		&[aria-label='Close'] {
+			&:not([disabled]) {
+				background: var(--win-title-bar-icon-close);
+				background-repeat: no-repeat;
+				background-position: bottom 2px left 3px;
+				background-color: var(--win-3d-objects-color);
+			}
+
+			&[disabled] {
+				background: none;
+				background-color: var(--win-3d-objects-color);
+
+				&::after {
+					content: '';
+					background: var(--win-title-bar-icon-close);
+					background-position: bottom 1px left 2px;
+					background-repeat: no-repeat;
+
+					// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+					filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+					width: 12px;
+					height: 11px;
+					position: absolute;
+				}
+			}
+		}
+
+		&[aria-label='Restore'] {
+			&:not([disabled]) {
+				background: var(--win-title-bar-icon-restore);
+				background-repeat: no-repeat;
+				background-position: bottom 2px left 3px;
+				background-color: var(--win-3d-objects-color);
+			}
+
+			&[disabled] {
+				background: none;
+				background-color: var(--win-3d-objects-color);
+
+				&::after {
+					content: '';
+					background: var(--win-title-bar-icon-restore);
+					background-position: bottom 1px left 2px;
+					background-repeat: no-repeat;
+
+					// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+					filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+					width: 12px;
+					height: 11px;
+					position: absolute;
+				}
+			}
+		}
+
+		&[aria-label='Help'] {
+			&:not([disabled]) {
+				background: var(--win-title-bar-icon-help);
+				background-repeat: no-repeat;
+				background-position: bottom 2px left 3px;
+				background-color: var(--win-3d-objects-color);
+			}
+
+			&[disabled] {
+				background: none;
+				background-color: var(--win-3d-objects-color);
+
+				&::after {
+					content: '';
+					background: var(--win-title-bar-icon-help);
+					background-position: bottom 1px left 2px;
+					background-repeat: no-repeat;
+
+					// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
+					filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+					width: 12px;
+					height: 11px;
+					position: absolute;
+				}
+			}
 		}
 	}
 
@@ -369,154 +573,6 @@ body.w2k {
 
 			.title-bar-text {
 				color: var(--win-inactive-title-bar-font-color);
-			}
-		}
-
-		.title-bar-controls {
-			button {
-				content: '';
-				margin-top: 0;
-				margin-bottom: 0;
-				min-width: 16px;
-				min-height: 14px;
-				width: 16px;
-				height: 14px;
-				image-rendering: pixelated;
-
-				&[aria-label='Minimize'] {
-					&:not([disabled]) {
-						background: var(--win-title-bar-icon-minimize);
-						background-repeat: no-repeat;
-						background-position: bottom 2px left 3px;
-						background-color: var(--win-3d-objects-color);
-					}
-
-					&[disabled] {
-						background: none;
-						background-color: var(--win-3d-objects-color);
-
-						&::after {
-							content: '';
-							background: var(--win-title-bar-icon-minimize);
-							background-position: bottom 1px left 2px;
-							background-repeat: no-repeat;
-
-							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
-							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
-							width: 12px;
-							height: 11px;
-							position: absolute;
-						}
-					}
-				}
-
-				&[aria-label='Maximize'] {
-					&:not([disabled]) {
-						background: var(--win-title-bar-icon-maximize);
-						background-repeat: no-repeat;
-						background-position: bottom 2px left 3px;
-						background-color: var(--win-3d-objects-color);
-					}
-
-					&[disabled] {
-						background: none;
-						background-color: var(--win-3d-objects-color);
-
-						&::after {
-							content: '';
-							background: var(--win-title-bar-icon-maximize);
-							background-position: bottom 1px left 2px;
-							background-repeat: no-repeat;
-
-							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
-							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
-							width: 12px;
-							height: 11px;
-							position: absolute;
-						}
-					}
-				}
-
-				&[aria-label='Close'] {
-					&:not([disabled]) {
-						background: var(--win-title-bar-icon-close);
-						background-repeat: no-repeat;
-						background-position: bottom 2px left 3px;
-						background-color: var(--win-3d-objects-color);
-					}
-
-					&[disabled] {
-						background: none;
-						background-color: var(--win-3d-objects-color);
-
-						&::after {
-							content: '';
-							background: var(--win-title-bar-icon-close);
-							background-position: bottom 1px left 2px;
-							background-repeat: no-repeat;
-
-							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
-							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
-							width: 12px;
-							height: 11px;
-							position: absolute;
-						}
-					}
-				}
-
-				&[aria-label='Restore'] {
-					&:not([disabled]) {
-						background: var(--win-title-bar-icon-restore);
-						background-repeat: no-repeat;
-						background-position: bottom 2px left 3px;
-						background-color: var(--win-3d-objects-color);
-					}
-
-					&[disabled] {
-						background: none;
-						background-color: var(--win-3d-objects-color);
-
-						&::after {
-							content: '';
-							background: var(--win-title-bar-icon-restore);
-							background-position: bottom 1px left 2px;
-							background-repeat: no-repeat;
-
-							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
-							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
-							width: 12px;
-							height: 11px;
-							position: absolute;
-						}
-					}
-				}
-
-				&[aria-label='Help'] {
-					&:not([disabled]) {
-						background: var(--win-title-bar-icon-help);
-						background-repeat: no-repeat;
-						background-position: bottom 2px left 3px;
-						background-color: var(--win-3d-objects-color);
-					}
-
-					&[disabled] {
-						background: none;
-						background-color: var(--win-3d-objects-color);
-
-						&::after {
-							content: '';
-							background: var(--win-title-bar-icon-help);
-							background-position: bottom 1px left 2px;
-							background-repeat: no-repeat;
-
-							// Without an invert, contrast(0) would only change pure black to rgb(127, 127, 127), but the color should be rgb(128, 128, 128)
-							filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
-							width: 12px;
-							height: 11px;
-							position: absolute;
-						}
-					}
-				}
 			}
 		}
 	}
@@ -571,7 +627,7 @@ body.w2k {
 	}
 
 	.taskbar {
-		z-index: 1000;
+		z-index: 10000;
 
 		> * {
 			height: var(--win-taskbar-element-height);
@@ -767,7 +823,7 @@ body.w2k {
 	.start-menu {
 		width: fit-content;
 		overflow: hidden;
-		z-index: 100000;
+		z-index: 100001;
 	}
 
 	.start-menu-container {

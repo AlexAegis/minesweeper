@@ -15,7 +15,6 @@ import {
 	defaultCommonProgramWindowPreferences,
 	initialWindowState,
 	type BaseWindowState,
-	type CommonProgramWindowPreferences,
 	type WindowState,
 } from '../components/window-state.interface.js';
 
@@ -35,7 +34,7 @@ export enum ProgramName {
 	UNKNOWN = 'unknown',
 }
 
-export interface ProgramState extends CommonProgramWindowPreferences {
+export interface ProgramState {
 	title: string;
 	name: ProgramName;
 	/**
@@ -78,8 +77,8 @@ const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 		title: capitalize(ProgramName.MINESWEEPER),
 		icon: minesweeperIconLarge,
 		titleBarIcon: minesweeperIconSmall,
-		resizable: false,
 		initialWindowState: {
+			resizable: false,
 			fitContent: true,
 			titleBarIcon: minesweeperIconSmall,
 		},
@@ -90,9 +89,9 @@ const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 		title: 'Cheese Terminator',
 		icon: cheeseTerminatorIconLarge,
 		titleBarIcon: cheeseTerminatorIconLarge,
-		resizable: false,
 		initialWindowState: {
 			fitContent: true,
+			resizable: false,
 			titleBarIcon: cheeseTerminatorIconLarge,
 		},
 	},

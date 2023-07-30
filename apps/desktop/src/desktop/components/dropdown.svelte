@@ -52,7 +52,6 @@
 	bind:button
 	look="{ButtonLook.TITLE_BAR_MENU_ITEM}"
 	active="{active === title}"
-	disable-self-inset="{active === undefined}"
 	on:pointerenter="{pointerenter}"
 	on:click="{click}"
 	{hotkeyLetter}
@@ -70,12 +69,12 @@
 	{/if}
 </Button>
 
-<style>
+<style lang="scss">
 	.dropdown {
 		display: flex;
 		position: absolute;
-		top: 41px;
-		min-width: 150px;
+		top: 40px;
+		min-width: 124px; // Measured for the  minesweeper dropdowns
 		flex-direction: column;
 		margin-left: -7px;
 		z-index: 100;

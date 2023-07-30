@@ -23,6 +23,10 @@
 			menu: Empty,
 			content: Empty,
 		},
+		[ProgramName.CHEESE_TERMINATOR]: {
+			menu: MinesweeperMenu,
+			content: Minesweeper,
+		},
 	};
 </script>
 
@@ -61,6 +65,9 @@
 							this="{windowComponents[next.program].menu}"
 							internals="{windowSlice.internals?.minesweeperGame}"
 							windowState="{next}"
+							on:close="{() => {
+								dicedWindows.remove(processId);
+							}}"
 						/>
 					{/if}
 				</svelte:fragment>

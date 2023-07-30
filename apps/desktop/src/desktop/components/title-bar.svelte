@@ -21,7 +21,6 @@
 	export let showHelp: boolean | undefined = false;
 	export let helpEnabled: boolean | undefined = true;
 
-	console.log('resizable', resizable);
 	const sink = new Subscription();
 
 	function minimize() {

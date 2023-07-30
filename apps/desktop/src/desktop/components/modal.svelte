@@ -83,7 +83,7 @@
 		class:dimmed
 		style="{$$props['style']}"
 		on:keypress
-		on:click|preventDefault="{backdropClick}"
+		on:click="{backdropClick}"
 	>
 		<Window windowState="{effectiveWindowState}" transient="{true}" on:close="{close}">
 			<slot />
@@ -99,7 +99,7 @@
 		width: 100svw;
 		left: 0;
 		top: 0;
-		z-index: 900;
+		z-index: 200000;
 
 		&.dimmed {
 			background-color: rgb(0 0 0 / 20%);
@@ -115,7 +115,7 @@
 
 		:global(.program-window) {
 			position: relative;
-			z-index: 1000;
+			z-index: 200001;
 		}
 	}
 </style>
