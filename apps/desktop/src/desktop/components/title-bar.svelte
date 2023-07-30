@@ -1,8 +1,7 @@
 <script lang="ts">
 	import Image from './image.svelte';
 
-	import { Subscription } from 'rxjs';
-	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import type { TitleBarEvents } from './title-bar-events.interface';
 
 	const dispatch = createEventDispatcher<TitleBarEvents>();
@@ -20,8 +19,6 @@
 	export let closeEnabled: boolean | undefined = true;
 	export let showHelp: boolean | undefined = false;
 	export let helpEnabled: boolean | undefined = true;
-
-	const sink = new Subscription();
 
 	function minimize() {
 		dispatch('minimize');
@@ -52,10 +49,6 @@
 		}
 		lastTap = tap;
 	}
-
-	onDestroy(() => {
-		sink.unsubscribe();
-	});
 </script>
 
 <div

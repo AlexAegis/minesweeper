@@ -149,6 +149,7 @@
 	class:immobile="{!effectiveMovable}"
 	class:non-resizable="{!effectiveResizable}"
 	class:maximized="{transientState.maximized}"
+	class:minimized="{transientState.minimized}"
 	class:fit-content="{transientState.fitContent}"
 	class:active="{transientState.active}"
 	style:top="{`${transientState.position.y}px`}"
@@ -201,6 +202,10 @@
 		user-select: none;
 
 		// touch-action: none;
+
+		&.minimized {
+			display: none !important;
+		}
 
 		.window-body {
 			overflow: auto;

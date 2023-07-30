@@ -16,8 +16,7 @@
 			icon="{next.titleBarIcon}"
 			on:click="{() => {
 				if (next.active) {
-					desktop$.internals.actions.activateProgram.next(undefined);
-					windowSlice.internals.windowActions.minimize.next(undefined);
+					windowSlice.internals.windowActions.minimize.next(true);
 				} else {
 					desktop$.internals.actions.activateProgram.next(next.processId);
 				}

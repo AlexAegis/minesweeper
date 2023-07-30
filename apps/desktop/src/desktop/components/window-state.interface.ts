@@ -4,6 +4,7 @@ import type { ProcessId, ProgramName } from '../store/desktop.store.js';
 
 export interface CommonProgramWindowPreferences {
 	maximized: boolean;
+	minimized: boolean;
 	resizable: boolean;
 	showMinimize: boolean;
 	minimizeEnabled: boolean;
@@ -47,6 +48,7 @@ export type WindowState = MineSweeperWindowState | BaseWindowState;
 
 export const defaultCommonProgramWindowPreferences: CommonProgramWindowPreferences = {
 	maximized: false,
+	minimized: false,
 	resizable: true,
 	showMinimize: true,
 	minimizeEnabled: true,

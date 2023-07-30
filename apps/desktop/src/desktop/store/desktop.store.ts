@@ -247,6 +247,10 @@ export const windows$ = desktop$.slice('windows', {
 								...windowState,
 								zIndex: indexMap.get(key) ?? 0,
 								active: windowState.processId === payload,
+								minimized:
+									windowState.processId === payload
+										? false // If this is the one being activated, unminimize it
+										: windowState.minimized, // Otherwise don't change it
 						  }
 						: {
 								...windowState,
@@ -308,7 +312,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 
 		const windowActions = {
 			maximize: windowSlice.createAction(`${WINDOW_ACTION} maximize`),
-			minimize: windowSlice.createAction(`${WINDOW_ACTION} minimize`),
+			minimize: windowSlice.createAction<boolean>(`${WINDOW_ACTION} minimize`),
 			restore: windowSlice.createAction(`${WINDOW_ACTION} restore`),
 			move: windowSlice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
 			resize: windowSlice.createAction<ResizeData>(`${WINDOW_ACTION} resize`),
@@ -321,6 +325,14 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 				windowActions.maximize.reduce(() => true),
 				windowActions.restore.reduce(() => false),
 			],
+		});
+
+		const minimized$ = windowSlice.slice('minimized', {
+			reducers: [windowActions.minimize.reduce((_state, payload) => payload)],
+		});
+
+		const active$ = windowSlice.slice('active', {
+			reducers: [windowActions.minimize.reduce((_state, payload) => !payload)],
 		});
 
 		const position$ = windowSlice.slice('position', {
@@ -337,7 +349,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 			minesweeperGame = createMineSweeperGame(windowSlice, 'programData');
 		}
 
-		return { windowActions, minesweeperGame, position$, maximized$ };
+		return { windowActions, minesweeperGame, position$, maximized$, minimized$, active$ };
 	},
 	reducers: [],
 });
@@ -392,8 +404,11 @@ if (browser) {
 		documentPointerDown$.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
-				return !elementsUnderPointer.some((element) =>
-					element.classList.contains('window'),
+				console.log(elementsUnderPointer.map((e) => e.classList.value));
+				return !elementsUnderPointer.some(
+					(element) =>
+						element.classList.contains('window') ||
+						element.classList.contains('type-taskbar-item'),
 				);
 			}),
 			ifLatestFrom(

@@ -38,16 +38,17 @@
 			<Window
 				windowState="{next}"
 				on:activate="{() => {
+					console.log('WINACT SELF');
 					desktop$.internals.actions.activateProgram.next(processId);
 				}}"
 				on:maximize="{() => {
-					windowSlice.internals.windowActions.maximize.next(processId);
+					windowSlice.internals.windowActions.maximize.next(undefined);
 				}}"
 				on:minimize="{() => {
-					windowSlice.internals.windowActions.minimize.next(processId);
+					windowSlice.internals.windowActions.minimize.next(true);
 				}}"
 				on:restore="{() => {
-					windowSlice.internals.windowActions.restore.next(processId);
+					windowSlice.internals.windowActions.restore.next(undefined);
 				}}"
 				on:close="{() => {
 					dicedWindows.remove(processId);

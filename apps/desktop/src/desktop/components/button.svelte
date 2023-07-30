@@ -11,6 +11,7 @@
 		fire: undefined;
 		alternativeFire: undefined;
 		cancelFire: undefined;
+		pointerdown: PointerEvent;
 	}>();
 
 	export let disabled = false;
@@ -54,6 +55,7 @@
 				pressed = true;
 			}
 		}
+		dispatch('pointerdown', event);
 	}
 
 	function pointerup(e: PointerEvent): void {
