@@ -4,6 +4,7 @@
 	import { createEventDispatcher, onDestroy } from 'svelte';
 	import { documentPointerUp$ } from '../../root.store';
 	import { ButtonLook } from './button-look.enum';
+	import Image from './image.svelte';
 
 	const dispatch = createEventDispatcher<{
 		startFire: undefined;
@@ -18,6 +19,8 @@
 	export let longpressTime = 275;
 	export let type: 'button' | 'submit' | 'reset' = 'button';
 	export let look: ButtonLook | undefined = undefined;
+	export let icon: string | undefined = undefined;
+	export let label: string | undefined = undefined;
 
 	export let selfPress: boolean | undefined = true;
 	export let hotkeyLetter: string | undefined = undefined;
@@ -154,6 +157,7 @@
 	class:toggleable-context="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-none="{look === undefined}"
 	class:type-thick="{look === ButtonLook.THICK}"
+	class:type-taskbar-item="{look === ButtonLook.TASKBAR_ITEM}"
 	class:type-title-bar-menu-item="{look === ButtonLook.TITLE_BAR_MENU_ITEM}"
 	class:type-context-menu-item="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-start-menu-item="{look === ButtonLook.START_MENU_ITEM}"
@@ -171,6 +175,14 @@
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
 		<span class="icon" class:checkmark="{toggled}"></span>
+		<span>
+			<slot />
+		</span>
+	{:else if look === ButtonLook.TASKBAR_ITEM}
+		<span class="taskbar-button-icon">
+			<Image height="{16}" width="{16}" src="{icon}" alt="{label}" />
+		</span>
+
 		<span>
 			<slot />
 		</span>

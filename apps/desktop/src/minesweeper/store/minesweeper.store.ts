@@ -183,9 +183,11 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	const minesweeperActions = {
 		cheating: cheating$.setAction,
 		resetGame: game$.createAction<GamePreset | undefined>(`${MS_TAG} reset`),
-		startGame: game$.createAction<{ safeCoordinate: CoordinateLike; mineCount: number }>(
-			`${MS_TAG} start game`,
-		),
+		startGame: game$.createAction<{
+			safeCoordinate: CoordinateLike;
+			mineCount: number;
+			cheating: boolean;
+		}>(`${MS_TAG} start game`),
 		setPreset: game$.createAction<{ name: string; preset: GamePreset }>(`${MS_TAG} set preset`),
 		addGameToHistory: game$.createAction<WinData>(`${MS_TAG} add game to history`),
 		incrementTimer: game$.createAction<number>(`${MS_TAG} increment timer ms`),
@@ -238,33 +240,35 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			minesweeperActions.resetGame.reduce((state, payload) => ({
 				...generateGameInstance(payload ?? state.settings),
 			})),
-			minesweeperActions.startGame.reduce((state, { safeCoordinate, mineCount }) => {
-				const mines = selectNRandomTiles(
-					Object.values(state.tiles),
-					safeCoordinate,
-					mineCount,
-				);
-				const tiles: Record<string, TileState> = { ...state.tiles };
+			minesweeperActions.startGame.reduce(
+				(state, { safeCoordinate, mineCount, cheating }) => {
+					const mines = selectNRandomTiles(
+						Object.values(state.tiles),
+						safeCoordinate,
+						mineCount,
+					);
+					const tiles: Record<string, TileState> = { ...state.tiles };
 
-				for (const mineCoordinate of mines) {
-					const mineKey = Coordinate.keyOf(mineCoordinate);
-					const tile = tiles[mineKey];
-					if (tile) {
-						tiles[mineKey] = { ...tile, isMine: true };
+					for (const mineCoordinate of mines) {
+						const mineKey = Coordinate.keyOf(mineCoordinate);
+						const tile = tiles[mineKey];
+						if (tile) {
+							tiles[mineKey] = { ...tile, isMine: true };
 
-						for (const mineNeighbour of getNeighbouringCoordinateKeys(
-							tiles,
-							mineCoordinate,
-						)) {
-							const tile = tiles[mineNeighbour];
-							if (tile && !tile.isMine) {
-								tiles[mineNeighbour] = { ...tile, value: tile.value + 1 };
+							for (const mineNeighbour of getNeighbouringCoordinateKeys(
+								tiles,
+								mineCoordinate,
+							)) {
+								const tile = tiles[mineNeighbour];
+								if (tile && !tile.isMine) {
+									tiles[mineNeighbour] = { ...tile, value: tile.value + 1 };
+								}
 							}
 						}
 					}
-				}
-				return { ...state, gameState: GameState.ONGOING, tiles };
-			}),
+					return { ...state, gameState: GameState.ONGOING, tiles, cheated: cheating };
+				},
+			),
 			minesweeperActions.tileActions.revealTile.reduce((state, revealedTile) => {
 				const revealedTileKey = Coordinate.keyOf(revealedTile);
 				const tiles = Object.values(state.tiles);
@@ -604,11 +608,12 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	scope.createEffect(
 		minesweeperActions.clickActions.fire.pipe(
 			ifLatestFrom(gameState$, isGameReadyToStart),
-			withLatestFrom(gameInstance$),
-			map(([tile, preset]) =>
+			withLatestFrom(gameInstance$, cheating$),
+			map(([tile, preset, cheating]) =>
 				minesweeperActions.startGame.makePacket({
 					safeCoordinate: { x: tile.x, y: tile.y },
 					mineCount: preset.settings.mineCount,
+					cheating,
 				}),
 			),
 		),

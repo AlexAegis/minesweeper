@@ -78,7 +78,7 @@
 							height="{iconSize}"
 							width="{iconSize}"
 						/>
-						{next.title}
+						{next.initialWindowState.title}
 					</Button>
 				</Observer>
 			{/each}

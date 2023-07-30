@@ -65,10 +65,13 @@
 	on:pointerdown="{dbltap}"
 	role="presentation"
 >
-	<div aria-label="title" class="title-bar-text">
-		{#if icon}
+	{#if icon}
+		<div class="title-bar-icon">
 			<Image class="ms-title-bar-icon" src="{icon}" alt="{title}" />
-		{/if}
+		</div>
+	{/if}
+
+	<div aria-label="title" class="title-bar-text">
 		{title}
 		<slot />
 	</div>

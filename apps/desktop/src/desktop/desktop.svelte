@@ -3,6 +3,8 @@
 	import DesktopWindows from './components/desktop-windows.svelte';
 	import Taskbar from './components/taskbar.svelte';
 	import './styles/desktop.scss';
+
+	import TaskbarPrograms from './components/taskbar-programs.svelte';
 </script>
 
 <div class="desktop">
@@ -11,5 +13,7 @@
 		<slot />
 		<DesktopWindows />
 	</div>
-	<Taskbar />
+	<Taskbar>
+		<TaskbarPrograms />
+	</Taskbar>
 </div>

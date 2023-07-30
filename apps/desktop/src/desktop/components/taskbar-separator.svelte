@@ -5,8 +5,8 @@
 	div.indicator {
 		display: block;
 		margin: 1px;
-		margin-left: 3px;
 		width: 2px;
+		min-width: 2px;
 		height: 22px;
 		box-shadow:
 			inset -1px 0 var(--win-3d-objects-color-lighter-1),

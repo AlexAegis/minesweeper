@@ -18,7 +18,7 @@ import {
 	type WindowState,
 } from '../components/window-state.interface.js';
 
-import { capitalize, isNotNullish } from '@alexaegis/common';
+import { isNotNullish } from '@alexaegis/common';
 import { documentPointerDown$, rootSlice$ } from '../../root.store.js';
 
 import { browser } from '$app/environment';
@@ -35,7 +35,7 @@ export enum ProgramName {
 }
 
 export interface ProgramState {
-	title: string;
+	// title: string;
 	name: ProgramName;
 	/**
 	 * Should be 48*48
@@ -74,10 +74,11 @@ const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 	[ProgramName.MINESWEEPER]: {
 		...defaultCommonProgramWindowPreferences,
 		name: ProgramName.MINESWEEPER,
-		title: capitalize(ProgramName.MINESWEEPER),
+
 		icon: minesweeperIconLarge,
 		titleBarIcon: minesweeperIconSmall,
 		initialWindowState: {
+			title: 'Minesweeper',
 			resizable: false,
 			fitContent: true,
 			titleBarIcon: minesweeperIconSmall,
@@ -86,10 +87,11 @@ const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 	[ProgramName.CHEESE_TERMINATOR]: {
 		...defaultCommonProgramWindowPreferences,
 		name: ProgramName.CHEESE_TERMINATOR,
-		title: 'Cheese Terminator',
+
 		icon: cheeseTerminatorIconLarge,
 		titleBarIcon: cheeseTerminatorIconLarge,
 		initialWindowState: {
+			title: 'Cheese Terminator',
 			fitContent: true,
 			resizable: false,
 			titleBarIcon: cheeseTerminatorIconLarge,
@@ -105,7 +107,7 @@ export const desktop$ = rootSlice$.addSlice(
 		shortcuts: Object.values(initialInstalledPrograms).reduce<Record<string, ShortcutState>>(
 			(acc, next, shortcutId) => {
 				acc[shortcutId] = {
-					name: next.title,
+					name: next.initialWindowState.title ?? next.name,
 					position: { x: 0, y: shortcutId * 32 },
 					program: next.name,
 					icon: next.icon ?? next.titleBarIcon,
@@ -210,7 +212,6 @@ export const windows$ = desktop$.slice('windows', {
 				...desktop$.value.programs[program].initialWindowState,
 				processId,
 				program,
-				title: program,
 				zIndex: Object.keys(state).length + 1,
 			};
 			return { ...state, [processId]: spawnedWindow };
@@ -266,20 +267,6 @@ export const windows$ = desktop$.slice('windows', {
 		return { activeWindowCount$ };
 	},
 });
-
-desktop$.createEffect(
-	documentPointerDown$.pipe(
-		filter((event) => {
-			const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
-			return !elementsUnderPointer.some((element) => element.classList.contains('window'));
-		}),
-		ifLatestFrom(
-			windows$.internals.activeWindowCount$,
-			(activeWindowCount) => activeWindowCount > 0,
-		),
-		map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
-	),
-);
 
 export const resizeWindow = (
 	windowState: BaseWindowState,
@@ -398,6 +385,22 @@ if (browser) {
 					...initialInstalledPrograms,
 				});
 			}),
+		),
+	);
+
+	desktop$.createEffect(
+		documentPointerDown$.pipe(
+			filter((event) => {
+				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+				return !elementsUnderPointer.some((element) =>
+					element.classList.contains('window'),
+				);
+			}),
+			ifLatestFrom(
+				windows$.internals.activeWindowCount$,
+				(activeWindowCount) => activeWindowCount > 0,
+			),
+			map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
 		),
 	);
 }
