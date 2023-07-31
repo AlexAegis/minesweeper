@@ -4,14 +4,45 @@
 
 	import Button from '../../desktop/components/button.svelte';
 	import type { GamePreset } from '../interfaces';
-
 	const dispatch = createEventDispatcher();
 
 	export let presets$: Observable<Record<string, GamePreset>>;
 	export let preset: GamePreset;
 
-	function ok() {
-		dispatch('ok', preset);
+	const calculateMaxMines = (preset: Pick<GamePreset, 'height' | 'width'>): number => {
+		return preset.width * preset.height - 1;
+	};
+
+	function enforceValidPreset(preset: GamePreset) {
+		if (preset.height > 50) {
+			preset.height = 50;
+		}
+
+		if (preset.height < 2) {
+			preset.height = 2;
+		}
+
+		if (preset.width > 50) {
+			preset.width = 50;
+		}
+
+		if (preset.width < 2) {
+			preset.width = 2;
+		}
+
+		const maxMines = calculateMaxMines(preset);
+		if (preset.mineCount > maxMines) {
+			preset.mineCount = maxMines;
+		}
+
+		if (preset.mineCount < 1) {
+			preset.mineCount = 1;
+		}
+	}
+
+	function submit() {
+		enforceValidPreset(preset);
+		dispatch('submit', preset);
 	}
 
 	function cancel() {
@@ -19,23 +50,21 @@
 	}
 
 	$: {
-		if (preset.mineCount > preset.width * preset.height - 1) {
-			preset.mineCount = preset.width * preset.height - 1;
-		}
+		enforceValidPreset(preset);
 	}
 </script>
 
 <div class="custom-settings">
-	<form on:submit|preventDefault="{ok}">
+	<form on:submit|preventDefault="{submit}">
 		<div class="inputs">
 			<div class="field-row">
 				<label for="height">Height:</label>
-				<input name="height" type="number" bind:value="{preset.height}" max="999" min="2" />
+				<input name="height" type="number" bind:value="{preset.height}" max="50" min="2" />
 			</div>
 
 			<div class="field-row">
 				<label for="width">Width:</label>
-				<input name="width" type="number" bind:value="{preset.width}" max="999" min="2" />
+				<input name="width" type="number" bind:value="{preset.width}" max="50" min="2" />
 			</div>
 
 			<div class="field-row">
@@ -50,7 +79,7 @@
 			</div>
 		</div>
 		<div class="actions">
-			<Button type="submit" on:click="{ok}">OK</Button>
+			<Button type="submit">OK</Button>
 			<Button on:click="{cancel}">Cancel</Button>
 		</div>
 	</form>

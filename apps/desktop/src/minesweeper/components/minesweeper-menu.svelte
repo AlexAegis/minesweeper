@@ -33,7 +33,7 @@
 
 	let active: string | undefined;
 
-	function settingsOkListener(event: CustomEvent<GamePreset>): void {
+	function settingsSubmit(event: CustomEvent<GamePreset>): void {
 		internals.minesweeperActions.resetGame.next(event.detail);
 		customGameModal.close();
 	}
@@ -138,7 +138,7 @@
 	<Settings
 		{presets$}
 		preset="{$preset$}"
-		on:ok="{settingsOkListener}"
+		on:submit="{settingsSubmit}"
 		on:cancel="{() => customGameModal.close()}"
 	/>
 </Modal>

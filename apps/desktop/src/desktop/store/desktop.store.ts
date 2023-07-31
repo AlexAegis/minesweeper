@@ -301,13 +301,16 @@ export const resizeWindow = (
 	windowState: BaseWindowState,
 	resizeData: ResizeData,
 ): BaseWindowState => {
-	if (isNullish(resizeData.height) && isNullish(resizeData.width)) {
+	if (!windowState.resizable) {
+		return windowState;
+	} else if (isNullish(resizeData.height) && isNullish(resizeData.width)) {
 		return windowState;
 	} else {
 		const nextWindowState = { ...windowState };
 
 		if (isNotNullish(resizeData.width) && resizeData.width >= nextWindowState.minWidth) {
 			nextWindowState.width = resizeData.width;
+
 			if (resizeData.moveX) {
 				nextWindowState.position = {
 					...nextWindowState.position,
@@ -318,6 +321,7 @@ export const resizeWindow = (
 
 		if (isNotNullish(resizeData.height) && resizeData.height >= nextWindowState.minHeight) {
 			nextWindowState.height = resizeData.height;
+
 			if (resizeData.moveY) {
 				nextWindowState.position = {
 					...nextWindowState.position,

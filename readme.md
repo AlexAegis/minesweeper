@@ -41,6 +41,13 @@ Here's a screencapture from a Windows NT 2000 Virtual Machine:
   shape of the original pretty well.
 - Some pixel are not exactly pixel shaped, that's thanks to browser rendering,
   can't do anything about that.
+- The timer for Minesweeper in the original starts at `1`, immediately as you
+  start the game. I believe this is not correct so my timer switches to `1` only
+  after a second after starting the game.
+  > My initial implementation actually did make the same mistake, and started
+  > from 1 immediately!
+- The maximum size of a playfield in the original is `30 by 24`, not much larger
+  than the `Expert` preset. I raised this to `50 by 50`.
 
 ## Features
 
