@@ -1,18 +1,15 @@
 <script lang="ts">
-	import { Observer } from 'svelte-rxjs-observer';
-	import type { DicedTiles } from '../store';
+	import type { Slice } from '@tinyslice/core';
+	import type { GameInstance, TileState } from '../store';
 	import Tile from './tile.svelte';
 
 	export let cheating: boolean;
-	export let dicedTiles: DicedTiles;
-	$: keys$ = dicedTiles.keys$;
+	export let tileSlice: Slice<GameInstance, Record<`${number},${number}`, TileState>>;
 </script>
 
 <div class="playfield {$$props['class'] ?? ''}" style="{$$props['style'] ?? ''}">
-	{#each $keys$ as key}
-		<Observer observable="{dicedTiles.get(key)}" let:next>
-			<Tile {cheating} tile="{next}" on:startFire on:fire on:alternativeFire on:cancelFire />
-		</Observer>
+	{#each Object.values($tileSlice) as tile}
+		<Tile {cheating} {tile} on:startFire on:fire on:alternativeFire on:cancelFire />
 	{/each}
 </div>
 

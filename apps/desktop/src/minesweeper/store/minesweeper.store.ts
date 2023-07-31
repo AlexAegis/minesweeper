@@ -715,6 +715,7 @@ export const createMineSweeperGame = <ParentSlice, T>(
 
 	return {
 		dicedTiles,
+		tilesSlice$,
 		minesweeperActions,
 		game$,
 		cheating$,

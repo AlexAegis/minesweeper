@@ -37,10 +37,6 @@
 		dispatch('alternativeFire', asCoordinate(tile));
 	}
 
-	function getValueClass(tile: TileState): string {
-		return `minesweeper-tile-${tile.value}`;
-	}
-
 	function getTileClassList(tile: TileState, cheating: boolean): string {
 		const classes: string[] = [];
 
@@ -62,7 +58,7 @@
 
 		// Protected styles to avoid information leaking
 		if (isEmptyTileMark(tile.mark) && (tile.revealed || cheating)) {
-			classes.push(getValueClass(tile));
+			classes.push(`minesweeper-tile-${tile.value}`);
 
 			if (tile.isMine) {
 				classes.push('mine');

@@ -15,6 +15,7 @@
 	$: forcedClassicScheme$ = internals.forcedClassicScheme$;
 	$: cheating$ = internals.cheating$;
 	$: cheating = $cheating$;
+	$: tileSlice = internals.tilesSlice$;
 
 	onMount(() => {
 		internals.game$.unpause();
@@ -44,7 +45,7 @@
 
 	<Playfield
 		class="panel inset"
-		dicedTiles="{internals.dicedTiles}"
+		{tileSlice}
 		{cheating}
 		on:startFire="{(event) =>
 			internals.minesweeperActions.clickActions.startFire.next(event.detail)}"
