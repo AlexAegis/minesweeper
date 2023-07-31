@@ -441,7 +441,7 @@ if (browser) {
 			mergeMap((windowRecord) => {
 				const windowStates = Object.values(windowRecord);
 
-				const animationTime = 500; // 150
+				const animationTime = 150;
 
 				const minimizationActions = createTimedAction<WindowState>({
 					states: windowStates.filter(

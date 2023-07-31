@@ -565,7 +565,7 @@ body {
 		&.animate {
 			z-index: 500000;
 			position: fixed;
-			animation: animate-titlebar 0.5s linear;
+			animation: animate-titlebar 0.15s linear;
 		}
 
 		@keyframes animate-titlebar {
