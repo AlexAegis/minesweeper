@@ -548,20 +548,37 @@ body.w2k {
 		display: flex;
 		gap: 2px;
 
-		&.floating {
+		&.animate-minimizing {
 			position: fixed;
-			animation: minimize 0.15s linear;
+			animation: minimizing 0.15s linear;
 		}
 
-		@keyframes minimize {
+		&.animate-unminimizing {
+			position: fixed;
+			animation: unminimizing 0.15s linear;
+		}
+
+		@keyframes minimizing {
 			from {
-				translate: var(--minimize-from-x) var(--minimize-from-y);
-				width: var(--from-width);
+				translate: var(--window-x) var(--window-y);
+				width: var(--window-width);
 			}
 
 			to {
-				translate: var(--minimize-to-x) var(--minimize-to-y);
-				width: var(--to-width);
+				translate: var(--button-x) var(--button-y);
+				width: var(--button-width);
+			}
+		}
+
+		@keyframes unminimizing {
+			from {
+				translate: var(--button-x) var(--button-y);
+				width: var(--button-width);
+			}
+
+			to {
+				translate: var(--window-x) var(--window-y);
+				width: var(--window-width);
 			}
 		}
 

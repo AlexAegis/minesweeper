@@ -10,17 +10,14 @@
 	const windowKeys$ = dicedWindows.keys$;
 
 	const formatAnimationVariables = (
-		from: CoordinateLike,
-		to: CoordinateLike,
-		fromWidth: number,
-		toWidth: number,
+		buttonPosition: CoordinateLike,
+		windowPosition: CoordinateLike,
+		buttonWidth: number,
+		windowWidth: number,
 	): string =>
-		`--minimize-from-x: ${from.x}px; --minimize-from-y: ${from.y}px; --minimize-to-x: ${to.x}px; --minimize-to-y: ${to.y}px; --from-width: ${fromWidth}px; --to-width: ${toWidth}px;`;
+		`--button-x: ${buttonPosition.x}px; --button-y: ${buttonPosition.y}px; --window-x: ${windowPosition.x}px; --window-y: ${windowPosition.y}px; --button-width: ${buttonWidth}px; --window-width: ${windowWidth}px;`;
 
-	const getMinimizeAnimation = (
-		process: BaseWindowState,
-		direction: 'minimizing' | 'unminimizing',
-	): string => {
+	const getMinimizeAnimation = (process: BaseWindowState): string | undefined => {
 		const buttonId = formatPid(process.processId, 'taskbar');
 		const windowId = formatPid(process.processId, 'window');
 
@@ -28,35 +25,26 @@
 		const windowElement = document.querySelector(`#${windowId}`);
 		const buttonParent = buttonElement?.parentElement;
 
-		if (buttonElement && windowElement && buttonParent) {
-			const buttonRect = buttonElement.getBoundingClientRect();
-			const buttonParentRect = buttonParent.getBoundingClientRect();
-			const offset: CoordinateLike = {
-				x: buttonRect.x - buttonParentRect.x,
-				y: buttonRect.y - buttonParentRect.y,
-			};
-			return direction === 'minimizing'
-				? formatAnimationVariables(
-						{
-							x: offset.x + process.position.x - buttonRect.x,
-							y: offset.y + process.position.y - buttonRect.y,
-						},
-						offset,
-						windowElement.clientWidth,
-						buttonElement.clientWidth,
-				  )
-				: formatAnimationVariables(
-						offset,
-						{
-							x: offset.x + process.position.x - buttonRect.x,
-							y: offset.y + process.position.y - buttonRect.y,
-						},
-						buttonElement.clientWidth,
-						windowElement.clientWidth,
-				  );
-		} else {
-			return '';
+		if (!buttonElement || !windowElement || !buttonParent) {
+			return undefined;
 		}
+
+		const buttonRect = buttonElement.getBoundingClientRect();
+		const buttonParentRect = buttonParent.getBoundingClientRect();
+		const buttonOffset: CoordinateLike = {
+			x: buttonRect.x - buttonParentRect.x,
+			y: buttonRect.y - buttonParentRect.y,
+		};
+		const windowOffset: CoordinateLike = {
+			x: buttonOffset.x + process.position.x - buttonRect.x,
+			y: buttonOffset.y + process.position.y - buttonRect.y,
+		};
+		return formatAnimationVariables(
+			buttonOffset,
+			windowOffset,
+			buttonElement.clientWidth,
+			windowElement.clientWidth,
+		);
 	};
 </script>
 
@@ -80,8 +68,8 @@
 
 		{#if next.minimized === 'minimizing' || next.minimized === 'unminimizing'}
 			<TitleBar
-				class="floating"
-				style="{getMinimizeAnimation(next, next.minimized)}"
+				class="{'animate-' + next.minimized}"
+				style="{getMinimizeAnimation(next)}"
 				title="{next.title}"
 				icon="{next.titleBarIcon}"
 				showMaximize="{false}"
