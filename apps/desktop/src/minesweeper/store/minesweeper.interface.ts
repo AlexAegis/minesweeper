@@ -2,12 +2,17 @@ import type { CoordinateKey } from '@alexaegis/desktop-common';
 import type { GamePreset, GameState, TileMark, WinData } from '../interfaces/index.js';
 import type { createMineSweeperGame } from './minesweeper.store.js';
 
+export interface GamePreferences {
+	unlockedScheme: boolean;
+	unlockedResize: boolean;
+}
+
 export interface Game {
 	presets: Record<string, GamePreset>;
 	instance: GameInstance;
 	history: WinData[];
 	cheating: boolean;
-	forcedClassicScheme: boolean;
+	preferences: GamePreferences;
 }
 
 export enum FieldState {

@@ -86,16 +86,29 @@
 		</Button>
 	</Observer>
 
-	<Observer observable="{internals.forcedClassicScheme$}" let:next>
+	<Observer observable="{internals.unlockedScheme$}" let:next>
 		<Button
 			look="{ButtonLook.CONTEXT_MENU_ITEM}"
 			on:click="{() => {
-				internals.forcedClassicScheme$.set(!next);
+				internals.unlockedScheme$.set(!next);
 			}}"
 			toggled="{next}"
 			title="Regardless of your UI scheme, Minesweeper always looked like the 98/Classic scheme. Here you can turn it off and see how it would like with the system scheme."
 		>
-			Force Classic Scheme
+			Unlock Color Scheme
+		</Button>
+	</Observer>
+
+	<Observer observable="{internals.unlockedResize$}" let:next>
+		<Button
+			look="{ButtonLook.CONTEXT_MENU_ITEM}"
+			on:click="{() => {
+				internals.unlockedResize$.set(!next);
+			}}"
+			toggled="{next}"
+			title="Minesweeper is not resizeable by default. How about changing that?"
+		>
+			Unlock Resize
 		</Button>
 	</Observer>
 

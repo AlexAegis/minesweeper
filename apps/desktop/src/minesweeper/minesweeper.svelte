@@ -12,7 +12,8 @@
 
 	export let internals: MinesweeperGame;
 
-	$: forcedClassicScheme$ = internals.forcedClassicScheme$;
+	$: unlockedScheme$ = internals.unlockedScheme$;
+
 	$: cheating$ = internals.cheating$;
 	$: cheating = $cheating$;
 	$: tileSlice = internals.tilesSlice$;
@@ -25,7 +26,7 @@
 	});
 </script>
 
-<div class="game w2k-scheme-classic" class:w2k-scheme-classic="{$forcedClassicScheme$}">
+<div class="game w2k-scheme-classic" class:w2k-scheme-classic="{!$unlockedScheme$}">
 	<Panel class="stats">
 		<Observer observable="{internals.remainingMines$}" let:next>
 			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />

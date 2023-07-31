@@ -22,6 +22,10 @@ import {
 	timer,
 	withLatestFrom,
 } from 'rxjs';
+import type {
+	BaseWindowState,
+	WindowState,
+} from '../../desktop/components/window-state.interface.js';
 import {
 	MS_TAG,
 	debug$,
@@ -156,10 +160,26 @@ export const CLASSIC_GAME_PRESETS = {
 
 const TIME_TICKRATE_MS = 1000;
 
+const isBaseWindowState = (o: object): o is BaseWindowState => {
+	return Object.hasOwn(o, 'processId') && Object.hasOwn(o, 'title') && Object.hasOwn(o, 'active');
+};
+
+const isWindowSlice = (slice: {
+	value: unknown;
+}): slice is Slice<Record<string, WindowState>, BaseWindowState> => {
+	return isBaseWindowState(slice.value as object);
+};
+
 export const createMineSweeperGame = <ParentSlice, T>(
 	parentSlice: Slice<ParentSlice, T>,
 	key: string,
 ) => {
+	let windowSlice: Slice<Record<string, WindowState>, BaseWindowState> | undefined;
+
+	if (isWindowSlice(parentSlice)) {
+		windowSlice = parentSlice;
+	}
+
 	const game$ = parentSlice.addSlice(
 		key,
 		{
@@ -167,7 +187,10 @@ export const createMineSweeperGame = <ParentSlice, T>(
 			history: [],
 			presets: CLASSIC_GAME_PRESETS,
 			cheating: false,
-			forcedClassicScheme: true,
+			preferences: {
+				unlockedScheme: false,
+				unlockedResize: false,
+			},
 		} as Game,
 		{
 			defineInternals: () => {
@@ -180,7 +203,10 @@ export const createMineSweeperGame = <ParentSlice, T>(
 	const CLICK_TAG = '[click]';
 
 	const cheating$ = game$.slice('cheating');
-	const forcedClassicScheme$ = game$.slice('forcedClassicScheme');
+	const preferences$ = game$.slice('preferences');
+
+	const unlockedScheme$ = preferences$.slice('unlockedScheme');
+	const unlockedResize$ = preferences$.slice('unlockedResize');
 
 	const minesweeperActions = {
 		cheating: cheating$.setAction,
@@ -713,13 +739,27 @@ export const createMineSweeperGame = <ParentSlice, T>(
 		),
 	);
 
+	game$.createEffect(
+		unlockedResize$.pipe(
+			map((unlockedResize) => {
+				return windowSlice?.updateAction.makePacket({
+					resizable: unlockedResize,
+					width: 0,
+					height: 0,
+				});
+			}),
+		),
+	);
+
 	return {
 		dicedTiles,
 		tilesSlice$,
 		minesweeperActions,
 		game$,
 		cheating$,
-		forcedClassicScheme$,
+		preferences$,
+		unlockedResize$,
+		unlockedScheme$,
 		smileyState$,
 		remainingMines$,
 		highscoreEntries$,
