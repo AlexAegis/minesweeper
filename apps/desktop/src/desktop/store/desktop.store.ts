@@ -7,7 +7,7 @@ import {
 	isNullish,
 	PremadeGetNext,
 } from '@tinyslice/core';
-import { filter, map, take, tap } from 'rxjs';
+import { filter, map, merge, mergeMap, of, take, tap, timer } from 'rxjs';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface.js';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store.js';
 import type { ResizeData } from '../components/resizable.function.js';
@@ -30,7 +30,7 @@ export type ProcessId = string;
 
 export enum ProgramName {
 	MINESWEEPER = 'minesweeper',
-	CHEESE_TERMINATOR = 'cheese-terminator',
+	CHEESE_TERMINATOR = 'cheeseTerminator',
 	UNKNOWN = 'unknown',
 }
 
@@ -69,6 +69,14 @@ export interface DesktopState {
 	startMenuOpen: boolean;
 	activeScheme: DesktopScheme;
 }
+
+/**
+ * The process identifier used for windows and their corresponding taskbar buttons
+ */
+export const formatPid = (
+	processId: number | string,
+	variant?: 'window' | 'taskbar' | undefined,
+): string => `pid${processId}${variant ? '-' + variant : ''}`;
 
 const initialInstalledPrograms: Partial<Record<ProgramName, ProgramState>> = {
 	[ProgramName.MINESWEEPER]: {
@@ -137,6 +145,22 @@ export const desktop$ = rootSlice$.addSlice(
 		},
 	},
 );
+
+//const reduceWindowMinimizing = (
+//	state: WindowMinimizationState,
+//	payload: boolean,
+//): WindowMinimizationState => {
+//	// If it's in a transitionary period, don't do anything
+//	if (typeof state === 'string') {
+//		return state;
+//	} else if (!state && payload) {
+//		return 'being-minimized';
+//	} else if (state && !payload) {
+//		return 'being-restored';
+//	} else {
+//		return state;
+//	}
+//};
 
 export const SHORTCUT_HEIGHT = 50;
 export const SHORTCUT_WIDTH = 75;
@@ -248,9 +272,10 @@ export const windows$ = desktop$.slice('windows', {
 								zIndex: indexMap.get(key) ?? 0,
 								active: windowState.processId === payload,
 								minimized:
-									windowState.processId === payload
-										? false // If this is the one being activated, unminimize it
-										: windowState.minimized, // Otherwise don't change it
+									windowState.processId === payload &&
+									windowState.minimized === true
+										? 'start-unminimizing' // If this is the one being activated, unminimize it
+										: windowState.minimized, // Otherwise leave it alone
 						  }
 						: {
 								...windowState,
@@ -327,12 +352,15 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 			],
 		});
 
-		const minimized$ = windowSlice.slice('minimized', {
-			reducers: [windowActions.minimize.reduce((_state, payload) => payload)],
-		});
+		const minimized$ = windowSlice.slice('minimized');
 
 		const active$ = windowSlice.slice('active', {
-			reducers: [windowActions.minimize.reduce((_state, payload) => !payload)],
+			reducers: [
+				minimized$.setAction.reduce(
+					(activeState, minimizationState) =>
+						typeof minimizationState === 'boolean' ? !minimizationState : activeState, // Only change the active state once not mid animation
+				),
+			],
 		});
 
 		const position$ = windowSlice.slice('position', {
@@ -376,6 +404,55 @@ if (browser) {
 		),
 	);
 
+	desktop$.createEffect(
+		dicedWindows.items$.pipe(
+			mergeMap((windowStates) => {
+				const minimizationsStarting = windowStates.filter(
+					(windowState) => windowState.minimized === 'start-minimizing',
+				);
+				// Immediately, to avoid starting it twice
+				const beginMinimizeAnimationActions = minimizationsStarting.map((windowState) =>
+					dicedWindows
+						.get(windowState.processId)
+						.internals.minimized$.setAction.makePacket('minimizing'),
+				);
+				// Some time later to finish it
+				const finishMinimizeAnimationActions = minimizationsStarting.map((windowState) =>
+					dicedWindows
+						.get(windowState.processId)
+						.internals.minimized$.setAction.makePacket(true),
+				);
+
+				const unminimizationsStarting = windowStates.filter(
+					(windowState) => windowState.minimized === 'start-unminimizing',
+				);
+				// Immediately, to avoid starting it twice
+				const beginUnminimizeAnimationActions = unminimizationsStarting.map((windowState) =>
+					dicedWindows
+						.get(windowState.processId)
+						.internals.minimized$.setAction.makePacket('unminimizing'),
+				);
+				// Some time later to finish it
+				const finishUnminimizeAnimationActions = unminimizationsStarting.map(
+					(windowState) =>
+						dicedWindows
+							.get(windowState.processId)
+							.internals.minimized$.setAction.makePacket(false),
+				);
+
+				return merge([
+					...[...beginMinimizeAnimationActions, ...beginUnminimizeAnimationActions].map(
+						(action) => of(action),
+					),
+					...[...finishMinimizeAnimationActions, ...finishUnminimizeAnimationActions].map(
+						(finishActions) => timer(150).pipe(map(() => finishActions)),
+					),
+				]);
+			}),
+			mergeMap((actions) => actions),
+		),
+	);
+
 	activeSchemeKind$.createEffect(
 		activeSchemeKind$.pipe(
 			tap((kind) => {
@@ -391,12 +468,7 @@ if (browser) {
 	desktop$.createEffect(
 		programs$.pipe(
 			take(1),
-			map((a) => {
-				console.log('programs', a);
-				return programs$.updateAction.makePacket({
-					...initialInstalledPrograms,
-				});
-			}),
+			map(() => programs$.updateAction.makePacket(initialInstalledPrograms)),
 		),
 	);
 
@@ -404,7 +476,6 @@ if (browser) {
 		documentPointerDown$.pipe(
 			filter((event) => {
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
-				console.log(elementsUnderPointer.map((e) => e.classList.value));
 				return !elementsUnderPointer.some(
 					(element) =>
 						element.classList.contains('window') ||

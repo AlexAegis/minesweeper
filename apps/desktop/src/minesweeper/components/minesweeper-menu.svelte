@@ -30,7 +30,6 @@
 	$: isGameSettingsNotAPreset$ = internals.isGameSettingsNotAPreset$;
 	$: presets$ = internals.presets$;
 	$: highscoreEntries$ = internals.highscoreEntries$;
-	$: cheating$ = internals.cheating$;
 
 	let active: string | undefined;
 

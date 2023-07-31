@@ -68,6 +68,7 @@ body.w2k {
 	--win-start-menu-item-height: var(--win-large-icon-size);
 	--win-absolute-distance-between-shortcuts: 76px; // Not used, a measurement between the corners of 2 shortcut icons Including the corner pixels, true both vertically and horizontally
 	--win-start-menu-item-width: 227px;
+	--win-taskbar-item-max-width: 160px;
 	--win-title-bar-icon-minimize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAADklEQVQI12NgwAbqQAgAA40A/e5DMQMAAAAASUVORK5CYII=');
 	--win-title-bar-icon-maximize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAEklEQVQI12P438AARA0Y6H8DAJLoCn7HPTdBAAAAAElFTkSuQmCC');
 	--win-title-bar-icon-close: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAHElEQVQI12NgYGBIbGAwZmCQY2DgAZPGYBEGBgAhOwJxp5nQ3QAAAABJRU5ErkJggg==');
@@ -547,6 +548,23 @@ body.w2k {
 		display: flex;
 		gap: 2px;
 
+		&.floating {
+			position: fixed;
+			animation: minimize 0.15s linear;
+		}
+
+		@keyframes minimize {
+			from {
+				translate: var(--minimize-from-x) var(--minimize-from-y);
+				width: var(--from-width);
+			}
+
+			to {
+				translate: var(--minimize-to-x) var(--minimize-to-y);
+				width: var(--to-width);
+			}
+		}
+
 		// 98.css
 		.title-bar-text {
 			display: flex;
@@ -686,7 +704,7 @@ body.w2k {
 			gap: 1px;
 
 			button:not(.start) {
-				flex: 0 1 160px;
+				flex: 0 1 var(--win-taskbar-item-max-width);
 				min-width: 0;
 				padding: 3px;
 				box-sizing: border-box;

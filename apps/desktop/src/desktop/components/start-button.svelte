@@ -22,8 +22,9 @@
 {/if}
 
 <Button
-	bind:button="{startButton}"
+	id="start"
 	class="start"
+	bind:button="{startButton}"
 	bind:active="{$startMenuOpen$}"
 	on:startFire="{() => {
 		startMenuOpen$.set(!startMenuOpen$.value);

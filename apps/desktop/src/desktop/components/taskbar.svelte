@@ -12,15 +12,15 @@
 	let startButton: HTMLElement;
 </script>
 
-<div class="taskbar panel">
+<div id="taskbar" class="taskbar panel">
 	<StartButton bind:startButton />
 	<TaskbarSeparator />
 	<slot name="taskbar" />
-	<div class="taskbar-programs">
+	<div id="taskbar-programs" class="taskbar-programs">
 		<slot />
 	</div>
 
-	<div class="quickbar panel inset">
+	<div id="quickbar" class="quickbar panel inset">
 		<slot name="quickbar" />
 		{#if $debug$}
 			<div class="quickbar-icon"><Image height="{10}" width="{10}" src="{flagIcon}" /></div>

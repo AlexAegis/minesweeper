@@ -2,9 +2,16 @@ import type { CoordinateLike } from '@alexaegis/desktop-common';
 import type { MinesweeperGame } from '../../minesweeper/store/index.js';
 import type { ProcessId, ProgramName } from '../store/desktop.store.js';
 
+export type WindowMinimizationState =
+	| boolean
+	| 'start-minimizing'
+	| 'minimizing'
+	| 'start-unminimizing'
+	| 'unminimizing';
+
 export interface CommonProgramWindowPreferences {
 	maximized: boolean;
-	minimized: boolean;
+	minimized: WindowMinimizationState;
 	resizable: boolean;
 	showMinimize: boolean;
 	minimizeEnabled: boolean;

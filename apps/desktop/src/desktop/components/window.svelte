@@ -23,6 +23,7 @@
 	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 
 	export let transient = false;
+	export let id: string | undefined = undefined;
 
 	$: transientState = {
 		...initialWindowState,
@@ -142,6 +143,7 @@
 
 <div
 	bind:this="{windowElement}"
+	{id}
 	class="program-window window pid{transientState.processId} {transientState.program} {$$props[
 		'class'
 	] ?? ''}"
@@ -149,7 +151,9 @@
 	class:immobile="{!effectiveMovable}"
 	class:non-resizable="{!effectiveResizable}"
 	class:maximized="{transientState.maximized}"
-	class:minimized="{transientState.minimized}"
+	class:unminimizing="{transientState.minimized === 'unminimizing'}"
+	class:minimizing="{transientState.minimized === 'minimizing'}"
+	class:minimized="{transientState.minimized === true}"
 	class:fit-content="{transientState.fitContent}"
 	class:active="{transientState.active}"
 	style:top="{`${transientState.position.y}px`}"
@@ -200,11 +204,13 @@
 		position: absolute;
 		box-sizing: border-box;
 		user-select: none;
+		touch-action: none;
 
-		// touch-action: none;
-
+		&.minimizing,
+		&.unminimizing,
 		&.minimized {
-			display: none !important;
+			//	display: none !important;
+			visibility: hidden !important;
 		}
 
 		.window-body {

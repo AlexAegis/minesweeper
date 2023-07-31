@@ -52,7 +52,8 @@
 </script>
 
 <div
-	class="title-bar"
+	class="title-bar {$$props['class'] ?? ''}"
+	style="{$$props['style'] ?? ''}"
 	class:active
 	on:dblclick="{maximize}"
 	on:pointerdown="{dbltap}"

@@ -23,6 +23,7 @@
 	export let icon: string | undefined = undefined;
 	export let label: string | undefined = undefined;
 	export let title: string | undefined = undefined;
+	export let id: string | undefined = undefined;
 
 	export let selfPress: boolean | undefined = true;
 	export let hotkeyLetter: string | undefined = undefined;
@@ -141,6 +142,7 @@
 
 <button
 	bind:this="{button}"
+	{id}
 	{type}
 	{disabled}
 	{title}

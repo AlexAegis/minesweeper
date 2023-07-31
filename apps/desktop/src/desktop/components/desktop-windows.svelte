@@ -3,7 +3,7 @@
 	import { Observer } from 'svelte-rxjs-observer';
 	import MinesweeperMenu from '../../minesweeper/components/minesweeper-menu.svelte';
 	import Minesweeper from '../../minesweeper/minesweeper.svelte';
-	import { desktop$, dicedWindows, ProgramName } from '../store';
+	import { desktop$, dicedWindows, formatPid, ProgramName } from '../store';
 	import Empty from './empty.svelte';
 	import Window from './window.svelte';
 
@@ -36,6 +36,7 @@
 	{#if windowSlice.internals}
 		<Observer observable="{windowSlice}" let:next>
 			<Window
+				id="{formatPid(next.processId, 'window')}"
 				windowState="{next}"
 				on:activate="{() => {
 					console.log('WINACT SELF');
@@ -45,7 +46,7 @@
 					windowSlice.internals.windowActions.maximize.next(undefined);
 				}}"
 				on:minimize="{() => {
-					windowSlice.internals.windowActions.minimize.next(true);
+					windowSlice.internals.minimized$.set('start-minimizing');
 				}}"
 				on:restore="{() => {
 					windowSlice.internals.windowActions.restore.next(undefined);
