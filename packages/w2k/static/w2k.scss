@@ -5,18 +5,27 @@
 	src: url('fonts/fs-tahoma-8px/fs-tahoma-8px.woff2') format('woff2');
 }
 
-body.w2k {
-	display: block;
+body {
 	height: 100svh;
-	overscroll-behavior: none;
-	background-color: var(--win-desktop-color);
 	margin: 0;
-	-webkit-touch-callout: none !important;
-	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+
+	&.embeddedtest {
+		height: 70svh;
+		width: 70%;
+		margin-top: 15%;
+		margin-left: 15%;
+	}
 }
 
 // All values and names were picked from Windows 2000
 .w2k {
+	display: block;
+	height: 100%;
+	overscroll-behavior: none;
+	width: 100%;
+	-webkit-touch-callout: none !important;
+	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+
 	--win-start-button-width: 54px; // + 1 the bo
 	--win-taskbar-height: 28px; // with box-sizing: border-box;
 	--win-taskbar-element-height: 22px;
@@ -548,37 +557,21 @@ body.w2k {
 		display: flex;
 		gap: 2px;
 
-		&.animate-minimizing {
+		&.animate {
+			z-index: 500000;
 			position: fixed;
-			animation: minimizing 0.15s linear;
+			animation: animate-titlebar 0.5s linear;
 		}
 
-		&.animate-unminimizing {
-			position: fixed;
-			animation: unminimizing 0.15s linear;
-		}
-
-		@keyframes minimizing {
+		@keyframes animate-titlebar {
 			from {
-				translate: var(--window-x) var(--window-y);
-				width: var(--window-width);
+				translate: var(--titlebar-from-x) var(--titlebar-from-y);
+				width: var(--titlebar-from-width);
 			}
 
 			to {
-				translate: var(--button-x) var(--button-y);
-				width: var(--button-width);
-			}
-		}
-
-		@keyframes unminimizing {
-			from {
-				translate: var(--button-x) var(--button-y);
-				width: var(--button-width);
-			}
-
-			to {
-				translate: var(--window-x) var(--window-y);
-				width: var(--window-width);
+				translate: var(--titlebar-to-x) var(--titlebar-to-y);
+				width: var(--titlebar-to-width);
 			}
 		}
 
@@ -672,17 +665,18 @@ body.w2k {
 	}
 
 	.taskbar {
-		z-index: 10000;
+		z-index: 2;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 4px 2px 2px;
 		height: var(--win-taskbar-height);
-		position: fixed;
+		position: sticky;
 		bottom: 0;
 		gap: 1px;
 		width: 100%;
 		box-sizing: border-box;
+		grid-row: 2;
 
 		// There's an extra shadow downwards to when the taskbar is nudged up the bottom side still looks like part of the taskbar
 		box-shadow:
@@ -872,16 +866,40 @@ body.w2k {
 
 	.desktop {
 		overscroll-behavior: none;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		height: calc(100% - var(--win-taskbar-height));
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: auto var(--win-taskbar-height);
+		height: 100%;
+		background-color: var(--win-desktop-color);
+		overflow: hidden;
 
+		.windows,
 		.workspace {
-			padding: var(--win-desktop-shortcut-gap);
-			box-sizing: border-box;
+			grid-row: 1;
+			grid-column: 1;
 			width: 100%;
 			height: 100%;
+			box-sizing: border-box;
+		}
+
+		// Forced overlap
+		.windows {
+			display: grid;
+			grid-template-rows: 1fr;
+			grid-template-columns: 1fr;
+			z-index: 1;
+			pointer-events: none;
+
+			> * {
+				grid-row: 1;
+				grid-column: 1;
+				pointer-events: all;
+			}
+		}
+
+		.workspace {
+			z-index: 0;
+			padding: var(--win-desktop-shortcut-gap);
 
 			&:not(.free-placement) {
 				display: grid;

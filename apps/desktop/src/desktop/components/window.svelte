@@ -4,8 +4,9 @@
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
 	import { documentPointerDown$ } from '../../root.store';
-	import { resizeWindow } from '../store';
+	import { formatPid, resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
+	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
 	import type { TitleBarEvents } from './title-bar-events.interface';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
@@ -139,7 +140,55 @@
 		resizeInteract?.unsubscribe();
 		sink.unsubscribe();
 	});
+
+	const getMaximizeAnimation = (
+		windowState: BaseWindowState,
+		stage: 'maximizing' | 'restoring',
+	): string | undefined => {
+		const workspaceId = 'workspace';
+		const windowId = formatPid(windowState.processId, 'window');
+
+		const workspaceElement = document.querySelector(`#${workspaceId}`);
+		const windowElement = document.querySelector(`#${windowId}`);
+
+		if (!workspaceElement || !windowElement) {
+			return undefined;
+		}
+
+		const windowRect = windowElement.getBoundingClientRect();
+		const workspaceRect = workspaceElement.getBoundingClientRect();
+
+		const windowOffset: TaskBarAnimationFrame = {
+			x: windowRect.x - workspaceRect.x,
+			y: windowRect.y - workspaceRect.y,
+			width: windowRect.width,
+		};
+
+		const workspaceOffset: TaskBarAnimationFrame = {
+			x: 3,
+			y: 3, // The distance from the edge of a window to the titlebar
+			width: workspaceRect.width,
+		};
+
+		const fromOffset = stage === 'restoring' ? workspaceOffset : windowOffset;
+		const toOffset = stage === 'maximizing' ? workspaceOffset : windowOffset;
+
+		return formatAnimationVariables(fromOffset, toOffset);
+	};
 </script>
+
+{#if transientState.maximized === 'maximizing' || transientState.maximized === 'restoring'}
+	<TitleBar
+		class="animate"
+		style="{getMaximizeAnimation(transientState, transientState.maximized)}"
+		title="{transientState.title}"
+		icon="{transientState.titleBarIcon}"
+		showMaximize="{false}"
+		showMinimize="{false}"
+		showHelp="{false}"
+		showClose="{false}"
+	/>
+{/if}
 
 <div
 	bind:this="{windowElement}"
@@ -150,17 +199,19 @@
 	class:invisible="{transientState.invisible}"
 	class:immobile="{!effectiveMovable}"
 	class:non-resizable="{!effectiveResizable}"
-	class:maximized="{transientState.maximized}"
-	class:unminimizing="{transientState.minimized === 'unminimizing'}"
-	class:minimizing="{transientState.minimized === 'minimizing'}"
 	class:minimized="{transientState.minimized === true}"
+	class:minimizing="{transientState.minimized === 'minimizing'}"
+	class:unminimizing="{transientState.minimized === 'unminimizing'}"
+	class:maximized="{transientState.maximized === true}"
+	class:maximizing="{transientState.maximized === 'maximizing'}"
+	class:restoring="{transientState.maximized === 'restoring'}"
 	class:fit-content="{transientState.fitContent}"
 	class:active="{transientState.active}"
 	style:top="{`${transientState.position.y}px`}"
 	style:left="{`${transientState.position.x}px`}"
 	style:height="{`${transientState.height}px`}"
 	style:width="{`${transientState.width}px`}"
-	style:z-index="{1000 + transientState.zIndex}"
+	style:z-index="{transientState.zIndex}"
 	on:pointerdown="{activate}"
 >
 	<TitleBar
@@ -182,6 +233,7 @@
 		on:maximize="{maximize}"
 		on:close="{close}"
 	/>
+
 	{#if $$slots.menu}
 		<div class="menu">
 			<slot name="menu" />
@@ -201,7 +253,7 @@
 
 <style lang="scss">
 	.program-window {
-		position: absolute;
+		position: relative;
 		box-sizing: border-box;
 		user-select: none;
 		touch-action: none;
@@ -240,8 +292,9 @@
 			}
 		}
 
-		&.maximized {
-			height: calc(100% - var(--win-taskbar-height)) !important;
+		&.maximized,
+		&.restoring {
+			height: 100% !important;
 			width: 100% !important;
 			top: 0 !important;
 			left: 0 !important;

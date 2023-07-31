@@ -1,23 +1,18 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@alexaegis/desktop-common';
 	import { Observer } from 'svelte-rxjs-observer';
 	import { desktop$, dicedWindows, formatPid } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
+	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
 	import TitleBar from './title-bar.svelte';
 	import type { BaseWindowState } from './window-state.interface';
 
 	const windowKeys$ = dicedWindows.keys$;
 
-	const formatAnimationVariables = (
-		buttonPosition: CoordinateLike,
-		windowPosition: CoordinateLike,
-		buttonWidth: number,
-		windowWidth: number,
-	): string =>
-		`--button-x: ${buttonPosition.x}px; --button-y: ${buttonPosition.y}px; --window-x: ${windowPosition.x}px; --window-y: ${windowPosition.y}px; --button-width: ${buttonWidth}px; --window-width: ${windowWidth}px;`;
-
-	const getMinimizeAnimation = (process: BaseWindowState): string | undefined => {
+	const getMinimizeAnimation = (
+		process: BaseWindowState,
+		stage: 'minimizing' | 'unminimizing',
+	): string | undefined => {
 		const buttonId = formatPid(process.processId, 'taskbar');
 		const windowId = formatPid(process.processId, 'window');
 
@@ -29,22 +24,25 @@
 			return undefined;
 		}
 
+		const windowRect = windowElement.getBoundingClientRect();
 		const buttonRect = buttonElement.getBoundingClientRect();
 		const buttonParentRect = buttonParent.getBoundingClientRect();
-		const buttonOffset: CoordinateLike = {
+		const buttonOffset: TaskBarAnimationFrame = {
 			x: buttonRect.x - buttonParentRect.x,
 			y: buttonRect.y - buttonParentRect.y,
+			width: buttonElement.clientWidth,
 		};
-		const windowOffset: CoordinateLike = {
-			x: buttonOffset.x + process.position.x - buttonRect.x,
-			y: buttonOffset.y + process.position.y - buttonRect.y,
+		const windowOffset: TaskBarAnimationFrame = {
+			x: buttonOffset.x + windowRect.x - buttonRect.x,
+			y: buttonOffset.y + windowRect.y - buttonRect.y,
+			width: windowRect.width,
 		};
-		return formatAnimationVariables(
-			buttonOffset,
-			windowOffset,
-			buttonElement.clientWidth,
-			windowElement.clientWidth,
-		);
+
+		console.log(windowElement.clientWidth);
+		const fromOffset = stage === 'minimizing' ? windowOffset : buttonOffset;
+		const toOffset = stage === 'minimizing' ? buttonOffset : windowOffset;
+
+		return formatAnimationVariables(fromOffset, toOffset);
 	};
 </script>
 
@@ -68,8 +66,8 @@
 
 		{#if next.minimized === 'minimizing' || next.minimized === 'unminimizing'}
 			<TitleBar
-				class="{'animate-' + next.minimized}"
-				style="{getMinimizeAnimation(next)}"
+				class="animate"
+				style="{getMinimizeAnimation(next, next.minimized)}"
 				title="{next.title}"
 				icon="{next.titleBarIcon}"
 				showMaximize="{false}"

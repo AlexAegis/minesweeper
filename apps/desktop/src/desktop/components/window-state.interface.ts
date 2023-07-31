@@ -9,8 +9,16 @@ export type WindowMinimizationState =
 	| 'start-unminimizing'
 	| 'unminimizing';
 
+// TODO: combine these two states as a generic animated boolean, boolean "start-forward" forward, start-backwards, backwards
+export type WindowMaximizationState =
+	| boolean
+	| 'start-maximizing'
+	| 'maximizing'
+	| 'start-restoring'
+	| 'restoring';
+
 export interface CommonProgramWindowPreferences {
-	maximized: boolean;
+	maximized: WindowMaximizationState;
 	minimized: WindowMinimizationState;
 	resizable: boolean;
 	showMinimize: boolean;

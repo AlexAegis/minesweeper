@@ -1,13 +1,14 @@
 import type { CoordinateLike } from '@alexaegis/desktop-common';
 import {
+	PremadeGetNext,
 	entitySliceReducerWithPrecompute,
 	getNextKeyStrategy,
 	getObjectKeysAsNumbers,
 	ifLatestFrom,
 	isNullish,
-	PremadeGetNext,
+	type ActionPacket,
 } from '@tinyslice/core';
-import { filter, map, merge, mergeMap, of, take, tap, timer } from 'rxjs';
+import { Observable, filter, map, merge, mergeMap, of, take, tap, timer } from 'rxjs';
 import type { MinesweeperGame } from '../../minesweeper/store/minesweeper.interface.js';
 import { createMineSweeperGame } from '../../minesweeper/store/minesweeper.store.js';
 import type { ResizeData } from '../components/resizable.function.js';
@@ -351,8 +352,8 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 
 		const maximized$ = windowSlice.slice('maximized', {
 			reducers: [
-				windowActions.maximize.reduce(() => true),
-				windowActions.restore.reduce(() => false),
+				windowActions.maximize.reduce((_state) => 'start-maximizing'),
+				windowActions.restore.reduce((_state) => 'start-restoring'),
 			],
 		});
 
@@ -416,50 +417,97 @@ if (browser) {
 		),
 	);
 
+	const createTimedAction = <T>(options: {
+		states: T[];
+		time: number;
+		createStartActionPacket: (state: T) => ActionPacket;
+		createFinishActionPacket: (state: T) => ActionPacket;
+	}): Observable<ActionPacket>[] => {
+		const startPackets = options.states.map((state) => options.createStartActionPacket(state));
+		const finishPackets = options.states.map((state) =>
+			options.createFinishActionPacket(state),
+		);
+
+		return [
+			...startPackets.map((packet) => of(packet)),
+			...finishPackets.map((finishPacket) =>
+				timer(options.time).pipe(map(() => finishPacket)),
+			),
+		];
+	};
+
 	windows$.createEffect(
 		windows$.pipe(
 			mergeMap((windowRecord) => {
 				const windowStates = Object.values(windowRecord);
-				const minimizationsStarting = windowStates.filter(
-					(windowState) => windowState.minimized === 'start-minimizing',
-				);
-				// Immediately, to avoid starting it twice
-				const beginMinimizeAnimationActions = minimizationsStarting.map((windowState) =>
-					dicedWindows
-						.get(windowState.processId)
-						.internals.minimized$.setAction.makePacket('minimizing'),
-				);
-				// Some time later to finish it
-				const finishMinimizeAnimationActions = minimizationsStarting.map((windowState) =>
-					dicedWindows
-						.get(windowState.processId)
-						.internals.minimized$.setAction.makePacket(true),
-				);
 
-				const unminimizationsStarting = windowStates.filter(
-					(windowState) => windowState.minimized === 'start-unminimizing',
-				);
-				// Immediately, to avoid starting it twice
-				const beginUnminimizeAnimationActions = unminimizationsStarting.map((windowState) =>
-					dicedWindows
-						.get(windowState.processId)
-						.internals.minimized$.setAction.makePacket('unminimizing'),
-				);
-				// Some time later to finish it
-				const finishUnminimizeAnimationActions = unminimizationsStarting.map(
-					(windowState) =>
+				const animationTime = 500; // 150
+
+				const minimizationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.minimized === 'start-minimizing',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
 						dicedWindows
-							.get(windowState.processId)
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket('minimizing'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket(true),
+				});
+
+				const unminimizationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.minimized === 'start-unminimizing',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket('unminimizing'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
 							.internals.minimized$.setAction.makePacket(false),
-				);
+				});
+
+				const maximiziationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.maximized === 'start-maximizing',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket('maximizing'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket(true),
+				});
+
+				const unmaximiziationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.maximized === 'start-restoring',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket('restoring'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket(false),
+				});
 
 				return merge([
-					...[...beginMinimizeAnimationActions, ...beginUnminimizeAnimationActions].map(
-						(action) => of(action),
-					),
-					...[...finishMinimizeAnimationActions, ...finishUnminimizeAnimationActions].map(
-						(finishActions) => timer(150).pipe(map(() => finishActions)),
-					),
+					...minimizationActions,
+					...unminimizationActions,
+					...maximiziationActions,
+					...unmaximiziationActions,
 				]);
 			}),
 			mergeMap((actions) => actions),

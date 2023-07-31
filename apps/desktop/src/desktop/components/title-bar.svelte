@@ -3,13 +3,14 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import type { TitleBarEvents } from './title-bar-events.interface';
+	import type { WindowMaximizationState } from './window-state.interface';
 
 	const dispatch = createEventDispatcher<TitleBarEvents>();
 
 	export let title: string;
 	export let icon: string | undefined = undefined;
 	export let active: boolean | undefined = true;
-	export let maximized: boolean | undefined = false;
+	export let maximized: WindowMaximizationState | undefined = false;
 	export let resizable: boolean | undefined = true;
 	export let showMinimize: boolean | undefined = true;
 	export let minimizeEnabled: boolean | undefined = true;
