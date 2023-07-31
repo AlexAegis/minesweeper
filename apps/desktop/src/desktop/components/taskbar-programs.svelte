@@ -38,7 +38,6 @@
 			width: windowRect.width,
 		};
 
-		console.log(windowElement.clientWidth);
 		const fromOffset = stage === 'minimizing' ? windowOffset : buttonOffset;
 		const toOffset = stage === 'minimizing' ? buttonOffset : windowOffset;
 

@@ -517,10 +517,20 @@ if (browser) {
 	activeSchemeKind$.createEffect(
 		activeSchemeKind$.pipe(
 			tap((kind) => {
-				if (kind === 'w2k') {
-					document.body.classList.replace('w2k-scheme-classic', 'w2k-scheme-standard');
-				} else {
-					document.body.classList.replace('w2k-scheme-standard', 'w2k-scheme-classic');
+				const desktopElement = document.querySelector('#desktop');
+
+				if (desktopElement) {
+					if (kind === 'w2k') {
+						desktopElement.classList.replace(
+							'w2k-scheme-classic',
+							'w2k-scheme-standard',
+						);
+					} else {
+						desktopElement.classList.replace(
+							'w2k-scheme-standard',
+							'w2k-scheme-classic',
+						);
+					}
 				}
 			}),
 		),

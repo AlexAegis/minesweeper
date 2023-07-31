@@ -6,7 +6,7 @@
 	import './styles/desktop.scss';
 </script>
 
-<div id="desktop" class="desktop">
+<div id="desktop" class="desktop w98 w2k w2k-scheme-standard">
 	<div id="workspace" class="workspace">
 		<DesktopShortcuts />
 		<slot />

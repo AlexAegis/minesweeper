@@ -9,6 +9,11 @@ body {
 	height: 100svh;
 	margin: 0;
 
+	#app-root {
+		height: 100%;
+		width: 100%;
+	}
+
 	&.embeddedtest {
 		height: 70svh;
 		width: 70%;
@@ -864,6 +869,7 @@ body {
 		}
 	}
 
+	&.desktop,
 	.desktop {
 		overscroll-behavior: none;
 		display: grid;
