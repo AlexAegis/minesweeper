@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.1.0](https://github.com/AlexAegis/minesweeper/compare/v4.0.0...v4.1.0) (2023-07-31)
+
+
+### Features
+
+* animations for minimizing ([2867deb](https://github.com/AlexAegis/minesweeper/commit/2867deb4a16d63badb8d4bad4ab76664585d79b3))
+* minimize ([5ebe868](https://github.com/AlexAegis/minesweeper/commit/5ebe868c26637f56c7606a1ec863bd340323a9ef))
+* nudge the taskbar up a little when not zoomed in ([d464fc8](https://github.com/AlexAegis/minesweeper/commit/d464fc88fc5f8c9d6178af81a25221e5817420f6))
+* slightly simplified minimize animations ([5c318bd](https://github.com/AlexAegis/minesweeper/commit/5c318bdb2009be1ba206df9896e81871c75060c4))
+* the forced classic scheme can now be turned off ([d17f166](https://github.com/AlexAegis/minesweeper/commit/d17f1664ce2adaab433a074aebe23ada104c289e))
+
+
+### Bug Fixes
+
+* modals are never minimizable ([b62b0d1](https://github.com/AlexAegis/minesweeper/commit/b62b0d1276a41dcf0db5fbbde8febd35d2d99305))
+
 ## [4.0.0](https://github.com/AlexAegis/minesweeper/compare/v3.0.0...v4.0.0) (2023-07-30)
 
 

@@ -1,7 +1,7 @@
 {
 	"name": "@alexaegis/w2k",
 	"description": "A Windows 2000 style Design System for Svelte based on 98.css",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"archetype": {
 		"platform": "web",
 		"framework": "svelte",

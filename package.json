@@ -1,7 +1,7 @@
 {
 	"name": "@alexaegis/desktop-workspace",
 	"description": "Minesweeper Clone powered by Svelte and TinySlice",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"license": "mit",
 	"private": true,
 	"keywords": [
