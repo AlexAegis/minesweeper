@@ -356,10 +356,18 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 
 		const active$ = windowSlice.slice('active', {
 			reducers: [
-				minimized$.setAction.reduce(
-					(activeState, minimizationState) =>
-						typeof minimizationState === 'boolean' ? !minimizationState : activeState, // Only change the active state once not mid animation
-				),
+				minimized$.setAction.reduce((_activeState, minimizationState) => {
+					if (typeof minimizationState === 'boolean') {
+						return !minimizationState; // Only change the active state once not mid animation
+					} else if (
+						minimizationState === 'start-minimizing' ||
+						minimizationState === 'minimizing'
+					) {
+						return false;
+					} else {
+						return true;
+					}
+				}),
 			],
 		});
 

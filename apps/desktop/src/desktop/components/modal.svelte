@@ -7,13 +7,14 @@
 
 	export let windowState: Partial<BaseWindowState>;
 
-	$: effectiveWindowState = { ...initialWindowState, ...windowState };
+	$: effectiveWindowState = { ...initialWindowState, ...windowState, showMinimize: false };
 
 	export let isOpen = false;
 	export let dimmed = false;
 
 	const errorNotification = new Subject<void>();
 
+	// TODO: ErrorFlash should actually toggle the 'active' class on the window
 	const errorFlash$ = errorNotification.pipe(
 		switchMap(() =>
 			merge(
