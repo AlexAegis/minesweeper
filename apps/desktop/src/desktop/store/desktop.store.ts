@@ -412,9 +412,10 @@ if (browser) {
 		),
 	);
 
-	desktop$.createEffect(
-		dicedWindows.items$.pipe(
-			mergeMap((windowStates) => {
+	windows$.createEffect(
+		windows$.pipe(
+			mergeMap((windowRecord) => {
+				const windowStates = Object.values(windowRecord);
 				const minimizationsStarting = windowStates.filter(
 					(windowState) => windowState.minimized === 'start-minimizing',
 				);
