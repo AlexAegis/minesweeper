@@ -1,6 +1,18 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@alexaegis/desktop-common';
-	import { Subscription, filter, tap } from 'rxjs';
+	import {
+		Subject,
+		Subscription,
+		concat,
+		filter,
+		interval,
+		map,
+		of,
+		startWith,
+		switchMap,
+		take,
+		tap,
+	} from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
 	import { documentPointerDown$ } from '../../root.store';
@@ -99,6 +111,9 @@
 	$: moveInteract?.toggle(effectiveMovable);
 
 	if (transient) {
+		// Transient means it's not managed by the store. So it has to deactivate itself.
+		// This is counteracted by the error flash that can activate it back after the
+		// flashing is over
 		sink.add(
 			documentPointerDown$
 				.pipe(
@@ -116,6 +131,29 @@
 				.subscribe(),
 		);
 	}
+
+	export const errorNotification = new Subject<void>();
+
+	export const errorFlash$ = errorNotification.pipe(
+		switchMap(() =>
+			concat(
+				of(true),
+				interval(60).pipe(
+					take(7),
+					map((_, i) => i % 2 === 0),
+				),
+				of(undefined),
+			),
+		),
+		tap(() => {
+			if (transient) {
+				activate();
+			}
+		}),
+		startWith(undefined),
+	);
+
+	$: errorFlash = $errorFlash$;
 
 	onMount(() => {
 		moveInteract = InteractBuilder.from(windowElement).movable(move);
@@ -145,10 +183,9 @@
 		windowState: BaseWindowState,
 		stage: 'maximizing' | 'restoring',
 	): string | undefined => {
-		const workspaceId = 'workspace';
 		const windowId = formatPid(windowState.processId, 'window');
 
-		const workspaceElement = document.querySelector(`#${workspaceId}`);
+		const workspaceElement = document.querySelector('#workspace');
 		const windowElement = document.querySelector(`#${windowId}`);
 
 		if (!workspaceElement || !windowElement) {
@@ -217,7 +254,7 @@
 	<TitleBar
 		title="{transientState.title}"
 		icon="{transientState.titleBarIcon}"
-		active="{transientState.active}"
+		active="{(errorFlash === undefined && transientState.active) || errorFlash}"
 		maximized="{transientState.maximized}"
 		resizable="{transientState.resizable}"
 		showMinimize="{transientState.showMinimize ?? !transient}"
@@ -232,6 +269,9 @@
 		on:restore="{restore}"
 		on:maximize="{maximize}"
 		on:close="{close}"
+		on:contextmenu="{() => {
+			console.log('window title context');
+		}}"
 	/>
 
 	{#if $$slots.menu}

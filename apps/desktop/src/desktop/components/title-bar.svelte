@@ -20,6 +20,7 @@
 	export let closeEnabled: boolean | undefined = true;
 	export let showHelp: boolean | undefined = false;
 	export let helpEnabled: boolean | undefined = true;
+	export let error: boolean | undefined = false;
 
 	function minimize() {
 		dispatch('minimize');
@@ -55,7 +56,9 @@
 <div
 	class="title-bar {$$props['class'] ?? ''}"
 	style="{$$props['style'] ?? ''}"
-	class:active
+	class:active="{active && !error}"
+	class:error
+	on:contextmenu|preventDefault
 	on:dblclick="{maximize}"
 	on:pointerdown="{dbltap}"
 	role="presentation"

@@ -550,7 +550,8 @@ if (browser) {
 				return !elementsUnderPointer.some(
 					(element) =>
 						element.classList.contains('window') ||
-						element.classList.contains('type-taskbar-item'),
+						element.classList.contains('type-taskbar-item') ||
+						element.classList.contains('modal-backdrop'),
 				);
 			}),
 			ifLatestFrom(

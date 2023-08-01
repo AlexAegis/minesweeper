@@ -20,7 +20,7 @@
 		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
 		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
+		"lint:format_": "prettier --cache-location .cache/prettier --check .",
 		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
 		"lint:rmd": "remark .",
@@ -35,7 +35,7 @@
 		"lint:tsc_": "tsc --noEmit",
 		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
-		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
+		"format_": "prettier --cache-location .cache/prettier --write .",
 		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop-common",
 		"test_": "vitest --passWithNoTests --coverage --run",
 		"test:watch": "vitest --passWithNoTests --coverage"
@@ -50,17 +50,17 @@
 		"./readme": "./readme.md"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.5.1"
+		"@alexaegis/common": "^0.5.2"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.6.1",
-		"@alexaegis/stylelint-config": "^0.6.1",
-		"@alexaegis/ts": "^0.6.1",
-		"@alexaegis/vite": "^0.6.1",
-		"@alexaegis/vitest": "^0.6.1",
+		"@alexaegis/eslint-config-vitest": "^0.6.2",
+		"@alexaegis/stylelint-config": "^0.6.2",
+		"@alexaegis/ts": "^0.6.2",
+		"@alexaegis/vite": "^0.6.2",
+		"@alexaegis/vitest": "^0.6.2",
 		"@types/node": "^20.4.5",
 		"stylelint": "^15.10.2",
-		"vite": "^4.4.7",
-		"vitest": "^0.33.0"
+		"vite": "^4.4.8",
+		"vitest": "^0.34.1"
 	}
 }

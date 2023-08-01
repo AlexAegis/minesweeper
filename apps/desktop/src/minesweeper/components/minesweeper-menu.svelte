@@ -2,12 +2,12 @@
 	import Settings from './settings.form.svelte';
 
 	import Button from '../../desktop/components/button.svelte';
-	import Modal from '../../desktop/components/modal.svelte';
+	import ModalDialogWindow from '../../desktop/components/modal-dialog-window.svelte';
 	import Highscore from './highscore.svelte';
 
-	let customGameModal: Modal;
-	let highScoreModal: Modal;
-	let aboutModal: Modal;
+	let customGameModal: ModalDialogWindow;
+	let highScoreModal: ModalDialogWindow;
+	let aboutModal: ModalDialogWindow;
 
 	import { map } from 'rxjs';
 	import type { GamePreset } from '../interfaces';
@@ -144,7 +144,7 @@
 	>
 </Dropdown>
 
-<Modal
+<ModalDialogWindow
 	bind:this="{customGameModal}"
 	windowState="{{ fitContent: true, title: 'Custom Field', resizable: false }}"
 >
@@ -154,9 +154,9 @@
 		on:submit="{settingsSubmit}"
 		on:cancel="{() => customGameModal.close()}"
 	/>
-</Modal>
+</ModalDialogWindow>
 
-<Modal
+<ModalDialogWindow
 	bind:this="{highScoreModal}"
 	windowState="{{ fitContent: false, title: 'Highscore', height: 240 }}"
 >
@@ -165,11 +165,11 @@
 		isClearingEnabled="{internals !== undefined}"
 		on:clear="{() => internals.winHistory$.set([])}"
 	/>
-</Modal>
+</ModalDialogWindow>
 
-<Modal
+<ModalDialogWindow
 	bind:this="{aboutModal}"
 	windowState="{{ fitContent: true, title: 'About', resizable: true }}"
 >
 	<AboutMinesweeper />
-</Modal>
+</ModalDialogWindow>

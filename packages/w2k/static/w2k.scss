@@ -879,8 +879,8 @@ body {
 		background-color: var(--win-desktop-color);
 		overflow: hidden;
 
-		.windows,
-		.workspace {
+		.workspace,
+		.window-plane {
 			grid-row: 1;
 			grid-column: 1;
 			width: 100%;
@@ -889,7 +889,7 @@ body {
 		}
 
 		// Forced overlap
-		.windows {
+		.window-plane {
 			display: grid;
 			grid-template-rows: 1fr;
 			grid-template-columns: 1fr;
@@ -989,7 +989,9 @@ body {
 	}
 
 	.start-menu-container,
-	.start-menu {
+	.start-menu,
+	.context-menu-container,
+	.context-menu {
 		width: fit-content;
 		overflow: hidden;
 		z-index: 100001;
@@ -1007,6 +1009,59 @@ body {
 			position: relative;
 			bottom: 0;
 			left: 0;
+		}
+	}
+
+	.context-menu-container {
+		display: block;
+		position: absolute;
+		z-index: 2000;
+		min-height: 16px;
+		padding: 1px;
+
+		--context-menu-appear-x-direction: -1;
+		--context-menu-appear-y-direction: -1;
+		--context-menu-appear-scale: 200px;
+
+		.context-menu {
+			position: relative;
+			bottom: 0;
+			left: 0;
+			min-width: 120px;
+			animation: context-menu-appear 0.15s linear;
+		}
+
+		@keyframes context-menu-appear {
+			from {
+				translate: calc(
+						var(--context-menu-appear-x-direction) * var(--context-menu-appear-scale)
+					)
+					calc(var(--context-menu-appear-y-direction) * var(--context-menu-appear-scale)); /* Starting position below the viewport */
+			}
+
+			to {
+				translate: 0; /* Ending position at the bottom of the container */
+			}
+		}
+	}
+
+	.modal-backdrop {
+		position: absolute;
+		position: fixed;
+		height: 100svh;
+		width: 100svw;
+		left: 0;
+		top: 0;
+		z-index: 200000;
+		pointer-events: visible;
+
+		&.dark-backdrop {
+			background-color: rgb(0 0 0 / 20%);
+		}
+
+		.program-window {
+			position: relative;
+			z-index: 200001;
 		}
 	}
 

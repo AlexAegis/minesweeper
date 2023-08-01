@@ -39,7 +39,6 @@
 				id="{formatPid(next.processId, 'window')}"
 				windowState="{next}"
 				on:activate="{() => {
-					console.log('WINACT SELF');
 					desktop$.internals.actions.activateProgram.next(processId);
 				}}"
 				on:maximize="{() => {

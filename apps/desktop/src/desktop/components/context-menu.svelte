@@ -1,20 +1,89 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@alexaegis/desktop-common';
+	import { filter, tap } from 'rxjs';
+	import { onDestroy } from 'svelte';
+	import { documentPointerDown$ } from '../../root.store';
+	export let position: CoordinateLike | undefined;
+	let xOffset = 0;
+	let yOffset = 0;
+	let xDirection = -1;
+	let yDirection = -1;
 
-	export let position: CoordinateLike;
+	$: effectivePosition = position
+		? { x: position.x + xOffset, y: position.y + yOffset }
+		: undefined;
+
+	let contextMenuContainer: HTMLElement | undefined;
+
+	const subscription = documentPointerDown$
+		.pipe(
+			filter((event) => {
+				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+				return (
+					!contextMenuContainer || !elementsUnderPointer.includes(contextMenuContainer)
+				);
+			}),
+			tap(() => {
+				position = undefined;
+			}),
+		)
+		.subscribe();
+
+	$: {
+		if (position) {
+			if (contextMenuContainer) {
+				const contextMenuContainerRect = contextMenuContainer.getBoundingClientRect();
+				const workspaceElement = document.querySelector('#workspace');
+
+				if (workspaceElement) {
+					const workspaceElementRect = workspaceElement.getBoundingClientRect();
+
+					if (workspaceElementRect.right < contextMenuContainerRect.right) {
+						xOffset = 1 - contextMenuContainerRect.width;
+						xDirection = 1;
+					} else {
+						xOffset = 0;
+						xDirection = -1;
+					}
+
+					if (workspaceElementRect.bottom < contextMenuContainerRect.bottom) {
+						yOffset = 1 - contextMenuContainerRect.height;
+						yDirection = 1;
+					} else {
+						yOffset = 0;
+						yDirection = -1;
+					}
+				}
+			} else {
+				xOffset = 0;
+				xDirection = -1;
+				yOffset = 0;
+				yDirection = -1;
+			}
+		}
+	}
+
+	onDestroy(() => {
+		subscription.unsubscribe();
+	});
 </script>
 
-<div class="context-menu window" style:top="{`${position.y}px`}" style:left="{`${position.x}px`}">
-	<slot />
-</div>
-
-<style lang="scss">
-	.context-menu {
-		display: block;
-		position: absolute;
-		z-index: 2000;
-		width: 200px;
-		min-height: 16px;
-		padding: 1px;
-	}
-</style>
+{#if effectivePosition !== undefined}
+	<div
+		bind:this="{contextMenuContainer}"
+		class="context-menu-container"
+		style:top="{`${effectivePosition.y}px`}"
+		style:left="{`${effectivePosition.x}px`}"
+		style:--context-menu-appear-x-direction="{xDirection}"
+		style:--context-menu-appear-y-direction="{yDirection}"
+		aria-roledescription="context menu containing contextual buttons"
+		role="presentation"
+		on:click="{() => {
+			position = undefined;
+		}}"
+	>
+		<div class="context-menu window">
+			<slot />
+		</div>
+	</div>
+{/if}

@@ -59,12 +59,26 @@
 		<div class="inputs">
 			<div class="field-row">
 				<label for="height">Height:</label>
-				<input name="height" type="number" bind:value="{preset.height}" max="50" min="2" />
+				<input
+					name="height"
+					type="number"
+					inputmode="numeric"
+					bind:value="{preset.height}"
+					max="50"
+					min="2"
+				/>
 			</div>
 
 			<div class="field-row">
 				<label for="width">Width:</label>
-				<input name="width" type="number" bind:value="{preset.width}" max="50" min="2" />
+				<input
+					name="width"
+					type="number"
+					inputmode="numeric"
+					bind:value="{preset.width}"
+					max="50"
+					min="2"
+				/>
 			</div>
 
 			<div class="field-row">
@@ -72,8 +86,9 @@
 				<input
 					name="mineCount"
 					type="number"
+					inputmode="numeric"
 					bind:value="{preset.mineCount}"
-					max="{preset.width * preset.height - 1}"
+					max="{calculateMaxMines(preset)}"
 					min="1"
 				/>
 			</div>

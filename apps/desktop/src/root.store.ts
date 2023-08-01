@@ -26,10 +26,12 @@ export const debug$ = rootSlice$.slice('debug');
 const documentPointerDownSubject$ = new Subject<PointerEvent>();
 const documentPointerUpSubject$ = new Subject<PointerEvent>();
 const documentMouseLeaveSubject$ = new Subject<PointerEvent>();
+const documentContextMenuSubject$ = new Subject<PointerEvent>();
 
 export const documentPointerDown$ = documentPointerDownSubject$.asObservable();
 export const documentPointerUp$ = documentPointerUpSubject$.asObservable();
 export const documentMouseLeave$ = documentMouseLeaveSubject$.asObservable();
+export const documentContextMenu$ = documentPointerDownSubject$.asObservable();
 
 if (browser) {
 	scheduled(fromEvent<PointerEvent>(document, 'pointerdown'), asyncScheduler)
@@ -42,6 +44,10 @@ if (browser) {
 
 	scheduled(fromEvent<PointerEvent>(document, 'mouseleave'), asyncScheduler)
 		.pipe(tap(documentMouseLeaveSubject$))
+		.subscribe();
+
+	scheduled(fromEvent<PointerEvent>(document, 'contextmenu'), asyncScheduler)
+		.pipe(tap(documentContextMenuSubject$))
 		.subscribe();
 }
 

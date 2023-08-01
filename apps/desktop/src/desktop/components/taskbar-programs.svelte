@@ -60,8 +60,14 @@
 				} else {
 					desktop$.internals.actions.activateProgram.next(next.processId);
 				}
-			}}">{next.title}</Button
+			}}"
+			on:contextmenu="{() => {
+				desktop$.internals.actions.activateProgram.next(next.processId);
+				console.log('TASKBAR ITEM CONTEXT');
+			}}"
 		>
+			{next.title}
+		</Button>
 
 		{#if next.minimized === 'minimizing' || next.minimized === 'unminimizing'}
 			<TitleBar

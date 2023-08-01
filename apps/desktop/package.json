@@ -21,7 +21,7 @@
 		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
 		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
 		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
-		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
+		"lint:format_": "prettier --cache-location .cache/prettier --check .",
 		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
 		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
 		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
@@ -38,7 +38,7 @@
 		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
 		"dev": "concurrently npm:watch-deps npm:start",
 		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop",
-		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
+		"format_": "prettier --cache-location .cache/prettier --write .",
 		"kit:sync": "svelte-kit sync",
 		"postinstall": "svelte-kit sync # pakk:not-distributed",
 		"preview": "vite preview",
@@ -49,7 +49,7 @@
 		"watch-deps": "TARGET_ENV='local' nodemon --config ../../node_modules/@alexaegis/autotool-plugin-vite/static/nodemon.json --watch ./node_modules/**/src/**/* --ext ts,tsx,mts,cts,svelte,js,jsx,mjs,cjs,json --ignore dist --exec 'turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/desktop'"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.5.1",
+		"@alexaegis/common": "^0.5.2",
 		"@alexaegis/desktop-common": "^4.1.0",
 		"@alexaegis/w2k": "workspace:^",
 		"@testing-library/svelte": "^4.0.3",
@@ -64,17 +64,18 @@
 		"svelte-rxjs-observer": "^0.5.0"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-svelte": "^0.6.1",
-		"@alexaegis/eslint-config-vitest": "^0.6.1",
-		"@alexaegis/prettier-config": "^0.6.1",
+		"@alexaegis/eslint-config-svelte": "^0.6.2",
+		"@alexaegis/eslint-config-vitest": "^0.6.2",
+		"@alexaegis/prettier-config": "^0.6.2",
 		"@alexaegis/prettier-config-svelte": "^0.5.4",
-		"@alexaegis/stylelint-config": "^0.6.1",
-		"@alexaegis/svelte-config": "^0.6.1",
-		"@alexaegis/ts": "^0.6.1",
-		"@alexaegis/vite": "^0.6.1",
-		"@alexaegis/vitest": "^0.6.1",
+		"@alexaegis/stylelint-config": "^0.6.2",
+		"@alexaegis/svelte-config": "^0.6.2",
+		"@alexaegis/ts": "^0.6.2",
+		"@alexaegis/vite": "^0.6.2",
+		"@alexaegis/vitest": "^0.6.2",
 		"@interactjs/types": "^1.10.18",
 		"@sveltejs/adapter-auto": "^2.1.0",
+		"@sveltejs/adapter-node": "^1.3.1",
 		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/adapter-vercel": "^3.0.3",
 		"@sveltejs/kit": "^1.22.4",
@@ -87,8 +88,8 @@
 		"svelte": "^4.1.2",
 		"svelte-check": "^3.4.6",
 		"svelte-preprocess": "^5.0.4",
-		"vite": "^4.4.7",
+		"vite": "^4.4.8",
 		"vite-plugin-preload": "^0.3.1",
-		"vitest": "^0.33.0"
+		"vitest": "^0.34.1"
 	}
 }

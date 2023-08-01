@@ -23,7 +23,7 @@
 		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
 		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
 		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
-		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
+		"lint:format_": "prettier --cache-location .cache/prettier --check .",
 		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
 		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
 		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
@@ -39,7 +39,7 @@
 		"lint:tsc_": "tsc --noEmit",
 		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
 		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
-		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
+		"format_": "prettier --cache-location .cache/prettier --write .",
 		"preview": "vite preview",
 		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @alexaegis/w2k",
 		"test_": "vitest --passWithNoTests --coverage --run",
@@ -61,12 +61,12 @@
 		"98.css": "^0.1.20"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-svelte": "^0.6.1",
-		"@alexaegis/eslint-config-vitest": "^0.6.1",
-		"@alexaegis/stylelint-config": "^0.6.1",
-		"@alexaegis/svelte-config": "^0.6.1",
-		"@alexaegis/ts": "^0.6.1",
-		"@alexaegis/vitest": "^0.6.1",
+		"@alexaegis/eslint-config-svelte": "^0.6.2",
+		"@alexaegis/eslint-config-vitest": "^0.6.2",
+		"@alexaegis/stylelint-config": "^0.6.2",
+		"@alexaegis/svelte-config": "^0.6.2",
+		"@alexaegis/ts": "^0.6.2",
+		"@alexaegis/vitest": "^0.6.2",
 		"@pakk/cli": "^0.5.0",
 		"@sveltejs/package": "^2.2.0",
 		"@types/node": "^20.4.5",
@@ -74,6 +74,6 @@
 		"svelte": "^4.1.2",
 		"svelte-check": "^3.4.6",
 		"svelte-preprocess": "^5.0.4",
-		"vitest": "^0.33.0"
+		"vitest": "^0.34.1"
 	}
 }
