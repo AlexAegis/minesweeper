@@ -1,5 +1,5 @@
 {
-	"$schema": "https://json.schemastore.org/typings?mark=managed-by-autoto",
+	"$schema": "https://json.schemastore.org/typings?mark=managed-by-autotool",
 	"ignores": [
 		"@alexaegis/autotool-plugin-*",
 		"@alexaegis/coverage-tools",

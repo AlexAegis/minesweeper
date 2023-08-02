@@ -9,4 +9,5 @@ typedoc
 
 # sveltekit
 .svelte-kit
+.vercel
 build

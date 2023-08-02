@@ -12,6 +12,7 @@ dist
 public/build
 build
 .svelte-kit
+.vercel
 typedoc
 
 # test artifacts
