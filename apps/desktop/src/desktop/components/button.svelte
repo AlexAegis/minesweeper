@@ -23,6 +23,7 @@
 	export let icon: string | undefined = undefined;
 	export let label: string | undefined = undefined;
 	export let title: string | undefined = undefined;
+	export let bold = false;
 	export let id: string | undefined = undefined;
 
 	export let selfPress: boolean | undefined = true;
@@ -156,6 +157,7 @@
 	class:active
 	class:selfPress
 	class:pressed
+	class:bold
 	class:flat="{look === ButtonLook.CONTEXT_MENU_ITEM ||
 		look === ButtonLook.START_MENU_ITEM ||
 		look === ButtonLook.TITLE_BAR_MENU_ITEM}"
@@ -180,7 +182,12 @@
 	on:pointerleave="{pointerleave}"
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
-		<span class="icon" class:checkmark="{toggled}"></span>
+		{#if icon}
+			<Image height="{10}" width="{10}" src="{icon}"></Image>
+		{:else}
+			<span class="icon" class:checkmark="{toggled}"> </span>
+		{/if}
+
 		<span>
 			<slot />
 		</span>

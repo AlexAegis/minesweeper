@@ -232,6 +232,10 @@ body {
 		margin-bottom: 1px;
 		margin-top: 1px;
 
+		&.bold {
+			font-weight: 700;
+		}
+
 		&.custom {
 			min-width: unset;
 			height: unset;
@@ -1014,7 +1018,7 @@ body {
 
 	.context-menu-container {
 		display: block;
-		position: absolute;
+		position: fixed;
 		z-index: 2000;
 		min-height: 16px;
 		padding: 1px;
@@ -1033,6 +1037,7 @@ body {
 
 		@keyframes context-menu-appear {
 			from {
+				pointer-events: none;
 				translate: calc(
 						var(--context-menu-appear-x-direction) * var(--context-menu-appear-scale)
 					)
@@ -1040,6 +1045,7 @@ body {
 			}
 
 			to {
+				pointer-events: all;
 				translate: 0; /* Ending position at the bottom of the container */
 			}
 		}

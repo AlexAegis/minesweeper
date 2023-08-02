@@ -342,7 +342,7 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 
 		const windowActions = {
 			maximize: windowSlice.createAction(`${WINDOW_ACTION} maximize`),
-			minimize: windowSlice.createAction<boolean>(`${WINDOW_ACTION} minimize`),
+			// minimize: windowSlice.createAction<boolean>(`${WINDOW_ACTION} minimize`),
 			restore: windowSlice.createAction(`${WINDOW_ACTION} restore`),
 			move: windowSlice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
 			resize: windowSlice.createAction<ResizeData>(`${WINDOW_ACTION} resize`),
@@ -395,7 +395,8 @@ export const dicedWindows = windows$.dice(initialWindowState, {
 	reducers: [],
 });
 
-export type DicedWindow = ReturnType<(typeof dicedWindows)['get']>;
+export type DicedWindows = typeof dicedWindows;
+export type DicedWindow = ReturnType<DicedWindows['get']>;
 
 export const isProgramSpawned$ = (program: ProgramName) =>
 	dicedWindows.some$((window) => window.program === program);
