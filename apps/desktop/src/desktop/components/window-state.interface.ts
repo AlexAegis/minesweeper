@@ -1,4 +1,4 @@
-import type { CoordinateLike } from '@alexaegis/desktop-common';
+import type { CoordinateLike } from '@w2k/common';
 import type { MinesweeperGame } from '../../minesweeper/store/index.js';
 import type { ProcessId, ProgramName } from '../store/desktop.store.js';
 

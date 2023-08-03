@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@alexaegis/desktop-common';
+	import type { CoordinateLike } from '@w2k/common';
 	import { desktop$, dicedWindows, formatPid, type DicedWindow } from '../store/desktop.store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';

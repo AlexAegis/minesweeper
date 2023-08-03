@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@alexaegis/desktop-common';
+	import type { CoordinateLike } from '@w2k/common';
 	import type { Subject } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import Modal from './modal.svelte';

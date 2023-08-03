@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@alexaegis/desktop-common';
+	import type { CoordinateLike } from '@w2k/common';
 	import { packageMetadata } from '../root.store';
 	import { ButtonLook } from './components/button-look.enum';
 	import Button from './components/button.svelte';

@@ -1,4 +1,4 @@
-import type { CoordinateKey } from '@alexaegis/desktop-common';
+import type { CoordinateKey } from '@w2k/common';
 import type { GamePreset, GameState, TileMark, WinData } from '../interfaces/index.js';
 import type { createMineSweeperGame } from './minesweeper.store.js';
 

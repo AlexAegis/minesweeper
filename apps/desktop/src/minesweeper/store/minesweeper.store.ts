@@ -1,11 +1,11 @@
 import { isNotNullish, shuffleArray } from '@alexaegis/common';
-import { Coordinate, type CoordinateKey, type CoordinateLike } from '@alexaegis/desktop-common';
 import {
 	Slice,
 	entitySliceReducer,
 	entitySliceReducerWithPrecompute,
 	ifLatestFrom,
 } from '@tinyslice/core';
+import { Coordinate, type CoordinateKey, type CoordinateLike } from '@w2k/common';
 import {
 	Observable,
 	combineLatest,

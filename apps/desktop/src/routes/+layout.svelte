@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { W2kGlobal } from '@alexaegis/w2k';
+	import { W2kGlobal } from '@w2k/css';
 	import minesweeperIconLarge from '../assets/minesweeper/minesweeper-icon-large.png';
 	import Desktop from '../desktop/desktop.svelte';
 </script>

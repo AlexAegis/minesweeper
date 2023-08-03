@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@alexaegis/desktop-common';
+	import type { CoordinateLike } from '@w2k/common';
 	import { createEventDispatcher } from 'svelte';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../interfaces';
 	import type { TileState } from '../store';
