@@ -123,8 +123,9 @@
 			"outputs": [".svelte-kit/**", "build/**", "dist/**"],
 			"passThroughEnv": ["PLATFORM"]
 		},
-		"dev": {
+		"dev_": {
 			"cache": false,
+			"dependsOn": ["^build-lib_"],
 			"passThroughEnv": ["BUILD_REASON"],
 			"persistent": true
 		},
@@ -224,8 +225,9 @@
 			"outputs": [],
 			"passThroughEnv": ["BASE_HREF", "PLATFORM", "TARGET_ENV"]
 		},
-		"start": {
+		"start_": {
 			"cache": false,
+			"dependsOn": ["^build-lib_"],
 			"passThroughEnv": ["BUILD_REASON"],
 			"persistent": true
 		},

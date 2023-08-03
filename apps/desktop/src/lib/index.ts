@@ -1,1 +1,1 @@
-export const a = 1;
+export { default as Desktop } from '../desktop/desktop.svelte';
