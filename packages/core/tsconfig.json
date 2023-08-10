@@ -1,0 +1,28 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig?mark=managed-by-autotool",
+	"extends": "@alexaegis/ts/web",
+	"compilerOptions": {
+		"rootDir": "../../",
+		"outDir": ".cache/tsc"
+	},
+	"files": ["package.json", "../../package.json"],
+	"include": [
+		"src/**/*",
+		"static/**/*",
+		"__mocks__/**/*",
+		"*",
+		".*",
+		"*.json",
+		".*.json",
+		"**/*.json"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"coverage",
+		"typedoc",
+		".turbo",
+		".cache",
+		"vite*.config.ts.timestamp-*"
+	]
+}

@@ -1,0 +1,83 @@
+<script lang="ts">
+	import { documentPointerUp$ } from '@w2k/core';
+	import { filter, tap } from 'rxjs';
+	import { onDestroy } from 'svelte';
+	import { ButtonLook } from './button-look.enum';
+	import Button from './button.svelte';
+
+	export let title: string;
+	export let hotkeyLetter: string | undefined = undefined;
+
+	export let active: string | undefined;
+
+	let button: HTMLElement;
+
+	const clickListener = documentPointerUp$
+		.pipe(
+			filter((event) => {
+				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+				return ![...(button.parentElement?.children ?? [])].some((child) =>
+					elementsUnderPointer.includes(child),
+				);
+			}),
+			tap(() => (active = undefined)),
+		)
+		.subscribe();
+
+	function itemClick(event: MouseEvent) {
+		if (
+			(event.target as Element).nodeName !== 'HR' &&
+			(event.target as Element).nodeName !== 'DIV'
+		) {
+			active = undefined;
+		}
+	}
+
+	function pointerenter(event: PointerEvent): void {
+		if (event.pointerType === 'mouse' && active !== undefined && active !== title) {
+			active = title;
+		}
+	}
+
+	function click(_event: MouseEvent): void {
+		active = active === title ? undefined : title;
+	}
+
+	onDestroy(() => {
+		clickListener.unsubscribe();
+	});
+</script>
+
+<Button
+	bind:button
+	look="{ButtonLook.TITLE_BAR_MENU_ITEM}"
+	active="{active === title}"
+	on:pointerenter="{pointerenter}"
+	on:click="{click}"
+	{hotkeyLetter}
+>
+	{title}
+	{#if active === title}
+		<div
+			role="presentation"
+			class="dropdown window"
+			on:click|preventDefault|stopPropagation="{itemClick}"
+			on:keypress
+		>
+			<slot />
+		</div>
+	{/if}
+</Button>
+
+<style lang="scss">
+	.dropdown {
+		display: flex;
+		position: absolute;
+		top: 40px;
+		min-width: 124px; // Measured for the  minesweeper dropdowns
+		flex-direction: column;
+		margin-left: -7px;
+		z-index: 100;
+		padding: 3px;
+	}
+</style>

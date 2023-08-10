@@ -1,0 +1,36 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig?mark=managed-by-autotool",
+	"extends": ["@alexaegis/ts/svelte"],
+	"compilerOptions": {
+		"rootDir": "../../",
+		"outDir": ".cache/tsc"
+	},
+	"files": ["package.json", "../../package.json"],
+	"include": [
+		".svelte-kit/ambient.d.ts",
+		".svelte-kit/types/**/$types.d.ts",
+		"src/**/*",
+		"src/**/*.svelte",
+		"static/**/*",
+		"__mocks__/**/*",
+		"*",
+		".*",
+		"*.json",
+		".*.json",
+		"**/*.json"
+	],
+	"exclude": [
+		// extends doesn't combine fields, so this has been copied from .svelte-kit
+		".svelte-kit/[!ambient.d.ts]**",
+		"src/service-worker.js",
+		"src/service-worker.ts",
+		"src/service-worker.d.ts",
+		"node_modules",
+		"dist",
+		"coverage",
+		"typedoc",
+		".turbo",
+		".cache",
+		"vite*.config.ts.timestamp-*"
+	]
+}

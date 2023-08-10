@@ -1,0 +1,187 @@
+@use 'sass:list';
+
+.minesweeper {
+	--tile-grid-color: var(--win-3d-objects-shade-source-color);
+	--tile-0-color: #a0a0a0;
+	--tile-1-color: #00f;
+	--tile-2-color: #008100;
+	--tile-3-color: #ff1300;
+	--tile-4-color: #000083;
+	--tile-5-color: #810500;
+	--tile-6-color: #2a9494;
+	--tile-7-color: #000;
+	--tile-8-color: #808080;
+	--tile-9-color: #ffd22e;
+	--tile-debug-veil: linear-gradient(
+		to right,
+		var(--win-3d-objects-shade-source-color),
+		var(--win-3d-objects-shade-source-color)
+	);
+	--asset-smiley-click: url('../src/assets/minesweeper-smiley-click-min.png');
+	--asset-smiley-lose: url('../src/assets/minesweeper-smiley-lose-min.png');
+	--asset-smiley-neutral: url('../src/assets/minesweeper-smiley-neutral-min.png');
+	--asset-smiley-win: url('../src/assets/minesweeper-smiley-win-min.png');
+	--asset-flag: url('../src/assets/flag.png');
+	--asset-not-mine: url('../src/assets/not-mine.png');
+	--asset-question-mark: url('../src/assets/question-mark.png');
+	--asset-mine: url('../src/assets/mine.png');
+
+	@for $i from 1 through 10 {
+		--asset-number-#{$i - 1}: url('../src/assets/#{$i - 1}-min.png');
+	}
+
+	// These dimensions were taken from the Windows XP SP3 version of Minesweeper
+	--game-area-border-width: 3px; // The outermost border, there is no right and bottom border
+	--game-area-padding: 6px; // the game area holds both the 7 segment displays and the tile grid
+	// Smiley total size: 28px
+	--smiley-icon-size: 17px;
+	--smiley-outline-width: 1px;
+	--smiley-border-width: 3px;
+	--smiley-top-left-padding: 2px;
+	--smiley-bottom-right-padding: 1px;
+
+	button.minesweeper-tile {
+		height: 16px;
+		width: 16px;
+		margin: 0;
+		border: 0;
+		border-bottom: 0;
+		border-right: 0;
+		display: block;
+		box-sizing: border-box;
+		padding: 0;
+		image-rendering: pixelated;
+		background-repeat: no-repeat !important;
+		background-position: 2px 2px;
+		user-select: none;
+		background-size: auto;
+		background-position-x: 3px;
+		background-position-y: 3px;
+
+		--debug-veil-size: calc(100% - 3.85px);
+		--debug-veil-position-left: 2px;
+
+		&.pressed {
+			--debug-veil-size: 100%;
+			--debug-veil-position-left: 0px;
+		}
+
+		&.pressed,
+		&.revealed {
+			box-shadow: none; // inset -1px -1px var(--win-3d-objects-color-darker-1) !important;
+			border-color: var(--win-3d-objects-color-darker-1);
+			border-width: 1px;
+			border-left-style: solid;
+			border-top-style: solid;
+		}
+
+		&:not(.pressed, .revealed) {
+			border: 0;
+			box-shadow:
+				inset -1px -1px var(--win-3d-objects-color-darker-1),
+				inset 1px 1px var(--win-3d-objects-color-lighter-1),
+				inset -2px -2px var(--win-3d-objects-color-darker-1),
+				inset 2px 2px var(--win-3d-objects-color-lighter-1);
+		}
+
+		&:active {
+			padding: 0;
+		}
+
+		&.wrong:not(.flag) {
+			background-color: red;
+		}
+
+		&.flag {
+			&.revealed,
+			&:not(.debug, .wrong) {
+				background-image: var(--asset-flag);
+			}
+
+			&.wrong {
+				&.revealed,
+				&:not(.debug) {
+					background-position: 1px 1px;
+					background-image: var(--asset-not-mine);
+				}
+			}
+		}
+
+		&.question-mark {
+			&:not(.revealed) {
+				background-image: var(--asset-question-mark);
+			}
+		}
+
+		&.mine {
+			&.revealed {
+				background-image: var(--asset-mine);
+			}
+
+			&.debug:not(.revealed) {
+				background: var(--asset-mine);
+				background-position: 2px 2px;
+				background-size: 13px;
+
+				&::after {
+					content: '';
+					display: block;
+					position: relative;
+					top: 0;
+					left: var(--debug-veil-position-left);
+					width: var(--debug-veil-size);
+					height: var(--debug-veil-size);
+					opacity: 0.8;
+					background: var(--tile-debug-veil);
+				}
+			}
+
+			&.pressed {
+				background-position: 1px 1px;
+				background-size: 13px;
+			}
+
+			&:not(.pressed) {
+				background-position: 0 0;
+				background-size: 12px;
+			}
+		}
+
+		$tile-colors: var(--tile-0-color), var(--tile-1-color), var(--tile-2-color),
+			var(--tile-3-color), var(--tile-4-color), var(--tile-5-color), var(--tile-6-color),
+			var(--tile-7-color), var(--tile-8-color), var(--tile-9-color);
+
+		@for $i from 2 through 10 {
+			&-#{$i - 1} {
+				color: list.nth($tile-colors, $i);
+
+				&.revealed,
+				&:not(.debug) {
+					/* stylelint-disable-next-line custom-property-pattern */
+					background-image: var(--asset-number-#{$i - 1});
+				}
+
+				&.debug:not(.revealed) {
+					/* stylelint-disable-next-line custom-property-pattern */
+					background-image: var(--asset-number-#{$i - 1});
+
+					&::after {
+						content: '';
+						display: block;
+						position: relative;
+						top: 0;
+						left: 2px;
+						width: calc(100% - 4px);
+						height: calc(100% - 4px);
+						opacity: 0.8;
+						background: var(--tile-debug-veil);
+					}
+				}
+
+				&.pressed:not(.revealed) {
+					background-position: 3px 3px;
+				}
+			}
+		}
+	}
+}

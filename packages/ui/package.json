@@ -1,5 +1,5 @@
 {
-	"name": "@w2k/minesweeper",
+	"name": "@w2k/ui",
 	"description": "A reimplementation of Minesweeper using Svelte and TinySlice",
 	"version": "4.1.0",
 	"archetype": {
@@ -10,36 +10,34 @@
 	},
 	"keywords": [
 		"98.css",
-		"css",
 		"managed-by-autotool",
-		"minesweeper",
 		"svelte",
 		"w2k"
 	],
 	"type": "module",
 	"scripts": {
 		"build-lib_": "pakk --svelte --target-package-json-kind development && svelte-package --input src && pakk --svelte --target-package-json-kind distribution",
-		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
-		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
-		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
-		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
-		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
+		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input '**/*.css'",
-		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
-		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
-		"lint:svelte": "turbo run lint:svelte_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:svelte": "turbo run lint:svelte_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
-		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"lint:tsc_": "tsc --noEmit",
-		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
-		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
+		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
-		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/minesweeper",
+		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/ui",
 		"test_": "vitest --passWithNoTests --coverage --run",
 		"test:watch": "vitest --passWithNoTests --coverage"
 	},
@@ -50,20 +48,19 @@
 			"svelte": "./src/index.js",
 			"default": "./src/index.js"
 		},
-		"./desktop": {
-			"types": "./src/desktop.ts",
-			"import": "./src/desktop.js",
-			"svelte": "./src/desktop.js",
-			"default": "./src/desktop.js"
-		},
-		"./minesweeper": "./static/minesweeper.scss"
+		"./components": {
+			"types": "./src/components.ts",
+			"import": "./src/components.js",
+			"svelte": "./src/components.js",
+			"default": "./src/components.js"
+		}
 	},
 	"dependencies": {
 		"@alexaegis/common": "^0.6.1",
 		"@tinyslice/core": "^0.8.0",
 		"@w2k/common": "workspace:^4.1.0",
 		"@w2k/core": "workspace:^",
-		"@w2k/ui": "workspace:^",
+		"interactjs": "^1.10.18",
 		"rxjs": "^7.8.1",
 		"svelte-rxjs-observer": "^0.5.0"
 	},
@@ -74,6 +71,7 @@
 		"@alexaegis/svelte-config": "^0.7.1",
 		"@alexaegis/ts": "^0.7.1",
 		"@alexaegis/vitest": "^0.7.1",
+		"@interactjs/types": "^1.10.18",
 		"@pakk/cli": "^0.6.0",
 		"@sveltejs/package": "^2.2.0",
 		"@types/node": "^20.4.9",
