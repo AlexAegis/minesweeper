@@ -68,7 +68,7 @@
 		"@alexaegis/vite": "^0.7.1",
 		"@alexaegis/vitest": "^0.7.1",
 		"@pakk/cli": "^0.6.0",
-		"@types/node": "^20.4.9",
+		"@types/node": "^20.5.0",
 		"stylelint": "^15.10.2",
 		"vite": "^4.4.9",
 		"vitest": "^0.34.1"

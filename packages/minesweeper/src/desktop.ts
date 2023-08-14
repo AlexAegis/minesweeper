@@ -10,6 +10,6 @@ export const minesweeperProgramInstallation: ProgramState = {
 		title: 'Minesweeper',
 		resizable: false,
 		fitContent: true,
-		titleBarIcon: minesweeperIconLarge,
+		titleBarIcon: minesweeperIconSmall,
 	},
 };

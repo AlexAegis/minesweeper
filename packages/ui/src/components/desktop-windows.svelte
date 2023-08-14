@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
 	import { formatPid, type DesktopSlice, type ProgramId } from '../store';
+	import WindowContextItems from './window-context-items.svelte';
 	import type { WindowComponents } from './window-state.interface';
 	import Window from './window.svelte';
 
@@ -41,6 +42,9 @@
 					windowSlice.internals.windowActions.resize.next(event.detail);
 				}}"
 			>
+				<svelte:fragment slot="title-bar-context-menu">
+					<WindowContextItems windowState="{next}" {windowSlice} {desktopSlice} />
+				</svelte:fragment>
 				<svelte:fragment slot="menu">
 					{#if next.program && windowComponents[next.program]}
 						<svelte:component

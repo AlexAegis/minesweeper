@@ -3,23 +3,11 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import type { TitleBarEvents } from './title-bar-events.interface';
-	import type { WindowMaximizationState } from './window-state.interface';
+	import type { WindowState } from './window-state.interface';
 
 	const dispatch = createEventDispatcher<TitleBarEvents>();
 
-	export let title: string;
-	export let icon: string | undefined = undefined;
-	export let active: boolean | undefined = true;
-	export let maximized: WindowMaximizationState | undefined = false;
-	export let resizable: boolean | undefined = true;
-	export let showMinimize: boolean | undefined = true;
-	export let minimizeEnabled: boolean | undefined = true;
-	export let showMaximize: boolean | undefined = true;
-	export let maximizeEnabled: boolean | undefined = true;
-	export let showClose: boolean | undefined = true;
-	export let closeEnabled: boolean | undefined = true;
-	export let showHelp: boolean | undefined = false;
-	export let helpEnabled: boolean | undefined = true;
+	export let windowState: WindowState;
 	export let error: boolean | undefined = false;
 
 	function minimize() {
@@ -27,7 +15,7 @@
 	}
 
 	function maximize() {
-		if (maximized) {
+		if (windowState.maximized) {
 			dispatch('restore');
 		} else {
 			dispatch('maximize');
@@ -56,54 +44,58 @@
 <div
 	class="title-bar {$$props['class'] ?? ''}"
 	style="{$$props['style'] ?? ''}"
-	class:active="{active && !error}"
+	class:active="{windowState.active && !error}"
 	class:error
-	on:contextmenu|preventDefault
 	on:dblclick="{maximize}"
 	on:pointerdown="{dbltap}"
+	on:contextmenu|preventDefault
 	role="presentation"
 >
-	{#if icon}
+	{#if windowState.titleBarIcon}
 		<div class="title-bar-icon">
-			<Image class="ms-title-bar-icon" src="{icon}" alt="{title}" />
+			<Image
+				class="title-bar-icon"
+				src="{windowState.titleBarIcon}"
+				alt="{windowState.title}"
+			/>
 		</div>
 	{/if}
 
 	<div aria-label="title" class="title-bar-text">
-		{title}
+		{windowState.title}
 		<slot />
 	</div>
 
 	<div class="title-bar-controls">
-		{#if showMinimize}
+		{#if windowState.showMinimize}
 			<button
 				aria-label="Minimize"
-				disabled="{!minimizeEnabled}"
+				disabled="{!windowState.minimizeEnabled}"
 				on:click|preventDefault|stopPropagation="{minimize}"
 			></button>
 		{/if}
 
-		{#if showMaximize}
+		{#if windowState.showMaximize}
 			<button
-				aria-label="{maximized ? 'Restore' : 'Maximize'}"
+				aria-label="{windowState.maximized ? 'Restore' : 'Maximize'}"
 				on:click|preventDefault|stopPropagation="{maximize}"
-				disabled="{!maximizeEnabled || !resizable}"
+				disabled="{!windowState.maximizeEnabled || !windowState.resizable}"
 			></button>
 		{/if}
 
-		{#if showHelp}
+		{#if windowState.showHelp}
 			<button
 				aria-label="Help"
 				on:click|preventDefault|stopPropagation="{help}"
-				disabled="{!helpEnabled}"
+				disabled="{!windowState.helpEnabled}"
 			></button>
 		{/if}
 
-		{#if showClose}
+		{#if windowState.showClose}
 			<button
 				aria-label="Close"
 				on:click|preventDefault|stopPropagation="{close}"
-				disabled="{!closeEnabled}"
+				disabled="{!windowState.closeEnabled}"
 			></button>
 		{/if}
 	</div>

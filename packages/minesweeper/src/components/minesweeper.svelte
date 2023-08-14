@@ -10,7 +10,6 @@
 	import '../../static/minesweeper.scss';
 
 	export let internals: MinesweeperGame;
-	console.log('mineInt', internals);
 	$: unlockedScheme$ = internals.unlockedScheme$;
 
 	$: cheating$ = internals.cheating$;

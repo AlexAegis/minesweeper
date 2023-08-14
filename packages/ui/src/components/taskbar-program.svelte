@@ -43,6 +43,9 @@
 
 {#if next.minimized === 'minimizing' || next.minimized === 'unminimizing'}
 	<TitleBar
+		windowState="{next}"
+		{desktopSlice}
+		{windowSlice}
 		class="animate"
 		style="{getMinimizeAnimation(next, next.minimized)}"
 		title="{next.title}"

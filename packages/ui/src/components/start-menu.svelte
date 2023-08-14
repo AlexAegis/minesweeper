@@ -1,24 +1,24 @@
 <script lang="ts">
+	import { PACKAGE_NAME_AND_VERSION, documentPointerUp$, packageMetadata } from '@w2k/core';
 	import { filter, map } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
-
+	import {
+		w2kDisplaySettingsIconLarge,
+		w2kProgramsIconLarge,
+		w2kScanIconLarge,
+		w2kShutdownIconLarge,
+	} from '../assets/icons';
+	import { githubIcon } from '../assets/misc';
 	import { type DesktopSlice } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import Image from './image.svelte';
 
-	import { PACKAGE_NAME_AND_VERSION, documentPointerUp$, packageMetadata } from '@w2k/core';
-	import displaySettingsIcon from '../assets/icons/w2k-display-settings-icon-large.png';
-	import programsIcon from '../assets/icons/w2k-programs-icon-large.png';
-	import scanIcon from '../assets/icons/w2k-scan-icon-large.png';
-	import shutdownIcon from '../assets/icons/w2k-shutdown-icon-large.png';
-	import githubIcon from '../assets/misc/github.png';
-
 	export let desktopSlice: DesktopSlice;
+	export let startButton: HTMLElement;
 
 	let startMenu: HTMLElement;
-	export let startButton: HTMLElement;
 
 	$: programKeys$ = desktopSlice.dicedPrograms.keys$;
 	$: activeSchemeKind$ = desktopSlice.activeSchemeKind$;
@@ -86,7 +86,7 @@
 					alert('Under Construction');
 				}}"
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{programsIcon}" />
+				<Image height="{iconSize}" width="{iconSize}" src="{w2kProgramsIconLarge}" />
 				Programs
 			</Button>
 
@@ -97,7 +97,7 @@
 					desktopSlice.toggleActiveSchemeKindAction.next(undefined);
 				}}"
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{displaySettingsIcon}" />
+				<Image height="{iconSize}" width="{iconSize}" src="{w2kDisplaySettingsIconLarge}" />
 				Switch to
 				{#if $activeSchemeKind$ === 'w98'}
 					w2k
@@ -114,7 +114,7 @@
 					debug$.set(!debug$.value);
 				}}"
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{scanIcon}" />
+				<Image height="{iconSize}" width="{iconSize}" src="{w2kScanIconLarge}" />
 				{#if $debug$}
 					Disable
 				{:else}
@@ -141,7 +141,7 @@
 					confirm('Sure?') && window.close();
 				}}"
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{shutdownIcon}" />
+				<Image height="{iconSize}" width="{iconSize}" src="{w2kShutdownIconLarge}" />
 				Shut down...
 			</Button>
 		</div>

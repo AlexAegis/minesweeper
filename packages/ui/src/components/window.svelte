@@ -16,6 +16,7 @@
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
 	import { documentPointerDown$ } from '@w2k/core';
+	import { ContextMenu } from '../components';
 	import { formatPid, resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
@@ -109,6 +110,8 @@
 
 	$: resizeInteract?.toggle(effectiveResizable ?? true);
 	$: moveInteract?.toggle(effectiveMovable);
+
+	let contextMenuPosition: CoordinateLike | undefined = undefined;
 
 	if (transient) {
 		// Transient means it's not managed by the store. So it has to deactivate itself.
@@ -217,13 +220,14 @@
 {#if transientState.maximized === 'maximizing' || transientState.maximized === 'restoring'}
 	<TitleBar
 		class="animate"
+		windowState="{{
+			...transientState,
+			showMaximize: false,
+			showMinimize: false,
+			showHelp: false,
+			showClose: false,
+		}}"
 		style="{getMaximizeAnimation(transientState, transientState.maximized)}"
-		title="{transientState.title}"
-		icon="{transientState.titleBarIcon}"
-		showMaximize="{false}"
-		showMinimize="{false}"
-		showHelp="{false}"
-		showClose="{false}"
 	/>
 {/if}
 
@@ -252,27 +256,24 @@
 	on:pointerdown="{activate}"
 >
 	<TitleBar
-		title="{transientState.title}"
-		icon="{transientState.titleBarIcon}"
-		active="{(errorFlash === undefined && transientState.active) || errorFlash}"
-		maximized="{transientState.maximized}"
-		resizable="{transientState.resizable}"
-		showMinimize="{transientState.showMinimize ?? !transient}"
-		minimizeEnabled="{transientState.minimizeEnabled}"
-		showMaximize="{transientState.showMaximize}"
-		maximizeEnabled="{transientState.maximizeEnabled}"
-		showClose="{transientState.showClose}"
-		closeEnabled="{transientState.closeEnabled}"
-		showHelp="{transientState.showHelp}"
-		helpEnabled="{transientState.helpEnabled}"
+		windowState="{{
+			...transientState,
+			active: ((errorFlash === undefined && transientState.active) || errorFlash) ?? false,
+		}}"
 		on:minimize="{minimize}"
 		on:restore="{restore}"
 		on:maximize="{maximize}"
 		on:close="{close}"
-		on:contextmenu="{() => {
-			console.log('window title context');
+		on:contextmenu="{(event) => {
+			contextMenuPosition = contextMenuPosition
+				? undefined
+				: { x: event.pageX, y: event.pageY };
 		}}"
-	/>
+	>
+		<ContextMenu bind:position="{contextMenuPosition}">
+			<slot name="title-bar-context-menu" />
+		</ContextMenu>
+	</TitleBar>
 
 	{#if $$slots.menu}
 		<div class="menu">

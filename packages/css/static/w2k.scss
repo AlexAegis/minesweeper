@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 @import '98.css/dist/98.css';
 
 @font-face {
@@ -34,6 +35,7 @@ body {
 	--win-start-button-width: 54px; // + 1 the bo
 	--win-taskbar-height: 28px; // with box-sizing: border-box;
 	--win-taskbar-element-height: 22px;
+	--win-title-bar-height: 18px;
 
 	// These two variables are re-declared on the default schemes so that parts of the ui can have a forced scheme. But it's inconvenient for custom schemes to declare these again, and those can't be used for forced styles anyway since it's runtime data.
 	--win-3d-objects-color: hsl(
@@ -81,7 +83,7 @@ body {
 	--win-desktop-shortcut-gap: 1px; // On top of the margin, this is also the padding of the workspace
 	--win-start-menu-item-height: var(--win-large-icon-size);
 	--win-absolute-distance-between-shortcuts: 76px; // Not used, a measurement between the corners of 2 shortcut icons Including the corner pixels, true both vertically and horizontally
-	--win-start-menu-item-width: 227px;
+	// --win-start-menu-item-width: 227px; // No such thing, it's only as wide as it has to be
 	--win-taskbar-item-max-width: 160px;
 	--win-title-bar-icon-minimize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAADklEQVQI12NgwAbqQAgAA40A/e5DMQMAAAAASUVORK5CYII=');
 	--win-title-bar-icon-maximize: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAEklEQVQI12P438AARA0Y6H8DAJLoCn7HPTdBAAAAAElFTkSuQmCC');
@@ -244,8 +246,9 @@ body {
 		}
 
 		&.toggleable-context {
-			display: flex;
-			gap: 6px;
+			display: grid;
+			grid-template-columns: 16px auto;
+			gap: 0;
 			align-items: center;
 		}
 
@@ -267,7 +270,11 @@ body {
 
 			// filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
 			color: var(--win-3d-objects-color-darker-1);
-			text-shadow: 1px 1px 0 var(--win-3d-objects-color-lighter-1) !important; // !important because it's also set in 98.css for the slight on-click movement, but here that movement is done with borders
+
+			&:not(:hover) {
+				color: var(--win-3d-objects-color-darker-1);
+				text-shadow: 1px 1px 0 var(--win-3d-objects-color-lighter-1) !important; // !important because it's also set in 98.css for the slight on-click movement, but here that movement is done with borders
+			}
 
 			&::before {
 				content: '';
@@ -364,7 +371,6 @@ body {
 			padding: 0 2px;
 			margin: 0;
 			height: var(--win-start-menu-item-height);
-			width: var(--win-start-menu-item-width);
 
 			img {
 				height: var(--win-large-icon-size);
@@ -376,6 +382,12 @@ body {
 			width: 100%;
 			height: 17px;
 			text-align: left;
+
+			&[disabled] {
+				img {
+					filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white);
+				}
+			}
 		}
 
 		&.type-context-menu-item,
@@ -391,9 +403,24 @@ body {
 
 			&:hover {
 				background-color: var(--win-start-menu-highlight-color);
-				color: white;
 
-				.checkmark {
+				&:not([disabled]) {
+					color: white;
+				}
+			}
+		}
+
+		&.type-context-menu-item:hover {
+			&[disabled] {
+				.icon,
+				img {
+					filter: contrast(0.001) invert(1);
+				}
+			}
+
+			&:not([disabled]) {
+				.icon,
+				img {
 					filter: invert(1);
 				}
 			}
@@ -560,11 +587,11 @@ body {
 		user-select: none;
 		touch-action: none;
 		cursor: default;
-		padding: 1px;
 		font-weight: bold;
-		padding-left: 2px;
+		padding: 0 2px;
 		display: flex;
 		gap: 2px;
+		height: var(--win-title-bar-height);
 
 		&.animate {
 			z-index: 500000;
@@ -592,15 +619,12 @@ body {
 			align-items: flex-end;
 			box-sizing: border-box;
 			margin-right: auto;
-
-			img {
-				align-self: center;
-			}
 		}
 
 		.title-bar-icon {
 			height: 16px;
 			width: 16px;
+			align-self: center;
 		}
 
 		&.active {
@@ -723,7 +747,7 @@ body {
 			width: 100%;
 			gap: 1px;
 
-			button:not(.start) {
+			button:not(.start, .type-context-menu-item).type-taskbar-item {
 				flex: 0 1 var(--win-taskbar-item-max-width);
 				min-width: 0;
 				padding: 3px;
@@ -752,18 +776,15 @@ body {
 			}
 		}
 
-		/* stylelint-disable-next-line no-descending-specificity */
 		button {
 			margin-top: 0;
 			margin-bottom: 0;
 
-			/* stylelint-disable-next-line no-descending-specificity */
 			&:not(.type-start-menu-item) {
 				height: var(--win-taskbar-element-height);
 			}
 
-			/* stylelint-disable-next-line no-descending-specificity */
-			&:not(.start) {
+			&.type-taskbar-item {
 				margin-left: 1px;
 				margin-right: 1px;
 				max-width: 160px;
@@ -774,6 +795,13 @@ body {
 				min-height: var(--win-taskbar-element-height);
 				min-width: fit-content;
 				padding: 4px;
+			}
+
+			&.type-context-menu-item {
+				width: calc(100%);
+				height: 20px;
+				margin: 0;
+				padding: 0;
 			}
 		}
 
@@ -1001,6 +1029,19 @@ body {
 		z-index: 100001;
 	}
 
+	hr {
+		width: calc(100% - 2px);
+		box-sizing: border-box;
+		align-self: center;
+		margin: 4px 1px 3px;
+		outline: 0;
+		border: 0;
+		height: 2px;
+		box-shadow:
+			inset 0 1px var(--win-3d-objects-color-darker-1),
+			inset 0 2px var(--win-3d-objects-color-lighter-1);
+	}
+
 	.start-menu-container {
 		display: block;
 		position: absolute;
@@ -1013,6 +1054,11 @@ body {
 			position: relative;
 			bottom: 0;
 			left: 0;
+		}
+
+		hr {
+			width: calc(100% - 4px);
+			margin: 3px 2px;
 		}
 	}
 
@@ -1069,18 +1115,5 @@ body {
 			position: relative;
 			z-index: 200001;
 		}
-	}
-
-	hr {
-		width: calc(100% - 4px);
-		box-sizing: border-box;
-		align-self: center;
-		margin: 3px 2px;
-		outline: 0;
-		border: 0;
-		height: 2px;
-		box-shadow:
-			inset 0 1px var(--win-3d-objects-color-darker-1),
-			inset 0 2px var(--win-3d-objects-color-lighter-1);
 	}
 }

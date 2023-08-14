@@ -183,7 +183,7 @@
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
 		{#if icon}
-			<Image height="{10}" width="{10}" src="{icon}"></Image>
+			<Image height="{16}" width="{16}" src="{icon}"></Image>
 		{:else}
 			<span class="icon" class:checkmark="{toggled}"> </span>
 		{/if}

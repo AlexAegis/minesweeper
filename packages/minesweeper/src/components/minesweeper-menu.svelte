@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Settings from './settings.form.svelte';
 
-	import { Button, ModalDialogWindow } from '@w2k/ui';
+	import { Button, ModalDialogWindow, w2kCheckmark } from '@w2k/ui';
 	import Highscore from './highscore.svelte';
 
 	let customGameModal: ModalDialogWindow;
@@ -73,6 +73,7 @@
 			on:click="{() => {
 				internals.minesweeperActions.cheating.next(!next);
 			}}"
+			icon="{next ? w2kCheckmark : ''}"
 			toggled="{next}"
 		>
 			{#if !next}
@@ -126,7 +127,7 @@
 			dispatch('close');
 		}}"
 	>
-		Quit
+		Exit
 	</Button>
 </Dropdown>
 <Dropdown title="{'Help'}" hotkeyLetter="{'H'}" bind:active>
