@@ -245,13 +245,6 @@ body {
 			min-height: unset;
 		}
 
-		&.toggleable-context {
-			display: grid;
-			grid-template-columns: 16px auto;
-			gap: 0;
-			align-items: center;
-		}
-
 		.icon {
 			margin-left: 3px;
 			width: 7px;
@@ -382,6 +375,10 @@ body {
 			width: 100%;
 			height: 17px;
 			text-align: left;
+			display: grid;
+			grid-template-columns: 16px auto;
+			gap: 0;
+			align-items: center;
 
 			&[disabled] {
 				img {

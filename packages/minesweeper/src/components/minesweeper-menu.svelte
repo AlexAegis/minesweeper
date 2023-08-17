@@ -49,7 +49,7 @@
 		<Observer observable="{internals.isGameSettingsAPreset$(preset)}" let:next>
 			<Button
 				look="{ButtonLook.CONTEXT_MENU_ITEM}"
-				toggled="{next}"
+				icon="{next ? w2kCheckmark : ''}"
 				on:click="{() => {
 					internals.minesweeperActions.resetGame.next(preset);
 				}}"
@@ -61,7 +61,7 @@
 	<Button
 		look="{ButtonLook.CONTEXT_MENU_ITEM}"
 		on:click="{() => customGameModal.open(windowState)}"
-		toggled="{$isGameSettingsNotAPreset$}"
+		icon="{$isGameSettingsNotAPreset$ ? w2kCheckmark : ''}"
 	>
 		Custom...
 	</Button>
@@ -74,7 +74,6 @@
 				internals.minesweeperActions.cheating.next(!next);
 			}}"
 			icon="{next ? w2kCheckmark : ''}"
-			toggled="{next}"
 		>
 			{#if !next}
 				Enable
@@ -91,7 +90,7 @@
 			on:click="{() => {
 				internals.unlockedScheme$.set(!next);
 			}}"
-			toggled="{next}"
+			icon="{next ? w2kCheckmark : ''}"
 			title="Regardless of your UI scheme, Minesweeper always looked like the 98/Classic scheme. Here you can turn it off and see how it would like with the system scheme."
 		>
 			Unlock Color Scheme
@@ -104,7 +103,7 @@
 			on:click="{() => {
 				internals.unlockedResize$.set(!next);
 			}}"
-			toggled="{next}"
+			icon="{next ? w2kCheckmark : ''}"
 			title="Minesweeper is not resizeable by default. How about changing that?"
 		>
 			Unlock Resize

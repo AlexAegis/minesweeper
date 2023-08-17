@@ -28,7 +28,6 @@
 
 	export let selfPress: boolean | undefined = true;
 	export let hotkeyLetter: string | undefined = undefined;
-	export let toggled: boolean | undefined = undefined;
 	export let active: boolean | undefined = undefined;
 
 	let longpressHappened = false;
@@ -161,8 +160,6 @@
 	class:flat="{look === ButtonLook.CONTEXT_MENU_ITEM ||
 		look === ButtonLook.START_MENU_ITEM ||
 		look === ButtonLook.TITLE_BAR_MENU_ITEM}"
-	class:toggleable="{toggled !== undefined}"
-	class:toggleable-context="{look === ButtonLook.CONTEXT_MENU_ITEM}"
 	class:type-none="{look === undefined}"
 	class:type-thick="{look === ButtonLook.THICK}"
 	class:type-taskbar-item="{look === ButtonLook.TASKBAR_ITEM}"
@@ -185,7 +182,7 @@
 		{#if icon}
 			<Image height="{16}" width="{16}" src="{icon}"></Image>
 		{:else}
-			<span class="icon" class:checkmark="{toggled}"> </span>
+			<span class="icon"></span>
 		{/if}
 
 		<span>
