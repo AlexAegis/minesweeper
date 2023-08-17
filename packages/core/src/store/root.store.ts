@@ -24,10 +24,13 @@ export const PACKAGE_NAME_AND_VERSION = `${packageMetadata.name} (${packageMetad
 
 const documentPointerDownSubject$ = new Subject<PointerEvent>();
 const documentPointerUpSubject$ = new Subject<PointerEvent>();
+const documentPointerMoveSubject$ = new Subject<PointerEvent>();
 const documentMouseLeaveSubject$ = new Subject<PointerEvent>();
 const documentContextMenuSubject$ = new Subject<PointerEvent>();
 
 export const documentPointerDown$ = documentPointerDownSubject$.asObservable();
+export const documentPointerMove$ = documentPointerMoveSubject$.asObservable();
+
 export const documentPointerUp$ = documentPointerUpSubject$.asObservable();
 export const documentMouseLeave$ = documentMouseLeaveSubject$.asObservable();
 export const documentContextMenu$ = documentPointerDownSubject$.asObservable();
@@ -44,6 +47,10 @@ export const initializeStoreBrowserFeatures = <
 
 	scheduled(fromEvent<PointerEvent>(document, 'pointerup'), asyncScheduler)
 		.pipe(tap(documentPointerUpSubject$))
+		.subscribe();
+
+	scheduled(fromEvent<PointerEvent>(document, 'pointermove'), asyncScheduler)
+		.pipe(tap(documentPointerMoveSubject$))
 		.subscribe();
 
 	scheduled(fromEvent<PointerEvent>(document, 'mouseleave'), asyncScheduler)

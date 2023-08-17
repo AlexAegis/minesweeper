@@ -69,6 +69,7 @@
 	on:doublefire="{() => {
 		spawn();
 	}}"
+	on:pointerdown|stopPropagation
 	class="shortcut"
 	class:selected
 	style:top="{`${transientPosition.y}px`}"

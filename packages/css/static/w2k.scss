@@ -15,11 +15,13 @@ body {
 		width: 100%;
 	}
 
+	background-color: black;
+
 	&.embeddedtest {
-		height: 70svh;
-		width: 70%;
-		margin-top: 15%;
-		margin-left: 15%;
+		height: 90svh;
+		width: 90%;
+		margin-top: 5%;
+		margin-left: 5%;
 	}
 }
 
@@ -901,28 +903,30 @@ body {
 	&.desktop,
 	.desktop {
 		overscroll-behavior: none;
-		display: grid;
-		grid-template-columns: 1fr;
-		grid-template-rows: auto var(--win-taskbar-height);
+		display: block;
+		position: relative;
 		height: 100%;
 		background-color: var(--win-desktop-color);
 		overflow: hidden;
 
 		.workspace,
 		.window-plane {
+			user-select: none;
 			grid-row: 1;
 			grid-column: 1;
 			width: 100%;
-			height: 100%;
+			height: calc(100% - var(--win-taskbar-height));
 			box-sizing: border-box;
 		}
 
 		// Forced overlap
 		.window-plane {
-			display: grid;
-			grid-template-rows: 1fr;
-			grid-template-columns: 1fr;
-			z-index: 1;
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			overflow: hidden;
+			z-index: 2;
 			pointer-events: none;
 
 			> * {
@@ -933,7 +937,7 @@ body {
 		}
 
 		.workspace {
-			z-index: 0;
+			z-index: 1;
 			padding: var(--win-desktop-shortcut-gap);
 
 			&:not(.free-placement) {
@@ -1109,8 +1113,18 @@ body {
 		}
 
 		.program-window {
-			position: relative;
+			position: fixed;
 			z-index: 200001;
 		}
+	}
+
+	.selection {
+		z-index: 2;
+		position: absolute;
+		outline: 1px dotted white;
+		display: block;
+		width: 12px;
+		height: 134px;
+		mix-blend-mode: difference;
 	}
 }
