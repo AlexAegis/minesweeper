@@ -1119,12 +1119,11 @@ body {
 	}
 
 	.selection {
-		z-index: 2;
-		position: absolute;
-		outline: 1px dotted white;
 		display: block;
-		width: 12px;
-		height: 134px;
+		position: absolute;
+		z-index: 2;
+		border: 1px dotted white;
+		box-sizing: border-box;
 		mix-blend-mode: difference;
 	}
 }

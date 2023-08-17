@@ -47,8 +47,6 @@
 			return;
 		}
 
-		const padding = 1;
-
 		const workspaceRect = workspaceElement.getBoundingClientRect();
 
 		const cursorX = event.pageX - workspaceRect.x;
@@ -62,8 +60,8 @@
 		const areaDesiredWidth = areaMaxX - areaMinX;
 		const areaDesiredHeight = areaMaxY - areaMinY;
 
-		selectArea.x = Math.max(areaMinX, padding);
-		selectArea.y = Math.max(areaMinY, padding);
+		selectArea.x = Math.max(areaMinX, 0);
+		selectArea.y = Math.max(areaMinY, 0);
 
 		const maxWidthBoundary =
 			cursorX > selectArea.origin.x ? workspaceRect.x + workspaceRect.width : workspaceRect.x;
@@ -72,10 +70,8 @@
 				? workspaceRect.y + workspaceRect.height
 				: workspaceRect.y;
 
-		const maxWidth =
-			Math.abs(selectArea.origin.x - maxWidthBoundary + workspaceRect.x) - padding;
-		const maxHeight =
-			Math.abs(selectArea.origin.y - maxHeightBoundary + workspaceRect.y) - padding;
+		const maxWidth = Math.abs(selectArea.origin.x - maxWidthBoundary + workspaceRect.x);
+		const maxHeight = Math.abs(selectArea.origin.y - maxHeightBoundary + workspaceRect.y);
 
 		selectArea.width = Math.min(areaDesiredWidth, maxWidth);
 		selectArea.height = Math.min(areaDesiredHeight, maxHeight);
