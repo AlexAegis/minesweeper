@@ -29,7 +29,9 @@ Here's a screencapture from a Windows NT 2000 Virtual Machine:
 
 ### Differences
 
-> I either can't fix these, or they would make no sense to fix.
+> I either can't fix these, or they would make no sense to fix. There are of
+> course many more differences, these are the ones I noticed and thought worth
+> mentioning.
 
 - Font used does not contain actual bold versions of Tahoma at 8px
 - The edges of the tiles and panels within Minesweeper have some
@@ -48,6 +50,8 @@ Here's a screencapture from a Windows NT 2000 Virtual Machine:
   > from 1 immediately!
 - The maximum size of a playfield in the original is `30 by 24`, not much larger
   than the `Expert` preset. I raised this to `50 by 50`.
+- Pressing `Cancel` in the custom game window resets the game board in the
+  original. I'm not going to do that.
 
 ## Features
 
@@ -72,18 +76,12 @@ Here's a screencapture from a Windows NT 2000 Virtual Machine:
 ## Known bugs
 
 - Shortcuts do not work.
-- Creating large games is pretty slow. It is because of my
-  [state-management library, TinySlice](https://github.com/AlexAegis/tinyslice).
-  This project is also serves as a proving ground for it.
-- Modals have a flashing warning when you click outside of them. But the current
-  implementation is not authentic. It should just switch back and forth between
-  `active` and `not-active` title bars. Also, modals should only prevent you
-  from using the program they were spawned from, not the entire screen.
 
 ## Planned features
 
 - Cheese Terminator
 - Basic scheme editor
+- A tetris game would be cool
 
 ## Styles
 
