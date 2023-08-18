@@ -92,6 +92,7 @@ body {
 	--win-title-bar-icon-close: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAHElEQVQI12NgYGBIbGAwZmCQY2DgAZPGYBEGBgAhOwJxp5nQ3QAAAABJRU5ErkJggg==');
 	--win-title-bar-icon-help: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAGTkAABk5ASYljJkAAAAGUExURUdwTAAAAJ8qhFEAAAABdFJOUwBA5thmAAAAFklEQVQI12OQY2AwBiM2BgYeMGKAMgANngC7z1BwaQAAAABJRU5ErkJggg==');
 	--win-title-bar-icon-restore: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAACXBIWXMAABk5AAAZOQEmJYyZAAAAOklEQVQYlZ2Q0QoAMAgCr9H//3J7GgtJGLsnwVIwuBQzsYxhmZIKIMXsOo54qkv9aomlRxN/dW4jADbgSQgUTlPGKAAAAABJRU5ErkJggg==');
+	--win-shortcut-icon: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAFZJREFUKFONkVEOwCAIQ9uTAydn6RYSMqeDP/T5JIVmlhhURICC3f0XJ7nCOuyV+Xz8CddFPTjCY3MHZVS/NRdcQJ99mbmb3vFs0xiZT2HfZgCjDUp0Abk8QQE1vv1HAAAAAElFTkSuQmCC');
 	--win-title-bar-padding: 2px;
 	--win-title-bar-icon-size: 24px;
 	--win-start-menu-static-items-height: calc(
@@ -245,18 +246,6 @@ body {
 			height: unset;
 			width: unset;
 			min-height: unset;
-		}
-
-		.icon {
-			margin-left: 3px;
-			width: 7px;
-			height: 7px;
-
-			&.checkmark {
-				background-image: var(--asset-checkmark);
-				image-rendering: pixelated;
-				background-repeat: no-repeat;
-			}
 		}
 
 		&[disabled]:not(.custom) {
@@ -836,7 +825,7 @@ body {
 		.shortcut-symbol {
 			width: 11px;
 			height: 11px;
-			background-image: var(--asset-shortcut);
+			background-image: var(--win-shortcut-icon);
 			background-repeat: no-repeat;
 			image-rendering: pixelated;
 			z-index: 1;

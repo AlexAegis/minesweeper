@@ -179,12 +179,7 @@
 	on:pointerleave="{pointerleave}"
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
-		{#if icon}
-			<Image height="{16}" width="{16}" src="{icon}"></Image>
-		{:else}
-			<span class="icon"></span>
-		{/if}
-
+		<Image height="{16}" width="{16}" src="{icon}"></Image>
 		<span>
 			<slot />
 		</span>

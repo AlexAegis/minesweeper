@@ -3,7 +3,6 @@
 	import { documentPointerMove$, documentPointerUp$, packageMetadata } from '@w2k/core';
 	import { onDestroy } from 'svelte';
 	import type { DesktopSlice, ProgramId } from '../store';
-	import '../styles/desktop.scss';
 	import AreaSelection from './area-selection.svelte';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
