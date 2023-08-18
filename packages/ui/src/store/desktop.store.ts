@@ -26,6 +26,7 @@ import type { Rectangle } from '../components/rectangle.interface.js';
 
 export type ProcessId = string;
 export type ProgramId = string;
+export type ShortcutId = number;
 
 export interface ProgramState {
 	name: ProgramId;
@@ -41,10 +42,12 @@ export interface ProgramState {
 }
 
 export interface ShortcutState {
+	shortcutId: ShortcutId;
 	name: string;
 	icon?: string | undefined;
-	program: string;
+	program: ProgramId;
 	position: CoordinateLike;
+	selected: boolean;
 }
 
 export interface DesktopScheme {
@@ -75,11 +78,6 @@ export const isThereAWindowOriginatingFromPosition = (
 	windows: WindowState[],
 	position: CoordinateLike,
 ): boolean => {
-	console.log(
-		'WIN',
-		windows.map((w) => w.position),
-		position,
-	);
 	return windows.some((win) => Coordinate.equal(win.position, position));
 };
 
@@ -97,9 +95,35 @@ export const centerRectangleIntoRectancle = (
 	};
 };
 
-export const SHORTCUT_HEIGHT = 50;
-export const SHORTCUT_WIDTH = 75;
+export const SHORTCUT_HEIGHT = 74;
+export const SHORTCUT_DISTANCE = SHORTCUT_HEIGHT + 1;
+export const SHORTCUT_WIDTH = 74;
 export const TITLE_BAR_HEIGHT = 18;
+
+export const getNextShortcutPosition = (shortcuts: ShortcutState[]): CoordinateLike => {
+	const result: CoordinateLike = {
+		x: 0,
+		y: 0,
+	};
+
+	const workspaceRectangle = getWorkspaceRectangle();
+	if (workspaceRectangle) {
+		for (
+			let i = 0;
+			i < 1000 && shortcuts.some((shortcut) => Coordinate.equal(shortcut.position, result));
+			i++
+		) {
+			result.y += SHORTCUT_DISTANCE;
+
+			if (workspaceRectangle.height < result.y + SHORTCUT_HEIGHT) {
+				result.y = 0;
+				result.x += SHORTCUT_DISTANCE;
+			}
+		}
+	}
+
+	return result;
+};
 
 export const resizeWindow = (
 	windowState: BaseWindowState,
@@ -183,10 +207,12 @@ export const createDesktopSlice = <
 			shortcuts: Object.values(preInstalledPrograms).reduce<Record<string, ShortcutState>>(
 				(acc, next, shortcutId) => {
 					acc[shortcutId] = {
+						shortcutId: shortcutId,
 						name: next.initialWindowState.title ?? next.name,
 						position: { x: 0, y: shortcutId * 32 },
 						program: next.name,
 						icon: next.icon ?? next.titleBarIcon,
+						selected: false,
 					};
 
 					return acc;
@@ -205,7 +231,7 @@ export const createDesktopSlice = <
 		{
 			defineInternals: (slice) => {
 				const actions = {
-					spawnProgram: slice.createAction<string>('spawn'),
+					spawnProgram: slice.createAction<ProgramId>('spawn'),
 					activateProgram: slice.createAction<ProcessId | undefined>('activate'),
 					moveShortcut: slice.createAction<number[]>('move shortcuts'),
 				};
@@ -217,6 +243,34 @@ export const createDesktopSlice = <
 
 	const shortcuts$ = desktop$.slice('shortcuts', {
 		reducers: [],
+		defineInternals: (slice) => {
+			const shortcutsActions = {
+				clearAllSelections: slice.createAction('clearAllSelections'),
+				setSelection: slice.createAction<ShortcutId[]>('setSelection'),
+				spawnShortcut: slice.createAction<ProgramState>('spawnShortcut'),
+			};
+
+			slice.addReducers([
+				shortcutsActions.spawnShortcut.reduce((state, payload) => {
+					const nextKey = getNextKeyStrategy(PremadeGetNext.nextLargest)(
+						getObjectKeysAsNumbers(state),
+					);
+					return {
+						...state,
+						[nextKey]: {
+							shortcutId: nextKey,
+							name: payload.initialWindowState.title,
+							position: getNextShortcutPosition(Object.values(state)),
+							program: payload.name,
+							selected: false,
+							icon: payload.icon,
+						},
+					};
+				}),
+			]);
+
+			return { shortcutsActions };
+		},
 	});
 
 	const activeScheme$ = desktop$.slice('activeScheme');
@@ -232,17 +286,53 @@ export const createDesktopSlice = <
 			name: 'undefined',
 			program: 'unknown',
 			position: { x: 0, y: 0 },
+			selected: false,
 			icon: undefined,
 		} as ShortcutState,
 		{
 			getAllKeys: getObjectKeysAsNumbers,
-			getNextKey: getNextKeyStrategy(PremadeGetNext.nextSmallest),
+			getNextKey: getNextKeyStrategy(PremadeGetNext.nextLargest),
 			defineInternals: (slice) => {
-				const position$ = slice.slice('position');
+				const shortcutActions = {
+					select: slice.createAction<ShortcutId>('select'),
+				};
 
-				return { position$ };
+				slice.addReducers([
+					shortcutActions.select.reduce((acc, next) => ({
+						...acc,
+						selected: acc.shortcutId === next,
+					})),
+					shortcuts$.internals.shortcutsActions.setSelection.reduce((state, payload) => ({
+						...state,
+						selected: payload.includes(state.shortcutId),
+					})),
+				]);
+
+				const position$ = slice.slice('position');
+				const selected$ = slice.slice('selected', {
+					reducers: [
+						shortcuts$.internals.shortcutsActions.clearAllSelections.reduce(
+							() => false,
+						),
+					],
+				});
+
+				return { position$, shortcutActions, selected$ };
 			},
 		},
+	);
+
+	shortcuts$.createEffect(
+		documentPointerDown$.pipe(
+			filter((event) => {
+				return event.target !== null && (event.target as HTMLElement).id === 'workspace';
+			}),
+			map(() => {
+				return shortcuts$.internals.shortcutsActions.clearAllSelections.makePacket(
+					undefined,
+				);
+			}),
+		),
 	);
 
 	const programs$ = desktop$.slice('programs');
@@ -596,6 +686,7 @@ export const createDesktopSlice = <
 		toggleActiveSchemeKindAction,
 		activeSchemeKind$,
 		dicedShortcuts,
+		shortcuts$,
 		programs$,
 		startMenuOpen$,
 		dicedPrograms,

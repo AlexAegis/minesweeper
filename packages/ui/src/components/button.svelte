@@ -171,7 +171,7 @@
 	on:mousedown
 	on:mouseenter
 	on:dblclick
-	on:contextmenu|preventDefault
+	on:contextmenu|preventDefault|stopPropagation
 	on:pointercancel
 	on:pointerenter
 	on:pointerup="{pointerup}"

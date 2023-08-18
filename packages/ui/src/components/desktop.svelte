@@ -89,7 +89,7 @@
 	<div
 		bind:this="{workspaceElement}"
 		id="workspace"
-		class="workspace"
+		class="workspace free-placement"
 		role="directory"
 		aria-roledescription="desktop workspace containing the icons"
 		on:pointerdown="{(e) => areaSelectionBegin(e)}"
@@ -99,7 +99,7 @@
 				: { x: event.pageX, y: event.pageY };
 		}}"
 	>
-		<DesktopShortcuts {desktopSlice} />
+		<DesktopShortcuts {desktopSlice} {selectArea} />
 
 		<AreaSelection area="{selectArea}" />
 		<slot />

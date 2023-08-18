@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { CoordinateLike } from '@w2k/common';
 	import { PACKAGE_NAME_AND_VERSION, documentPointerUp$, packageMetadata } from '@w2k/core';
 	import { filter, map } from 'rxjs';
 	import { onDestroy } from 'svelte';
@@ -13,6 +14,7 @@
 	import { type DesktopSlice } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
+	import ContextMenu from './context-menu.svelte';
 	import Image from './image.svelte';
 
 	export let desktopSlice: DesktopSlice;
@@ -24,9 +26,14 @@
 	$: activeSchemeKind$ = desktopSlice.activeSchemeKind$;
 	$: debug$ = desktopSlice.desktop$.internals.debug$;
 
+	let contextMenuPosition: CoordinateLike | undefined = undefined;
+
 	const closeEffect = desktopSlice.desktop$.createEffect(
 		documentPointerUp$.pipe(
 			filter((event) => {
+				if (event.button !== 0) {
+					return false;
+				}
 				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
 				return (
 					(!elementsUnderPointer.includes(startMenu) &&
@@ -52,18 +59,18 @@
 			<div>{PACKAGE_NAME_AND_VERSION}</div>
 		</div>
 		<div class="content">
-			<slot />
-
 			{#each $programKeys$ as programKey}
 				<Observer observable="{desktopSlice.dicedPrograms.get(programKey)}" let:next>
 					<Button
 						class="flat"
 						look="{ButtonLook.START_MENU_ITEM}"
-						on:fire="{() => {
+						on:click="{() => {
 							desktopSlice.desktop$.internals.actions.spawnProgram.next(programKey);
 						}}"
-						on:alternativeFire="{() => {
-							console.log('TODO: create icon', programKey);
+						on:contextmenu="{(event) => {
+							contextMenuPosition = contextMenuPosition
+								? undefined
+								: { x: event.pageX, y: event.pageY };
 						}}"
 					>
 						<Image
@@ -74,10 +81,28 @@
 						/>
 						{next.initialWindowState.title}
 					</Button>
+
+					<ContextMenu bind:position="{contextMenuPosition}">
+						<Button
+							look="{ButtonLook.CONTEXT_MENU_ITEM}"
+							on:click="{() => {
+								desktopSlice.shortcuts$.internals.shortcutsActions.spawnShortcut.next(
+									next,
+								);
+							}}"
+						>
+							Create Shortcut
+						</Button>
+					</ContextMenu>
 				</Observer>
 			{/each}
 
 			<hr />
+
+			<slot />
+			{#if $$slots.default}
+				<hr />
+			{/if}
 
 			<Button
 				look="{ButtonLook.START_MENU_ITEM}"

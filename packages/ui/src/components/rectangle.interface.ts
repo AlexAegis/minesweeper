@@ -4,3 +4,22 @@ export interface Rectangle extends CoordinateLike {
 	height: number;
 	width: number;
 }
+
+export const areRectanglesOverlapping = (a: Rectangle, b: Rectangle): boolean => {
+	const axl = a.x;
+	const axh = a.x + a.width;
+
+	const bxl = b.x;
+	const bxh = b.x + b.width;
+
+	const ayl = a.y;
+	const ayh = a.y + a.height;
+
+	const byl = b.y;
+	const byh = b.y + b.height;
+
+	const noHorizontalOverlap = axh < bxl || axl > bxh;
+	const noVerticalOverlap = ayh < byl || ayl > byh;
+
+	return !noHorizontalOverlap && !noVerticalOverlap;
+};
