@@ -1115,4 +1115,8 @@ body {
 		box-sizing: border-box;
 		mix-blend-mode: difference;
 	}
+
+	img {
+		image-rendering: pixelated;
+	}
 }

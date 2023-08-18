@@ -1,8 +1,10 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@w2k/common';
+	import { defer, type CoordinateLike } from '@w2k/common';
 	import type { Subject } from 'rxjs';
 	import { onDestroy } from 'svelte';
+	import { nudgeAreaIntoArea } from '../helpers/nudge-area-into-area.function';
 	import Modal from './modal.svelte';
+	import type { Rectangle } from './rectangle.interface';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
@@ -17,41 +19,57 @@
 
 	export let isOpen = false;
 
+	let modalWindowElement: HTMLElement;
 	let errorNotification: Subject<void>;
 
-	const centerOf = (
-		position: CoordinateLike,
-		size: CoordinateLike,
-		sizeOfTarget?: CoordinateLike,
-	): CoordinateLike => {
+	const centerOf = (position: Rectangle, sizeOfTarget: CoordinateLike): CoordinateLike => {
 		return {
-			x: position.x + Math.floor(size.x / 2) - Math.floor((sizeOfTarget?.x ?? 0) / 2),
-			y: position.y + Math.floor(size.y / 2) - Math.floor((sizeOfTarget?.y ?? 0) / 2),
+			x: position.x + Math.floor(position.width / 2) - Math.floor(sizeOfTarget.x / 2),
+			y: position.y + Math.floor(position.height / 2) - Math.floor(sizeOfTarget.y / 2),
 		};
 	};
 
-	export function open(parentWindow?: BaseWindowState) {
+	export function open(centeringElement?: Element | undefined | null) {
 		windowState.invisible = true;
 		isOpen = true;
+
+		const centerElement = centeringElement ?? document.body;
 		// Let the modal window mount before calculating center
-		setTimeout(() => {
-			windowState.position = centerOf(
-				parentWindow?.position ?? { x: 0, y: 0 },
-				{
-					x: parentWindow?.width ?? document.body.scrollWidth,
-					y: parentWindow?.height ?? document.body.scrollHeight,
-				},
-				{ x: effectiveWindowState.width, y: effectiveWindowState.height },
-			);
+
+		const centerElementRect = centerElement.getBoundingClientRect();
+
+		const workspaceElement = document.querySelector('#workspace');
+
+		defer(() => {
+			windowState.position = centerOf(centerElementRect, {
+				x: effectiveWindowState.width,
+				y: effectiveWindowState.height,
+			});
+
+			if (workspaceElement && modalWindowElement) {
+				const windowRectangle = modalWindowElement.getBoundingClientRect();
+
+				const workspaceRectangle = workspaceElement.getBoundingClientRect();
+
+				windowState.position = nudgeAreaIntoArea(
+					{
+						...windowState.position,
+						height: windowRectangle.height,
+						width: windowRectangle.width,
+					},
+					workspaceRectangle,
+				);
+			}
+
 			windowState.invisible = false;
-		}, 0);
+		})();
 	}
 
 	export function close(_event?: CustomEvent<undefined>) {
 		// Let stuff clear itself
-		setTimeout(() => {
+		defer(() => {
 			isOpen = false;
-		}, 0);
+		})();
 	}
 
 	export function backdropClick(event: MouseEvent) {
@@ -67,8 +85,10 @@
 
 <Modal bind:isOpen backdropCanClose="{false}" on:error="{() => errorNotification?.next(undefined)}">
 	<Window
+		bind:windowElement="{modalWindowElement}"
 		windowState="{effectiveWindowState}"
 		transient="{true}"
+		canDeactivate="{false}"
 		on:close="{close}"
 		bind:errorNotification
 	>

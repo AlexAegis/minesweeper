@@ -27,11 +27,3 @@
 		style:min-width="{width ? `${width}px` : undefined}"
 	></div>
 {/if}
-
-<style>
-	img {
-		image-rendering: pixelated;
-		width: auto;
-		height: inherit;
-	}
-</style>

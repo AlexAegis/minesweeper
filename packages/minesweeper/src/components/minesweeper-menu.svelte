@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Settings from './settings.form.svelte';
 
-	import { Button, ModalDialogWindow, w2kCheckmark } from '@w2k/ui';
+	import { Button, ModalDialogWindow, formatPid, w2kCheckmark } from '@w2k/ui';
 	import Highscore from './highscore.svelte';
 
 	let customGameModal: ModalDialogWindow;
@@ -35,6 +35,14 @@
 		internals.minesweeperActions.resetGame.next(event.detail);
 		customGameModal.close();
 	}
+
+	function openModal(modal: ModalDialogWindow) {
+		const windowElement = document.querySelector(
+			'#' + formatPid(windowState.processId, 'window'),
+		);
+
+		modal.open(windowElement);
+	}
 </script>
 
 <Dropdown title="Game" hotkeyLetter="{'G'}" bind:active>
@@ -60,7 +68,7 @@
 	{/each}
 	<Button
 		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => customGameModal.open(windowState)}"
+		on:click="{() => openModal(customGameModal)}"
 		icon="{$isGameSettingsNotAPreset$ ? w2kCheckmark : ''}"
 	>
 		Custom...
@@ -112,10 +120,7 @@
 
 	<hr />
 
-	<Button
-		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => highScoreModal.open(windowState)}"
-	>
+	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => openModal(highScoreModal)}">
 		Best times...
 	</Button>
 	<hr />
@@ -137,9 +142,9 @@
 		Github
 	</Button>
 	<hr />
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => aboutModal.open(windowState)}"
-		>About Minesweeper...</Button
-	>
+	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => openModal(aboutModal)}">
+		About Minesweeper...
+	</Button>
 </Dropdown>
 
 <ModalDialogWindow

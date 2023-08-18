@@ -24,7 +24,7 @@
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
-	let windowElement: HTMLElement;
+	export let windowElement: HTMLElement | undefined = undefined;
 
 	const dispatch = createEventDispatcher<
 		{
@@ -37,6 +37,7 @@
 	export let windowState: Partial<BaseWindowState> | undefined = undefined;
 
 	export let transient = false;
+	export let canDeactivate = true;
 	export let id: string | undefined = undefined;
 
 	$: transientState = {
@@ -59,7 +60,7 @@
 	}
 
 	function deactivate() {
-		if (transient && transientState.active) {
+		if (transient && transientState.active && canDeactivate) {
 			transientState = { ...transientState, active: false };
 		}
 	}
@@ -125,7 +126,7 @@
 							event.pageX,
 							event.pageY,
 						);
-						return !elementsUnderPointer.includes(windowElement);
+						return !windowElement || !elementsUnderPointer.includes(windowElement);
 					}),
 					tap(() => {
 						deactivate();
@@ -140,9 +141,9 @@
 	export const errorFlash$ = errorNotification.pipe(
 		switchMap(() =>
 			concat(
-				of(true),
-				interval(60).pipe(
-					take(7),
+				of(false),
+				interval(66).pipe(
+					take(6),
 					map((_, i) => i % 2 === 0),
 				),
 				of(undefined),
@@ -159,19 +160,21 @@
 	$: errorFlash = $errorFlash$;
 
 	onMount(() => {
-		moveInteract = InteractBuilder.from(windowElement).movable(move);
-		resizeInteract = InteractBuilder.from(windowElement).resizable(resize);
+		if (windowElement) {
+			moveInteract = InteractBuilder.from(windowElement).movable(move);
+			resizeInteract = InteractBuilder.from(windowElement).resizable(resize);
 
-		// Update size on render
-		if (windowState) {
-			if (transient) {
-				windowState.width = windowElement.scrollWidth;
-				windowState.height = windowElement.scrollHeight;
-			} else {
-				dispatch('resize', {
-					height: windowElement.scrollHeight,
-					width: windowElement.scrollWidth,
-				} as ResizeData);
+			// Update size on render
+			if (windowState) {
+				if (transient) {
+					windowState.width = windowElement.scrollWidth;
+					windowState.height = windowElement.scrollHeight;
+				} else {
+					dispatch('resize', {
+						height: windowElement.scrollHeight,
+						width: windowElement.scrollWidth,
+					} as ResizeData);
+				}
 			}
 		}
 	});
