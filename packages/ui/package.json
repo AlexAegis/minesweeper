@@ -61,6 +61,7 @@
 		"@w2k/common": "workspace:^4.1.0",
 		"@w2k/core": "workspace:^",
 		"interactjs": "^1.10.18",
+		"moveable": "^0.51.1",
 		"rxjs": "^7.8.1",
 		"svelte-rxjs-observer": "^0.5.0"
 	},

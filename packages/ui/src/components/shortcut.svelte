@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
+	import Moveable from 'moveable';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { ButtonLook, ContextMenu } from '../components';
 	import type { ProgramId, ShortcutId, ShortcutState } from '../store';
 	import Button from './button.svelte';
 	import { firable } from './firable.action';
 	import Image from './image.svelte';
-	import { InteractBuilder } from './resizable.function';
 
 	export let shortcutState: ShortcutState;
 
@@ -22,7 +22,7 @@
 	let shortcutElement: HTMLElement | undefined = undefined;
 	export let shortcutIconElement: HTMLElement | undefined = undefined;
 
-	let moveInteract: InteractBuilder;
+	let movable: Moveable | undefined;
 
 	$: transientPosition = { ...shortcutState.position };
 
@@ -38,18 +38,24 @@
 
 	onMount(() => {
 		if (shortcutElement) {
-			moveInteract = InteractBuilder.from(shortcutElement).movable(move);
-			moveInteract.interactable.on('dragend', (_event: DragEvent): void => {
-				drop();
-			});
+			movable = new Moveable(shortcutElement, {
+				draggable: true,
+				target: shortcutElement,
+				hideDefaultLines: true,
+				isDisplayShadowRoundControls: false,
+				origin: false,
+			})
+				.on('drag', (event): void => {
+					move({ x: event.delta[0] ?? 0, y: event.delta[1] ?? 0 });
+				})
+				.on('dragEnd', (_event: DragEvent): void => {
+					drop();
+				});
 		}
 	});
 
 	onDestroy(() => {
-		if (moveInteract) {
-			moveInteract.interactable.off('dragend');
-			moveInteract.unsubscribe();
-		}
+		movable?.destroy();
 	});
 
 	function spawn(): void {
@@ -79,6 +85,7 @@
 
 	function keydown(e: KeyboardEvent): void {
 		console.log(e);
+
 		switch (e.key) {
 			case 'Enter': {
 				spawn();
@@ -86,6 +93,10 @@
 			}
 			case 'F2': {
 				beginRenameShortcut();
+				break;
+			}
+			case 'Delete': {
+				deleteShortcut();
 				break;
 			}
 			case 'Escape': {

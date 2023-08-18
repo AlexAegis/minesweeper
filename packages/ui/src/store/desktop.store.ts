@@ -96,16 +96,14 @@ export const centerRectangleIntoRectancle = (
 	};
 };
 
-export const SHORTCUT_HEIGHT = 74;
-export const SHORTCUT_DISTANCE = SHORTCUT_HEIGHT + 1;
-export const SHORTCUT_WIDTH = 74;
+export const SHORTCUT_DISTANCE = 75;
 export const TITLE_BAR_HEIGHT = 18;
 
-export const getNextShortcutPosition = (shortcuts: ShortcutState[]): CoordinateLike => {
-	const result: CoordinateLike = {
-		x: 0,
-		y: 0,
-	};
+export const getNextShortcutPosition = (
+	shortcuts: ShortcutState[],
+	start?: CoordinateLike,
+): CoordinateLike => {
+	const result: CoordinateLike = start ? { ...start } : { x: 0, y: 0 };
 
 	const workspaceRectangle = getWorkspaceRectangle();
 	if (workspaceRectangle) {
@@ -116,7 +114,7 @@ export const getNextShortcutPosition = (shortcuts: ShortcutState[]): CoordinateL
 		) {
 			result.y += SHORTCUT_DISTANCE;
 
-			if (workspaceRectangle.height < result.y + SHORTCUT_HEIGHT) {
+			if (workspaceRectangle.height < result.y + TITLE_BAR_HEIGHT) {
 				result.y = 0;
 				result.x += SHORTCUT_DISTANCE;
 			}
@@ -163,14 +161,17 @@ export const resizeWindow = (
 };
 
 export const snapShortcutPosition = (position: CoordinateLike): CoordinateLike => {
+	getNextShortcutPosition;
 	return {
 		x: Math.floor(
-			position.x - ((position.x + SHORTCUT_WIDTH / 2) % SHORTCUT_WIDTH) + SHORTCUT_WIDTH / 2,
+			position.x -
+				((position.x + SHORTCUT_DISTANCE / 2) % SHORTCUT_DISTANCE) +
+				SHORTCUT_DISTANCE / 2,
 		),
 		y: Math.floor(
 			position.y -
-				((position.y + SHORTCUT_HEIGHT / 2) % SHORTCUT_HEIGHT) +
-				SHORTCUT_HEIGHT / 2,
+				((position.y + SHORTCUT_DISTANCE / 2) % SHORTCUT_DISTANCE) +
+				SHORTCUT_DISTANCE / 2,
 		),
 	};
 };
@@ -250,6 +251,9 @@ export const createDesktopSlice = <
 				setSelection: slice.createAction<ShortcutId[]>('setSelection'),
 				spawnShortcut: slice.createAction<ProgramState>('spawnShortcut'),
 				deleteSelected: slice.createAction<ShortcutId>('deleteSelected'),
+				moveTo: slice.createAction<{ shortcutId: ShortcutId; position: CoordinateLike }>(
+					'moveTo',
+				),
 			};
 
 			slice.addReducers([
@@ -276,6 +280,22 @@ export const createDesktopSlice = <
 								!shortcut.selected && shortcutId !== payload.toString(),
 						),
 					);
+				}),
+				shortcutsActions.moveTo.reduce((state, payload) => {
+					const snappedPosition = snapShortcutPosition(payload.position);
+					return {
+						...state,
+						[payload.shortcutId]: {
+							...state[payload.shortcutId],
+							position: getNextShortcutPosition(
+								Object.values(state).filter(
+									(shortcutState) =>
+										shortcutState.shortcutId !== payload.shortcutId,
+								),
+								snappedPosition,
+							),
+						},
+					};
 				}),
 			]);
 
@@ -304,15 +324,7 @@ export const createDesktopSlice = <
 			getAllKeys: getObjectKeysAsNumbers,
 			getNextKey: getNextKeyStrategy(PremadeGetNext.nextLargest),
 			defineInternals: (slice) => {
-				const shortcutActions = {
-					select: slice.createAction<ShortcutId>('select'),
-				};
-
 				slice.addReducers([
-					shortcutActions.select.reduce((acc, next) => ({
-						...acc,
-						selected: acc.shortcutId === next,
-					})),
 					shortcuts$.internals.shortcutsActions.setSelection.reduce((state, payload) => ({
 						...state,
 						selected: payload.includes(state.shortcutId),
@@ -327,7 +339,7 @@ export const createDesktopSlice = <
 				const position$ = slice.slice('position');
 				const selected$ = slice.slice('selected');
 
-				return { position$, shortcutActions, selected$ };
+				return { position$, selected$ };
 			},
 		},
 	);

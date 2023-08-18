@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
-	import {
-		getWorkspaceRectangle,
-		snapShortcutPosition,
-		type DesktopSlice,
-		type ShortcutId,
-	} from '../store';
+	import { getWorkspaceRectangle, type DesktopSlice, type ShortcutId } from '../store';
 	import { areRectanglesOverlapping, type Rectangle } from './rectangle.interface';
 	import Shortcut from './shortcut.svelte';
 
@@ -47,7 +42,9 @@
 			bind:shortcutIconElement="{shortcutElements[next.shortcutId]}"
 			shortcutState="{next}"
 			on:select="{(_event) => {
-				shortcutSlice.internals.shortcutActions.select.next(next.shortcutId);
+				desktopSlice.shortcuts$.internals.shortcutsActions.setSelection.next([
+					next.shortcutId,
+				]);
 			}}"
 			on:delete="{() => {
 				desktopSlice.shortcuts$.internals.shortcutsActions.deleteSelected.next(
@@ -69,7 +66,10 @@
 				});
 			}}"
 			on:drop="{(event) => {
-				shortcutSlice.internals.position$.set(snapShortcutPosition(event.detail));
+				desktopSlice.shortcuts$.internals.shortcutsActions.moveTo.next({
+					shortcutId: next.shortcutId,
+					position: event.detail,
+				});
 			}}"
 			on:dblclick="{(event) => {
 				event.target;
