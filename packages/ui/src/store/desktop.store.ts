@@ -48,6 +48,7 @@ export interface ShortcutState {
 	program: ProgramId;
 	position: CoordinateLike;
 	selected: boolean;
+	renaming: boolean;
 }
 
 export interface DesktopScheme {
@@ -213,6 +214,7 @@ export const createDesktopSlice = <
 						program: next.name,
 						icon: next.icon ?? next.titleBarIcon,
 						selected: false,
+						renaming: false,
 					};
 
 					return acc;
@@ -233,7 +235,6 @@ export const createDesktopSlice = <
 				const actions = {
 					spawnProgram: slice.createAction<ProgramId>('spawn'),
 					activateProgram: slice.createAction<ProcessId | undefined>('activate'),
-					moveShortcut: slice.createAction<number[]>('move shortcuts'),
 				};
 
 				return { actions, debug$: slice.slice('debug') };
@@ -248,6 +249,7 @@ export const createDesktopSlice = <
 				clearAllSelections: slice.createAction('clearAllSelections'),
 				setSelection: slice.createAction<ShortcutId[]>('setSelection'),
 				spawnShortcut: slice.createAction<ProgramState>('spawnShortcut'),
+				deleteSelected: slice.createAction<ShortcutId>('deleteSelected'),
 			};
 
 			slice.addReducers([
@@ -267,6 +269,14 @@ export const createDesktopSlice = <
 						},
 					};
 				}),
+				shortcutsActions.deleteSelected.reduce((state, payload) => {
+					return Object.fromEntries(
+						Object.entries(state).filter(
+							([shortcutId, shortcut]) =>
+								!shortcut.selected && shortcutId !== payload.toString(),
+						),
+					);
+				}),
 			]);
 
 			return { shortcutsActions };
@@ -283,6 +293,7 @@ export const createDesktopSlice = <
 
 	const dicedShortcuts = shortcuts$.dice(
 		{
+			shortcutId: 0,
 			name: 'undefined',
 			program: 'unknown',
 			position: { x: 0, y: 0 },
@@ -306,16 +317,15 @@ export const createDesktopSlice = <
 						...state,
 						selected: payload.includes(state.shortcutId),
 					})),
+					shortcuts$.internals.shortcutsActions.clearAllSelections.reduce((state) => ({
+						...state,
+						selected: false,
+						renaming: false,
+					})),
 				]);
 
 				const position$ = slice.slice('position');
-				const selected$ = slice.slice('selected', {
-					reducers: [
-						shortcuts$.internals.shortcutsActions.clearAllSelections.reduce(
-							() => false,
-						),
-					],
-				});
+				const selected$ = slice.slice('selected');
 
 				return { position$, shortcutActions, selected$ };
 			},

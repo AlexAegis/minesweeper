@@ -153,7 +153,9 @@ body {
 				var(--win-3d-objects-shade-source-l)
 		);
 
+		input,
 		button {
+			font-size: 16px;
 			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
 				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
 		}
@@ -191,8 +193,10 @@ body {
 				var(--win-3d-objects-shade-source-l)
 		);
 
+		input,
 		button {
 			// TODO: Remove tahoma-8px from here, but fix the sizes of MS Sans Serif
+			font-size: 16px;
 			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
 				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
 		}
@@ -815,6 +819,14 @@ body {
 		cursor: pointer;
 		z-index: 1; // When another shortcut is selected, an unselected one should get behind
 
+		&:focus-visible {
+			outline: none;
+
+			.title {
+				outline: 1px dotted yellow;
+			}
+		}
+
 		.icon {
 			width: var(--win-large-icon-size);
 			height: var(--win-large-icon-size);
@@ -854,6 +866,12 @@ body {
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			overflow: hidden;
+		}
+
+		input {
+			width: 100%;
+			border: 1px black solid;
+			box-shadow: none;
 		}
 
 		&.selected,

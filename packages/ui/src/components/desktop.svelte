@@ -20,6 +20,7 @@
 	export let desktopSlice: DesktopSlice;
 
 	let selectArea: (Rectangle & { origin: CoordinateLike }) | undefined;
+	let selectAreaStart: (Rectangle & { origin: CoordinateLike }) | undefined;
 
 	function areaSelectionBegin(event: PointerEvent) {
 		const workspaceRect = workspaceElement.getBoundingClientRect();
@@ -27,21 +28,27 @@
 			x: event.pageX - workspaceRect.x,
 			y: event.pageY - workspaceRect.y,
 		};
-		selectArea = {
+		// This is separated to avoid starting anything related to area selection for simple clicks
+		selectAreaStart = {
 			...origin,
 			height: 0,
 			width: 0,
 			origin,
 		};
+		selectArea = undefined;
 	}
 
 	function areaSelectionEnd(_event: PointerEvent) {
-		if (selectArea) {
-			selectArea = undefined;
-		}
+		selectAreaStart = undefined;
+		selectArea = undefined;
 	}
 
 	function areaSelectionMove(event: PointerEvent) {
+		if (selectAreaStart && !selectArea) {
+			selectArea = selectAreaStart;
+			selectAreaStart = undefined;
+		}
+
 		if (!selectArea) {
 			return;
 		}

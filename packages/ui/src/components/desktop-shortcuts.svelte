@@ -44,11 +44,29 @@
 	{@const shortcutSlice = desktopSlice.dicedShortcuts.get(shortcutKey)}
 	<Observer observable="{shortcutSlice}" let:next>
 		<Shortcut
-			{desktopSlice}
-			bind:shortcutIconElement="{shortcutElements[shortcutKey]}"
+			bind:shortcutIconElement="{shortcutElements[next.shortcutId]}"
 			shortcutState="{next}"
 			on:select="{(_event) => {
 				shortcutSlice.internals.shortcutActions.select.next(next.shortcutId);
+			}}"
+			on:delete="{() => {
+				desktopSlice.shortcuts$.internals.shortcutsActions.deleteSelected.next(
+					next.shortcutId,
+				);
+			}}"
+			on:spawn="{() => {
+				desktopSlice.desktop$.internals.actions.spawnProgram.next(next.program);
+			}}"
+			on:beginRename="{() => {
+				shortcutSlice.update({
+					renaming: true,
+				});
+			}}"
+			on:rename="{(event) => {
+				shortcutSlice.update({
+					name: event.detail.name,
+					renaming: false,
+				});
 			}}"
 			on:drop="{(event) => {
 				shortcutSlice.internals.position$.set(snapShortcutPosition(event.detail));
