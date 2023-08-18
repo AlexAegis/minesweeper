@@ -85,11 +85,11 @@ export const initialWindowState: BaseWindowState = {
 	title: '...',
 	titleBarIcon: '',
 	active: true,
-	height: 100,
-	width: 80,
+	height: 0,
+	width: 0,
 	position: {
-		x: 200,
-		y: 200,
+		x: 160,
+		y: 120,
 	},
 	minWidth: 120,
 	minHeight: 45, // 45: titlebar and menubar together

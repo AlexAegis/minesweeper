@@ -8,7 +8,7 @@ import {
 	isNullish,
 	type ActionPacket,
 } from '@tinyslice/core';
-import type { CoordinateLike } from '@w2k/common';
+import { Coordinate, type CoordinateLike } from '@w2k/common';
 import { Observable, filter, map, merge, mergeMap, of, take, tap, timer } from 'rxjs';
 
 import type { ResizeData } from '../components/resizable.function.js';
@@ -22,6 +22,7 @@ import { isNotNullish } from '@alexaegis/common';
 import { documentPointerDown$ } from '@w2k/core';
 
 import { browser } from '$app/environment';
+import type { Rectangle } from '../components/rectangle.interface.js';
 
 export type ProcessId = string;
 export type ProgramId = string;
@@ -70,8 +71,35 @@ export const formatPid = (
 	variant?: 'window' | 'taskbar' | undefined,
 ): string => `pid${processId}${variant ? '-' + variant : ''}`;
 
+export const isThereAWindowOriginatingFromPosition = (
+	windows: WindowState[],
+	position: CoordinateLike,
+): boolean => {
+	console.log(
+		'WIN',
+		windows.map((w) => w.position),
+		position,
+	);
+	return windows.some((win) => Coordinate.equal(win.position, position));
+};
+
+export const getWorkspaceRectangle = (): DOMRect | undefined => {
+	return document.querySelector('#workspace')?.getBoundingClientRect();
+};
+
+export const centerRectangleIntoRectancle = (
+	toBeCentered: Pick<Rectangle, 'height' | 'width'>,
+	centerOn: Rectangle,
+): CoordinateLike => {
+	return {
+		x: centerOn.x + Math.floor(centerOn.width / 2) - Math.floor(toBeCentered.width / 2),
+		y: centerOn.y + Math.floor(centerOn.height / 2) - Math.floor(toBeCentered.height / 2),
+	};
+};
+
 export const SHORTCUT_HEIGHT = 50;
 export const SHORTCUT_WIDTH = 75;
+export const TITLE_BAR_HEIGHT = 18;
 
 export const resizeWindow = (
 	windowState: BaseWindowState,
@@ -244,6 +272,21 @@ export const createDesktopSlice = <
 					program,
 					zIndex: Object.keys(state).length + 1,
 				};
+
+				for (
+					let i = 0;
+					isThereAWindowOriginatingFromPosition(
+						Object.values(state),
+						spawnedWindow.position,
+					) && i < 10;
+					i++
+				) {
+					spawnedWindow.position = {
+						x: spawnedWindow.position.x + TITLE_BAR_HEIGHT + 3,
+						y: spawnedWindow.position.y + TITLE_BAR_HEIGHT + 3,
+					};
+				}
+
 				return { ...state, [processId]: spawnedWindow };
 			}),
 			desktop$.internals.actions.activateProgram.reduce(

@@ -3,6 +3,7 @@
 	import { documentPointerDown$ } from '@w2k/core';
 	import { filter, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { getWorkspaceRectangle } from '../store/desktop.store';
 
 	const dispatcher = createEventDispatcher<{
 		dismiss: undefined;
@@ -55,11 +56,9 @@
 		if (position) {
 			if (contextMenuContainer) {
 				const contextMenuContainerRect = contextMenuContainer.getBoundingClientRect();
-				const workspaceElement = document.querySelector('#workspace');
+				const workspaceElementRect = getWorkspaceRectangle();
 
-				if (workspaceElement) {
-					const workspaceElementRect = workspaceElement.getBoundingClientRect();
-
+				if (workspaceElementRect) {
 					if (workspaceElementRect.right < contextMenuContainerRect.right) {
 						xOffset = 1 - contextMenuContainerRect.width;
 						xDirection = 1;
@@ -100,7 +99,7 @@
 		style:--context-menu-appear-y-direction="{yAxisAnimated ? yDirection : 0}"
 		aria-roledescription="context menu containing contextual buttons"
 		role="presentation"
-		on:click="{() => {
+		on:click|stopPropagation="{() => {
 			position = undefined;
 		}}"
 	>

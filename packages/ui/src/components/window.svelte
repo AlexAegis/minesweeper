@@ -17,7 +17,7 @@
 
 	import { documentPointerDown$ } from '@w2k/core';
 	import { ContextMenu } from '../components';
-	import { formatPid, resizeWindow } from '../store';
+	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
 	import { InteractBuilder, type ResizeData } from './resizable.function';
 	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
 	import type { TitleBarEvents } from './title-bar-events.interface';
@@ -191,15 +191,14 @@
 	): string | undefined => {
 		const windowId = formatPid(windowState.processId, 'window');
 
-		const workspaceElement = document.querySelector('#workspace');
+		const workspaceRect = getWorkspaceRectangle();
 		const windowElement = document.querySelector(`#${windowId}`);
 
-		if (!workspaceElement || !windowElement) {
+		if (!workspaceRect || !windowElement) {
 			return undefined;
 		}
 
 		const windowRect = windowElement.getBoundingClientRect();
-		const workspaceRect = workspaceElement.getBoundingClientRect();
 
 		const windowOffset: TaskBarAnimationFrame = {
 			x: windowRect.x - workspaceRect.x,

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { defer, type CoordinateLike } from '@w2k/common';
+	import { defer } from '@w2k/common';
 	import type { Subject } from 'rxjs';
 	import { onDestroy } from 'svelte';
 	import { nudgeAreaIntoArea } from '../helpers/nudge-area-into-area.function';
+	import { centerRectangleIntoRectancle, getWorkspaceRectangle } from '../store';
 	import Modal from './modal.svelte';
-	import type { Rectangle } from './rectangle.interface';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
@@ -22,13 +22,6 @@
 	let modalWindowElement: HTMLElement;
 	let errorNotification: Subject<void>;
 
-	const centerOf = (position: Rectangle, sizeOfTarget: CoordinateLike): CoordinateLike => {
-		return {
-			x: position.x + Math.floor(position.width / 2) - Math.floor(sizeOfTarget.x / 2),
-			y: position.y + Math.floor(position.height / 2) - Math.floor(sizeOfTarget.y / 2),
-		};
-	};
-
 	export function open(centeringElement?: Element | undefined | null) {
 		windowState.invisible = true;
 		isOpen = true;
@@ -38,18 +31,16 @@
 
 		const centerElementRect = centerElement.getBoundingClientRect();
 
-		const workspaceElement = document.querySelector('#workspace');
+		const workspaceRectangle = getWorkspaceRectangle();
 
 		defer(() => {
-			windowState.position = centerOf(centerElementRect, {
-				x: effectiveWindowState.width,
-				y: effectiveWindowState.height,
-			});
+			windowState.position = centerRectangleIntoRectancle(
+				effectiveWindowState,
+				centerElementRect,
+			);
 
-			if (workspaceElement && modalWindowElement) {
+			if (workspaceRectangle && modalWindowElement) {
 				const windowRectangle = modalWindowElement.getBoundingClientRect();
-
-				const workspaceRectangle = workspaceElement.getBoundingClientRect();
 
 				windowState.position = nudgeAreaIntoArea(
 					{

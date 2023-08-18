@@ -910,7 +910,7 @@ body {
 
 		// Forced overlap
 		.window-plane {
-			display: block;
+			display: grid;
 			position: absolute;
 			top: 0;
 			left: 0;

@@ -25,10 +25,17 @@
 >
 	Restore
 </Button>
-<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" disabled="{true}" title="Not implemented">Move</Button
+<Button
+	look="{ButtonLook.CONTEXT_MENU_ITEM}"
+	disabled="{windowState.maximized !== false || windowState.minimized !== false}"
+	title="Resets the position of the window"
+	on:click="{() => windowSlice.internals.position$.set({ x: 10, y: 10 })}"
 >
-<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" disabled="{true}" title="Not implemented">Size</Button
->
+	Move
+</Button>
+<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" disabled="{true}" title="Not implemented">
+	Size
+</Button>
 <Button
 	look="{ButtonLook.CONTEXT_MENU_ITEM}"
 	icon="{w2kTaskbarMinimizeIcon}"
