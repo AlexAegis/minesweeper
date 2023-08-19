@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
+	import type { GrippyContainer } from '../helpers/grippy/grippy';
 	import { formatPid, type DesktopSlice, type ProgramId } from '../store';
 	import WindowContextItems from './window-context-items.svelte';
 	import type { WindowComponents } from './window-state.interface';
 	import Window from './window.svelte';
 
+	export let windowHandler: GrippyContainer;
 	export let desktopSlice: DesktopSlice;
 	// TODO: Move this somewhere else
 	export let windowComponents: Record<ProgramId, WindowComponents>;
@@ -20,6 +22,7 @@
 			<Window
 				id="{formatPid(next.processId, 'window')}"
 				windowState="{next}"
+				{windowHandler}
 				on:activate="{() => {
 					desktopSlice.desktop$.internals.actions.activateProgram.next(processId);
 				}}"

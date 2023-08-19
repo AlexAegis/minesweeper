@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
 	import { documentPointerMove$, documentPointerUp$, packageMetadata } from '@w2k/core';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { GrippyContainer } from '../helpers/grippy/grippy';
 	import type { DesktopSlice, ProgramId } from '../store';
 	import AreaSelection from './area-selection.svelte';
 	import { ButtonLook } from './button-look.enum';
@@ -86,9 +87,17 @@
 	const globalPointerUpListener = documentPointerUp$.subscribe(areaSelectionEnd);
 	const globalPointerMoveListener = documentPointerMove$.subscribe(areaSelectionMove);
 
+	let windowHandler: GrippyContainer;
+
+	onMount(() => {
+		windowHandler = new GrippyContainer(workspaceElement);
+		windowHandler.initialize();
+	});
+
 	onDestroy(() => {
 		globalPointerUpListener.unsubscribe();
 		globalPointerMoveListener.unsubscribe();
+		windowHandler.unsubscribe();
 	});
 </script>
 
@@ -112,7 +121,7 @@
 		<slot />
 	</div>
 	<div id="window-plane" class="window-plane">
-		<DesktopWindows {desktopSlice} {windowComponents} />
+		<DesktopWindows {desktopSlice} {windowComponents} {windowHandler} />
 	</div>
 
 	<ContextMenu bind:position="{contextMenuPosition}">

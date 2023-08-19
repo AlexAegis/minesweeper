@@ -1,6 +1,6 @@
 import type { Rectangle } from '../components/rectangle.interface';
 
-export const cloneRectangle = (element: HTMLElement): Rectangle => {
+export const cloneRectangle = (element: Element): Rectangle => {
 	const rectangle = element.getBoundingClientRect();
 
 	return {

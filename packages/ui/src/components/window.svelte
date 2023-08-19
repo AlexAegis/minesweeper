@@ -17,21 +17,18 @@
 
 	import { sleep } from '@alexaegis/common';
 	import { documentPointerDown$ } from '@w2k/core';
-	import Moveable, { type OnResize } from 'moveable';
 	import { ContextMenu } from '../components';
-	import {
-		checkStyleResult,
-		cloneRectangle,
-		type WindowResizeContext,
-	} from '../helpers/movable-window';
+	import type { Handler, ResizeData } from '../helpers';
+	import type { GrippyContainer } from '../helpers/grippy/grippy';
+	import { checkStyleResult, type WindowResizeContext } from '../helpers/movable-window';
 	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
-	import type { ResizeData } from './resizable.function';
 	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
 	import type { TitleBarEvents } from './title-bar-events.interface';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
 	export let windowElement: HTMLElement | undefined = undefined;
+	export let windowHandler: GrippyContainer;
 
 	const dispatch = createEventDispatcher<
 		{
@@ -113,8 +110,6 @@
 		dispatch('close');
 	}
 
-	let movable: Moveable | undefined;
-
 	let contextMenuPosition: CoordinateLike | undefined = undefined;
 
 	if (transient) {
@@ -163,15 +158,13 @@
 	$: errorFlash = $errorFlash$;
 
 	const resizableHandler = (element: HTMLElement) => {
-		return (event: OnResize, context: WindowResizeContext) => {
+		return (event: ResizeData, context: WindowResizeContext) => {
 			if (
 				!event.target.classList.contains('immobile') &&
 				!event.target.classList.contains('non-resizable')
 			) {
-				const deltaWidth = event.delta[0] ?? 0;
-				const directionX = event.direction[0] ?? 0;
-				const distWidth = event.dist[0] ?? 0;
-				const distHeight = event.dist[1] ?? 0;
+				const distWidth = event.width;
+				const distHeight = event.height;
 
 				const preferredHeight = context.startRectangle.height + distHeight;
 				const preferredWidth = context.startRectangle.width + distWidth;
@@ -180,61 +173,44 @@
 					height: preferredHeight,
 				});
 
-				resize({
-					height: after.height,
-					width: after.width,
-					moveY: undefined, // event.drag.top,
-					moveX: undefined, // event.drag.left, // event.clientX,
-				});
+				resize(event);
 			}
 		};
 	};
+
+	let dragHandler: Handler;
+	let resizeHandler: Handler;
+
 	onMount(async () => {
 		await sleep(0);
+
 		const windowPlane = document.querySelector<HTMLElement>('#window-plane');
 		if (windowElement && windowPlane) {
-			const windowMoveHandler = resizableHandler(windowElement);
-
-			let windowResizeContext: WindowResizeContext;
-
 			const titleBar = windowElement.querySelectorAll('.title-bar').item(0);
 
-			movable = new Moveable(windowPlane, {
+			dragHandler = windowHandler.draggable({
 				target: windowElement,
-				draggable: true,
-				dragTarget: titleBar as HTMLElement,
-				resizable: true,
+				handle: titleBar,
+				listeners: {
+					move: (data) => {
+						move(data.delta);
+					},
+				},
+			});
 
-				hideDefaultLines: false,
-				isDisplayShadowRoundControls: false,
-				origin: false,
-				edge: true,
-			})
-				.on('drag', (event): void => {
-					move({ x: event.delta[0] ?? 0, y: event.delta[1] ?? 0 });
-				})
-
-				.on('resizeStart', (event) => {
-					console.log('RESSTART event', event);
-
-					windowResizeContext = {
-						minWidth: 0,
-						minHeight: 0,
-						heightSink: 0,
-						widthSink: 0,
-						minHeightAchievedAtDist: undefined,
-						minWidthAchievedAtDist: undefined,
-						startRectangle: cloneRectangle(event.target as HTMLElement),
-					};
-				})
-				.on('resize', (event) => {
-					console.log('RES event', event);
-					windowMoveHandler(event, windowResizeContext);
-				});
-
+			resizeHandler = windowHandler.resizable({
+				target: windowElement,
+				listeners: {
+					resize: (data) => {
+						console.log('resizing', data);
+					},
+				},
+				edgeInnerWidth: 3,
+			});
 			// Update size on render
 			if (windowState) {
 				if (transient) {
+					3;
 					windowState.width = windowElement.scrollWidth;
 					windowState.height = windowElement.scrollHeight;
 				} else {
@@ -248,8 +224,9 @@
 	});
 
 	onDestroy(() => {
-		movable?.destroy();
 		sink.unsubscribe();
+		dragHandler.unsubscribe();
+		resizeHandler.unsubscribe();
 	});
 
 	const getMaximizeAnimation = (
