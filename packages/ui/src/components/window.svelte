@@ -15,10 +15,17 @@
 	} from 'rxjs';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
+	import { sleep } from '@alexaegis/common';
 	import { documentPointerDown$ } from '@w2k/core';
+	import Moveable, { type OnResize } from 'moveable';
 	import { ContextMenu } from '../components';
+	import {
+		checkStyleResult,
+		cloneRectangle,
+		type WindowResizeContext,
+	} from '../helpers/movable-window';
 	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
-	import { InteractBuilder, type ResizeData } from './resizable.function';
+	import type { ResizeData } from './resizable.function';
 	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
 	import type { TitleBarEvents } from './title-bar-events.interface';
 	import TitleBar from './title-bar.svelte';
@@ -106,11 +113,7 @@
 		dispatch('close');
 	}
 
-	let moveInteract: InteractBuilder | undefined;
-	let resizeInteract: InteractBuilder | undefined;
-
-	$: resizeInteract?.toggle(effectiveResizable ?? true);
-	$: moveInteract?.toggle(effectiveMovable);
+	let movable: Moveable | undefined;
 
 	let contextMenuPosition: CoordinateLike | undefined = undefined;
 
@@ -159,10 +162,75 @@
 
 	$: errorFlash = $errorFlash$;
 
-	onMount(() => {
-		if (windowElement) {
-			moveInteract = InteractBuilder.from(windowElement).movable(move);
-			resizeInteract = InteractBuilder.from(windowElement).resizable(resize);
+	const resizableHandler = (element: HTMLElement) => {
+		return (event: OnResize, context: WindowResizeContext) => {
+			if (
+				!event.target.classList.contains('immobile') &&
+				!event.target.classList.contains('non-resizable')
+			) {
+				const deltaWidth = event.delta[0] ?? 0;
+				const directionX = event.direction[0] ?? 0;
+				const distWidth = event.dist[0] ?? 0;
+				const distHeight = event.dist[1] ?? 0;
+
+				const preferredHeight = context.startRectangle.height + distHeight;
+				const preferredWidth = context.startRectangle.width + distWidth;
+				const { after } = checkStyleResult(element, {
+					width: preferredWidth,
+					height: preferredHeight,
+				});
+
+				resize({
+					height: after.height,
+					width: after.width,
+					moveY: undefined, // event.drag.top,
+					moveX: undefined, // event.drag.left, // event.clientX,
+				});
+			}
+		};
+	};
+	onMount(async () => {
+		await sleep(0);
+		const windowPlane = document.querySelector<HTMLElement>('#window-plane');
+		if (windowElement && windowPlane) {
+			const windowMoveHandler = resizableHandler(windowElement);
+
+			let windowResizeContext: WindowResizeContext;
+
+			const titleBar = windowElement.querySelectorAll('.title-bar').item(0);
+
+			movable = new Moveable(windowPlane, {
+				target: windowElement,
+				draggable: true,
+				dragTarget: titleBar as HTMLElement,
+				resizable: true,
+
+				hideDefaultLines: false,
+				isDisplayShadowRoundControls: false,
+				origin: false,
+				edge: true,
+			})
+				.on('drag', (event): void => {
+					move({ x: event.delta[0] ?? 0, y: event.delta[1] ?? 0 });
+				})
+
+				.on('resizeStart', (event) => {
+					console.log('RESSTART event', event);
+
+					windowResizeContext = {
+						minWidth: 0,
+						minHeight: 0,
+						heightSink: 0,
+						widthSink: 0,
+						minHeightAchievedAtDist: undefined,
+						minWidthAchievedAtDist: undefined,
+						startRectangle: cloneRectangle(event.target as HTMLElement),
+					};
+				})
+				.on('resize', (event) => {
+					console.log('RES event', event);
+					windowMoveHandler(event, windowResizeContext);
+				});
 
 			// Update size on render
 			if (windowState) {
@@ -180,8 +248,7 @@
 	});
 
 	onDestroy(() => {
-		moveInteract?.unsubscribe();
-		resizeInteract?.unsubscribe();
+		movable?.destroy();
 		sink.unsubscribe();
 	});
 

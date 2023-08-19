@@ -11,7 +11,7 @@
 		w2kShutdownIconLarge,
 	} from '../assets/icons';
 	import { githubIcon } from '../assets/misc';
-	import { type DesktopSlice } from '../store';
+	import type { DesktopSlice } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import ContextMenu from './context-menu.svelte';

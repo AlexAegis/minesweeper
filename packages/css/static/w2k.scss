@@ -1139,4 +1139,22 @@ body {
 	img {
 		image-rendering: pixelated;
 	}
+
+	//.moveable {
+	//	&-control {
+	//		border-radius: 0 !important;
+	//		border-width: 0 !important;
+	//		width: 4px !important;
+	//		height: 4px !important;
+	//		margin-top: -2px !important;
+	//		margin-left: -2px !important;
+	//		background: none !important;
+	//		cursor: alias;
+	//	}
+	//
+	//	&-line {
+	//		height: 4px !important;
+	//		background: beige !important;
+	//	}
+	//}
 }

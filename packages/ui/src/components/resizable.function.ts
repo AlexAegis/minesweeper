@@ -60,6 +60,7 @@ const resizable = (
 		margin: 7, // window padding in px is 3
 		listeners: {
 			move: (event: ResizeEvent) => {
+				console.log('interactjs', event);
 				if (
 					!event.target.classList.contains('immobile') &&
 					!event.target.classList.contains('non-resizable')

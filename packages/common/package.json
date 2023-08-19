@@ -50,16 +50,16 @@
 		"./readme": "./readme.md"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.6.1"
+		"@alexaegis/common": "^0.6.2"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.7.1",
-		"@alexaegis/stylelint-config": "^0.7.1",
-		"@alexaegis/ts": "^0.7.1",
-		"@alexaegis/vite": "^0.7.1",
-		"@alexaegis/vitest": "^0.7.1",
-		"@types/node": "^20.5.0",
-		"stylelint": "^15.10.2",
+		"@alexaegis/eslint-config-vitest": "^0.7.2",
+		"@alexaegis/stylelint-config": "^0.7.2",
+		"@alexaegis/ts": "^0.7.2",
+		"@alexaegis/vite": "^0.7.2",
+		"@alexaegis/vitest": "^0.7.2",
+		"@types/node": "^20.5.1",
+		"stylelint": "^15.10.3",
 		"vite": "^4.4.9",
 		"vitest": "^0.34.2"
 	}

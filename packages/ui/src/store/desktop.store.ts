@@ -141,7 +141,7 @@ export const resizeWindow = (
 			if (resizeData.moveX) {
 				nextWindowState.position = {
 					...nextWindowState.position,
-					x: nextWindowState.position.x + resizeData.moveX,
+					x: resizeData.moveX,
 				};
 			}
 		}
@@ -152,7 +152,7 @@ export const resizeWindow = (
 			if (resizeData.moveY) {
 				nextWindowState.position = {
 					...nextWindowState.position,
-					y: nextWindowState.position.y + resizeData.moveY,
+					y: resizeData.moveY,
 				};
 			}
 		}
