@@ -6,7 +6,7 @@
 	import type { WindowComponents } from './window-state.interface';
 	import Window from './window.svelte';
 
-	export let windowHandler: GrippyContainer;
+	export let grippy: GrippyContainer;
 	export let desktopSlice: DesktopSlice;
 	// TODO: Move this somewhere else
 	export let windowComponents: Record<ProgramId, WindowComponents>;
@@ -22,7 +22,7 @@
 			<Window
 				id="{formatPid(next.processId, 'window')}"
 				windowState="{next}"
-				{windowHandler}
+				{grippy}
 				on:activate="{() => {
 					desktopSlice.desktop$.internals.actions.activateProgram.next(processId);
 				}}"

@@ -18,22 +18,22 @@
 	import { sleep } from '@alexaegis/common';
 	import { documentPointerDown$ } from '@w2k/core';
 	import { ContextMenu } from '../components';
-	import type { Handler, ResizeData } from '../helpers';
+	import type { Handler } from '../helpers';
 	import type { GrippyContainer } from '../helpers/grippy/grippy';
-	import { checkStyleResult, type WindowResizeContext } from '../helpers/movable-window';
 	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
+	import type { Rectangle } from './rectangle.interface';
 	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
 	import type { TitleBarEvents } from './title-bar-events.interface';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
 	export let windowElement: HTMLElement | undefined = undefined;
-	export let windowHandler: GrippyContainer;
+	export let grippy: GrippyContainer;
 
 	const dispatch = createEventDispatcher<
 		{
 			activate: undefined;
-			resize: ResizeData;
+			resize: Rectangle;
 			move: CoordinateLike;
 		} & TitleBarEvents
 	>();
@@ -52,6 +52,14 @@
 	$: effectiveResizable = transientState.resizable && !transientState.maximized;
 	$: effectiveMovable = !transientState.maximized;
 
+	$: {
+		resizeHandler?.setEnabled(effectiveResizable);
+	}
+
+	$: {
+		dragHandler?.setEnabled(effectiveMovable);
+	}
+
 	const sink = new Subscription();
 
 	function activate() {
@@ -69,7 +77,7 @@
 		}
 	}
 
-	function resize(next: ResizeData) {
+	function resize(next: Rectangle) {
 		dispatch('resize', next);
 		if (transient) {
 			transientState = resizeWindow(transientState, next);
@@ -157,29 +165,8 @@
 
 	$: errorFlash = $errorFlash$;
 
-	const resizableHandler = (element: HTMLElement) => {
-		return (event: ResizeData, context: WindowResizeContext) => {
-			if (
-				!event.target.classList.contains('immobile') &&
-				!event.target.classList.contains('non-resizable')
-			) {
-				const distWidth = event.width;
-				const distHeight = event.height;
-
-				const preferredHeight = context.startRectangle.height + distHeight;
-				const preferredWidth = context.startRectangle.width + distWidth;
-				const { after } = checkStyleResult(element, {
-					width: preferredWidth,
-					height: preferredHeight,
-				});
-
-				resize(event);
-			}
-		};
-	};
-
-	let dragHandler: Handler;
-	let resizeHandler: Handler;
+	let dragHandler: Handler | undefined;
+	let resizeHandler: Handler | undefined;
 
 	onMount(async () => {
 		await sleep(0);
@@ -188,21 +175,21 @@
 		if (windowElement && windowPlane) {
 			const titleBar = windowElement.querySelectorAll('.title-bar').item(0);
 
-			dragHandler = windowHandler.draggable({
+			dragHandler = grippy.draggable({
 				target: windowElement,
 				handle: titleBar,
 				listeners: {
 					move: (data) => {
-						move(data.delta);
+						move(data.cursor.delta);
 					},
 				},
 			});
 
-			resizeHandler = windowHandler.resizable({
+			resizeHandler = grippy.resizable({
 				target: windowElement,
 				listeners: {
 					resize: (data) => {
-						console.log('resizing', data);
+						resize(data.resize);
 					},
 				},
 				edgeInnerWidth: 3,
@@ -217,7 +204,7 @@
 					dispatch('resize', {
 						height: windowElement.scrollHeight,
 						width: windowElement.scrollWidth,
-					} as ResizeData);
+					} as Rectangle);
 				}
 			}
 		}
@@ -225,8 +212,8 @@
 
 	onDestroy(() => {
 		sink.unsubscribe();
-		dragHandler.unsubscribe();
-		resizeHandler.unsubscribe();
+		dragHandler?.unsubscribe();
+		resizeHandler?.unsubscribe();
 	});
 
 	const getMaximizeAnimation = (

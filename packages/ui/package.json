@@ -60,8 +60,6 @@
 		"@tinyslice/core": "^0.8.0",
 		"@w2k/common": "workspace:^4.1.0",
 		"@w2k/core": "workspace:^",
-		"interactjs": "^1.10.18",
-		"moveable": "^0.51.1",
 		"rxjs": "^7.8.1",
 		"svelte-rxjs-observer": "^0.5.0"
 	},
@@ -72,7 +70,6 @@
 		"@alexaegis/svelte-config": "^0.7.2",
 		"@alexaegis/ts": "^0.7.2",
 		"@alexaegis/vitest": "^0.7.2",
-		"@interactjs/types": "^1.10.18",
 		"@pakk/cli": "^0.6.0",
 		"@sveltejs/package": "^2.2.1",
 		"@types/node": "^20.5.1",

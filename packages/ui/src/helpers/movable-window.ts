@@ -1,25 +1,15 @@
 import type { Rectangle } from '../components/rectangle.interface';
 
-export const cloneRectangle = (element: Element): Rectangle => {
+export const cloneRectangle = (element: Element, round = false): Rectangle => {
 	const rectangle = element.getBoundingClientRect();
 
 	return {
-		height: rectangle.height,
-		width: rectangle.width,
-		x: rectangle.x,
-		y: rectangle.y,
+		height: round ? Math.round(rectangle.height) : rectangle.height,
+		width: round ? Math.round(rectangle.width) : rectangle.width,
+		x: round ? Math.round(rectangle.x) : rectangle.x,
+		y: round ? Math.round(rectangle.y) : rectangle.y,
 	};
 };
-
-export interface WindowResizeContext {
-	minWidth: number;
-	minHeight: number;
-	widthSink: number;
-	heightSink: number;
-	minWidthAchievedAtDist: number | undefined;
-	minHeightAchievedAtDist: number | undefined;
-	startRectangle: Rectangle;
-}
 
 /**
  * This method temporarily applies a style to an element, then returns
@@ -31,19 +21,38 @@ export const checkStyleResult = (
 	temporaryChanges: {
 		width: number;
 		height: number;
+		x: number;
+		y: number;
 	},
 ): {
 	before: Rectangle;
 	after: Rectangle;
 } => {
 	const originalWidthStyle = element.style.width;
-	const originalHeightStyle = element.style.width;
-	const before = cloneRectangle(element);
+	const originalHeightStyle = element.style.height;
+	// const originalLeftStyle = element.style.left;
+	// const originalTopStyle = element.style.top;
+	const before: Rectangle = {
+		height: element.offsetHeight,
+		width: element.offsetWidth,
+		x: element.offsetLeft,
+		y: element.offsetTop,
+	};
+
 	element.style.width = temporaryChanges.width.toString() + 'px';
 	element.style.height = temporaryChanges.height.toString() + 'px';
-	const after = cloneRectangle(element);
+	// element.style.top = temporaryChanges.y.toString() + 'px';
+	// element.style.left = temporaryChanges.x.toString() + 'px';
+	const after: Rectangle = {
+		height: element.offsetHeight,
+		width: element.offsetWidth,
+		x: element.offsetLeft,
+		y: element.offsetTop,
+	};
 	element.style.width = originalWidthStyle;
 	element.style.height = originalHeightStyle;
+	// 	element.style.top = originalLeftStyle;
+	// 	element.style.left = originalTopStyle;
 
 	return {
 		before,

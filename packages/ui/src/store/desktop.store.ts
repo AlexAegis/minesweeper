@@ -11,7 +11,6 @@ import {
 import { Coordinate, type CoordinateLike } from '@w2k/common';
 import { Observable, filter, map, merge, mergeMap, of, take, tap, timer } from 'rxjs';
 
-import type { ResizeData } from '../components/resizable.function.js';
 import {
 	initialWindowState,
 	type BaseWindowState,
@@ -23,6 +22,7 @@ import { documentPointerDown$ } from '@w2k/core';
 
 import { browser } from '$app/environment';
 import type { Rectangle } from '../components/rectangle.interface.js';
+import { addVec, vecComparator } from '../helpers/grippy/handlers/vec2.interface.js';
 
 export type ProcessId = string;
 export type ProgramId = string;
@@ -48,6 +48,7 @@ export interface ShortcutState {
 	program: ProgramId;
 	position: CoordinateLike;
 	selected: boolean;
+	floating: boolean;
 	renaming: boolean;
 }
 
@@ -104,9 +105,31 @@ export const getNextShortcutPosition = (
 	start?: CoordinateLike,
 ): CoordinateLike => {
 	const result: CoordinateLike = start ? { ...start } : { x: 0, y: 0 };
-
 	const workspaceRectangle = getWorkspaceRectangle();
 	if (workspaceRectangle) {
+		// Snapgrid edge snapping, maybe generalize it
+		if (result.x < 0) {
+			result.x = 0;
+		}
+
+		if (result.y < 0) {
+			result.y = 0;
+		}
+
+		if (result.y > workspaceRectangle.height - 2 * SHORTCUT_DISTANCE) {
+			result.y = 0;
+			while (result.y < workspaceRectangle.height - 2 * SHORTCUT_DISTANCE) {
+				result.y += SHORTCUT_DISTANCE;
+			}
+		}
+
+		if (result.x > workspaceRectangle.width - 2 * SHORTCUT_DISTANCE) {
+			result.x = 0;
+			while (result.x < workspaceRectangle.width - 2 * SHORTCUT_DISTANCE) {
+				result.x += SHORTCUT_DISTANCE;
+			}
+		}
+
 		for (
 			let i = 0;
 			i < 1000 && shortcuts.some((shortcut) => Coordinate.equal(shortcut.position, result));
@@ -126,7 +149,7 @@ export const getNextShortcutPosition = (
 
 export const resizeWindow = (
 	windowState: BaseWindowState,
-	resizeData: ResizeData,
+	resizeData: Rectangle,
 ): BaseWindowState => {
 	if (!windowState.resizable) {
 		return windowState;
@@ -138,10 +161,10 @@ export const resizeWindow = (
 		if (isNotNullish(resizeData.width) && resizeData.width >= nextWindowState.minWidth) {
 			nextWindowState.width = resizeData.width;
 
-			if (resizeData.moveX) {
+			if (resizeData.x) {
 				nextWindowState.position = {
 					...nextWindowState.position,
-					x: resizeData.moveX,
+					x: resizeData.x,
 				};
 			}
 		}
@@ -149,10 +172,10 @@ export const resizeWindow = (
 		if (isNotNullish(resizeData.height) && resizeData.height >= nextWindowState.minHeight) {
 			nextWindowState.height = resizeData.height;
 
-			if (resizeData.moveY) {
+			if (resizeData.y) {
 				nextWindowState.position = {
 					...nextWindowState.position,
-					y: resizeData.moveY,
+					y: resizeData.y,
 				};
 			}
 		}
@@ -215,6 +238,7 @@ export const createDesktopSlice = <
 						program: next.name,
 						icon: next.icon ?? next.titleBarIcon,
 						selected: false,
+						floating: false,
 						renaming: false,
 					};
 
@@ -251,6 +275,9 @@ export const createDesktopSlice = <
 				setSelection: slice.createAction<ShortcutId[]>('setSelection'),
 				spawnShortcut: slice.createAction<ProgramState>('spawnShortcut'),
 				deleteSelected: slice.createAction<ShortcutId>('deleteSelected'),
+				move: slice.createAction<{ shortcutId: ShortcutId; position: CoordinateLike }>(
+					'move',
+				),
 				moveTo: slice.createAction<{ shortcutId: ShortcutId; position: CoordinateLike }>(
 					'moveTo',
 				),
@@ -281,21 +308,52 @@ export const createDesktopSlice = <
 						),
 					);
 				}),
-				shortcutsActions.moveTo.reduce((state, payload) => {
-					const snappedPosition = snapShortcutPosition(payload.position);
+				shortcutsActions.move.reduce((state, payload) => {
 					return {
 						...state,
-						[payload.shortcutId]: {
-							...state[payload.shortcutId],
+						...Object.fromEntries(
+							Object.entries(state)
+								.filter(
+									([_key, shortcut]) =>
+										shortcut.selected ||
+										shortcut.shortcutId === payload.shortcutId,
+								)
+								.map(([key, shortcut]) => [
+									key,
+									{
+										...shortcut,
+										floating: true,
+										selected: true,
+										position: addVec(shortcut.position, payload.position),
+									},
+								]),
+						),
+					};
+				}),
+				shortcutsActions.moveTo.reduce((state, payload) => {
+					const nextState = { ...state };
+					const shortcutsToSnap = Object.values(state)
+						.filter(
+							(shortcut) =>
+								shortcut.selected || shortcut.shortcutId === payload.shortcutId,
+						)
+						.sort((a, b) => vecComparator(a.position, b.position));
+					for (const shortcut of shortcutsToSnap) {
+						const snappedPosition = snapShortcutPosition(shortcut.position);
+						nextState[shortcut.shortcutId] = {
+							...shortcut,
+							selected: true,
+							floating: false,
 							position: getNextShortcutPosition(
-								Object.values(state).filter(
+								Object.values(nextState).filter(
 									(shortcutState) =>
-										shortcutState.shortcutId !== payload.shortcutId,
+										shortcutState.shortcutId !== shortcut.shortcutId,
 								),
 								snappedPosition,
 							),
-						},
-					};
+						};
+					}
+					return nextState;
 				}),
 			]);
 
@@ -318,6 +376,8 @@ export const createDesktopSlice = <
 			program: 'unknown',
 			position: { x: 0, y: 0 },
 			selected: false,
+			renaming: false,
+			floating: false,
 			icon: undefined,
 		} as ShortcutState,
 		{
@@ -347,7 +407,12 @@ export const createDesktopSlice = <
 	shortcuts$.createEffect(
 		documentPointerDown$.pipe(
 			filter((event) => {
-				return event.target !== null && (event.target as HTMLElement).id === 'workspace';
+				return (
+					event.target !== null &&
+					((event.target as HTMLElement).id === 'workspace' ||
+						(event.target as HTMLElement).id === 'selection-plane' ||
+						(event.target as HTMLElement).id === 'window-plane')
+				);
 			}),
 			map(() => {
 				return shortcuts$.internals.shortcutsActions.clearAllSelections.makePacket(
@@ -469,7 +534,7 @@ export const createDesktopSlice = <
 				// minimize: windowSlice.createAction<boolean>(`${WINDOW_ACTION} minimize`),
 				restore: windowSlice.createAction(`${WINDOW_ACTION} restore`),
 				move: windowSlice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
-				resize: windowSlice.createAction<ResizeData>(`${WINDOW_ACTION} resize`),
+				resize: windowSlice.createAction<Rectangle>(`${WINDOW_ACTION} resize`),
 			};
 
 			windowSlice.addReducers([windowActions.resize.reduce(resizeWindow)]);

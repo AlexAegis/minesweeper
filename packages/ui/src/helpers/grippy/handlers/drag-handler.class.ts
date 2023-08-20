@@ -1,4 +1,5 @@
 import { cloneRectangle } from '../../movable-window.js';
+import type { GrippyContainer } from '../grippy.js';
 import {
 	Handler,
 	normalizeHandlerOptions,
@@ -9,26 +10,42 @@ import {
 } from './base-handler.class.js';
 import { type Vec2 } from './vec2.interface.js';
 
-export interface MoveData {
+export interface BaseGrippyEventData {
 	target: Element;
 	handle: Element;
 	event: PointerEvent;
+}
+
+export interface CursorData {
 	/**
 	 * From the previous event
 	 */
 	delta: Vec2;
+
 	/**
 	 * From the first event
 	 */
 	total: Vec2;
+
+	/**
+	 * Where is the cursor now
+	 */
+	client: Vec2;
+
+	/**
+	 * Where was the first event
+	 */
+	origin: Vec2;
 }
+
+export type DragHandlerData = BaseGrippyEventData & { cursor: CursorData };
 
 export interface DragHandlerOptions extends HandlerOptions {
 	listeners?:
 		| {
-				moveBegin?: (data: MoveData) => void;
-				move?: (data: MoveData) => void;
-				moveEnd?: (data: MoveData) => void;
+				moveBegin?: (data: DragHandlerData) => void;
+				move?: (data: DragHandlerData) => void;
+				moveEnd?: (data: DragHandlerData) => void;
 		  }
 		| undefined;
 	handleCursor?: string | undefined;
@@ -43,6 +60,31 @@ export const normalizeDragHandlerOptions = (
 		...normalizeHandlerOptions(options),
 		listeners: options.listeners,
 		handleCursor: options.handleCursor,
+	};
+};
+
+export const calculateCursorData = (
+	event: PointerEvent,
+	context: PointerEventActionContext,
+	container: GrippyContainer,
+): CursorData => {
+	const client: Vec2 = container.getEventPositionWithOffset(event);
+
+	const delta: Vec2 = {
+		x: client.x - context.lastPointerPositon.x,
+		y: client.y - context.lastPointerPositon.y,
+	};
+
+	const total: Vec2 = {
+		x: client.x - context.pointerOrigin.x,
+		y: client.y - context.pointerOrigin.y,
+	};
+
+	return {
+		client,
+		delta,
+		total,
+		origin: { ...context.pointerOrigin },
 	};
 };
 
@@ -65,15 +107,9 @@ export class DragHandler extends Handler<NormalizeDragHandlerOptions> {
 
 	begin(event: PointerEvent): void {
 		this.actionContext = {
-			pointerOrigin: {
-				x: event.x,
-				y: event.y,
-			},
-			lastPointerPositon: {
-				x: event.x,
-				y: event.y,
-			},
-			originalSize: cloneRectangle(this.options.target),
+			pointerOrigin: this.container.getEventPositionWithOffset(event),
+			lastPointerPositon: this.container.getEventPositionWithOffset(event),
+			originalSize: this.container.offsetWithContainer(cloneRectangle(this.options.target)),
 			initialEvent: event,
 		};
 
@@ -81,62 +117,31 @@ export class DragHandler extends Handler<NormalizeDragHandlerOptions> {
 			handle: this.options.handle,
 			target: this.options.target,
 			event,
-			delta: { x: 0, y: 0 },
-			total: { x: 0, y: 0 },
+			cursor: calculateCursorData(event, this.actionContext, this.container),
 		});
 	}
 
 	handle(event: PointerEvent): void {
 		if (this.actionContext) {
-			const position: Vec2 = {
-				x: event.x,
-				y: event.y,
-			};
-			const delta: Vec2 = {
-				x: position.x - this.actionContext.lastPointerPositon.x,
-				y: position.y - this.actionContext.lastPointerPositon.y,
-			};
-
-			const total: Vec2 = {
-				x: position.x - this.actionContext.pointerOrigin.x,
-				y: position.y - this.actionContext.pointerOrigin.y,
-			};
-
-			this.actionContext.lastPointerPositon.x = position.x;
-			this.actionContext.lastPointerPositon.y = position.y;
-
+			const cursor = calculateCursorData(event, this.actionContext, this.container);
 			this.options.listeners?.move?.({
 				handle: this.options.handle,
 				target: this.options.target,
 				event,
-				delta,
-				total,
+				cursor,
 			});
+
+			this.actionContext.lastPointerPositon = cursor.client;
 		}
 	}
 
 	end(event: PointerEvent): void {
 		if (this.actionContext) {
-			const position: Vec2 = {
-				x: event.x,
-				y: event.y,
-			};
-			const delta: Vec2 = {
-				x: position.x - this.actionContext.lastPointerPositon.x,
-				y: position.y - this.actionContext.lastPointerPositon.y,
-			};
-
-			const total: Vec2 = {
-				x: position.x - this.actionContext.pointerOrigin.x,
-				y: position.y - this.actionContext.pointerOrigin.y,
-			};
-
 			this.options.listeners?.moveEnd?.({
 				handle: this.options.handle,
 				target: this.options.target,
 				event,
-				delta,
-				total,
+				cursor: calculateCursorData(event, this.actionContext, this.container),
 			});
 		}
 

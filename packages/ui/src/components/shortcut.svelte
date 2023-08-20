@@ -1,17 +1,18 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@w2k/common';
-	import Moveable from 'moveable';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { ButtonLook, ContextMenu } from '../components';
+	import type { GrippyContainer, Handler, Vec2 } from '../helpers';
 	import type { ProgramId, ShortcutId, ShortcutState } from '../store';
 	import Button from './button.svelte';
 	import { firable } from './firable.action';
 	import Image from './image.svelte';
 
 	export let shortcutState: ShortcutState;
+	export let grippy: GrippyContainer;
 
 	const dispatch = createEventDispatcher<{
-		drop: CoordinateLike;
+		move: Vec2;
+		drop: Vec2;
 		select: ShortcutId;
 		spawn: ProgramId;
 		delete: ShortcutId;
@@ -22,40 +23,36 @@
 	let shortcutElement: HTMLElement | undefined = undefined;
 	export let shortcutIconElement: HTMLElement | undefined = undefined;
 
-	let movable: Moveable | undefined;
+	let dragHandler: Handler | undefined;
 
 	$: transientPosition = { ...shortcutState.position };
 
-	function move(delta: CoordinateLike) {
-		console.log('Moving shortcut!');
-		transientPosition.x += delta.x;
-		transientPosition.y += delta.y;
+	function move(position: Vec2) {
+		dispatch('move', position);
 	}
 
-	function drop() {
-		dispatch('drop', transientPosition);
+	function drop(position: Vec2) {
+		dispatch('drop', position);
 	}
 
 	onMount(() => {
 		if (shortcutElement) {
-			movable = new Moveable(shortcutElement, {
-				draggable: true,
+			dragHandler = grippy.draggable({
 				target: shortcutElement,
-				hideDefaultLines: true,
-				isDisplayShadowRoundControls: false,
-				origin: false,
-			})
-				.on('drag', (event): void => {
-					move({ x: event.delta[0] ?? 0, y: event.delta[1] ?? 0 });
-				})
-				.on('dragEnd', (_event: DragEvent): void => {
-					drop();
-				});
+				listeners: {
+					move: (data) => {
+						move(data.cursor.delta);
+					},
+					moveEnd: (data) => {
+						drop(data.cursor.client);
+					},
+				},
+			});
 		}
 	});
 
 	onDestroy(() => {
-		movable?.destroy();
+		dragHandler?.unsubscribe();
 	});
 
 	function spawn(): void {
@@ -84,8 +81,6 @@
 	}
 
 	function keydown(e: KeyboardEvent): void {
-		console.log(e);
-
 		switch (e.key) {
 			case 'Enter': {
 				spawn();
@@ -117,7 +112,9 @@
 			});
 		}
 	}
-	let contextMenuPosition: CoordinateLike | undefined = undefined;
+	let contextMenuPosition: Vec2 | undefined = undefined;
+
+	let pointerMovedDuringClick = false;
 </script>
 
 <div
@@ -125,20 +122,26 @@
 	id="{'shortcut' + shortcutState.shortcutId}"
 	use:firable="{{ draggable: true }}"
 	on:contextmenu|stopPropagation="{(event) => {
-		select();
 		contextMenuPosition = contextMenuPosition ? undefined : { x: event.pageX, y: event.pageY };
 	}}"
 	aria-label="shortcut"
 	role="button"
 	tabindex="0"
-	on:click="{() => {
-		select();
-	}}"
 	on:keydown="{keydown}"
 	on:dblclick="{() => {
 		spawn();
 	}}"
-	on:pointerdown|stopPropagation
+	on:click="{() => {
+		if (!pointerMovedDuringClick) {
+			select();
+		}
+	}}"
+	on:pointermove="{() => {
+		pointerMovedDuringClick = true;
+	}}"
+	on:pointerdown="{() => {
+		pointerMovedDuringClick = false;
+	}}"
 	class="shortcut"
 	class:selected="{shortcutState.selected && !shortcutState.renaming}"
 	style:top="{`${transientPosition.y}px`}"

@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
+	import type { GrippyContainer } from '../helpers/grippy';
 	import { getWorkspaceRectangle, type DesktopSlice, type ShortcutId } from '../store';
 	import { areRectanglesOverlapping, type Rectangle } from './rectangle.interface';
 	import Shortcut from './shortcut.svelte';
 
+	export let grippy: GrippyContainer;
 	export let desktopSlice: DesktopSlice;
 	export let selectArea: Rectangle | undefined = undefined;
 
@@ -39,6 +41,7 @@
 	{@const shortcutSlice = desktopSlice.dicedShortcuts.get(shortcutKey)}
 	<Observer observable="{shortcutSlice}" let:next>
 		<Shortcut
+			{grippy}
 			bind:shortcutIconElement="{shortcutElements[next.shortcutId]}"
 			shortcutState="{next}"
 			on:select="{(_event) => {
@@ -63,6 +66,12 @@
 				shortcutSlice.update({
 					name: event.detail.name,
 					renaming: false,
+				});
+			}}"
+			on:move="{(event) => {
+				desktopSlice.shortcuts$.internals.shortcutsActions.move.next({
+					shortcutId: next.shortcutId,
+					position: event.detail,
 				});
 			}}"
 			on:drop="{(event) => {

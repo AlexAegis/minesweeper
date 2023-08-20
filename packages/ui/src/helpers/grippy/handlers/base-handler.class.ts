@@ -35,6 +35,10 @@ export interface ElementActionContext {
 
 export abstract class Handler<Options extends HandlerOptions = HandlerOptions> {
 	protected container: GrippyContainer;
+	private _enabled = true;
+	public get enabled(): boolean {
+		return this._enabled;
+	}
 	public readonly options: Options;
 
 	public constructor(container: GrippyContainer, options: Options) {
@@ -49,6 +53,18 @@ export abstract class Handler<Options extends HandlerOptions = HandlerOptions> {
 	abstract handle(pointerEvent: PointerEvent): void;
 	abstract end(pointerEvent: PointerEvent): void;
 	preferredCursor?(pointerEvent: PointerEvent): string | undefined;
+
+	enable(): void {
+		this._enabled = true;
+	}
+
+	disable(): void {
+		this._enabled = false;
+	}
+
+	setEnabled(enabled: boolean): void {
+		this._enabled = enabled;
+	}
 
 	public unsubscribe(): void {
 		this.container.removeHandler(this);

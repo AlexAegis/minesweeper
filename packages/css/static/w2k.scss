@@ -929,6 +929,17 @@ body {
 		}
 
 		// Forced overlap
+		.selection-plane {
+			display: grid;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			user-select: none;
+			height: calc(100% - var(--win-taskbar-height));
+		}
+
+		// Forced overlap
 		.window-plane {
 			display: grid;
 			position: absolute;
@@ -1139,22 +1150,4 @@ body {
 	img {
 		image-rendering: pixelated;
 	}
-
-	//.moveable {
-	//	&-control {
-	//		border-radius: 0 !important;
-	//		border-width: 0 !important;
-	//		width: 4px !important;
-	//		height: 4px !important;
-	//		margin-top: -2px !important;
-	//		margin-left: -2px !important;
-	//		background: none !important;
-	//		cursor: alias;
-	//	}
-	//
-	//	&-line {
-	//		height: 4px !important;
-	//		background: beige !important;
-	//	}
-	//}
 }

@@ -23,3 +23,12 @@ export const areRectanglesOverlapping = (a: Rectangle, b: Rectangle): boolean =>
 
 	return !noHorizontalOverlap && !noVerticalOverlap;
 };
+
+export const substractRectangles = (a: Rectangle, b: Rectangle): Rectangle => {
+	return {
+		x: b.x - a.x,
+		y: b.y - a.y,
+		height: b.height - a.height,
+		width: b.width - a.width,
+	};
+};

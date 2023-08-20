@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
-	import { documentPointerMove$, documentPointerUp$, packageMetadata } from '@w2k/core';
+	import { packageMetadata } from '@w2k/core';
 	import { onDestroy, onMount } from 'svelte';
+	import type { Handler } from '../helpers';
 	import { GrippyContainer } from '../helpers/grippy/grippy';
 	import type { DesktopSlice, ProgramId } from '../store';
 	import AreaSelection from './area-selection.svelte';
@@ -20,84 +21,84 @@
 	let workspaceElement: HTMLDivElement;
 	export let desktopSlice: DesktopSlice;
 
-	let selectArea: (Rectangle & { origin: CoordinateLike }) | undefined;
-	let selectAreaStart: (Rectangle & { origin: CoordinateLike }) | undefined;
+	let selectArea: Rectangle | undefined;
+	let selectAreaStart: Rectangle | undefined;
 
-	function areaSelectionBegin(event: PointerEvent) {
-		const workspaceRect = workspaceElement.getBoundingClientRect();
-		const origin: CoordinateLike = {
-			x: event.pageX - workspaceRect.x,
-			y: event.pageY - workspaceRect.y,
-		};
-		// This is separated to avoid starting anything related to area selection for simple clicks
-		selectAreaStart = {
-			...origin,
-			height: 0,
-			width: 0,
-			origin,
-		};
-		selectArea = undefined;
-	}
+	let grippy = new GrippyContainer();
 
-	function areaSelectionEnd(_event: PointerEvent) {
-		selectAreaStart = undefined;
-		selectArea = undefined;
-	}
-
-	function areaSelectionMove(event: PointerEvent) {
-		if (selectAreaStart && !selectArea) {
-			selectArea = selectAreaStart;
-			selectAreaStart = undefined;
-		}
-
-		if (!selectArea) {
-			return;
-		}
-
-		const workspaceRect = workspaceElement.getBoundingClientRect();
-
-		const cursorX = event.pageX - workspaceRect.x;
-		const cursorY = event.pageY - workspaceRect.y;
-
-		const areaMinX = Math.min(selectArea.origin.x, cursorX);
-		const areaMinY = Math.min(selectArea.origin.y, cursorY);
-		const areaMaxX = Math.max(selectArea.origin.x, cursorX);
-		const areaMaxY = Math.max(selectArea.origin.y, cursorY);
-
-		const areaDesiredWidth = areaMaxX - areaMinX;
-		const areaDesiredHeight = areaMaxY - areaMinY;
-
-		selectArea.x = Math.max(areaMinX, 0);
-		selectArea.y = Math.max(areaMinY, 0);
-
-		const maxWidthBoundary =
-			cursorX > selectArea.origin.x ? workspaceRect.x + workspaceRect.width : workspaceRect.x;
-		const maxHeightBoundary =
-			cursorY > selectArea.origin.y
-				? workspaceRect.y + workspaceRect.height
-				: workspaceRect.y;
-
-		const maxWidth = Math.abs(selectArea.origin.x - maxWidthBoundary + workspaceRect.x);
-		const maxHeight = Math.abs(selectArea.origin.y - maxHeightBoundary + workspaceRect.y);
-
-		selectArea.width = Math.min(areaDesiredWidth, maxWidth);
-		selectArea.height = Math.min(areaDesiredHeight, maxHeight);
-	}
-
-	const globalPointerUpListener = documentPointerUp$.subscribe(areaSelectionEnd);
-	const globalPointerMoveListener = documentPointerMove$.subscribe(areaSelectionMove);
-
-	let windowHandler: GrippyContainer;
+	let selectionDraggable: Handler | undefined;
 
 	onMount(() => {
-		windowHandler = new GrippyContainer(workspaceElement);
-		windowHandler.initialize();
+		grippy.initialize(workspaceElement);
+
+		selectionDraggable = grippy.draggable({
+			target: workspaceElement,
+			listeners: {
+				moveBegin: (e) => {
+					// This is separated to avoid starting anything related to area selection for simple clicks
+					selectAreaStart = {
+						...e.cursor.client,
+						height: 0,
+						width: 0,
+					};
+					selectArea = undefined;
+				},
+				move: (e) => {
+					if (selectAreaStart && !selectArea) {
+						selectArea = selectAreaStart;
+						selectAreaStart = undefined;
+					}
+
+					if (!selectArea) {
+						return;
+					}
+
+					const workspaceRect = workspaceElement.getBoundingClientRect();
+
+					const cursorX = e.cursor.client.x;
+					const cursorY = e.cursor.client.y;
+
+					const areaMinX = Math.min(e.cursor.origin.x, cursorX);
+					const areaMinY = Math.min(e.cursor.origin.y, cursorY);
+					const areaMaxX = Math.max(e.cursor.origin.x, cursorX);
+					const areaMaxY = Math.max(e.cursor.origin.y, cursorY);
+
+					const areaDesiredWidth = areaMaxX - areaMinX;
+					const areaDesiredHeight = areaMaxY - areaMinY;
+
+					selectArea.x = Math.max(areaMinX, 0);
+					selectArea.y = Math.max(areaMinY, 0);
+
+					const maxWidthBoundary =
+						cursorX > e.cursor.origin.x
+							? workspaceRect.x + workspaceRect.width
+							: workspaceRect.x;
+					const maxHeightBoundary =
+						cursorY > e.cursor.origin.y
+							? workspaceRect.y + workspaceRect.height
+							: workspaceRect.y;
+
+					const maxWidth = Math.abs(
+						e.cursor.origin.x - maxWidthBoundary + workspaceRect.x,
+					);
+					const maxHeight = Math.abs(
+						e.cursor.origin.y - maxHeightBoundary + workspaceRect.y,
+					);
+
+					selectArea.width = Math.min(areaDesiredWidth, maxWidth);
+					selectArea.height = Math.min(areaDesiredHeight, maxHeight);
+				},
+				moveEnd: (_e) => {
+					selectAreaStart = undefined;
+					selectArea = undefined;
+				},
+			},
+		});
 	});
 
 	onDestroy(() => {
-		globalPointerUpListener.unsubscribe();
-		globalPointerMoveListener.unsubscribe();
-		windowHandler.unsubscribe();
+		selectionDraggable?.unsubscribe();
+		grippy.unsubscribe();
 	});
 </script>
 
@@ -108,20 +109,21 @@
 		class="workspace free-placement"
 		role="directory"
 		aria-roledescription="desktop workspace containing the icons"
-		on:pointerdown="{(e) => areaSelectionBegin(e)}"
 		on:contextmenu|preventDefault="{(event) => {
 			contextMenuPosition = contextMenuPosition
 				? undefined
 				: { x: event.pageX, y: event.pageY };
 		}}"
 	>
-		<DesktopShortcuts {desktopSlice} {selectArea} />
-
-		<AreaSelection area="{selectArea}" />
+		<DesktopShortcuts {desktopSlice} {selectArea} {grippy} />
 		<slot />
+		<div id="selection-plane" class="selection-plane">
+			<AreaSelection area="{selectArea}" />
+		</div>
 	</div>
+
 	<div id="window-plane" class="window-plane">
-		<DesktopWindows {desktopSlice} {windowComponents} {windowHandler} />
+		<DesktopWindows {desktopSlice} {windowComponents} {grippy} />
 	</div>
 
 	<ContextMenu bind:position="{contextMenuPosition}">

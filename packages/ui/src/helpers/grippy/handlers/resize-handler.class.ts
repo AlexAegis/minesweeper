@@ -1,5 +1,6 @@
-import type { Defined } from '@alexaegis/common';
-import { cloneRectangle } from '../../movable-window.js';
+import { type Defined } from '@alexaegis/common';
+import { substractRectangles, type Rectangle } from '../../../components/rectangle.interface.js';
+import { checkStyleResult, cloneRectangle } from '../../movable-window.js';
 import {
 	Handler,
 	normalizeHandlerOptions,
@@ -8,20 +9,26 @@ import {
 	type NormalizedHandlerOptions,
 	type PointerEventActionContext,
 } from './base-handler.class.js';
-import type { MoveData } from './drag-handler.class.js';
+import {
+	calculateCursorData,
+	type CursorData,
+	type DragHandlerData,
+} from './drag-handler.class.js';
 import type { Vec2 } from './vec2.interface.js';
 
-export interface ResizeData extends MoveData {
-	width: number;
-	height: number;
+export interface ResizeHandlerData extends DragHandlerData {
+	resize: Rectangle;
+	resizeDelta: Rectangle;
+	resizeTotalDelta: Rectangle;
+	axisLockedCursorData: CursorData;
 }
 
 export interface ResizeHandlerOptions extends HandlerOptions {
 	listeners?:
 		| {
-				resizeBegin?: (data: ResizeData) => void;
-				resize?: (data: ResizeData) => void;
-				resizeEnd?: (data: ResizeData) => void;
+				resizeBegin?: (data: ResizeHandlerData) => void;
+				resize?: (data: ResizeHandlerData) => void;
+				resizeEnd?: (data: ResizeHandlerData) => void;
 		  }
 		| undefined;
 	/**
@@ -139,6 +146,30 @@ const getEdgeSegment = (
 	}
 };
 
+const isWesternEdge = (edge: EdgeSegment): boolean => {
+	return edge.includes('w');
+};
+
+const isEasternEdge = (edge: EdgeSegment): boolean => {
+	return edge.includes('e');
+};
+
+const isNorthernEdge = (edge: EdgeSegment): boolean => {
+	return edge.includes('n');
+};
+
+const isSouthernEdge = (edge: EdgeSegment): boolean => {
+	return edge.includes('s');
+};
+
+const edgeMovesOnHorizontalAxis = (edge: EdgeSegment): boolean => {
+	return isEasternEdge(edge) || isWesternEdge(edge);
+};
+
+const edgeMovesOnVerticalAxis = (edge: EdgeSegment): boolean => {
+	return isNorthernEdge(edge) || isSouthernEdge(edge);
+};
+
 const cursorMap: Record<EdgeSegment, string> = {
 	e: 'ew-resize',
 	n: 'ns-resize',
@@ -150,18 +181,132 @@ const cursorMap: Record<EdgeSegment, string> = {
 	w: 'ew-resize',
 };
 
+export interface AxisLockContext {
+	xAxisLocked: boolean;
+	yAxisLocked: boolean;
+}
+
+const dropLockedAxes = (vec: Vec2, options: AxisLockContext): Vec2 => {
+	return {
+		x: options.xAxisLocked ? 0 : vec.x,
+		y: options.yAxisLocked ? 0 : vec.y,
+	};
+};
+
+const axisLockCursorData = (cursorData: CursorData, options: AxisLockContext): CursorData => {
+	return {
+		client: dropLockedAxes(cursorData.client, options),
+		delta: dropLockedAxes(cursorData.delta, options),
+		total: dropLockedAxes(cursorData.total, options),
+		origin: cursorData.origin,
+	};
+};
+
+const snap = <T extends Partial<Rectangle>>(resize: T): T => {
+	if (resize.height !== undefined) {
+		resize.height = Math.floor(resize.height);
+	}
+	if (resize.width !== undefined) {
+		resize.width = Math.floor(resize.width);
+	}
+	if (resize.x !== undefined) {
+		resize.x = Math.ceil(resize.x);
+	}
+	if (resize.y !== undefined) {
+		resize.y = Math.ceil(resize.y);
+	}
+
+	return resize;
+};
+
+const calculateResizeData = (
+	cursorData: CursorData,
+	context: ResizeActionContext,
+	options: { target: Element },
+): Rectangle => {
+	let width = context.originalSize.width;
+	let height = context.originalSize.height;
+	let x = context.originalSize.x;
+	let y = context.originalSize.y;
+
+	if (context.eastern) {
+		width += cursorData.total.x;
+	}
+
+	if (context.western) {
+		x += cursorData.total.x;
+		width -= cursorData.total.x;
+	}
+
+	if (context.southern) {
+		height += cursorData.total.y;
+	}
+
+	if (context.northern) {
+		y += cursorData.total.y;
+		height -= cursorData.total.y;
+	}
+
+	const resize: Rectangle = {
+		width,
+		height,
+		x,
+		y,
+	};
+
+	snap(resize);
+
+	// Verify
+	const { after } = checkStyleResult(options.target as HTMLElement, resize);
+
+	if (context.western && width <= after.width) {
+		const originalRight = context.originalSize.x + context.originalSize.width;
+
+		resize.width = after.width;
+		resize.x = originalRight - after.width;
+	}
+
+	if (context.northern && height <= after.height) {
+		const originalBottom = context.originalSize.y + context.originalSize.height;
+
+		resize.height = after.height;
+		resize.y = originalBottom - after.height;
+	}
+
+	snap(resize);
+	return resize;
+};
+
+interface EdgeContext {
+	initialEdge: EdgeSegment;
+	eastern: boolean;
+	western: boolean;
+	northern: boolean;
+	southern: boolean;
+}
+
+type ResizeActionContext = PointerEventActionContext &
+	ElementActionContext &
+	AxisLockContext &
+	EdgeContext & {
+		lastSize: Rectangle;
+	};
+
 export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
-	private actionContext:
-		| (PointerEventActionContext & ElementActionContext & { initialEdge: EdgeSegment })
-		| undefined;
+	private actionContext: ResizeActionContext | undefined;
 
 	override preferredCursor(event: PointerEvent): string | undefined {
-		const rectangle = this.options.handle.getBoundingClientRect();
-		const edgeSegment = getEdgeSegment(event, rectangle, this.options);
-		return edgeSegment ? cursorMap[edgeSegment] : undefined;
+		if (this.actionContext) {
+			return cursorMap[this.actionContext.initialEdge];
+		} else {
+			const rectangle = this.options.handle.getBoundingClientRect();
+			const edgeSegment = getEdgeSegment(event, rectangle, this.options);
+			return edgeSegment ? cursorMap[edgeSegment] : undefined;
+		}
 	}
 
 	begin(event: PointerEvent): void {
+		this.container.getContainerRect();
 		const edge = getEdgeSegment(
 			event,
 			this.options.handle.getBoundingClientRect(),
@@ -169,87 +314,89 @@ export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 		);
 		if (edge) {
 			this.actionContext = {
-				pointerOrigin: {
+				pointerOrigin: this.container.offsetWithContainer({
 					x: event.x,
 					y: event.y,
-				},
-				lastPointerPositon: {
+				}),
+				lastPointerPositon: this.container.offsetWithContainer({
 					x: event.x,
 					y: event.y,
-				},
-				originalSize: cloneRectangle(this.options.target),
+				}),
+				originalSize: this.container.offsetWithContainer(
+					cloneRectangle(this.options.target, true),
+				),
 				initialEvent: event,
 				initialEdge: edge,
+				xAxisLocked: !edgeMovesOnHorizontalAxis(edge),
+				yAxisLocked: !edgeMovesOnVerticalAxis(edge),
+				eastern: isEasternEdge(edge),
+				northern: isNorthernEdge(edge),
+				southern: isSouthernEdge(edge),
+				western: isWesternEdge(edge),
+				lastSize: cloneRectangle(this.options.target, true),
 			};
+
+			snap(this.actionContext.originalSize);
+			snap(this.actionContext.lastSize);
+
+			const cursor = calculateCursorData(event, this.actionContext, this.container);
+			const axisLockedCursorData = axisLockCursorData(cursor, this.actionContext);
+			const resize = calculateResizeData(cursor, this.actionContext, this.options);
 
 			this.options.listeners?.resizeBegin?.({
 				handle: this.options.handle,
 				target: this.options.target,
 				event,
-				delta: { x: 0, y: 0 },
-				total: { x: 0, y: 0 },
-				height: this.actionContext.originalSize.height,
-				width: this.actionContext.originalSize.width,
+				cursor,
+				axisLockedCursorData,
+				resize,
+				resizeDelta: substractRectangles(this.actionContext.lastSize, resize),
+				resizeTotalDelta: substractRectangles(this.actionContext.originalSize, resize),
 			});
 		}
 	}
 
 	handle(event: PointerEvent): void {
 		if (this.actionContext) {
-			const position: Vec2 = {
-				x: event.x,
-				y: event.y,
-			};
-			const delta: Vec2 = {
-				x: position.x - this.actionContext.lastPointerPositon.x,
-				y: position.y - this.actionContext.lastPointerPositon.y,
-			};
-
-			const total: Vec2 = {
-				x: position.x - this.actionContext.pointerOrigin.x,
-				y: position.y - this.actionContext.pointerOrigin.y,
-			};
-
-			this.actionContext.lastPointerPositon.x = position.x;
-			this.actionContext.lastPointerPositon.y = position.y;
+			const cursor = calculateCursorData(event, this.actionContext, this.container);
+			const axisLockedCursorData = axisLockCursorData(cursor, this.actionContext);
+			const resize = calculateResizeData(cursor, this.actionContext, this.options);
 
 			this.options.listeners?.resize?.({
 				handle: this.options.handle,
 				target: this.options.target,
 				event,
-				delta,
-				total,
-				height: this.actionContext.originalSize.height,
-				width: this.actionContext.originalSize.width,
+				cursor,
+				axisLockedCursorData,
+				resize,
+				resizeDelta: substractRectangles(this.actionContext.lastSize, resize),
+				resizeTotalDelta: substractRectangles(this.actionContext.originalSize, resize),
 			});
+
+			this.actionContext.lastPointerPositon = cursor.client;
+			this.actionContext.lastSize = resize;
 		}
 	}
 
 	end(event: PointerEvent): void {
 		if (this.actionContext) {
-			const position: Vec2 = {
-				x: event.x,
-				y: event.y,
-			};
-			const delta: Vec2 = {
-				x: position.x - this.actionContext.lastPointerPositon.x,
-				y: position.y - this.actionContext.lastPointerPositon.y,
-			};
-
-			const total: Vec2 = {
-				x: position.x - this.actionContext.pointerOrigin.x,
-				y: position.y - this.actionContext.pointerOrigin.y,
-			};
+			const cursor = calculateCursorData(event, this.actionContext, this.container);
+			const axisLockedCursorData = axisLockCursorData(cursor, this.actionContext);
+			const resize = calculateResizeData(cursor, this.actionContext, this.options);
 
 			this.options.listeners?.resizeEnd?.({
 				handle: this.options.handle,
 				target: this.options.target,
 				event,
-				delta,
-				total,
-				height: this.actionContext.originalSize.height,
-				width: this.actionContext.originalSize.width,
+				cursor,
+				axisLockedCursorData,
+				resize,
+				resizeDelta: substractRectangles(this.actionContext.lastSize, resize),
+				resizeTotalDelta: substractRectangles(this.actionContext.originalSize, resize),
 			});
+
+			this.actionContext.lastPointerPositon = cursor.client;
+			this.actionContext.lastSize = resize;
 		}
 
 		this.actionContext = undefined;
