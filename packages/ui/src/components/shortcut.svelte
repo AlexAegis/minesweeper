@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { ButtonLook, ContextMenu } from '../components';
-	import type { GrippyContainer, Handler, Vec2 } from '../helpers';
+	import { readGlobal, type GrippyContainer, type Handler, type Vec2 } from '../helpers';
 	import type { ProgramId, ShortcutId, ShortcutState } from '../store';
 	import Button from './button.svelte';
 	import { firable } from './firable.action';
@@ -122,7 +122,9 @@
 	id="{'shortcut' + shortcutState.shortcutId}"
 	use:firable="{{ draggable: true }}"
 	on:contextmenu|stopPropagation="{(event) => {
-		contextMenuPosition = contextMenuPosition ? undefined : { x: event.pageX, y: event.pageY };
+		contextMenuPosition = contextMenuPosition
+			? undefined
+			: { x: event.pageX / readGlobal('w2kZoom'), y: event.pageY / readGlobal('w2kZoom') };
 	}}"
 	aria-label="shortcut"
 	role="button"

@@ -2,7 +2,7 @@
 	import type { CoordinateLike } from '@w2k/common';
 	import { packageMetadata } from '@w2k/core';
 	import { onDestroy, onMount } from 'svelte';
-	import type { Handler } from '../helpers';
+	import { readGlobal, writeGlobal, type Handler } from '../helpers';
 	import { GrippyContainer } from '../helpers/grippy/grippy';
 	import type { DesktopSlice, ProgramId } from '../store';
 	import AreaSelection from './area-selection.svelte';
@@ -19,16 +19,27 @@
 	let contextMenuPosition: CoordinateLike | undefined = undefined;
 	export let windowComponents: Record<ProgramId, WindowComponents>;
 	let workspaceElement: HTMLDivElement;
+	let desktopElement: HTMLDivElement;
+
 	export let desktopSlice: DesktopSlice;
 
 	let selectArea: Rectangle | undefined;
 	let selectAreaStart: Rectangle | undefined;
 
-	let grippy = new GrippyContainer();
+	export let zoom = 1;
+
+	let grippy = new GrippyContainer({
+		zoom,
+	});
+
+	$: {
+		writeGlobal('w2kZoom', zoom);
+	}
 
 	let selectionDraggable: Handler | undefined;
 
 	onMount(() => {
+		grippy.options.rootElement = desktopElement;
 		grippy.initialize(workspaceElement);
 
 		selectionDraggable = grippy.draggable({
@@ -102,7 +113,7 @@
 	});
 </script>
 
-<div id="desktop" class="desktop w98 w2k w2k-scheme-standard">
+<div id="desktop" class="desktop w98 w2k w2k-scheme-standard" bind:this="{desktopElement}">
 	<div
 		bind:this="{workspaceElement}"
 		id="workspace"
@@ -112,7 +123,10 @@
 		on:contextmenu|preventDefault="{(event) => {
 			contextMenuPosition = contextMenuPosition
 				? undefined
-				: { x: event.pageX, y: event.pageY };
+				: {
+						x: event.pageX / readGlobal('w2kZoom'),
+						y: event.pageY / readGlobal('w2kZoom'),
+				  };
 		}}"
 	>
 		<DesktopShortcuts {desktopSlice} {selectArea} {grippy} />

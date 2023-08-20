@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
+	import { readGlobal } from '../helpers/w2k-globals';
 	import { formatPid, type DesktopSlice, type DicedWindow } from '../store/desktop.store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
@@ -13,15 +14,19 @@
 
 	export let next: WindowState;
 	export let windowSlice: DicedWindow;
-
+	let forceAppearActive = false;
 	let contextMenuPosition: CoordinateLike | undefined = undefined;
+
+	$: {
+		forceAppearActive = !!contextMenuPosition;
+	}
 </script>
 
 <Button
 	id="{formatPid(next.processId, 'taskbar')}"
 	class="{formatPid(next.processId)}"
 	look="{ButtonLook.TASKBAR_ITEM}"
-	active="{next.active}"
+	active="{forceAppearActive ? true : next.active}"
 	icon="{next.titleBarIcon}"
 	on:click="{() => {
 		if (next.active) {
@@ -31,7 +36,9 @@
 		}
 	}}"
 	on:contextmenu="{(event) => {
-		contextMenuPosition = contextMenuPosition ? undefined : { x: event.pageX, y: event.pageY };
+		contextMenuPosition = contextMenuPosition
+			? undefined
+			: { x: event.pageX / readGlobal('w2kZoom'), y: event.pageY / readGlobal('w2kZoom') };
 	}}"
 >
 	{next.title}

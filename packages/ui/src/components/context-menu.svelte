@@ -30,7 +30,10 @@
 	// Adding the direction is done to let the position effectively ignore the edge of the panel.
 	// This will always pushes the corner of the panel 1 px towards the spawn position.
 	$: effectivePosition = position
-		? { x: position.x + xOffset + xDirection, y: position.y + yOffset + yDirection }
+		? {
+				x: position.x + xOffset + xDirection,
+				y: position.y + yOffset + yDirection,
+		  }
 		: undefined;
 
 	let contextMenuContainer: HTMLElement | undefined;

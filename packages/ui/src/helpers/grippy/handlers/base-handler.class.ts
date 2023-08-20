@@ -47,6 +47,7 @@ export abstract class Handler<Options extends HandlerOptions = HandlerOptions> {
 	}
 
 	initialize?(): void;
+	everyMove?(pointerEvent: PointerEvent): void;
 	destroy?(): void;
 
 	abstract begin(pointerEvent: PointerEvent): void;

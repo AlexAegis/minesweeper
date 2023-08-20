@@ -11,6 +11,7 @@
 		w2kShutdownIconLarge,
 	} from '../assets/icons';
 	import { githubIcon } from '../assets/misc';
+	import { readGlobal } from '../helpers/w2k-globals';
 	import type { DesktopSlice } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
@@ -70,7 +71,10 @@
 						on:contextmenu="{(event) => {
 							contextMenuPosition = contextMenuPosition
 								? undefined
-								: { x: event.pageX, y: event.pageY };
+								: {
+										x: event.pageX / readGlobal('w2kZoom'),
+										y: event.pageY / readGlobal('w2kZoom'),
+								  };
 						}}"
 					>
 						<Image

@@ -1,6 +1,7 @@
 import { type Defined } from '@alexaegis/common';
 import { substractRectangles, type Rectangle } from '../../../components/rectangle.interface.js';
-import { checkStyleResult, cloneRectangle } from '../../movable-window.js';
+import { checkStyleResult } from '../../movable-window.js';
+import type { GrippyContainer } from '../grippy.js';
 import {
 	Handler,
 	normalizeHandlerOptions,
@@ -60,55 +61,60 @@ export const normalizeResizeHandlerOptions = (
 };
 
 const isAtTopEdge = (
-	event: PointerEvent,
-	rectangle: DOMRect,
+	event: Vec2,
+	rectangle: Rectangle,
 	options: Pick<NormalizedResizeHandlerOptions, 'edgeInnerWidth'>,
+	container: GrippyContainer,
 ): boolean => {
-	const horizontallyWithin =
-		rectangle.x <= event.clientX && event.clientX <= rectangle.x + rectangle.width;
-	const verticallyWithin =
-		rectangle.y <= event.clientY && event.clientY <= rectangle.y + options.edgeInnerWidth + 1;
+	const padding = (options.edgeInnerWidth + 1) * container.options.zoom;
+
+	const horizontallyWithin = rectangle.x <= event.x && event.x <= rectangle.x + rectangle.width;
+	const verticallyWithin = rectangle.y <= event.y && event.y <= rectangle.y + padding;
 
 	return horizontallyWithin && verticallyWithin;
 };
 
 const isAtBottomEdge = (
-	event: PointerEvent,
-	rectangle: DOMRect,
+	event: Vec2,
+	rectangle: Rectangle,
 	options: Pick<NormalizedResizeHandlerOptions, 'edgeInnerWidth'>,
+	container: GrippyContainer,
 ): boolean => {
-	const horizontallyWithin =
-		rectangle.x <= event.clientX && event.clientX <= rectangle.x + rectangle.width;
+	const padding = (options.edgeInnerWidth + 1) * container.options.zoom;
+
+	const horizontallyWithin = rectangle.x <= event.x && event.x <= rectangle.x + rectangle.width;
 	const verticallyWithin =
-		rectangle.y + rectangle.height - (options.edgeInnerWidth + 1) <= event.clientY &&
-		event.clientY <= rectangle.y + rectangle.height;
+		rectangle.y + rectangle.height - padding <= event.y &&
+		event.y <= rectangle.y + rectangle.height;
 
 	return horizontallyWithin && verticallyWithin;
 };
 
 const isAtLeftEdge = (
-	event: PointerEvent,
-	rectangle: DOMRect,
+	event: Vec2,
+	rectangle: Rectangle,
 	options: Pick<NormalizedResizeHandlerOptions, 'edgeInnerWidth'>,
+	container: GrippyContainer,
 ): boolean => {
-	const horizontallyWithin =
-		rectangle.x <= event.clientX && event.clientX <= rectangle.x + options.edgeInnerWidth + 1;
-	const verticallyWithin =
-		rectangle.y <= event.clientY && event.clientY <= rectangle.y + rectangle.height;
+	const padding = (options.edgeInnerWidth + 1) * container.options.zoom;
+	const horizontallyWithin = rectangle.x <= event.x && event.x <= rectangle.x + padding;
+	const verticallyWithin = rectangle.y <= event.y && event.y <= rectangle.y + rectangle.height;
 
 	return horizontallyWithin && verticallyWithin;
 };
 
 const isAtRightEdge = (
-	event: PointerEvent,
-	rectangle: DOMRect,
+	position: Vec2,
+	rectangle: Rectangle,
 	options: Pick<NormalizedResizeHandlerOptions, 'edgeInnerWidth'>,
+	container: GrippyContainer,
 ): boolean => {
+	const padding = (options.edgeInnerWidth + 1) * container.options.zoom;
 	const horizontallyWithin =
-		rectangle.x + rectangle.width - (options.edgeInnerWidth + 1) <= event.clientX &&
-		event.clientX <= rectangle.x + rectangle.width;
+		rectangle.x + rectangle.width - padding <= position.x &&
+		position.x <= rectangle.x + rectangle.width;
 	const verticallyWithin =
-		rectangle.y <= event.clientY && event.clientY <= rectangle.y + rectangle.height;
+		rectangle.y <= position.y && position.y <= rectangle.y + rectangle.height;
 
 	return horizontallyWithin && verticallyWithin;
 };
@@ -116,14 +122,20 @@ const isAtRightEdge = (
 export type EdgeSegment = 'n' | 'e' | 's' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 
 const getEdgeSegment = (
-	event: PointerEvent,
-	rectangle: DOMRect,
+	event: Vec2,
+	rectangle: Rectangle,
 	options: Pick<NormalizedResizeHandlerOptions, 'edgeInnerWidth' | 'enabledEdges'>,
+	container: GrippyContainer,
 ): EdgeSegment | undefined => {
-	const w = isAtLeftEdge(event, rectangle, options);
-	const e = isAtRightEdge(event, rectangle, options);
-	const n = isAtTopEdge(event, rectangle, options);
-	const s = isAtBottomEdge(event, rectangle, options);
+	const position: Vec2 = {
+		x: event.x,
+		y: event.y,
+	};
+
+	const w = isAtLeftEdge(position, rectangle, options, container);
+	const e = isAtRightEdge(position, rectangle, options, container);
+	const n = isAtTopEdge(position, rectangle, options, container);
+	const s = isAtBottomEdge(position, rectangle, options, container);
 
 	if (n && w && options.enabledEdges?.nw !== false) {
 		return 'nw';
@@ -223,11 +235,14 @@ const calculateResizeData = (
 	cursorData: CursorData,
 	context: ResizeActionContext,
 	options: { target: Element },
+	container: GrippyContainer,
 ): Rectangle => {
-	let width = context.originalSize.width;
-	let height = context.originalSize.height;
-	let x = context.originalSize.x;
-	let y = context.originalSize.y;
+	snap(context.originalSize);
+
+	let width = context.originalSize.width / container.options.zoom;
+	let height = context.originalSize.height / container.options.zoom;
+	let x = context.originalSize.x / container.options.zoom;
+	let y = context.originalSize.y / container.options.zoom;
 
 	if (context.eastern) {
 		width += cursorData.total.x;
@@ -257,13 +272,15 @@ const calculateResizeData = (
 	snap(resize);
 
 	// Verify
-	const { after } = checkStyleResult(options.target as HTMLElement, resize);
-
+	const styleCheck = checkStyleResult(options.target as HTMLElement, resize);
+	const after = container.zoomRectangle(styleCheck.after);
 	if (context.western && width <= after.width) {
 		const originalRight = context.originalSize.x + context.originalSize.width;
 
 		resize.width = after.width;
 		resize.x = originalRight - after.width;
+		resize.x /= container.options.zoom;
+		resize.width /= container.options.zoom;
 	}
 
 	if (context.northern && height <= after.height) {
@@ -271,6 +288,8 @@ const calculateResizeData = (
 
 		resize.height = after.height;
 		resize.y = originalBottom - after.height;
+		resize.y /= container.options.zoom;
+		resize.height /= container.options.zoom;
 	}
 
 	snap(resize);
@@ -294,37 +313,119 @@ type ResizeActionContext = PointerEventActionContext &
 
 export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 	private actionContext: ResizeActionContext | undefined;
-
+	private debugElement: HTMLCanvasElement | undefined;
 	override preferredCursor(event: PointerEvent): string | undefined {
 		if (this.actionContext) {
 			return cursorMap[this.actionContext.initialEdge];
 		} else {
-			const rectangle = this.options.handle.getBoundingClientRect();
-			const edgeSegment = getEdgeSegment(event, rectangle, this.options);
+			const rectangle = this.container.zoomRectangle(
+				this.options.handle.getBoundingClientRect(),
+			);
+
+			const edgeSegment = getEdgeSegment(
+				this.container.offsetWithContainer(event),
+				rectangle,
+				this.options,
+				this.container,
+			);
 			return edgeSegment ? cursorMap[edgeSegment] : undefined;
 		}
 	}
 
+	override initialize(): void {
+		if (this.container.options.debug) {
+			this.debugElement = this.createDebugElement();
+		}
+	}
+
+	override everyMove(_pointerEvent: PointerEvent): void {
+		if (this.debugElement) {
+			this.updateDebugElementPosition(this.debugElement);
+		}
+	}
+
+	private createDebugElement(): HTMLCanvasElement {
+		const body = document.querySelector('body');
+		const existingDebugElement = document.querySelector('#debugElement');
+		if (existingDebugElement) {
+			existingDebugElement.remove();
+		}
+		if (body) {
+			const containerRect = this.container.getContainerRect();
+			const debugElement = document.createElement('canvas');
+			debugElement.id = 'debugElement';
+			debugElement.style.pointerEvents = 'none';
+			debugElement.style.opacity = '0.5';
+			debugElement.style.backgroundColor = 'red';
+			debugElement.style.display = 'block';
+			debugElement.style.position = 'fixed';
+			debugElement.style.zIndex = '999999';
+			debugElement.style.left = containerRect.x + 'px';
+			debugElement.style.top = containerRect.y + 'px';
+			debugElement.style.width = body.offsetWidth.toString() + 'px';
+			debugElement.style.height = body.offsetHeight.toString() + 'px';
+			debugElement.width = body.offsetWidth;
+			debugElement.height = body.offsetHeight;
+			this.updateDebugElementPosition(debugElement);
+
+			body.append(debugElement);
+			return debugElement;
+		} else {
+			throw new Error('nobody is here');
+		}
+	}
+
+	private updateDebugElementPosition(element: HTMLCanvasElement): void {
+		const context = element.getContext('2d');
+		const rectangle = this.container.zoomRectangle(this.options.handle.getBoundingClientRect());
+		if (context) {
+			context.clearRect(0, 0, element.width, element.height);
+
+			context.fillStyle = 'rgb(10, 10, 250)';
+			context.fillRect(10, 10, 20, 20);
+
+			const resolution = 2;
+			for (let x = rectangle.x; x < rectangle.x + rectangle.width; x += resolution) {
+				for (let y = rectangle.y; y < rectangle.y + rectangle.height; y += resolution) {
+					const vec: Vec2 = {
+						x,
+						y,
+					};
+
+					const edge = getEdgeSegment(
+						vec,
+						rectangle,
+						{ edgeInnerWidth: 5 },
+						this.container,
+					);
+					if (edge) {
+						context.fillStyle = 'rgb(40, 220, 40)';
+						context.fillRect(x, y, resolution, resolution);
+					}
+				}
+			}
+		}
+	}
+
 	begin(event: PointerEvent): void {
-		this.container.getContainerRect();
-		const edge = getEdgeSegment(
-			event,
+		const handleRect = this.container.zoomRectangle(
 			this.options.handle.getBoundingClientRect(),
+		);
+		const targetRect = this.container.zoomRectangle(
+			this.options.target.getBoundingClientRect(),
+		);
+
+		const edge = getEdgeSegment(
+			this.container.offsetWithContainer(event),
+			handleRect,
 			this.options,
+			this.container,
 		);
 		if (edge) {
 			this.actionContext = {
-				pointerOrigin: this.container.offsetWithContainer({
-					x: event.x,
-					y: event.y,
-				}),
-				lastPointerPositon: this.container.offsetWithContainer({
-					x: event.x,
-					y: event.y,
-				}),
-				originalSize: this.container.offsetWithContainer(
-					cloneRectangle(this.options.target, true),
-				),
+				pointerOrigin: this.container.getEventPositionWithOffset(event),
+				lastPointerPositon: this.container.getEventPositionWithOffset(event),
+				originalSize: { ...targetRect },
 				initialEvent: event,
 				initialEdge: edge,
 				xAxisLocked: !edgeMovesOnHorizontalAxis(edge),
@@ -333,7 +434,7 @@ export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 				northern: isNorthernEdge(edge),
 				southern: isSouthernEdge(edge),
 				western: isWesternEdge(edge),
-				lastSize: cloneRectangle(this.options.target, true),
+				lastSize: { ...targetRect },
 			};
 
 			snap(this.actionContext.originalSize);
@@ -341,7 +442,12 @@ export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 
 			const cursor = calculateCursorData(event, this.actionContext, this.container);
 			const axisLockedCursorData = axisLockCursorData(cursor, this.actionContext);
-			const resize = calculateResizeData(cursor, this.actionContext, this.options);
+			const resize = calculateResizeData(
+				cursor,
+				this.actionContext,
+				this.options,
+				this.container,
+			);
 
 			this.options.listeners?.resizeBegin?.({
 				handle: this.options.handle,
@@ -360,7 +466,12 @@ export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 		if (this.actionContext) {
 			const cursor = calculateCursorData(event, this.actionContext, this.container);
 			const axisLockedCursorData = axisLockCursorData(cursor, this.actionContext);
-			const resize = calculateResizeData(cursor, this.actionContext, this.options);
+			const resize = calculateResizeData(
+				cursor,
+				this.actionContext,
+				this.options,
+				this.container,
+			);
 
 			this.options.listeners?.resize?.({
 				handle: this.options.handle,
@@ -382,7 +493,12 @@ export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 		if (this.actionContext) {
 			const cursor = calculateCursorData(event, this.actionContext, this.container);
 			const axisLockedCursorData = axisLockCursorData(cursor, this.actionContext);
-			const resize = calculateResizeData(cursor, this.actionContext, this.options);
+			const resize = calculateResizeData(
+				cursor,
+				this.actionContext,
+				this.options,
+				this.container,
+			);
 
 			this.options.listeners?.resizeEnd?.({
 				handle: this.options.handle,

@@ -1,4 +1,3 @@
-import { cloneRectangle } from '../../movable-window.js';
 import type { GrippyContainer } from '../grippy.js';
 import {
 	Handler,
@@ -109,7 +108,7 @@ export class DragHandler extends Handler<NormalizeDragHandlerOptions> {
 		this.actionContext = {
 			pointerOrigin: this.container.getEventPositionWithOffset(event),
 			lastPointerPositon: this.container.getEventPositionWithOffset(event),
-			originalSize: this.container.offsetWithContainer(cloneRectangle(this.options.target)),
+			originalSize: this.container.zoomRectangle(this.options.target.getBoundingClientRect()),
 			initialEvent: event,
 		};
 

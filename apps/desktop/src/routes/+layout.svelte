@@ -13,6 +13,6 @@
 
 <W2kGlobal />
 
-<Desktop {desktopSlice} {windowComponents}>
+<Desktop {desktopSlice} {windowComponents} zoom="{2}">
 	<slot />
 </Desktop>
