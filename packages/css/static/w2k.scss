@@ -224,6 +224,8 @@ body {
 	}
 
 	img {
+		image-rendering: pixelated;
+
 		&.disabled {
 			filter: contrast(0.001) invert(1) drop-shadow(1px 1px 0 white) !important;
 		}
@@ -690,6 +692,13 @@ body {
 			inset 1px 1px var(--win-3d-objects-color),
 			inset -2px -2px var(--win-3d-objects-color-darker-1),
 			inset 2px 2px var(--win-3d-objects-color-lighter-2);
+
+		.menu-bar {
+			display: flex;
+			flex-direction: row;
+			padding-top: 1px;
+			padding-bottom: 1px;
+		}
 	}
 
 	// Elements that should have 2px edges and shadows, inset
@@ -833,7 +842,7 @@ body {
 
 			&.type-context-menu-item {
 				width: calc(100%);
-				height: 20px;
+				height: 18px;
 				margin: 0;
 				padding: 0;
 			}
@@ -1193,9 +1202,5 @@ body {
 		border: 1px dotted white;
 		box-sizing: border-box;
 		mix-blend-mode: difference;
-	}
-
-	img {
-		image-rendering: pixelated;
 	}
 }

@@ -77,6 +77,5 @@
 <style>
 	.menu-bar {
 		display: flex;
-		min-height: 20px;
 	}
 </style>

@@ -16,6 +16,7 @@ export { default as Image } from './image.svelte';
 export { default as ModalDialogWindow } from './modal-dialog-window.svelte';
 export { default as Modal } from './modal.svelte';
 export { default as Panel } from './panel.svelte';
+export { default as Select } from './select.svelte';
 export { default as Shortcut } from './shortcut.svelte';
 export { default as StartButton } from './start-button.svelte';
 export { default as StartMenu } from './start-menu.svelte';

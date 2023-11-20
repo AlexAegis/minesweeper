@@ -444,6 +444,9 @@ importers:
       '@w2k/ui':
         specifier: workspace:^
         version: link:../ui
+      colord:
+        specifier: ^2.9.3
+        version: 2.9.3
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -4318,7 +4321,6 @@ packages:
 
   /colord@2.9.3:
     resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
-    dev: true
 
   /colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}

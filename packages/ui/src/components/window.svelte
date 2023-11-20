@@ -28,7 +28,7 @@
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
 	export let windowElement: HTMLElement | undefined = undefined;
-	export let grippy: GrippyContainer;
+	export let grippy: GrippyContainer | undefined = undefined;
 
 	const dispatch = createEventDispatcher<
 		{
@@ -172,7 +172,7 @@
 		await sleep(0);
 
 		const windowPlane = document.querySelector<HTMLElement>('#window-plane');
-		if (windowElement && windowPlane) {
+		if (windowElement && windowPlane && grippy) {
 			const titleBar = windowElement.querySelectorAll('.title-bar').item(0);
 
 			dragHandler = grippy.draggable({
@@ -270,6 +270,7 @@
 	class="program-window window pid{transientState.processId} {transientState.program} {$$props[
 		'class'
 	] ?? ''}"
+	style="{$$props['style'] ?? ''}"
 	class:invisible="{transientState.invisible}"
 	class:immobile="{!effectiveMovable}"
 	class:non-resizable="{!effectiveResizable}"

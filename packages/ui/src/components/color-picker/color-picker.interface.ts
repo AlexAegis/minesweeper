@@ -4,6 +4,12 @@ export interface ColorRgb {
 	b: number;
 }
 
+export interface ColorHsl {
+	h: number;
+	s: number;
+	l: number;
+}
+
 export const toCssRgb = (color: ColorRgb | undefined): string =>
 	color ? `rgb(${color.r} ${color.g} ${color.b});` : 'transparent';
 

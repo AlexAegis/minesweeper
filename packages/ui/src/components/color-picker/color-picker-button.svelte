@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import { w2kDropdownArrowSmall } from '../../assets/misc';
 	import Button from '../button.svelte';
 	import ContextMenu from '../context-menu.svelte';
@@ -8,6 +9,11 @@
 
 	export let disabled = false;
 	export let color: ColorRgb | undefined = undefined;
+
+	const dispatch = createEventDispatcher<{
+		change: ColorRgb;
+	}>();
+
 	$: colorRgb = toCssRgb(color);
 	/**
 	 * The button does **not** stay pressed when the quick palette is open
@@ -18,14 +24,14 @@
 
 <Button
 	bind:button
-	class="custom type-high color-picker"
+	class="custom type-high color-picker {$$props['class'] ?? ''}"
 	{disabled}
 	on:click="{() => {
 		open = !open;
 	}}"
 	style="
 
---selected-color: {colorRgb};"
+--selected-color: {colorRgb}; {$$props['style'] ?? ''}"
 >
 	<!--
 		For some reason this doesn't work here
@@ -50,6 +56,7 @@
 		<ColorQuickPalette
 			on:select="{(event) => {
 				color = event.detail;
+				dispatch('change', color);
 			}}"
 		></ColorQuickPalette>
 	</ContextMenu>
