@@ -1,28 +1,63 @@
 <script lang="ts">
-	import { Button, ColorPicker, Select } from '@w2k/ui';
+	import {
+		Button,
+		ColorPicker,
+		Select,
+		w2kStandardColorScheme,
+		type DesktopColorScheme,
+		type DesktopSlice,
+	} from '@w2k/ui';
+	import { map } from 'rxjs';
+	import { createEventDispatcher } from 'svelte';
 	import AppearancePreview from './appearance-preview.svelte';
 	import {
 		defaultDesktopColorScheme,
 		desktopColorSchemeSelectOptions,
-		type DesktopColorScheme,
 	} from './color-scheme.interface';
+	export let desktopSlice!: DesktopSlice;
+	$: allSchemeNames$ = desktopSlice.dicedSchemes.items$.pipe(
+		map((items) => {
+			const sortedItems = items.sort((a, b) => a.displayName.localeCompare(b.displayName));
+			const sortedEntries: [string, string][] = sortedItems.map((data) => [
+				data.key,
+				data.displayName,
+			]);
+			sortedEntries.push(['custom-scheme', '']);
+			return Object.fromEntries(sortedEntries);
+		}),
+	);
 
 	export let temporaryScheme: DesktopColorScheme = {
 		...defaultDesktopColorScheme,
 	};
 
+	const dispatcher = createEventDispatcher<{ change: DesktopColorScheme }>();
+
+	$: {
+		dispatcher('change', temporaryScheme);
+	}
+
 	let item: keyof DesktopColorScheme | undefined = undefined;
+	let scheme: string | undefined = undefined;
+
+	$: {
+		temporaryScheme = scheme
+			? desktopSlice.schemes$.value[scheme]?.data ?? w2kStandardColorScheme
+			: w2kStandardColorScheme;
+		console.log('temporaryScheme', temporaryScheme);
+	}
 </script>
 
+{JSON.stringify($allSchemeNames$)}
 <div>
 	<AppearancePreview desktopColorScheme="{temporaryScheme}"></AppearancePreview>
 	<div class="options">
-		<select
+		<Select
 			name="schemeSelector"
-			id="schemeSelector"
+			options="{$allSchemeNames$}"
 			style="grid-row: 2; grid-column: 1;"
-			disabled
-		></select>
+			bind:value="{scheme}"
+		></Select>
 		<label for="schemeSelector" style="grid-row: 1; grid-column: 1;">Scheme:</label>
 		<div class="scheme-operations">
 			<Button disabled>Save as...</Button>
@@ -45,7 +80,7 @@
 			disabled="{item === undefined || temporaryScheme[item]?.color1 === undefined}"
 			color="{item && temporaryScheme[item]?.color1}"
 			on:change="{(event) => {
-				if (item && temporaryScheme[item] && temporaryScheme[item].color1) {
+				if (item && temporaryScheme[item]?.color1) {
 					temporaryScheme[item].color1 = event.detail;
 				}
 			}}"
@@ -57,7 +92,7 @@
 			disabled="{item === undefined || temporaryScheme[item]?.color2 === undefined}"
 			color="{item && temporaryScheme[item]?.color2}"
 			on:change="{(event) => {
-				if (item && temporaryScheme[item] && temporaryScheme[item].color2) {
+				if (item && temporaryScheme[item]?.color2) {
 					temporaryScheme[item].color2 = event.detail;
 				}
 			}}"

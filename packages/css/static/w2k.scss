@@ -124,7 +124,7 @@ body {
 		--win-3d-objects-shade-source-l: 75.33%;
 	}
 
-	&-scheme-standard {
+	&.standard-scheme {
 		// All values and names were picked from Windows 2000 Standard Scheme
 		--win-desktop-color: #3a6ea5;
 
@@ -164,7 +164,7 @@ body {
 		}
 	}
 
-	&-scheme-classic {
+	&.classic-scheme {
 		// Colors picked from Windows 2000 Classic Scheme
 		--win-desktop-color: #008080;
 

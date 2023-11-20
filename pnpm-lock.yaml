@@ -364,7 +364,7 @@ importers:
         version: 0.8.4(svelte@4.2.5)(vite@5.0.0)
       '@pakk/cli':
         specifier: ^0.7.0
-        version: 0.7.0
+        version: 0.7.0(sass@1.69.5)
       '@types/node':
         specifier: ^20.9.2
         version: 20.9.2
@@ -404,7 +404,7 @@ importers:
         version: 0.8.4(svelte@4.2.5)(vite@4.5.0)
       '@pakk/cli':
         specifier: ^0.7.0
-        version: 0.7.0
+        version: 0.7.0(sass@1.69.5)
       '@sveltejs/package':
         specifier: ^2.2.2
         version: 2.2.2(svelte@4.2.5)(typescript@5.2.2)
@@ -474,7 +474,7 @@ importers:
         version: 0.8.4(svelte@4.2.5)(vite@4.5.0)
       '@pakk/cli':
         specifier: ^0.7.0
-        version: 0.7.0
+        version: 0.7.0(sass@1.69.5)
       '@sveltejs/package':
         specifier: ^2.2.2
         version: 2.2.2(svelte@4.2.5)(typescript@5.2.2)
@@ -541,7 +541,7 @@ importers:
         version: 0.8.4(svelte@4.2.5)(vite@4.5.0)
       '@pakk/cli':
         specifier: ^0.7.0
-        version: 0.7.0
+        version: 0.7.0(sass@1.69.5)
       '@sveltejs/package':
         specifier: ^2.2.2
         version: 2.2.2(svelte@4.2.5)(typescript@5.2.2)
@@ -578,6 +578,9 @@ importers:
       '@w2k/core':
         specifier: workspace:^
         version: link:../core
+      colord:
+        specifier: ^2.9.3
+        version: 2.9.3
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -872,18 +875,6 @@ packages:
       autotool-plugin: 0.3.0
     dev: true
 
-  /@alexaegis/cli-tools@0.7.0:
-    resolution: {integrity: sha512-Rxfu+ue0XQKij72NSYOYOt02mk4PmxSVj0wqm3fn8oF/Iq7GX8wBk/G6N+iw9H2mH6nyMlY0TXMPuQuak770dg==}
-    engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
-    dependencies:
-      '@alexaegis/common': 0.7.3
-      '@alexaegis/fs': 0.7.0
-      '@alexaegis/logging': 0.7.0
-      '@alexaegis/workspace-tools': 0.7.3
-      '@types/yargs': 17.0.24
-      yargs: 17.7.2
-    dev: true
-
   /@alexaegis/cli-tools@0.7.3:
     resolution: {integrity: sha512-/hNb+otBu0PLm8CKrP2D7z6cT7iQs9AGBfL/WyElAVgGhzhXBbFg++yzu+k1QkpLZDI39bcyOGt3VO8/YpTNpg==}
     engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
@@ -979,17 +970,6 @@ packages:
       - supports-color
     dev: true
 
-  /@alexaegis/fs@0.7.0:
-    resolution: {integrity: sha512-r9JQpS3qXJa5zU1ohj+m85+QUz8T0cfHLn+crzboBFcuiiFa3hA0G0B7H8VZXB4p1qCRc/BspGGpjjcB+/G7wA==}
-    engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
-    dependencies:
-      '@alexaegis/common': 0.7.3
-      '@alexaegis/logging': 0.7.0
-      js-yaml: 4.1.0
-    optionalDependencies:
-      prettier: 3.1.0
-    dev: true
-
   /@alexaegis/fs@0.7.3:
     resolution: {integrity: sha512-i7DlGfMYA3uTZc6nh/HLJdJg/aq2EGYgQRhoyzlrZGVm8ppiQ20Z3GK2pVuhNliYz0VwKcG3PJLjcq5frLwMTQ==}
     engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
@@ -1010,14 +990,6 @@ packages:
       typescript: 5.2.2
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /@alexaegis/logging@0.7.0:
-    resolution: {integrity: sha512-4oKxiVaDNsWE0uiLjg0hn/VgLYOGViH7J9CgdDj/I4hz9b5p0pHzNVKicwJpGtHe1U3OmBUoNf7i0Rs4sHK/KQ==}
-    engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
-    dependencies:
-      '@alexaegis/common': 0.7.3
-      tslog: 4.9.2
     dev: true
 
   /@alexaegis/logging@0.7.3:
@@ -2395,34 +2367,6 @@ packages:
       - supports-color
     dev: true
 
-  /@pakk/cli@0.7.0:
-    resolution: {integrity: sha512-26WjwHJFBqhz/QrLTE46uMfz3uzLfsSfGC8ul5TBOLMBW0maiVwwwf6zqsJUYi5C7oruAQ4bMzmFjK8dygrzzw==}
-    engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
-    hasBin: true
-    dependencies:
-      '@alexaegis/cli-tools': 0.7.0
-      '@alexaegis/common': 0.7.3
-      '@alexaegis/fs': 0.7.0
-      '@alexaegis/logging': 0.7.0
-      '@alexaegis/workspace-tools': 0.7.3
-      '@pakk/core': 0.7.0(sass@1.69.5)
-      '@types/node': 20.9.2
-      prettier: 3.1.0
-      ts-node: 10.9.1(@types/node@20.9.2)(typescript@5.2.2)
-      typescript: 5.2.2
-      vite: 4.5.0(@types/node@20.9.2)(sass@1.69.5)
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - terser
-    dev: true
-
   /@pakk/cli@0.7.0(sass@1.69.5):
     resolution: {integrity: sha512-26WjwHJFBqhz/QrLTE46uMfz3uzLfsSfGC8ul5TBOLMBW0maiVwwwf6zqsJUYi5C7oruAQ4bMzmFjK8dygrzzw==}
     engines: {node: '>=18.10.0', pnpm: '>=8.0.0'}
@@ -3246,18 +3190,8 @@ packages:
     resolution: {integrity: sha512-UqCG7NjNyume6e+BHcFkOQOS8of/E18V2z/jTRkiD98YiiryYOFBVvPxqA/8PQCwkn7icKqz/hFflMIRN2HGhQ==}
     dev: true
 
-  /@types/yargs-parser@21.0.0:
-    resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}
-    dev: true
-
   /@types/yargs-parser@21.0.3:
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
-    dev: true
-
-  /@types/yargs@17.0.24:
-    resolution: {integrity: sha512-6i0aC7jV6QzQB8ne1joVZ0eSFIstHsCrobmOtghM11yGlH0j43FKL2UhWdELkyps0zuf7qVTUVCCR+tgSlyLLw==}
-    dependencies:
-      '@types/yargs-parser': 21.0.0
     dev: true
 
   /@types/yargs@17.0.31:

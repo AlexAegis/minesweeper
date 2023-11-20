@@ -2,6 +2,7 @@
 	import type { CoordinateLike } from '@w2k/common';
 	import { packageMetadata } from '@w2k/core';
 	import { onDestroy, onMount } from 'svelte';
+	import { desktopColorSchemeToCssVariables, joinStyleMap } from '..';
 	import { readGlobal, writeGlobal, type Handler } from '../helpers';
 	import { GrippyContainer } from '../helpers/grippy/grippy';
 	import type { DesktopSlice, ProgramId } from '../store';
@@ -22,6 +23,8 @@
 	let desktopElement: HTMLDivElement;
 
 	export let desktopSlice: DesktopSlice;
+	$: activeSchemeData$ = desktopSlice.activeSchemeData$;
+	$: activeSchemeKind$ = desktopSlice.activeSchemeKind$;
 
 	let selectArea: Rectangle | undefined;
 	let selectAreaStart: Rectangle | undefined;
@@ -113,7 +116,13 @@
 	});
 </script>
 
-<div id="desktop" class="desktop w98 w2k w2k-scheme-standard" bind:this="{desktopElement}">
+<div
+	id="desktop"
+	class="desktop w2k {$activeSchemeKind$}"
+	bind:this="{desktopElement}"
+	style="{joinStyleMap(desktopColorSchemeToCssVariables($activeSchemeData$))};
+	zoom: {100 * zoom}%;"
+>
 	<div
 		bind:this="{workspaceElement}"
 		id="workspace"

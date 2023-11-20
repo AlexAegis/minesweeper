@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { Button, ButtonLook, Window } from '@w2k/ui';
 	import {
+		Button,
+		ButtonLook,
+		Window,
 		desktopColorSchemeToCssVariables,
+		joinStyleMap,
 		type DesktopColorScheme,
-	} from './color-scheme.interface';
+	} from '@w2k/ui';
 
 	export let desktopColorScheme: DesktopColorScheme;
 </script>
 
 <div
 	class="appearance-preview custom-scheme w2k"
-	style="{desktopColorSchemeToCssVariables(desktopColorScheme)}"
+	style="{joinStyleMap(desktopColorSchemeToCssVariables(desktopColorScheme))}"
 >
 	<Window
 		transient="{false}"

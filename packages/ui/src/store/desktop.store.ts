@@ -3,6 +3,7 @@ import {
 	Slice,
 	entitySliceReducerWithPrecompute,
 	getNextKeyStrategy,
+	getObjectKeys,
 	getObjectKeysAsNumbers,
 	ifLatestFrom,
 	isNullish,
@@ -23,6 +24,12 @@ import { documentPointerDown$ } from '@w2k/core';
 import { browser } from '$app/environment';
 import type { Rectangle } from '../components/rectangle.interface.js';
 import { addVec, vecComparator } from '../helpers/grippy/handlers/vec2.interface.js';
+import {
+	areDesktopColorSchemesEqual,
+	w2kClassicColorScheme,
+	w2kStandardColorScheme,
+	type DesktopColorScheme,
+} from '../scheme/desktop-color-scheme.js';
 
 export type ProcessId = string;
 export type ProgramId = string;
@@ -53,7 +60,8 @@ export interface ShortcutState {
 }
 
 export interface DesktopScheme {
-	kind: 'w2k' | 'w98'; // They define some some aspects like darkest shadow color, and start icon
+	kind: 'standard-scheme' | 'classic-scheme' | 'custom-scheme'; // They define some some aspects like darkest shadow color, and start icon
+	data: DesktopColorScheme;
 }
 
 export interface DesktopState {
@@ -65,6 +73,10 @@ export interface DesktopState {
 	nextProcessId: ProcessId;
 	startMenuOpen: boolean;
 	activeScheme: DesktopScheme;
+	schemes: Record<
+		string,
+		{ data: DesktopColorScheme; key: string; displayName: string; builtIn: boolean }
+	>;
 	debug: boolean;
 }
 
@@ -251,7 +263,22 @@ export const createDesktopSlice = <
 			startMenuOpen: false,
 			nextProcessId: '0',
 			activeScheme: {
-				kind: 'w2k',
+				kind: 'standard-scheme',
+				data: w2kStandardColorScheme,
+			},
+			schemes: {
+				'standard-scheme': {
+					key: 'standard-scheme',
+					displayName: 'Standard Scheme',
+					builtIn: true,
+					data: w2kStandardColorScheme,
+				},
+				'classic-scheme': {
+					key: 'classic-scheme',
+					displayName: 'Classic Scheme',
+					builtIn: true,
+					data: w2kClassicColorScheme,
+				},
 			},
 			debug: true,
 		} as DesktopState,
@@ -264,6 +291,15 @@ export const createDesktopSlice = <
 
 				return { actions, debug$: slice.slice('debug') };
 			},
+		},
+	);
+	const schemes$ = desktop$.slice('schemes');
+
+	const dicedSchemes = schemes$.dice(
+		{ data: w2kStandardColorScheme, key: 'custom-scheme', displayName: 'Custom Scheme' },
+		{
+			getAllKeys: getObjectKeys,
+			getNextKey: (_keys) => 'custom-scheme',
 		},
 	);
 
@@ -363,9 +399,22 @@ export const createDesktopSlice = <
 
 	const activeScheme$ = desktop$.slice('activeScheme');
 	const toggleActiveSchemeKindAction = desktop$.createAction('toggleKind');
+	const setSchemeAction = activeScheme$.createAction<DesktopColorScheme>('setScheme');
+	const activeSchemeData$ = activeScheme$.slice('data', {
+		reducers: [setSchemeAction.reduce((state, payload) => ({ ...state, ...payload }))],
+	});
 	const activeSchemeKind$ = activeScheme$.slice('kind', {
 		reducers: [
-			toggleActiveSchemeKindAction.reduce((state) => (state === 'w2k' ? 'w98' : 'w2k')),
+			toggleActiveSchemeKindAction.reduce((state) =>
+				state === 'standard-scheme' ? 'classic-scheme' : 'standard-scheme',
+			),
+			setSchemeAction.reduce((_state, payload) =>
+				areDesktopColorSchemesEqual(w2kStandardColorScheme, payload)
+					? 'standard-scheme'
+					: areDesktopColorSchemesEqual(w2kClassicColorScheme, payload)
+					  ? 'classic-scheme'
+					  : 'custom-scheme',
+			),
 		],
 	});
 
@@ -719,19 +768,12 @@ export const createDesktopSlice = <
 			activeSchemeKind$.pipe(
 				tap((kind) => {
 					const desktopElement = document.querySelector('#desktop');
-
+					console.log('asd', desktopElement);
 					if (desktopElement) {
-						if (kind === 'w2k') {
-							desktopElement.classList.replace(
-								'w2k-scheme-classic',
-								'w2k-scheme-standard',
-							);
-						} else {
-							desktopElement.classList.replace(
-								'w2k-scheme-standard',
-								'w2k-scheme-classic',
-							);
-						}
+						desktopElement.classList.remove('classic-scheme');
+						desktopElement.classList.remove('standard-scheme');
+						desktopElement.classList.remove('custom-scheme');
+						desktopElement.classList.add(kind);
 					}
 				}),
 			),
@@ -772,7 +814,10 @@ export const createDesktopSlice = <
 		activeScheme$,
 		toggleActiveSchemeKindAction,
 		activeSchemeKind$,
+		activeSchemeData$,
 		dicedShortcuts,
+		schemes$,
+		dicedSchemes,
 		shortcuts$,
 		programs$,
 		startMenuOpen$,

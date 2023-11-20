@@ -1,14 +1,24 @@
 <script lang="ts">
-	import { Button, TabSet, type DesktopSlice, type TabSetTabs, type WindowState } from '@w2k/ui';
+	import {
+		Button,
+		TabSet,
+		areDesktopColorSchemesEqual,
+		cloneDesktopColorScheme,
+		type DesktopColorScheme,
+		type DesktopSlice,
+		type TabSetTabs,
+		type WindowState,
+	} from '@w2k/ui';
 	import AppearanceSettings from './appearance/appearance-settings.svelte';
 	// export let internals!: DisplayPropertiesApp;
 	// export let windowSlice!: DicedWindow;
 	export let desktopSlice!: DesktopSlice;
 	export let windowState!: WindowState;
 
-	desktopSlice.activeScheme$.internals;
-
-	const somethingChanged = false; // TODO
+	$: somethingChanged = !areDesktopColorSchemesEqual(
+		desktopSlice.activeSchemeData$.value,
+		temporaryScheme,
+	);
 
 	const tabs: TabSetTabs = {
 		background: { displayName: 'Background', disabled: true },
@@ -18,22 +28,42 @@
 		effects: { displayName: 'Effects', disabled: true },
 		settings: { displayName: 'Settings', disabled: true },
 	};
+
+	let temporaryScheme: DesktopColorScheme = cloneDesktopColorScheme(
+		desktopSlice.activeSchemeData$.value,
+	);
+
+	function close() {
+		desktopSlice.dicedWindows.remove(windowState.processId);
+	}
+
+	function applyScheme() {
+		desktopSlice.activeSchemeData$.setAction.next(cloneDesktopColorScheme(temporaryScheme));
+	}
 </script>
 
 <div class="content">
 	<TabSet {tabs} selected="appearance">
 		<div slot="content" let:tab>
 			{#if tab === 'appearance'}
-				<AppearanceSettings></AppearanceSettings>
+				<AppearanceSettings bind:temporaryScheme {desktopSlice}></AppearanceSettings>
 			{/if}
 		</div>
 	</TabSet>
 	<div class="prompt-control">
-		<Button>OK</Button>
-		<Button on:click="{() => desktopSlice.dicedWindows.remove(windowState.processId)}">
-			Cancel
-		</Button>
-		<Button disabled="{!somethingChanged}">Apply</Button>
+		<Button
+			on:click="{() => {
+				applyScheme();
+				close();
+			}}">OK</Button
+		>
+		<Button on:click="{() => close()}">Cancel</Button>
+		<Button
+			on:click="{() => {
+				applyScheme();
+			}}"
+			disabled="{!somethingChanged}">Apply</Button
+		>
 	</div>
 </div>
 
