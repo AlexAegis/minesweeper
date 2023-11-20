@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let alt: string | undefined = undefined;
 	export let src: string | undefined = undefined;
+	export let disabled = false;
 
 	export let height: number | undefined = undefined;
 	export let width: number | undefined = undefined;
@@ -18,6 +19,7 @@
 		aria-label="{alt}"
 		{src}
 		{alt}
+		class:disabled
 	/>
 {:else}
 	<div

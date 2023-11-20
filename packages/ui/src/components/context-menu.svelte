@@ -103,10 +103,11 @@
 		aria-roledescription="context menu containing contextual buttons"
 		role="presentation"
 		on:click|stopPropagation="{() => {
+			dispatcher('dismiss');
 			position = undefined;
 		}}"
 	>
-		<div class="context-menu window">
+		<div class="context-menu window {$$props['class'] ?? ''}" style="{$$props['style'] ?? ''}">
 			<slot />
 		</div>
 	</div>

@@ -48,21 +48,24 @@
 				<svelte:fragment slot="title-bar-context-menu">
 					<WindowContextItems windowState="{next}" {windowSlice} {desktopSlice} />
 				</svelte:fragment>
-				<svelte:fragment slot="menu">
-					{#if next.program && windowComponents[next.program]}
+				{#if next.program && windowComponents[next.program]?.menu}
+					<div class="menu-bar">
 						<svelte:component
 							this="{windowComponents[next.program]?.menu}"
+							slot="menu"
 							internals="{windowSlice.internals?.programLogic}"
 							windowState="{next}"
-							on:close="{() => {
-								desktopSlice.dicedWindows.remove(processId);
-							}}"
+							on:close="{() => desktopSlice.dicedWindows.remove(processId)}"
 						/>
-					{/if}
-				</svelte:fragment>
+					</div>
+				{/if}
+
 				{#if next.program && windowSlice.internals?.programLogic && windowComponents[next.program]}
 					<svelte:component
 						this="{windowComponents[next.program]?.content}"
+						windowState="{next}"
+						{windowSlice}
+						{desktopSlice}
 						internals="{windowSlice.internals.programLogic}"
 					/>
 				{/if}
@@ -70,3 +73,10 @@
 		</Observer>
 	{/if}
 {/each}
+
+<style>
+	.menu-bar {
+		display: flex;
+		min-height: 20px;
+	}
+</style>

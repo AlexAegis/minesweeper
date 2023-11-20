@@ -3,6 +3,7 @@ export * from './button-look.enum.js';
 export * from './button.js';
 export { default as Button } from './button.svelte';
 export { default as Clock } from './clock.svelte';
+export * from './color-picker/index.js';
 export { default as ContextMenu } from './context-menu.svelte';
 export { default as DesktopShortcuts } from './desktop-shortcuts.svelte';
 export { default as DesktopWindows } from './desktop-windows.svelte';

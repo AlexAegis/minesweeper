@@ -1,23 +1,20 @@
-import {
-	Slice
-} from '@tinyslice/core';
+import { Slice } from '@tinyslice/core';
 
 import type { BaseWindowState, WindowState } from '@w2k/ui';
 
 export const DISPLAY_PROPERTIES_TAG = '[display-properties]';
 
+export type DisplayPropertiesApp = ReturnType<typeof createDesktopProperties>;
+
 export const createDesktopProperties = (
 	parentSlice: Slice<Record<string, WindowState>, BaseWindowState>,
 	key: string,
 ) => {
-
-
-
 	const game$ = parentSlice.addSlice(
 		key,
 		{
-			cheating: false
-		} ,
+			cheating: false,
+		},
 		{
 			defineInternals: () => {
 				return 1;
@@ -25,16 +22,11 @@ export const createDesktopProperties = (
 		},
 	);
 
-
-
 	const cheating$ = game$.slice('cheating');
 
 	const minesweeperActions = {
 		cheating: cheating$.setAction,
-
 	};
-
-
 
 	return {
 		minesweeperActions,

@@ -151,10 +151,9 @@
 		>
 			Github
 		</Button>
-
+		<hr />
 		<Button
 			look="{ButtonLook.CONTEXT_MENU_ITEM}"
-			bold="{true}"
 			on:click="{() =>
 				desktopSlice.desktop$.internals.actions.spawnProgram.next('displayProperties')}"
 		>
