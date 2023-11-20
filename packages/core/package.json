@@ -14,8 +14,6 @@
 	],
 	"type": "module",
 	"scripts": {
-		"build": "turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
-		"build-lib_": "vite build",
 		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
 		"lint:depcheck_": "depcheck",
 		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
@@ -35,12 +33,14 @@
 		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
 		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
 		"lint:tsc_": "tsc --noEmit",
-		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
-		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
-		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
 		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
 		"test_": "vitest --passWithNoTests --coverage --run",
-		"test:watch": "vitest --passWithNoTests --coverage"
+		"test:watch": "vitest --passWithNoTests --coverage",
+		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
+		"build": "turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
+		"build-lib_": "vite build",
+		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
+		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write ."
 	},
 	"exports": {
 		".": {
@@ -58,15 +58,15 @@
 		"rxjs": "^7.8.1"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.7.2",
-		"@alexaegis/stylelint-config": "^0.7.2",
-		"@alexaegis/ts": "^0.7.2",
-		"@alexaegis/vite": "^0.7.2",
-		"@alexaegis/vitest": "^0.7.2",
-		"@pakk/cli": "^0.6.0",
-		"@types/node": "^20.5.1",
-		"stylelint": "^15.10.3",
-		"vite": "^4.4.9",
-		"vitest": "^0.34.2"
+		"@alexaegis/eslint-config-vitest": "^0.8.4",
+		"@alexaegis/stylelint-config": "^0.8.4",
+		"@alexaegis/ts": "^0.8.4",
+		"@alexaegis/vite": "^0.8.4",
+		"@alexaegis/vitest": "^0.8.4",
+		"@pakk/cli": "^0.7.0",
+		"@types/node": "^20.9.2",
+		"stylelint": "^15.11.0",
+		"vite": "^5.0.0",
+		"vitest": "^0.34.6"
 	}
 }

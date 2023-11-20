@@ -28,11 +28,14 @@ body {
 // All values and names were picked from Windows 2000
 .w2k {
 	display: block;
-	height: 100%;
 	overscroll-behavior: none;
 	width: 100%;
 	-webkit-touch-callout: none !important;
 	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+
+	&:not(body) {
+		height: 100%;
+	}
 
 	--win-start-button-width: 54px; // + 1 the bo
 	--win-taskbar-height: 28px; // with box-sizing: border-box;
@@ -811,8 +814,7 @@ body {
 		grid-template-rows: var(--win-large-icon-size) auto;
 		position: absolute;
 		row-gap: 4px; // When the icon is selected, the distance between the blue highlight and the shortcut icon is 4px
-		align-items: start;
-		justify-items: center;
+		place-items: start center;
 		margin: var(--win-shortcut-margin);
 		user-select: none;
 		touch-action: none;
@@ -843,8 +845,7 @@ body {
 			z-index: 1;
 			grid-row: 1;
 			grid-column: 2;
-			justify-self: start;
-			align-self: end;
+			place-self: end start;
 		}
 
 		.title {
@@ -1007,8 +1008,7 @@ body {
 			div {
 				color: white;
 				overflow: hidden;
-				justify-self: end;
-				align-self: end;
+				place-self: end end;
 				font-weight: bold;
 				flex-flow: nowrap;
 				text-overflow: ellipsis;

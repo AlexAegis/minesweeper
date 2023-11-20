@@ -28,6 +28,7 @@
 		"prettier*",
 		"publint",
 		"remark",
+		"remark-cli",
 		"stylelint",
 		"stylelint-config-*",
 		"svelte",

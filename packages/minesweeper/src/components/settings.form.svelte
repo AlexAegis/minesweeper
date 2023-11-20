@@ -18,16 +18,16 @@
 			preset.height = 50;
 		}
 
-		if (preset.height < 2) {
-			preset.height = 2;
+		if (preset.height < 1) {
+			preset.height = 1;
 		}
 
 		if (preset.width > 50) {
 			preset.width = 50;
 		}
 
-		if (preset.width < 2) {
-			preset.width = 2;
+		if (preset.width < 1) {
+			preset.width = 1;
 		}
 
 		const maxMines = calculateMaxMines(preset);
@@ -65,7 +65,7 @@
 					inputmode="numeric"
 					bind:value="{preset.height}"
 					max="50"
-					min="2"
+					min="1"
 				/>
 			</div>
 
@@ -77,7 +77,7 @@
 					inputmode="numeric"
 					bind:value="{preset.width}"
 					max="50"
-					min="2"
+					min="1"
 				/>
 			</div>
 

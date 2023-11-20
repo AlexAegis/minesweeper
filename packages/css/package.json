@@ -16,8 +16,6 @@
 	],
 	"type": "module",
 	"scripts": {
-		"build": "turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
-		"build-lib_": "pakk --svelte --target-package-json-kind development && svelte-package --input src && pakk --svelte --target-package-json-kind distribution",
 		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
 		"lint:depcheck_": "depcheck",
 		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
@@ -37,13 +35,15 @@
 		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
 		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
 		"lint:tsc_": "tsc --noEmit",
-		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
-		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
-		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
-		"preview": "vite preview",
 		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
 		"test_": "vitest --passWithNoTests --coverage --run",
-		"test:watch": "vitest --passWithNoTests --coverage"
+		"test:watch": "vitest --passWithNoTests --coverage",
+		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
+		"build": "turbo run build-lib_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
+		"build-lib_": "pakk --svelte --target-package-json-kind development && svelte-package --input src && pakk --svelte --target-package-json-kind distribution",
+		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/css",
+		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write .",
+		"preview": "vite preview"
 	},
 	"exports": {
 		".": {
@@ -61,19 +61,19 @@
 		"98.css": "^0.1.20"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-svelte": "^0.7.2",
-		"@alexaegis/eslint-config-vitest": "^0.7.2",
-		"@alexaegis/stylelint-config": "^0.7.2",
-		"@alexaegis/svelte-config": "^0.7.2",
-		"@alexaegis/ts": "^0.7.2",
-		"@alexaegis/vitest": "^0.7.2",
-		"@pakk/cli": "^0.6.0",
-		"@sveltejs/package": "^2.2.1",
-		"@types/node": "^20.5.1",
-		"stylelint": "^15.10.3",
-		"svelte": "^4.2.0",
-		"svelte-check": "^3.5.0",
-		"svelte-preprocess": "^5.0.4",
-		"vitest": "^0.34.2"
+		"@alexaegis/eslint-config-svelte": "^0.8.4",
+		"@alexaegis/eslint-config-vitest": "^0.8.4",
+		"@alexaegis/stylelint-config": "^0.8.4",
+		"@alexaegis/svelte-config": "^0.8.4",
+		"@alexaegis/ts": "^0.8.4",
+		"@alexaegis/vitest": "^0.8.4",
+		"@pakk/cli": "^0.7.0",
+		"@sveltejs/package": "^2.2.2",
+		"@types/node": "^20.9.2",
+		"stylelint": "^15.11.0",
+		"svelte": "^4.2.5",
+		"svelte-check": "^3.6.0",
+		"svelte-preprocess": "^5.1.0",
+		"vitest": "^0.34.6"
 	}
 }

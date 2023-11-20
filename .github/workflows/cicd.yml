@@ -29,11 +29,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
         lint-kind: [tsc, es, md, format, style, svelte, depcheck]
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: setup node.js ${{ matrix.node-version }}
@@ -67,10 +67,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         with:
           fetch-depth: 1
@@ -115,14 +115,14 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v3
         if: |
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
           vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
       - name: upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         if: |
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
           vars.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
@@ -135,10 +135,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: setup node.js ${{ matrix.node-version }}
@@ -187,14 +187,14 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v3
         if: |
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
           vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
       - name: upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         if: |
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
           vars.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
@@ -207,10 +207,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: setup node.js ${{ matrix.node-version }}
@@ -253,14 +253,14 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v3
         if: |
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
           vars.PAGES_DEPLOY_ARTIFACT_DIR != '' &&
           github.ref_name == github.event.repository.default_branch &&
           github.event_name != 'pull_request'
       - name: upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         if: |
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
           vars.PAGES_DEPLOY_ARTIFACT_DIR != '' && 
@@ -273,7 +273,11 @@ jobs:
     if: |
       github.ref_name == github.event.repository.default_branch && 
       github.event_name != 'pull_request' &&
-      vars.PAGES_DEPLOY_ARTIFACT_DIR
+      vars.PAGES_DEPLOY_ARTIFACT_DIR && (
+        vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' ||
+        vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' ||
+        vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
+      )
     runs-on: ubuntu-latest
     needs: [build, test, lint, typedoc]
     environment:
@@ -290,7 +294,7 @@ jobs:
         ${{ steps.collect_packages.outputs.non_published_packages }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: collect public packages
@@ -310,7 +314,7 @@ jobs:
         package: ${{ fromJSON(needs.collect.outputs.non_published_packages) }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: setup node.js
         uses: actions/setup-node@v3
         with:

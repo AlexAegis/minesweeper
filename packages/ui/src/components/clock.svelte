@@ -33,6 +33,7 @@
 	// The clocks last pixel is 16 pixel away from the edge of its panel,
 	// the font has an extra empty pixel at the end, -3 px because of the panels padding (was measured by disabling the clock and checking where the last icon stops)
 	.clock {
+		font-variant-numeric: tabular-nums; // Not supported with tahoma-8px, but would be nice
 		font-size: 16px;
 		width: 48px;
 		margin: 5px 8px 5px 9px;

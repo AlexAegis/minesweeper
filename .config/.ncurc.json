@@ -3,5 +3,6 @@
 	"dep": ["prod", "dev", "optional", "packageManager"],
 	"peer": true,
 	"deep": true,
-	"upgrade": true
+	"upgrade": true,
+	"reject": ["unified-prettier"]
 }
