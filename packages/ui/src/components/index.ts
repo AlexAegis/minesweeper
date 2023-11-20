@@ -18,6 +18,8 @@ export { default as Panel } from './panel.svelte';
 export { default as Shortcut } from './shortcut.svelte';
 export { default as StartButton } from './start-button.svelte';
 export { default as StartMenu } from './start-menu.svelte';
+export * from './tab-set.interface.js';
+export { default as TabSet } from './tab-set.svelte';
 export * from './taskbar-animation.js';
 export { default as TaskbarProgram } from './taskbar-program.svelte';
 export { default as TaskbarPrograms } from './taskbar-programs.svelte';

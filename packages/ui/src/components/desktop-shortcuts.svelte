@@ -9,7 +9,7 @@
 	export let desktopSlice: DesktopSlice;
 	export let selectArea: Rectangle | undefined = undefined;
 
-	let shortcutElements: Record<ShortcutId, HTMLElement | undefined> = {};
+	const shortcutElements: Record<ShortcutId, HTMLElement | undefined> = {};
 
 	$: {
 		const workspaceRectangle = getWorkspaceRectangle();

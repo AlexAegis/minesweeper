@@ -3,6 +3,7 @@ import { createDesktopSlice, type DesktopSlice, type ProgramId } from '@w2k/ui';
 
 import { browser } from '$app/environment';
 import { initializeStoreBrowserFeatures } from '@w2k/core';
+import { createDesktopProperties, DisplayProperties, displayPropertiesProgramInstallation } from '@w2k/display-properties';
 import {
 	createMineSweeperGame,
 	Minesweeper,
@@ -24,6 +25,9 @@ export const windowComponents: Record<ProgramId, WindowComponents> = {
 		menu: MinesweeperMenu,
 		content: Minesweeper,
 	},
+	displayProperties: {
+		content: DisplayProperties,
+	}
 };
 
 export const scope = new Scope();
@@ -31,6 +35,7 @@ export const rootSlice$ = scope.createRootSlice({});
 
 export const desktopSlice: DesktopSlice = createDesktopSlice(rootSlice$, {
 	minesweeper: { attach: createMineSweeperGame, installEntry: minesweeperProgramInstallation },
+	displayProperties: { attach: createDesktopProperties, installEntry: displayPropertiesProgramInstallation },
 });
 
 if (browser) {

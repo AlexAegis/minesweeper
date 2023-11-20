@@ -28,7 +28,7 @@
 
 	export let zoom = 1;
 
-	let grippy = new GrippyContainer({
+	const grippy = new GrippyContainer({
 		zoom,
 	});
 
@@ -150,6 +150,15 @@
 			on:click="{() => window.open(packageMetadata.homepage, '_blank')}"
 		>
 			Github
+		</Button>
+
+		<Button
+			look="{ButtonLook.CONTEXT_MENU_ITEM}"
+			bold="{true}"
+			on:click="{() =>
+				desktopSlice.desktop$.internals.actions.spawnProgram.next('displayProperties')}"
+		>
+			Properties
 		</Button>
 	</ContextMenu>
 

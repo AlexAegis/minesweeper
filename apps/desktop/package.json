@@ -60,6 +60,7 @@
 		"@w2k/common": "^4.1.0",
 		"@w2k/core": "workspace:^",
 		"@w2k/css": "workspace:^",
+		"@w2k/display-properties": "workspace:^",
 		"@w2k/minesweeper": "workspace:^",
 		"@w2k/ui": "workspace:^",
 		"98.css": "^0.1.20",

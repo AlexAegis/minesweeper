@@ -253,7 +253,7 @@ export const createDesktopSlice = <
 			activeScheme: {
 				kind: 'w2k',
 			},
-			debug: false,
+			debug: true,
 		} as DesktopState,
 		{
 			defineInternals: (slice) => {

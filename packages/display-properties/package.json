@@ -1,0 +1,85 @@
+{
+	"name": "@w2k/display-properties",
+	"description": "The display properies window implementing appearance settings",
+	"version": "4.1.0",
+	"archetype": {
+		"platform": "web",
+		"framework": "svelte",
+		"language": "ts",
+		"kind": "lib"
+	},
+	"keywords": [
+		"98.css",
+		"css",
+		"managed-by-autotool",
+		"minesweeper",
+		"svelte",
+		"w2k"
+	],
+	"type": "module",
+	"scripts": {
+		"lint:es": "turbo run lint:es_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
+		"lint:format": "turbo run lint:format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --check .",
+		"lint:md": "turbo run lint:md_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:md_": "remark --frail --no-stdout --silently-ignore .",
+		"lint:style": "turbo run lint:style_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input '**/*.css'",
+		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
+		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
+		"lint:svelte": "turbo run lint:svelte_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"lint:tsc_": "tsc --noEmit",
+		"test": "turbo run test_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"test_": "vitest --passWithNoTests --coverage --run",
+		"test:watch": "vitest --passWithNoTests --coverage",
+		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"build-lib_": "pakk --svelte --target-package-json-kind development && svelte-package --input src && pakk --svelte --target-package-json-kind distribution",
+		"format": "turbo run format_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/display-properties",
+		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write ."
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.js",
+			"svelte": "./src/index.js",
+			"default": "./src/index.js"
+		},
+		"./desktop": {
+			"types": "./src/desktop.ts",
+			"import": "./src/desktop.js",
+			"svelte": "./src/desktop.js",
+			"default": "./src/desktop.js"
+		}
+	},
+	"dependencies": {
+		"@alexaegis/common": "^0.7.3",
+		"@tinyslice/core": "^0.8.0",
+		"@w2k/common": "workspace:^4.1.0",
+		"@w2k/core": "workspace:^",
+		"@w2k/ui": "workspace:^",
+		"rxjs": "^7.8.1",
+		"svelte-rxjs-observer": "^0.5.1"
+	},
+	"devDependencies": {
+		"@alexaegis/eslint-config-svelte": "^0.8.4",
+		"@alexaegis/eslint-config-vitest": "^0.8.4",
+		"@alexaegis/stylelint-config": "^0.8.4",
+		"@alexaegis/svelte-config": "^0.8.4",
+		"@alexaegis/ts": "^0.8.4",
+		"@alexaegis/vitest": "^0.8.4",
+		"@pakk/cli": "^0.7.0",
+		"@sveltejs/package": "^2.2.2",
+		"@types/node": "^20.9.2",
+		"stylelint": "^15.11.0",
+		"svelte": "^4.2.5",
+		"svelte-check": "^3.6.0",
+		"svelte-preprocess": "^5.1.0",
+		"vitest": "^0.34.6"
+	}
+}

@@ -3,7 +3,7 @@ import type { ComponentType } from 'svelte';
 import type { ProcessId, ProgramId } from '../store/desktop.store.js';
 
 export interface WindowComponents {
-	menu: ComponentType;
+	menu?: ComponentType;
 	/**
 	 * TODO: maybe rename this to body or windowContent
 	 */
