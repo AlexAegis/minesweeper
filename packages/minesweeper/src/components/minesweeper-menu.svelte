@@ -22,7 +22,7 @@
 	export let windowState: BaseWindowState;
 	export let internals: MinesweeperGame;
 
-	let dispatch = createEventDispatcher<{ close: undefined }>();
+	const dispatch = createEventDispatcher<{ close: undefined }>();
 
 	$: preset$ = internals.gameSettings$?.pipe(map((settings) => ({ ...settings })));
 	$: isGameSettingsNotAPreset$ = internals.isGameSettingsNotAPreset$;

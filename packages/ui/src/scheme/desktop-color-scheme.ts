@@ -96,9 +96,9 @@ export const desktopColorSchemeToCssVariables = (
 		'--win-3d-objects-color-h': `${objectColor.h}`,
 		'--win-3d-objects-color-s': `${objectColor.s}%`,
 		'--win-3d-objects-color-l': `${objectColor.l}%`,
-		'--win-desktop-color': `${toCssRgb(scheme.desktop.color1)}`,
-		'--win-active-title-bar-color': `${toCssRgb(scheme.activeTitleBar.color1)}`,
-		'--win-active-title-bar-color-2': `${toCssRgb(scheme.activeTitleBar.color2)}`,
+		'--win-desktop-color': toCssRgb(scheme.desktop.color1),
+		'--win-active-title-bar-color': toCssRgb(scheme.activeTitleBar.color1),
+		'--win-active-title-bar-color-2': toCssRgb(scheme.activeTitleBar.color2),
 	};
 };
 

@@ -74,7 +74,7 @@
 								: {
 										x: event.pageX / readGlobal('w2kZoom'),
 										y: event.pageY / readGlobal('w2kZoom'),
-								  };
+									};
 						}}"
 					>
 						<Image
@@ -128,7 +128,7 @@
 			>
 				<Image height="{iconSize}" width="{iconSize}" src="{w2kDisplaySettingsIconLarge}" />
 				Switch to
-				{#if $activeSchemeKind$ === 'w98'}
+				{#if $activeSchemeKind$ === 'classic-scheme'}
 					w2k
 				{:else}
 					w98

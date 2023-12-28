@@ -412,8 +412,8 @@ export const createDesktopSlice = <
 				areDesktopColorSchemesEqual(w2kStandardColorScheme, payload)
 					? 'standard-scheme'
 					: areDesktopColorSchemesEqual(w2kClassicColorScheme, payload)
-					  ? 'classic-scheme'
-					  : 'custom-scheme',
+						? 'classic-scheme'
+						: 'custom-scheme',
 			),
 		],
 	});
@@ -551,11 +551,11 @@ export const createDesktopSlice = <
 										windowState.minimized === true
 											? 'start-unminimizing' // If this is the one being activated, unminimize it
 											: windowState.minimized, // Otherwise leave it alone
-							  }
+								}
 							: {
 									...windowState,
 									active: false,
-							  };
+								};
 					},
 				),
 			),

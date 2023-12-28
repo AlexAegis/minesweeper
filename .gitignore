@@ -152,6 +152,9 @@ typedoc
 vite.config.ts.*
 vitest.config.ts.*
 
+# vitepress
+**/.vitepress/cache
+
 # parcel
 dist*
 tmp*

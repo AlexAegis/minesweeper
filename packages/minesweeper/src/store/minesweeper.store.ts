@@ -695,7 +695,7 @@ export const createMineSweeperGame = (
 					? timer(timeElapseTickrate, TIME_TICKRATE_MS).pipe(
 							takeUntil(gameEnded$),
 							map(() => true),
-					  )
+						)
 					: of(false),
 			),
 			map((running) =>

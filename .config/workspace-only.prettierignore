@@ -20,6 +20,7 @@ public/build
 public/index.js
 .svelte-kit
 typedoc
+**/.vitepress/cache
 
 # test artifacts
 coverage

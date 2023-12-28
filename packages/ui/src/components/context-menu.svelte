@@ -33,7 +33,7 @@
 		? {
 				x: position.x + xOffset + xDirection,
 				y: position.y + yOffset + yDirection,
-		  }
+			}
 		: undefined;
 
 	let contextMenuContainer: HTMLElement | undefined;

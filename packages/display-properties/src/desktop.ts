@@ -1,6 +1,5 @@
 import { defaultCommonProgramWindowPreferences, type ProgramState } from '@w2k/ui';
 
-
 export const displayPropertiesProgramInstallation: ProgramState = {
 	...defaultCommonProgramWindowPreferences,
 	name: 'displayProperties',

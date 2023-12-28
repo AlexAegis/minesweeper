@@ -14,7 +14,9 @@
 	$: startMenuOpen$ = desktopSlice.startMenuOpen$;
 
 	const startIcon$ = desktopSlice.activeSchemeKind$.pipe(
-		map((kind) => (kind === 'w2k' ? w2kStandardStartMenuIcon : w2kClassicStartMenuIcon)),
+		map((kind) =>
+			kind === 'classic-scheme' ? w2kStandardStartMenuIcon : w2kClassicStartMenuIcon,
+		),
 	);
 </script>
 

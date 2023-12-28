@@ -14,6 +14,7 @@ build
 .svelte-kit
 .vercel
 typedoc
+**/.vitepress/cache
 
 # test artifacts
 coverage

@@ -135,7 +135,7 @@
 				: {
 						x: event.pageX / readGlobal('w2kZoom'),
 						y: event.pageY / readGlobal('w2kZoom'),
-				  };
+					};
 		}}"
 	>
 		<DesktopShortcuts {desktopSlice} {selectArea} {grippy} />
