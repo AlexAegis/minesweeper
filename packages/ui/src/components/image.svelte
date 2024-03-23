@@ -11,10 +11,10 @@
 	<img
 		class="{$$props['class'] ?? ''}"
 		style="{$$props['style'] ?? ''}"
-		style:height="{height ? `${height}px` : undefined}"
-		style:width="{width ? `${width}px` : undefined}"
-		style:min-height="{height ? `${height}px` : undefined}"
-		style:min-width="{width ? `${width}px` : undefined}"
+		style:height="{height ? `${height.toString()}px` : undefined}"
+		style:width="{width ? `${width.toString()}px` : undefined}"
+		style:min-height="{height ? `${height.toString()}px` : undefined}"
+		style:min-width="{width ? `${width.toString()}px` : undefined}"
 		draggable="{false}"
 		aria-label="{alt}"
 		{src}
@@ -23,9 +23,9 @@
 	/>
 {:else}
 	<div
-		style:height="{height ? `${height}px` : undefined}"
-		style:width="{width ? `${width}px` : undefined}"
-		style:min-height="{height ? `${height}px` : undefined}"
-		style:min-width="{width ? `${width}px` : undefined}"
+		style:height="{height ? `${height.toString()}px` : undefined}"
+		style:width="{width ? `${width.toString()}px` : undefined}"
+		style:min-height="{height ? `${height.toString()}px` : undefined}"
+		style:min-width="{width ? `${width.toString()}px` : undefined}"
 	></div>
 {/if}

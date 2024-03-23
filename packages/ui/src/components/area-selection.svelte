@@ -7,9 +7,9 @@
 {#if area}
 	<div
 		class="selection"
-		style:top="{`${area.y}px`}"
-		style:left="{`${area.x}px`}"
-		style:width="{`${area.width}px`}"
-		style:height="{`${area.height}px`}"
+		style:top="{`${area.y.toString()}px`}"
+		style:left="{`${area.x.toString()}px`}"
+		style:width="{`${area.width.toString()}px`}"
+		style:height="{`${area.height.toString()}px`}"
 	></div>
 {/if}

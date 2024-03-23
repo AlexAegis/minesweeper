@@ -119,7 +119,7 @@
 
 <div
 	bind:this="{shortcutElement}"
-	id="{'shortcut' + shortcutState.shortcutId}"
+	id="{'shortcut' + shortcutState.shortcutId.toString()}"
 	use:firable="{{ draggable: true }}"
 	on:contextmenu|stopPropagation="{(event) => {
 		contextMenuPosition = contextMenuPosition
@@ -146,8 +146,8 @@
 	}}"
 	class="shortcut"
 	class:selected="{shortcutState.selected && !shortcutState.renaming}"
-	style:top="{`${transientPosition.y}px`}"
-	style:left="{`${transientPosition.x}px`}"
+	style:top="{`${transientPosition.y.toString()}px`}"
+	style:left="{`${transientPosition.x.toString()}px`}"
 >
 	<div class="icon" bind:this="{shortcutIconElement}">
 		<Image class="icon" alt="{shortcutState.name}" src="{shortcutState.icon}" />

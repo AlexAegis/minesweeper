@@ -96,8 +96,8 @@
 	<div
 		bind:this="{contextMenuContainer}"
 		class="context-menu-container"
-		style:top="{`${effectivePosition.y}px`}"
-		style:left="{`${effectivePosition.x}px`}"
+		style:top="{`${effectivePosition.y.toString()}px`}"
+		style:left="{`${effectivePosition.x.toString()}px`}"
 		style:--context-menu-appear-x-direction="{xAxisAnimated ? xDirection : 0}"
 		style:--context-menu-appear-y-direction="{yAxisAnimated ? yDirection : 0}"
 		aria-roledescription="context menu containing contextual buttons"

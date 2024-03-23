@@ -58,7 +58,7 @@
 
 		// Protected styles to avoid information leaking
 		if (isEmptyTileMark(tile.mark) && (tile.revealed || cheating)) {
-			classes.push(`minesweeper-tile-${tile.value}`);
+			classes.push(`minesweeper-tile-${tile.value.toString()}`);
 
 			if (tile.isMine) {
 				classes.push('mine');

@@ -165,7 +165,7 @@ export class GrippyContainer {
 		this.container = container;
 		if (this.options.zoom) {
 			(this.options.rootElement.style as unknown as { zoom: string }).zoom =
-				this.options.zoom * 100 + '%';
+				`${this.options.zoom * 100}%`;
 		}
 
 		for (const [type, listener] of Object.entries(this.documentListeners)) {

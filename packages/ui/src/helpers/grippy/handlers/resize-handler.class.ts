@@ -360,8 +360,8 @@ export class ResizeHandler extends Handler<NormalizedResizeHandlerOptions> {
 			debugElement.style.display = 'block';
 			debugElement.style.position = 'fixed';
 			debugElement.style.zIndex = '999999';
-			debugElement.style.left = containerRect.x + 'px';
-			debugElement.style.top = containerRect.y + 'px';
+			debugElement.style.left = `${containerRect.x.toString()}px`;
+			debugElement.style.top = `${containerRect.y.toString()}px`;
 			debugElement.style.width = body.offsetWidth.toString() + 'px';
 			debugElement.style.height = body.offsetHeight.toString() + 'px';
 			debugElement.width = body.offsetWidth;

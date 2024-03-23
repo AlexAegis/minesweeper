@@ -4,5 +4,5 @@
 	"peer": true,
 	"deep": true,
 	"upgrade": true,
-	"reject": ["unified-prettier"]
+	"reject": ["commitlint", "@commitlint/*"]
 }
