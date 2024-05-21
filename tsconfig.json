@@ -16,6 +16,7 @@
 		".turbo",
 		".cache",
 		"vite*.config.ts.timestamp-*",
+		"eslint.config.*",
 		"packages",
 		"apps",
 		"libs",

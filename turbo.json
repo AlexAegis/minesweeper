@@ -3,8 +3,8 @@
 	"globalDependencies": [
 		".config/*",
 		".env",
-		".eslintrc.cjs",
-		".prettierrc.cjs",
+		"eslint.config.js",
+		".prettierrc.js",
 		".remarkrc.js",
 		"package.json",
 		"pnpm-lock.yaml",

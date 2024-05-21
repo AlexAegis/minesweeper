@@ -23,6 +23,7 @@
 		"typedoc",
 		".turbo",
 		".cache",
-		"vite*.config.ts.timestamp-*"
+		"vite*.config.ts.timestamp-*",
+		"eslint.config.*"
 	]
 }
