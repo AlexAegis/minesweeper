@@ -118,51 +118,51 @@
 </script>
 
 <div
-	bind:this="{shortcutElement}"
-	id="{'shortcut' + shortcutState.shortcutId.toString()}"
-	use:firable="{{ draggable: true }}"
-	on:contextmenu|stopPropagation="{(event) => {
+	bind:this={shortcutElement}
+	id={'shortcut' + shortcutState.shortcutId.toString()}
+	use:firable={{ draggable: true }}
+	on:contextmenu|stopPropagation={(event) => {
 		contextMenuPosition = contextMenuPosition
 			? undefined
 			: { x: event.pageX / readGlobal('w2kZoom'), y: event.pageY / readGlobal('w2kZoom') };
-	}}"
+	}}
 	aria-label="shortcut"
 	role="button"
 	tabindex="0"
-	on:keydown="{keydown}"
-	on:dblclick="{() => {
+	on:keydown={keydown}
+	on:dblclick={() => {
 		spawn();
-	}}"
-	on:click="{() => {
+	}}
+	on:click={() => {
 		if (!pointerMovedDuringClick) {
 			select();
 		}
-	}}"
-	on:pointermove="{() => {
+	}}
+	on:pointermove={() => {
 		pointerMovedDuringClick = true;
-	}}"
-	on:pointerdown="{() => {
+	}}
+	on:pointerdown={() => {
 		pointerMovedDuringClick = false;
-	}}"
+	}}
 	class="shortcut"
-	class:selected="{shortcutState.selected && !shortcutState.renaming}"
-	style:top="{`${transientPosition.y.toString()}px`}"
-	style:left="{`${transientPosition.x.toString()}px`}"
+	class:selected={shortcutState.selected && !shortcutState.renaming}
+	style:top={`${transientPosition.y.toString()}px`}
+	style:left={`${transientPosition.x.toString()}px`}
 >
-	<div class="icon" bind:this="{shortcutIconElement}">
-		<Image class="icon" alt="{shortcutState.name}" src="{shortcutState.icon}" />
+	<div class="icon" bind:this={shortcutIconElement}>
+		<Image class="icon" alt={shortcutState.name} src={shortcutState.icon} />
 	</div>
 	<div class="shortcut-symbol"></div>
 	{#if shortcutState.renaming}
-		<form class="title" on:submit|preventDefault="{rename}">
+		<form class="title" on:submit|preventDefault={rename}>
 			<!-- svelte-ignore a11y-autofocus -->
 			<input
 				class="input"
 				type="text"
 				name="name"
 				autofocus
-				value="{shortcutState.name}"
-				on:keydown|stopPropagation="{keydownRename}"
+				value={shortcutState.name}
+				on:keydown|stopPropagation={keydownRename}
 				on:dblclick|stopPropagation
 			/>
 		</form>
@@ -173,19 +173,15 @@
 	{/if}
 </div>
 
-<ContextMenu bind:position="{contextMenuPosition}" spawnElement="{shortcutElement}">
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => spawn()}" bold="{true}">
-		Open
-	</Button>
+<ContextMenu bind:position={contextMenuPosition} spawnElement={shortcutElement}>
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => spawn()} bold={true}>Open</Button>
 	<hr />
 	<slot />
 	{#if $$slots.default}
 		<hr />
 	{/if}
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => deleteShortcut()}">
-		Delete
-	</Button>
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => beginRenameShortcut()}">
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => deleteShortcut()}>Delete</Button>
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => beginRenameShortcut()}>
 		Rename
 	</Button>
 </ContextMenu>

@@ -55,45 +55,40 @@
 </script>
 
 <div class="start-menu-container">
-	<div bind:this="{startMenu}" class="start-menu window">
+	<div bind:this={startMenu} class="start-menu window">
 		<div class="banner">
 			<div>{PACKAGE_NAME_AND_VERSION}</div>
 		</div>
 		<div class="content">
 			{#each $programKeys$ as programKey}
-				<Observer observable="{desktopSlice.dicedPrograms.get(programKey)}" let:next>
+				<Observer observable={desktopSlice.dicedPrograms.get(programKey)} let:next>
 					<Button
 						class="flat"
-						look="{ButtonLook.START_MENU_ITEM}"
-						on:click="{() => {
+						look={ButtonLook.START_MENU_ITEM}
+						on:click={() => {
 							desktopSlice.desktop$.internals.actions.spawnProgram.next(programKey);
-						}}"
-						on:contextmenu="{(event) => {
+						}}
+						on:contextmenu={(event) => {
 							contextMenuPosition = contextMenuPosition
 								? undefined
 								: {
 										x: event.pageX / readGlobal('w2kZoom'),
 										y: event.pageY / readGlobal('w2kZoom'),
 									};
-						}}"
+						}}
 					>
-						<Image
-							alt="{next.name}"
-							src="{next.icon}"
-							height="{iconSize}"
-							width="{iconSize}"
-						/>
+						<Image alt={next.name} src={next.icon} height={iconSize} width={iconSize} />
 						{next.initialWindowState.title}
 					</Button>
 
-					<ContextMenu bind:position="{contextMenuPosition}">
+					<ContextMenu bind:position={contextMenuPosition}>
 						<Button
-							look="{ButtonLook.CONTEXT_MENU_ITEM}"
-							on:click="{() => {
+							look={ButtonLook.CONTEXT_MENU_ITEM}
+							on:click={() => {
 								desktopSlice.shortcuts$.internals.shortcutsActions.spawnShortcut.next(
 									next,
 								);
-							}}"
+							}}
 						>
 							Create Shortcut
 						</Button>
@@ -109,24 +104,24 @@
 			{/if}
 
 			<Button
-				look="{ButtonLook.START_MENU_ITEM}"
+				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire="{() => {
+				on:fire={() => {
 					alert('Under Construction');
-				}}"
+				}}
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{w2kProgramsIconLarge}" />
+				<Image height={iconSize} width={iconSize} src={w2kProgramsIconLarge} />
 				Programs
 			</Button>
 
 			<Button
-				look="{ButtonLook.START_MENU_ITEM}"
+				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire="{() => {
+				on:fire={() => {
 					desktopSlice.toggleActiveSchemeKindAction.next(undefined);
-				}}"
+				}}
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{w2kDisplaySettingsIconLarge}" />
+				<Image height={iconSize} width={iconSize} src={w2kDisplaySettingsIconLarge} />
 				Switch to
 				{#if $activeSchemeKind$ === 'classic-scheme'}
 					w2k
@@ -137,13 +132,13 @@
 			</Button>
 
 			<Button
-				look="{ButtonLook.START_MENU_ITEM}"
+				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire="{() => {
+				on:fire={() => {
 					debug$.set(!debug$.value);
-				}}"
+				}}
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{w2kScanIconLarge}" />
+				<Image height={iconSize} width={iconSize} src={w2kScanIconLarge} />
 				{#if $debug$}
 					Disable
 				{:else}
@@ -153,24 +148,24 @@
 			</Button>
 
 			<Button
-				look="{ButtonLook.START_MENU_ITEM}"
+				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire="{() => window.open(packageMetadata.homepage, '_blank')}"
+				on:fire={() => window.open(packageMetadata.homepage, '_blank')}
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{githubIcon}" />
+				<Image height={iconSize} width={iconSize} src={githubIcon} />
 				Github
 			</Button>
 
 			<hr />
 
 			<Button
-				look="{ButtonLook.START_MENU_ITEM}"
+				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire="{() => {
+				on:fire={() => {
 					confirm('Sure?') && window.close();
-				}}"
+				}}
 			>
-				<Image height="{iconSize}" width="{iconSize}" src="{w2kShutdownIconLarge}" />
+				<Image height={iconSize} width={iconSize} src={w2kShutdownIconLarge} />
 				Shut down...
 			</Button>
 		</div>

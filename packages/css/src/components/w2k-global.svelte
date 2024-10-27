@@ -4,5 +4,5 @@
 </script>
 
 <svelte:head>
-	<link rel="preload" href="{font}" type="font/woff2" as="font" crossOrigin="anonymous" />
+	<link rel="preload" href={font} type="font/woff2" as="font" crossOrigin="anonymous" />
 </svelte:head>

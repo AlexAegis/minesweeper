@@ -1,13 +1,13 @@
 import type { CoordinateLike } from '@w2k/common';
-import type { ComponentType } from 'svelte';
+import type { Component } from 'svelte';
 import type { ProcessId, ProgramId } from '../store/desktop.store.js';
 
 export interface WindowComponents {
-	menu?: ComponentType;
+	menu?: Component;
 	/**
 	 * TODO: maybe rename this to body or windowContent
 	 */
-	content: ComponentType;
+	content: Component;
 }
 
 export type WindowMinimizationState =

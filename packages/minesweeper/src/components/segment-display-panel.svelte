@@ -29,7 +29,7 @@
 
 <div class="segment-display panel inset">
 	{#each numbers as number}
-		<SegmentDisplay value="{number}" />
+		<SegmentDisplay value={number} />
 	{/each}
 </div>
 

@@ -7,7 +7,7 @@
 	export let tileSlice: Slice<GameInstance, Record<`${number},${number}`, TileState>>;
 </script>
 
-<div class="playfield {$$props['class'] ?? ''}" style="{$$props['style'] ?? ''}">
+<div class="playfield {$$props['class'] ?? ''}" style={$$props['style'] ?? ''}>
 	{#each Object.values($tileSlice) as tile}
 		<Tile {cheating} {tile} on:startFire on:fire on:alternativeFire on:cancelFire />
 	{/each}

@@ -52,17 +52,17 @@
 	</TabSet>
 	<div class="prompt-control">
 		<Button
-			on:click="{() => {
+			on:click={() => {
 				applyScheme();
 				close();
-			}}">OK</Button
+			}}>OK</Button
 		>
-		<Button on:click="{() => close()}">Cancel</Button>
+		<Button on:click={() => close()}>Cancel</Button>
 		<Button
-			on:click="{() => {
+			on:click={() => {
 				applyScheme();
-			}}"
-			disabled="{!somethingChanged}">Apply</Button
+			}}
+			disabled={!somethingChanged}>Apply</Button
 		>
 	</div>
 </div>

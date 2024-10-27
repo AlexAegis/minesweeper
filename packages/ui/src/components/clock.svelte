@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { BehaviorSubject, combineLatest, interval, map, startWith } from 'rxjs';
 	import { onMount } from 'svelte';
 
@@ -21,7 +20,7 @@
 	);
 
 	onMount(() => {
-		if (browser) {
+		if (navigator) {
 			language$.next(navigator.language);
 		}
 	});

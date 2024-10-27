@@ -7,13 +7,13 @@
 
 <select
 	{name}
-	id="{name}"
+	id={name}
 	bind:value
 	{disabled}
-	class="{$$props['class'] ?? ''}"
-	style="{$$props['style'] ?? ''}"
+	class={$$props['class'] ?? ''}
+	style={$$props['style'] ?? ''}
 >
 	{#each Object.keys(options) as optionKey}
-		<option value="{optionKey}">{options[optionKey]}</option>
+		<option value={optionKey}>{options[optionKey]}</option>
 	{/each}
 </select>

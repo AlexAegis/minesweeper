@@ -119,29 +119,29 @@
 <div
 	id="desktop"
 	class="desktop w2k {$activeSchemeKind$}"
-	bind:this="{desktopElement}"
+	bind:this={desktopElement}
 	style="{joinStyleMap(desktopColorSchemeToCssVariables($activeSchemeData$))};
 	zoom: {100 * zoom}%;"
 >
 	<div
-		bind:this="{workspaceElement}"
+		bind:this={workspaceElement}
 		id="workspace"
 		class="workspace free-placement"
 		role="directory"
 		aria-roledescription="desktop workspace containing the icons"
-		on:contextmenu|preventDefault="{(event) => {
+		on:contextmenu|preventDefault={(event) => {
 			contextMenuPosition = contextMenuPosition
 				? undefined
 				: {
 						x: event.pageX / readGlobal('w2kZoom'),
 						y: event.pageY / readGlobal('w2kZoom'),
 					};
-		}}"
+		}}
 	>
 		<DesktopShortcuts {desktopSlice} {selectArea} {grippy} />
 		<slot />
 		<div id="selection-plane" class="selection-plane">
-			<AreaSelection area="{selectArea}" />
+			<AreaSelection area={selectArea} />
 		</div>
 	</div>
 
@@ -149,22 +149,22 @@
 		<DesktopWindows {desktopSlice} {windowComponents} {grippy} />
 	</div>
 
-	<ContextMenu bind:position="{contextMenuPosition}">
-		<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => console.log('Hello world')}">
+	<ContextMenu bind:position={contextMenuPosition}>
+		<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => console.log('Hello world')}>
 			Hello
 		</Button>
 
 		<Button
-			look="{ButtonLook.CONTEXT_MENU_ITEM}"
-			on:click="{() => window.open(packageMetadata.homepage, '_blank')}"
+			look={ButtonLook.CONTEXT_MENU_ITEM}
+			on:click={() => window.open(packageMetadata.homepage, '_blank')}
 		>
 			Github
 		</Button>
 		<hr />
 		<Button
-			look="{ButtonLook.CONTEXT_MENU_ITEM}"
-			on:click="{() =>
-				desktopSlice.desktop$.internals.actions.spawnProgram.next('displayProperties')}"
+			look={ButtonLook.CONTEXT_MENU_ITEM}
+			on:click={() =>
+				desktopSlice.desktop$.internals.actions.spawnProgram.next('displayProperties')}
 		>
 			Properties
 		</Button>

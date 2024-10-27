@@ -43,21 +43,17 @@
 
 <div
 	class="title-bar {$$props['class'] ?? ''}"
-	style="{$$props['style'] ?? ''}"
-	class:active="{windowState.active && !error}"
+	style={$$props['style'] ?? ''}
+	class:active={windowState.active && !error}
 	class:error
-	on:dblclick="{maximize}"
-	on:pointerdown="{dbltap}"
+	on:dblclick={maximize}
+	on:pointerdown={dbltap}
 	on:contextmenu|preventDefault
 	role="presentation"
 >
 	{#if windowState.titleBarIcon}
 		<div class="title-bar-icon">
-			<Image
-				class="title-bar-icon"
-				src="{windowState.titleBarIcon}"
-				alt="{windowState.title}"
-			/>
+			<Image class="title-bar-icon" src={windowState.titleBarIcon} alt={windowState.title} />
 		</div>
 	{/if}
 
@@ -70,32 +66,32 @@
 		{#if windowState.showMinimize}
 			<button
 				aria-label="Minimize"
-				disabled="{!windowState.minimizeEnabled}"
-				on:click|preventDefault|stopPropagation="{minimize}"
+				disabled={!windowState.minimizeEnabled}
+				on:click|preventDefault|stopPropagation={minimize}
 			></button>
 		{/if}
 
 		{#if windowState.showMaximize}
 			<button
-				aria-label="{windowState.maximized ? 'Restore' : 'Maximize'}"
-				on:click|preventDefault|stopPropagation="{maximize}"
-				disabled="{!windowState.maximizeEnabled || !windowState.resizable}"
+				aria-label={windowState.maximized ? 'Restore' : 'Maximize'}
+				on:click|preventDefault|stopPropagation={maximize}
+				disabled={!windowState.maximizeEnabled || !windowState.resizable}
 			></button>
 		{/if}
 
 		{#if windowState.showHelp}
 			<button
 				aria-label="Help"
-				on:click|preventDefault|stopPropagation="{help}"
-				disabled="{!windowState.helpEnabled}"
+				on:click|preventDefault|stopPropagation={help}
+				disabled={!windowState.helpEnabled}
 			></button>
 		{/if}
 
 		{#if windowState.showClose}
 			<button
 				aria-label="Close"
-				on:click|preventDefault|stopPropagation="{close}"
-				disabled="{!windowState.closeEnabled}"
+				on:click|preventDefault|stopPropagation={close}
+				disabled={!windowState.closeEnabled}
 			></button>
 		{/if}
 	</div>

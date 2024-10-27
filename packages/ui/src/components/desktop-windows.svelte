@@ -18,55 +18,55 @@
 	{@const windowSlice = desktopSlice.dicedWindows.get(processId)}
 
 	{#if windowSlice.internals}
-		<Observer observable="{windowSlice}" let:next>
+		<Observer observable={windowSlice} let:next>
 			<Window
-				id="{formatPid(next.processId, 'window')}"
-				windowState="{next}"
+				id={formatPid(next.processId, 'window')}
+				windowState={next}
 				{grippy}
-				on:activate="{() => {
+				on:activate={() => {
 					desktopSlice.desktop$.internals.actions.activateProgram.next(processId);
-				}}"
-				on:maximize="{() => {
+				}}
+				on:maximize={() => {
 					windowSlice.internals.windowActions.maximize.next(undefined);
-				}}"
-				on:minimize="{() => {
+				}}
+				on:minimize={() => {
 					windowSlice.internals.minimized$.set('start-minimizing');
-				}}"
-				on:restore="{() => {
+				}}
+				on:restore={() => {
 					windowSlice.internals.windowActions.restore.next(undefined);
-				}}"
-				on:close="{() => {
+				}}
+				on:close={() => {
 					desktopSlice.dicedWindows.remove(processId);
-				}}"
-				on:move="{(event) => {
+				}}
+				on:move={(event) => {
 					windowSlice.internals.windowActions.move.next(event.detail);
-				}}"
-				on:resize="{(event) => {
+				}}
+				on:resize={(event) => {
 					windowSlice.internals.windowActions.resize.next(event.detail);
-				}}"
+				}}
 			>
 				<svelte:fragment slot="title-bar-context-menu">
-					<WindowContextItems windowState="{next}" {windowSlice} {desktopSlice} />
+					<WindowContextItems windowState={next} {windowSlice} {desktopSlice} />
 				</svelte:fragment>
-				{#if next.program && windowComponents[next.program]?.menu}
-					<div class="menu-bar">
-						<svelte:component
-							this="{windowComponents[next.program]?.menu}"
-							slot="menu"
-							internals="{windowSlice.internals?.programLogic}"
-							windowState="{next}"
-							on:close="{() => desktopSlice.dicedWindows.remove(processId)}"
-						/>
-					</div>
-				{/if}
+				<svelte:fragment slot="menu">
+					{#if next.program && windowComponents[next.program]?.menu}
+						<div class="menu-bar">
+							<svelte:component
+								this={windowComponents[next.program]?.menu}
+								internals={windowSlice.internals?.programLogic}
+								windowState={next}
+							/>
+						</div>
+					{/if}
+				</svelte:fragment>
 
 				{#if next.program && windowSlice.internals?.programLogic && windowComponents[next.program]}
 					<svelte:component
-						this="{windowComponents[next.program]?.content}"
-						windowState="{next}"
+						this={windowComponents[next.program]?.content}
+						windowState={next}
 						{windowSlice}
 						{desktopSlice}
-						internals="{windowSlice.internals.programLogic}"
+						internals={windowSlice.internals.programLogic}
 					/>
 				{/if}
 			</Window>

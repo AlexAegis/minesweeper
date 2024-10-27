@@ -74,13 +74,13 @@
 	});
 </script>
 
-<Modal bind:isOpen backdropCanClose="{false}" on:error="{() => errorNotification?.next(undefined)}">
+<Modal bind:isOpen backdropCanClose={false} on:error={() => errorNotification?.next(undefined)}>
 	<Window
-		bind:windowElement="{modalWindowElement}"
-		windowState="{effectiveWindowState}"
-		transient="{true}"
-		canDeactivate="{false}"
-		on:close="{close}"
+		bind:windowElement={modalWindowElement}
+		windowState={effectiveWindowState}
+		transient={true}
+		canDeactivate={false}
+		on:close={close}
 		bind:errorNotification
 	>
 		<slot />

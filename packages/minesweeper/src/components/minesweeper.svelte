@@ -24,21 +24,21 @@
 	});
 </script>
 
-<div class="game w2k-scheme-classic" class:w2k-scheme-classic="{!$unlockedScheme$}">
+<div class="game w2k-scheme-classic" class:w2k-scheme-classic={!$unlockedScheme$}>
 	<Panel class="stats">
-		<Observer observable="{internals.remainingMines$}" let:next>
-			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />
+		<Observer observable={internals.remainingMines$} let:next>
+			<SegmentDisplayPanel value={next} paddedLength={3} />
 		</Observer>
-		<Observer observable="{internals.smileyState$}" let:next>
+		<Observer observable={internals.smileyState$} let:next>
 			<Smiley
-				on:click="{() => {
+				on:click={() => {
 					internals.minesweeperActions.resetGame.next(undefined);
-				}}"
-				smileyState="{next}"
+				}}
+				smileyState={next}
 			/>
 		</Observer>
-		<Observer observable="{internals.elapsedSeconds$}" let:next>
-			<SegmentDisplayPanel value="{next}" paddedLength="{3}" />
+		<Observer observable={internals.elapsedSeconds$} let:next>
+			<SegmentDisplayPanel value={next} paddedLength={3} />
 		</Observer>
 	</Panel>
 
@@ -46,17 +46,17 @@
 		class="panel inset"
 		{tileSlice}
 		{cheating}
-		on:startFire="{(event) =>
-			internals.minesweeperActions.clickActions.startFire.next(event.detail)}"
-		on:fire="{(event) => {
+		on:startFire={(event) =>
+			internals.minesweeperActions.clickActions.startFire.next(event.detail)}
+		on:fire={(event) => {
 			internals.minesweeperActions.clickActions.fire.next(event.detail);
-		}}"
-		on:alternativeFire="{(event) => {
+		}}
+		on:alternativeFire={(event) => {
 			internals.minesweeperActions.clickActions.alternativeFire.next(event.detail);
-		}}"
-		on:cancelFire="{(event) => {
+		}}
+		on:cancelFire={(event) => {
 			internals.minesweeperActions.clickActions.cancelFire.next(event.detail);
-		}}"
+		}}
 	/>
 </div>
 

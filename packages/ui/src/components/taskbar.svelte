@@ -25,7 +25,7 @@
 	<div id="quickbar" class="quickbar panel inset">
 		<slot name="quickbar" />
 		{#if $debug$}
-			<div class="quickbar-icon"><Image height="{16}" width="{16}" src="{debugIcon}" /></div>
+			<div class="quickbar-icon"><Image height={16} width={16} src={debugIcon} /></div>
 		{/if}
 		<Clock />
 	</div>

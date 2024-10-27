@@ -141,31 +141,31 @@
 </script>
 
 <button
-	bind:this="{button}"
+	bind:this={button}
 	{id}
 	{type}
 	{disabled}
 	{title}
-	aria-label="{$$props['aria-label']}"
-	class="{$$props['class'] ?? ''}"
-	class:outset="{!pressed}"
-	class:inset="{pressed}"
-	style="{$$props['style'] ?? ''}"
-	class:disabled="{disabled || appearDisabled}"
-	class:hotkey-letter="{!!hotkeyLetter}"
+	aria-label={$$props['aria-label']}
+	class={$$props['class'] ?? ''}
+	class:outset={!pressed}
+	class:inset={pressed}
+	style={$$props['style'] ?? ''}
+	class:disabled={disabled || appearDisabled}
+	class:hotkey-letter={!!hotkeyLetter}
 	class:active
 	class:selfPress
 	class:pressed
 	class:bold
-	class:flat="{look === ButtonLook.CONTEXT_MENU_ITEM ||
+	class:flat={look === ButtonLook.CONTEXT_MENU_ITEM ||
 		look === ButtonLook.START_MENU_ITEM ||
-		look === ButtonLook.TITLE_BAR_MENU_ITEM}"
-	class:type-none="{look === undefined}"
-	class:type-thick="{look === ButtonLook.THICK}"
-	class:type-taskbar-item="{look === ButtonLook.TASKBAR_ITEM}"
-	class:type-title-bar-menu-item="{look === ButtonLook.TITLE_BAR_MENU_ITEM}"
-	class:type-context-menu-item="{look === ButtonLook.CONTEXT_MENU_ITEM}"
-	class:type-start-menu-item="{look === ButtonLook.START_MENU_ITEM}"
+		look === ButtonLook.TITLE_BAR_MENU_ITEM}
+	class:type-none={look === undefined}
+	class:type-thick={look === ButtonLook.THICK}
+	class:type-taskbar-item={look === ButtonLook.TASKBAR_ITEM}
+	class:type-title-bar-menu-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
+	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
+	class:type-start-menu-item={look === ButtonLook.START_MENU_ITEM}
 	on:click
 	on:mouseup
 	on:mousedown
@@ -174,18 +174,18 @@
 	on:contextmenu|preventDefault|stopPropagation
 	on:pointercancel
 	on:pointerenter
-	on:pointerup="{pointerup}"
-	on:pointerdown="{pointerdown}"
-	on:pointerleave="{pointerleave}"
+	on:pointerup={pointerup}
+	on:pointerdown={pointerdown}
+	on:pointerleave={pointerleave}
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
-		<Image height="{16}" width="{16}" src="{icon}"></Image>
+		<Image height={16} width={16} src={icon}></Image>
 		<span>
 			<slot />
 		</span>
 	{:else if look === ButtonLook.TASKBAR_ITEM}
 		<span class="taskbar-button-icon">
-			<Image height="{16}" width="{16}" src="{icon}" alt="{label}" />
+			<Image height={16} width={16} src={icon} alt={label} />
 		</span>
 
 		<span>

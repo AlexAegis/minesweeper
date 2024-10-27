@@ -253,58 +253,58 @@
 {#if transientState.maximized === 'maximizing' || transientState.maximized === 'restoring'}
 	<TitleBar
 		class="animate"
-		windowState="{{
+		windowState={{
 			...transientState,
 			showMaximize: false,
 			showMinimize: false,
 			showHelp: false,
 			showClose: false,
-		}}"
-		style="{getMaximizeAnimation(transientState, transientState.maximized)}"
+		}}
+		style={getMaximizeAnimation(transientState, transientState.maximized)}
 	/>
 {/if}
 
 <div
-	bind:this="{windowElement}"
+	bind:this={windowElement}
 	{id}
 	class="program-window window pid{transientState.processId} {transientState.program} {$$props[
 		'class'
 	] ?? ''}"
-	style="{$$props['style'] ?? ''}"
-	class:invisible="{transientState.invisible}"
-	class:immobile="{!effectiveMovable}"
-	class:non-resizable="{!effectiveResizable}"
-	class:minimized="{transientState.minimized === true}"
-	class:minimizing="{transientState.minimized === 'minimizing'}"
-	class:unminimizing="{transientState.minimized === 'unminimizing'}"
-	class:maximized="{transientState.maximized === true}"
-	class:maximizing="{transientState.maximized === 'maximizing'}"
-	class:restoring="{transientState.maximized === 'restoring'}"
-	class:fit-content="{transientState.fitContent}"
-	class:active="{transientState.active}"
-	style:top="{`${transientState.position.y.toString()}px`}"
-	style:left="{`${transientState.position.x.toString()}px`}"
-	style:height="{`${transientState.height.toString()}px`}"
-	style:width="{`${transientState.width.toString()}px`}"
-	style:z-index="{transientState.zIndex}"
-	on:pointerdown="{activate}"
+	style={$$props['style'] ?? ''}
+	class:invisible={transientState.invisible}
+	class:immobile={!effectiveMovable}
+	class:non-resizable={!effectiveResizable}
+	class:minimized={transientState.minimized === true}
+	class:minimizing={transientState.minimized === 'minimizing'}
+	class:unminimizing={transientState.minimized === 'unminimizing'}
+	class:maximized={transientState.maximized === true}
+	class:maximizing={transientState.maximized === 'maximizing'}
+	class:restoring={transientState.maximized === 'restoring'}
+	class:fit-content={transientState.fitContent}
+	class:active={transientState.active}
+	style:top={`${transientState.position.y.toString()}px`}
+	style:left={`${transientState.position.x.toString()}px`}
+	style:height={`${transientState.height.toString()}px`}
+	style:width={`${transientState.width.toString()}px`}
+	style:z-index={transientState.zIndex}
+	on:pointerdown={activate}
 >
 	<TitleBar
-		windowState="{{
+		windowState={{
 			...transientState,
 			active: ((errorFlash === undefined && transientState.active) || errorFlash) ?? false,
-		}}"
-		on:minimize="{minimize}"
-		on:restore="{restore}"
-		on:maximize="{maximize}"
-		on:close="{close}"
-		on:contextmenu="{(event) => {
+		}}
+		on:minimize={minimize}
+		on:restore={restore}
+		on:maximize={maximize}
+		on:close={close}
+		on:contextmenu={(event) => {
 			contextMenuPosition = contextMenuPosition
 				? undefined
 				: { x: event.pageX, y: event.pageY };
-		}}"
+		}}
 	>
-		<ContextMenu bind:position="{contextMenuPosition}">
+		<ContextMenu bind:position={contextMenuPosition}>
 			<slot name="title-bar-context-menu" />
 		</ContextMenu>
 	</TitleBar>

@@ -30,7 +30,7 @@
 		</div>
 	</div>
 	<div class="footer">
-		<Button disabled="{!isClearingEnabled}" on:fire="{() => dispatch('clear')}"
+		<Button disabled={!isClearingEnabled} on:fire={() => dispatch('clear')}
 			>Clear Highscrore</Button
 		>
 	</div>

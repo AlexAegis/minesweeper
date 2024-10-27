@@ -10,9 +10,9 @@
 		{#each Object.entries(tabs) as [tabId, { displayName, disabled }]}
 			<button
 				class="custom tab use-disabled-shadow"
-				on:click="{() => (selected = tabId)}"
+				on:click={() => (selected = tabId)}
 				{disabled}
-				class:active="{selected === tabId}"
+				class:active={selected === tabId}
 			>
 				{displayName}
 			</button>
@@ -21,7 +21,7 @@
 
 	<div class="window" role="tabpanel">
 		<div class="window-body">
-			<slot name="content" tab="{selected}" />
+			<slot name="content" tab={selected} />
 		</div>
 	</div>
 </div>

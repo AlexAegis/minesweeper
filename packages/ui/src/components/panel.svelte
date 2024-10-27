@@ -1,4 +1,4 @@
-<div class="{$$props['class'] ?? ''}" style="{$$props['style'] ?? ''}">
+<div class={$$props['class'] ?? ''} style={$$props['style'] ?? ''}>
 	<slot />
 </div>
 

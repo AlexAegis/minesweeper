@@ -94,20 +94,20 @@
 
 {#if effectivePosition !== undefined}
 	<div
-		bind:this="{contextMenuContainer}"
+		bind:this={contextMenuContainer}
 		class="context-menu-container"
-		style:top="{`${effectivePosition.y.toString()}px`}"
-		style:left="{`${effectivePosition.x.toString()}px`}"
-		style:--context-menu-appear-x-direction="{xAxisAnimated ? xDirection : 0}"
-		style:--context-menu-appear-y-direction="{yAxisAnimated ? yDirection : 0}"
+		style:top={`${effectivePosition.y.toString()}px`}
+		style:left={`${effectivePosition.x.toString()}px`}
+		style:--context-menu-appear-x-direction={xAxisAnimated ? xDirection : 0}
+		style:--context-menu-appear-y-direction={yAxisAnimated ? yDirection : 0}
 		aria-roledescription="context menu containing contextual buttons"
 		role="presentation"
-		on:click|stopPropagation="{() => {
+		on:click|stopPropagation={() => {
 			dispatcher('dismiss');
 			position = undefined;
-		}}"
+		}}
 	>
-		<div class="context-menu window {$$props['class'] ?? ''}" style="{$$props['style'] ?? ''}">
+		<div class="context-menu window {$$props['class'] ?? ''}" style={$$props['style'] ?? ''}>
 			<slot />
 		</div>
 	</div>

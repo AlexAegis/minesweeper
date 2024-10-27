@@ -9,7 +9,7 @@
 	}>();
 </script>
 
-<button class="custom" on:click="{() => dispatch('select', color)}">
+<button class="custom" on:click={() => dispatch('select', color)} aria-label="Select Color">
 	<div class="color" style="background-color: rgb({color.r} {color.g} {color.b});"></div>
 </button>
 

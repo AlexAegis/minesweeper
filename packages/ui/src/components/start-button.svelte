@@ -27,11 +27,11 @@
 <Button
 	id="start"
 	class="start"
-	bind:button="{startButton}"
-	bind:active="{$startMenuOpen$}"
-	on:startFire="{() => {
+	bind:button={startButton}
+	bind:active={$startMenuOpen$}
+	on:startFire={() => {
 		startMenuOpen$.set(!startMenuOpen$.value);
-	}}"
+	}}
 >
-	<Image height="{14}" src="{$startIcon$}" />
+	<Image height={14} src={$startIcon$} />
 </Button>

@@ -66,7 +66,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: pnpm setup
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           run_install: false
       - name: get pnpm store directory
@@ -109,7 +109,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: pnpm setup
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc'
         with:
           run_install: false
@@ -145,7 +145,7 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
         if: |
           needs.check-pages.outputs.pages_enabled == 'true' &&
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'typedoc' &&
@@ -184,7 +184,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: pnpm setup
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         if: vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'vitepress'
         with:
           run_install: false
@@ -220,7 +220,7 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
         if: |
           needs.check-pages.outputs.pages_enabled == 'true' &&
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'vitepress' &&
@@ -256,7 +256,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: pnpm setup
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           run_install: false
       - name: get pnpm store directory
@@ -298,7 +298,7 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
         if: |
           needs.check-pages.outputs.pages_enabled == 'true' &&
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'test' &&
@@ -333,7 +333,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: pnpm setup
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           run_install: false
       - name: get pnpm store directory
@@ -369,7 +369,7 @@ jobs:
         run: |
           cp ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/index.html ${{ vars.PAGES_DEPLOY_ARTIFACT_DIR }}/404.html
       - name: setup pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
         if: |
           needs.check-pages.outputs.pages_enabled == 'true' &&
           vars.PAGES_DEPLOY_ARTIFACT_BUILDING_JOB == 'build' &&
@@ -427,7 +427,7 @@ jobs:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
       - name: pnpm setup
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           run_install: false
       - name: get pnpm store directory

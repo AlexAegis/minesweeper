@@ -45,43 +45,43 @@
 	}
 </script>
 
-<Dropdown title="Game" hotkeyLetter="{'G'}" bind:active>
+<Dropdown title="Game" hotkeyLetter={'G'} bind:active>
 	<Button
-		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => internals.minesweeperActions.resetGame.next(undefined)}"
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => internals.minesweeperActions.resetGame.next(undefined)}
 	>
 		New
 	</Button>
 	<hr />
 	{#each Object.entries(CLASSIC_GAME_PRESETS) as [key, preset]}
-		<Observer observable="{internals.isGameSettingsAPreset$(preset)}" let:next>
+		<Observer observable={internals.isGameSettingsAPreset$(preset)} let:next>
 			<Button
-				look="{ButtonLook.CONTEXT_MENU_ITEM}"
-				icon="{next ? w2kCheckmark : ''}"
-				on:click="{() => {
+				look={ButtonLook.CONTEXT_MENU_ITEM}
+				icon={next ? w2kCheckmark : ''}
+				on:click={() => {
 					internals.minesweeperActions.resetGame.next(preset);
-				}}"
+				}}
 			>
 				{key}
 			</Button>
 		</Observer>
 	{/each}
 	<Button
-		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => openModal(customGameModal)}"
-		icon="{$isGameSettingsNotAPreset$ ? w2kCheckmark : ''}"
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => openModal(customGameModal)}
+		icon={$isGameSettingsNotAPreset$ ? w2kCheckmark : ''}
 	>
 		Custom...
 	</Button>
 	<hr />
 
-	<Observer observable="{internals.cheating$}" let:next>
+	<Observer observable={internals.cheating$} let:next>
 		<Button
-			look="{ButtonLook.CONTEXT_MENU_ITEM}"
-			on:click="{() => {
+			look={ButtonLook.CONTEXT_MENU_ITEM}
+			on:click={() => {
 				internals.minesweeperActions.cheating.next(!next);
-			}}"
-			icon="{next ? w2kCheckmark : ''}"
+			}}
+			icon={next ? w2kCheckmark : ''}
 		>
 			{#if !next}
 				Enable
@@ -92,26 +92,26 @@
 		</Button>
 	</Observer>
 
-	<Observer observable="{internals.unlockedScheme$}" let:next>
+	<Observer observable={internals.unlockedScheme$} let:next>
 		<Button
-			look="{ButtonLook.CONTEXT_MENU_ITEM}"
-			on:click="{() => {
+			look={ButtonLook.CONTEXT_MENU_ITEM}
+			on:click={() => {
 				internals.unlockedScheme$.set(!next);
-			}}"
-			icon="{next ? w2kCheckmark : ''}"
+			}}
+			icon={next ? w2kCheckmark : ''}
 			title="Regardless of your UI scheme, Minesweeper always looked like the 98/Classic scheme. Here you can turn it off and see how it would like with the system scheme."
 		>
 			Unlock Color Scheme
 		</Button>
 	</Observer>
 
-	<Observer observable="{internals.unlockedResize$}" let:next>
+	<Observer observable={internals.unlockedResize$} let:next>
 		<Button
-			look="{ButtonLook.CONTEXT_MENU_ITEM}"
-			on:click="{() => {
+			look={ButtonLook.CONTEXT_MENU_ITEM}
+			on:click={() => {
 				internals.unlockedResize$.set(!next);
-			}}"
-			icon="{next ? w2kCheckmark : ''}"
+			}}
+			icon={next ? w2kCheckmark : ''}
 			title="Minesweeper is not resizeable by default. How about changing that?"
 		>
 			Unlock Resize
@@ -120,59 +120,59 @@
 
 	<hr />
 
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => openModal(highScoreModal)}">
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => openModal(highScoreModal)}>
 		Best times...
 	</Button>
 	<hr />
 
 	<Button
-		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => {
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => {
 			dispatch('close');
-		}}"
+		}}
 	>
 		Exit
 	</Button>
 </Dropdown>
-<Dropdown title="{'Help'}" hotkeyLetter="{'H'}" bind:active>
+<Dropdown title={'Help'} hotkeyLetter={'H'} bind:active>
 	<Button
-		look="{ButtonLook.CONTEXT_MENU_ITEM}"
-		on:click="{() => window.open(packageMetadata.homepage, '_blank')}"
+		look={ButtonLook.CONTEXT_MENU_ITEM}
+		on:click={() => window.open(packageMetadata.homepage, '_blank')}
 	>
 		Github
 	</Button>
 	<hr />
-	<Button look="{ButtonLook.CONTEXT_MENU_ITEM}" on:click="{() => openModal(aboutModal)}">
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => openModal(aboutModal)}>
 		About Minesweeper...
 	</Button>
 </Dropdown>
 
 <ModalDialogWindow
-	bind:this="{customGameModal}"
-	windowState="{{ fitContent: true, title: 'Custom Field', resizable: false }}"
+	bind:this={customGameModal}
+	windowState={{ fitContent: true, title: 'Custom Field', resizable: false }}
 >
 	<Settings
 		{presets$}
-		preset="{$preset$}"
-		on:submit="{settingsSubmit}"
-		on:cancel="{() => customGameModal.close()}"
+		preset={$preset$}
+		on:submit={settingsSubmit}
+		on:cancel={() => customGameModal.close()}
 	/>
 </ModalDialogWindow>
 
 <ModalDialogWindow
-	bind:this="{highScoreModal}"
-	windowState="{{ fitContent: false, title: 'Highscore', height: 240 }}"
+	bind:this={highScoreModal}
+	windowState={{ fitContent: false, title: 'Highscore', height: 240 }}
 >
 	<Highscore
 		{highscoreEntries$}
-		isClearingEnabled="{internals !== undefined}"
-		on:clear="{() => internals.winHistory$.set([])}"
+		isClearingEnabled={internals !== undefined}
+		on:clear={() => internals.winHistory$.set([])}
 	/>
 </ModalDialogWindow>
 
 <ModalDialogWindow
-	bind:this="{aboutModal}"
-	windowState="{{ fitContent: true, title: 'About', resizable: true }}"
+	bind:this={aboutModal}
+	windowState={{ fitContent: true, title: 'About', resizable: true }}
 >
 	<AboutMinesweeper />
 </ModalDialogWindow>

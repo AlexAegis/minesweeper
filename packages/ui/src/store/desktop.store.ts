@@ -21,7 +21,6 @@ import {
 import { isNotNullish } from '@alexaegis/common';
 import { documentPointerDown$ } from '@w2k/core';
 
-import { browser } from '$app/environment';
 import type { Rectangle } from '../components/rectangle.interface.js';
 import { addVec, vecComparator } from '../helpers/grippy/handlers/vec2.interface.js';
 import {
@@ -653,161 +652,143 @@ export const createDesktopSlice = <
 	// TODO: This spawn-minesweeper-if-not-running should be specific to the app, not the library
 	const isMinesweeperSpawned$ = isProgramSpawned$('minesweeper');
 
-	if (browser) {
-		// Initialize a fresh instance of minesweeper if there isn't one already.
-		// It's done in the browser only because otherwise it would pre-render it
-		// even when it's not needed
-		//windows$.createEffect(
-		//	isMinesweeperSpawned$.pipe(
-		//		take(1),
-		//		filter((is) => !is),
-		//		map(() => desktop$.internals.actions.spawnProgram.makePacket('minesweeper')),
-		//	),
-		//);
-
-		const createTimedAction = <T>(options: {
-			states: T[];
-			time: number;
-			createStartActionPacket: (state: T) => ActionPacket;
-			createFinishActionPacket: (state: T) => ActionPacket;
-		}): Observable<ActionPacket>[] => {
-			const startPackets = options.states.map((state) =>
-				options.createStartActionPacket(state),
-			);
-			const finishPackets = options.states.map((state) =>
-				options.createFinishActionPacket(state),
-			);
-
-			return [
-				...startPackets.map((packet) => of(packet)),
-				...finishPackets.map((finishPacket) =>
-					timer(options.time).pipe(map(() => finishPacket)),
-				),
-			];
-		};
-
-		windows$.createEffect(
-			windows$.pipe(
-				mergeMap((windowRecord) => {
-					const windowStates = Object.values(windowRecord);
-
-					const animationTime = 150;
-
-					const minimizationActions = createTimedAction<WindowState>({
-						states: windowStates.filter(
-							(windowState) => windowState.minimized === 'start-minimizing',
-						),
-						time: animationTime,
-						createStartActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.minimized$.setAction.makePacket('minimizing'),
-						createFinishActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.minimized$.setAction.makePacket(true),
-					});
-
-					const unminimizationActions = createTimedAction<WindowState>({
-						states: windowStates.filter(
-							(windowState) => windowState.minimized === 'start-unminimizing',
-						),
-						time: animationTime,
-						createStartActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.minimized$.setAction.makePacket('unminimizing'),
-						createFinishActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.minimized$.setAction.makePacket(false),
-					});
-
-					const maximiziationActions = createTimedAction<WindowState>({
-						states: windowStates.filter(
-							(windowState) => windowState.maximized === 'start-maximizing',
-						),
-						time: animationTime,
-						createStartActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.maximized$.setAction.makePacket('maximizing'),
-						createFinishActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.maximized$.setAction.makePacket(true),
-					});
-
-					const unmaximiziationActions = createTimedAction<WindowState>({
-						states: windowStates.filter(
-							(windowState) => windowState.maximized === 'start-restoring',
-						),
-						time: animationTime,
-						createStartActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.maximized$.setAction.makePacket('restoring'),
-						createFinishActionPacket: (state) =>
-							dicedWindows
-								.get(state.processId)
-								.internals.maximized$.setAction.makePacket(false),
-					});
-
-					return merge([
-						...minimizationActions,
-						...unminimizationActions,
-						...maximiziationActions,
-						...unmaximiziationActions,
-					]);
-				}),
-				mergeMap((actions) => actions),
-			),
+	const createTimedAction = <T>(options: {
+		states: T[];
+		time: number;
+		createStartActionPacket: (state: T) => ActionPacket;
+		createFinishActionPacket: (state: T) => ActionPacket;
+	}): Observable<ActionPacket>[] => {
+		const startPackets = options.states.map((state) => options.createStartActionPacket(state));
+		const finishPackets = options.states.map((state) =>
+			options.createFinishActionPacket(state),
 		);
 
-		activeSchemeKind$.createEffect(
-			activeSchemeKind$.pipe(
-				tap((kind) => {
-					const desktopElement = document.querySelector('#desktop');
-					console.log('asd', desktopElement);
-					if (desktopElement) {
-						desktopElement.classList.remove('classic-scheme');
-						desktopElement.classList.remove('standard-scheme');
-						desktopElement.classList.remove('custom-scheme');
-						desktopElement.classList.add(kind);
-					}
-				}),
+		return [
+			...startPackets.map((packet) => of(packet)),
+			...finishPackets.map((finishPacket) =>
+				timer(options.time).pipe(map(() => finishPacket)),
 			),
-		);
+		];
+	};
 
-		desktop$.createEffect(
-			programs$.pipe(
-				take(1),
-				map(() => programs$.updateAction.makePacket(preInstalledPrograms)),
-			),
-		);
+	windows$.createEffect(
+		windows$.pipe(
+			mergeMap((windowRecord) => {
+				const windowStates = Object.values(windowRecord);
 
-		desktop$.createEffect(
-			documentPointerDown$.pipe(
-				filter((event) => {
-					const elementsUnderPointer = document.elementsFromPoint(
-						event.pageX,
-						event.pageY,
-					);
-					return !elementsUnderPointer.some(
-						(element) =>
-							element.classList.contains('window') ||
-							element.classList.contains('type-taskbar-item') ||
-							element.classList.contains('modal-backdrop'),
-					);
-				}),
-				ifLatestFrom(
-					windows$.internals.activeWindowCount$,
-					(activeWindowCount) => activeWindowCount > 0,
-				),
-				map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
+				const animationTime = 150;
+
+				const minimizationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.minimized === 'start-minimizing',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket('minimizing'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket(true),
+				});
+
+				const unminimizationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.minimized === 'start-unminimizing',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket('unminimizing'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.minimized$.setAction.makePacket(false),
+				});
+
+				const maximiziationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.maximized === 'start-maximizing',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket('maximizing'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket(true),
+				});
+
+				const unmaximiziationActions = createTimedAction<WindowState>({
+					states: windowStates.filter(
+						(windowState) => windowState.maximized === 'start-restoring',
+					),
+					time: animationTime,
+					createStartActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket('restoring'),
+					createFinishActionPacket: (state) =>
+						dicedWindows
+							.get(state.processId)
+							.internals.maximized$.setAction.makePacket(false),
+				});
+
+				return merge([
+					...minimizationActions,
+					...unminimizationActions,
+					...maximiziationActions,
+					...unmaximiziationActions,
+				]);
+			}),
+			mergeMap((actions) => actions),
+		),
+	);
+
+	activeSchemeKind$.createEffect(
+		activeSchemeKind$.pipe(
+			tap((kind) => {
+				const desktopElement = document.querySelector('#desktop');
+				console.log('asd', desktopElement);
+				if (desktopElement) {
+					desktopElement.classList.remove('classic-scheme');
+					desktopElement.classList.remove('standard-scheme');
+					desktopElement.classList.remove('custom-scheme');
+					desktopElement.classList.add(kind);
+				}
+			}),
+		),
+	);
+
+	desktop$.createEffect(
+		programs$.pipe(
+			take(1),
+			map(() => programs$.updateAction.makePacket(preInstalledPrograms)),
+		),
+	);
+
+	desktop$.createEffect(
+		documentPointerDown$.pipe(
+			filter((event) => {
+				const elementsUnderPointer = document.elementsFromPoint(event.pageX, event.pageY);
+				return !elementsUnderPointer.some(
+					(element) =>
+						element.classList.contains('window') ||
+						element.classList.contains('type-taskbar-item') ||
+						element.classList.contains('modal-backdrop'),
+				);
+			}),
+			ifLatestFrom(
+				windows$.internals.activeWindowCount$,
+				(activeWindowCount) => activeWindowCount > 0,
 			),
-		);
-	}
+			map(() => desktop$.internals.actions.activateProgram.makePacket(undefined)),
+		),
+	);
 
 	return {
 		desktop$,

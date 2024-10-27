@@ -25,23 +25,23 @@
 
 <Button
 	bind:button
-	look="{ButtonLook.TITLE_BAR_MENU_ITEM}"
-	active="{active === title}"
-	on:pointerenter="{pointerenter}"
-	on:click="{click}"
+	look={ButtonLook.TITLE_BAR_MENU_ITEM}
+	active={active === title}
+	on:pointerenter={pointerenter}
+	on:click={click}
 	{hotkeyLetter}
 >
 	{title}
 
 	{#if active === title}
 		<ContextMenu
-			position="{button.getBoundingClientRect()}"
-			xAxisAnimated="{false}"
-			yAxisAnimated="{justActivated}"
-			spawnElement="{button}"
-			on:dismiss="{() => {
+			position={button.getBoundingClientRect()}
+			xAxisAnimated={false}
+			yAxisAnimated={justActivated}
+			spawnElement={button}
+			on:dismiss={() => {
 				active = undefined;
-			}}"
+			}}
 		>
 			<slot />
 		</ContextMenu>

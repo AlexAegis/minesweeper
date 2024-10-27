@@ -39,51 +39,51 @@
 
 {#each $shortcutKeys$ as shortcutKey}
 	{@const shortcutSlice = desktopSlice.dicedShortcuts.get(shortcutKey)}
-	<Observer observable="{shortcutSlice}" let:next>
+	<Observer observable={shortcutSlice} let:next>
 		<Shortcut
 			{grippy}
-			bind:shortcutIconElement="{shortcutElements[next.shortcutId]}"
-			shortcutState="{next}"
-			on:select="{(_event) => {
+			bind:shortcutIconElement={shortcutElements[next.shortcutId]}
+			shortcutState={next}
+			on:select={(_event) => {
 				desktopSlice.shortcuts$.internals.shortcutsActions.setSelection.next([
 					next.shortcutId,
 				]);
-			}}"
-			on:delete="{() => {
+			}}
+			on:delete={() => {
 				desktopSlice.shortcuts$.internals.shortcutsActions.deleteSelected.next(
 					next.shortcutId,
 				);
-			}}"
-			on:spawn="{() => {
+			}}
+			on:spawn={() => {
 				desktopSlice.desktop$.internals.actions.spawnProgram.next(next.program);
-			}}"
-			on:beginRename="{() => {
+			}}
+			on:beginRename={() => {
 				shortcutSlice.update({
 					renaming: true,
 				});
-			}}"
-			on:rename="{(event) => {
+			}}
+			on:rename={(event) => {
 				shortcutSlice.update({
 					name: event.detail.name,
 					renaming: false,
 				});
-			}}"
-			on:move="{(event) => {
+			}}
+			on:move={(event) => {
 				desktopSlice.shortcuts$.internals.shortcutsActions.move.next({
 					shortcutId: next.shortcutId,
 					position: event.detail,
 				});
-			}}"
-			on:drop="{(event) => {
+			}}
+			on:drop={(event) => {
 				desktopSlice.shortcuts$.internals.shortcutsActions.moveTo.next({
 					shortcutId: next.shortcutId,
 					position: event.detail,
 				});
-			}}"
-			on:dblclick="{(event) => {
+			}}
+			on:dblclick={(event) => {
 				event.target;
 				desktopSlice.desktop$.internals.actions.spawnProgram.next(next.program);
-			}}"
+			}}
 		/>
 	</Observer>
 {/each}

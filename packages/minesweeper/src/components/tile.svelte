@@ -73,13 +73,13 @@
 
 <Button
 	class="minesweeper-tile custom {tileClass}"
-	pressed="{tile.pressed || tile.revealed}"
-	disabled="{tile.disabled}"
-	appearDisabled="{tile.revealed}"
-	selfPress="{false}"
-	on:fire="{fire}"
-	on:startFire="{startFire}"
-	on:alternativeFire="{alternativeFire}"
-	on:cancelFire="{cancelFire}"
+	pressed={tile.pressed || tile.revealed}
+	disabled={tile.disabled}
+	appearDisabled={tile.revealed}
+	selfPress={false}
+	on:fire={fire}
+	on:startFire={startFire}
+	on:alternativeFire={alternativeFire}
+	on:cancelFire={cancelFire}
 	style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 />

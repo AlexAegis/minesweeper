@@ -42,7 +42,7 @@
 
 	$: {
 		temporaryScheme = scheme
-			? desktopSlice.schemes$.value[scheme]?.data ?? w2kStandardColorScheme
+			? (desktopSlice.schemes$.value[scheme]?.data ?? w2kStandardColorScheme)
 			: w2kStandardColorScheme;
 		console.log('temporaryScheme', temporaryScheme);
 	}
@@ -50,13 +50,13 @@
 
 {JSON.stringify($allSchemeNames$)}
 <div>
-	<AppearancePreview desktopColorScheme="{temporaryScheme}"></AppearancePreview>
+	<AppearancePreview desktopColorScheme={temporaryScheme}></AppearancePreview>
 	<div class="options">
 		<Select
 			name="schemeSelector"
-			options="{$allSchemeNames$}"
+			options={$allSchemeNames$}
 			style="grid-row: 2; grid-column: 1;"
-			bind:value="{scheme}"
+			bind:value={scheme}
 		></Select>
 		<label for="schemeSelector" style="grid-row: 1; grid-column: 1;">Scheme:</label>
 		<div class="scheme-operations">
@@ -66,9 +66,9 @@
 
 		<Select
 			name="schemeItem"
-			options="{desktopColorSchemeSelectOptions}"
+			options={desktopColorSchemeSelectOptions}
 			style="grid-row: 4; grid-column: 1;"
-			bind:value="{item}"
+			bind:value={item}
 		></Select>
 		<label for="schemeItem" style="grid-row: 3; grid-column: 1;">Item:</label>
 
@@ -77,25 +77,25 @@
 
 		<ColorPicker
 			style="grid-row: 4; grid-column: 3;"
-			disabled="{item === undefined || temporaryScheme[item]?.color1 === undefined}"
-			color="{item && temporaryScheme[item]?.color1}"
-			on:change="{(event) => {
+			disabled={item === undefined || temporaryScheme[item]?.color1 === undefined}
+			color={item && temporaryScheme[item]?.color1}
+			on:change={(event) => {
 				if (item && temporaryScheme[item]?.color1) {
 					temporaryScheme[item].color1 = event.detail;
 				}
-			}}"
+			}}
 		></ColorPicker>
 		<label for="schemeItemColor1" style="grid-row: 3; grid-column: 3;">Color 1:</label>
 
 		<ColorPicker
 			style="grid-row: 4; grid-column: 4;"
-			disabled="{item === undefined || temporaryScheme[item]?.color2 === undefined}"
-			color="{item && temporaryScheme[item]?.color2}"
-			on:change="{(event) => {
+			disabled={item === undefined || temporaryScheme[item]?.color2 === undefined}
+			color={item && temporaryScheme[item]?.color2}
+			on:change={(event) => {
 				if (item && temporaryScheme[item]?.color2) {
 					temporaryScheme[item].color2 = event.detail;
 				}
-			}}"
+			}}
 		></ColorPicker>
 		<label for="schemeItemColor2" style="grid-row: 3; grid-column: 4;">Color 2:</label>
 

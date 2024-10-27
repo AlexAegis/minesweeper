@@ -15,22 +15,23 @@ import {
 	minesweeperProgramInstallation,
 } from '@w2k/minesweeper';
 import { Empty, type WindowComponents } from '@w2k/ui';
+import type { Component } from 'svelte';
 
 export const windowComponents: Record<ProgramId, WindowComponents> = {
 	minesweeper: {
-		menu: MinesweeperMenu,
-		content: Minesweeper,
+		menu: MinesweeperMenu as unknown as Component,
+		content: Minesweeper as unknown as Component,
 	},
 	unknown: {
 		menu: Empty,
 		content: Empty,
 	},
 	cheeseTerminator: {
-		menu: MinesweeperMenu,
-		content: Minesweeper,
+		menu: MinesweeperMenu as unknown as Component,
+		content: Minesweeper as unknown as Component,
 	},
 	displayProperties: {
-		content: DisplayProperties,
+		content: DisplayProperties as unknown as Component,
 	},
 };
 

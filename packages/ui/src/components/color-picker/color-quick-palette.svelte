@@ -13,7 +13,7 @@
 
 <div class="quick-color-palette">
 	{#each Object.values(COMMON_COLORS) as color}
-		<ColorSelectButton {color} on:select="{(event) => dispatch('select', event.detail)}"
+		<ColorSelectButton {color} on:select={(event) => dispatch('select', event.detail)}
 		></ColorSelectButton>
 	{/each}
 	<!-- And 4 more from current theme-->
@@ -25,9 +25,7 @@
 <hr />
 <Button>Other...</Button>
 {#if customColor}
-	<ColorSelectButton
-		color="{customColor}"
-		on:select="{(event) => dispatch('select', event.detail)}"
+	<ColorSelectButton color={customColor} on:select={(event) => dispatch('select', event.detail)}
 	></ColorSelectButton>
 {/if}
 

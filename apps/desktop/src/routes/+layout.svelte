@@ -6,13 +6,13 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" type="image/png" href="{minesweeperIconLarge}" />
+	<link rel="icon" type="image/png" href={minesweeperIconLarge} />
 	<title>w2k</title>
 	<meta name="Description" content="w2k desktop" />
 </svelte:head>
 
 <W2kGlobal />
 
-<Desktop {desktopSlice} {windowComponents} zoom="{2}">
+<Desktop {desktopSlice} {windowComponents} zoom={2}>
 	<slot />
 </Desktop>

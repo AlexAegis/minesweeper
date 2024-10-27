@@ -9,43 +9,43 @@
 	const bottomRightSegment = '013456789';
 	const bottomSegment = '0235689';
 
-	$: last = typeof value === 'number' ? value % 10 : value.at(-1) ?? '0';
+	$: last = typeof value === 'number' ? value % 10 : (value.at(-1) ?? '0');
 </script>
 
 <div>
 	<span
 		style="grid-column: 2; grid-row: 1;"
-		class:on="{topSegment.includes(last.toString())}"
+		class:on={topSegment.includes(last.toString())}
 		class="horizontal top"
 	></span>
 	<span
 		style="grid-column: 1; grid-row: 2;"
-		class:on="{topLeftSegment.includes(last.toString())}"
+		class:on={topLeftSegment.includes(last.toString())}
 		class="vertical left"
 	></span>
 	<span
 		style="grid-column: 3; grid-row: 2;"
-		class:on="{topRightSegment.includes(last.toString())}"
+		class:on={topRightSegment.includes(last.toString())}
 		class="vertical right"
 	></span>
 	<span
 		style="grid-column: 2; grid-row: 3;"
-		class:on="{centerSegment.includes(last.toString())}"
+		class:on={centerSegment.includes(last.toString())}
 		class="horizontal center"
 	></span>
 	<span
 		style="grid-column: 1; grid-row: 4;"
-		class:on="{bottomLeftSegment.includes(last.toString())}"
+		class:on={bottomLeftSegment.includes(last.toString())}
 		class="vertical left"
 	></span>
 	<span
 		style="grid-column: 3; grid-row: 4;"
-		class:on="{bottomRightSegment.includes(last.toString())}"
+		class:on={bottomRightSegment.includes(last.toString())}
 		class="vertical right"
 	></span>
 	<span
 		style="grid-column: 2; grid-row: 5;"
-		class:on="{bottomSegment.includes(last.toString())}"
+		class:on={bottomSegment.includes(last.toString())}
 		class="horizontal bottom"
 	></span>
 </div>

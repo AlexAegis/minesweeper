@@ -10,7 +10,7 @@
 
 {#each $windowKeys$ as windowKey}
 	{@const windowSlice = desktopSlice.dicedWindows.get(windowKey)}
-	<Observer observable="{windowSlice}" let:next>
+	<Observer observable={windowSlice} let:next>
 		<TaskbarProgram {next} {windowSlice} {desktopSlice} />
 	</Observer>
 {/each}

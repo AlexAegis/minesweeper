@@ -26,9 +26,9 @@
 	bind:button
 	class="custom type-high color-picker {$$props['class'] ?? ''}"
 	{disabled}
-	on:click="{() => {
+	on:click={() => {
 		open = !open;
-	}}"
+	}}
 	style="
 
 --selected-color: {colorRgb}; {$$props['style'] ?? ''}"
@@ -37,27 +37,27 @@
 		For some reason this doesn't work here
 		style:--selected-color="{colorRgb}"
 -->
-	<div class="color-preview" class:enabled="{!disabled}"></div>
+	<div class="color-preview" class:enabled={!disabled}></div>
 	<div class="vertical-separator"></div>
-	<Image src="{w2kDropdownArrowSmall}" {disabled}></Image>
+	<Image src={w2kDropdownArrowSmall} {disabled}></Image>
 </Button>
 
 {#if button && open}
 	<ContextMenu
 		class="color-picker"
-		position="{button.getBoundingClientRect()}"
-		spawnElement="{button}"
-		xAxisAnimated="{false}"
-		yAxisAnimated="{false}"
-		on:dismiss="{() => {
+		position={button.getBoundingClientRect()}
+		spawnElement={button}
+		xAxisAnimated={false}
+		yAxisAnimated={false}
+		on:dismiss={() => {
 			open = false;
-		}}"
+		}}
 	>
 		<ColorQuickPalette
-			on:select="{(event) => {
+			on:select={(event) => {
 				color = event.detail;
 				dispatch('change', color);
-			}}"
+			}}
 		></ColorQuickPalette>
 	</ContextMenu>
 {/if}

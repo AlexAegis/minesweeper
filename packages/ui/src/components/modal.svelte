@@ -35,10 +35,10 @@
 		role="button"
 		aria-roledescription="closes the modal"
 		tabindex="-1"
-		class:dark-backdrop="{darkBackdrop}"
-		style="{$$props['style']}"
+		class:dark-backdrop={darkBackdrop}
+		style={$$props['style']}
 		on:keypress
-		on:click="{backdropClick}"
+		on:click={backdropClick}
 	>
 		<slot />
 	</div>

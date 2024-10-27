@@ -55,7 +55,7 @@
 </script>
 
 <div class="custom-settings">
-	<form on:submit|preventDefault="{submit}">
+	<form on:submit|preventDefault={submit}>
 		<div class="inputs">
 			<div class="field-row">
 				<label for="height">Height:</label>
@@ -63,7 +63,7 @@
 					name="height"
 					type="number"
 					inputmode="numeric"
-					bind:value="{preset.height}"
+					bind:value={preset.height}
 					max="50"
 					min="1"
 				/>
@@ -75,7 +75,7 @@
 					name="width"
 					type="number"
 					inputmode="numeric"
-					bind:value="{preset.width}"
+					bind:value={preset.width}
 					max="50"
 					min="1"
 				/>
@@ -87,21 +87,21 @@
 					name="mineCount"
 					type="number"
 					inputmode="numeric"
-					bind:value="{preset.mineCount}"
-					max="{calculateMaxMines(preset)}"
+					bind:value={preset.mineCount}
+					max={calculateMaxMines(preset)}
 					min="1"
 				/>
 			</div>
 		</div>
 		<div class="actions">
 			<Button type="submit">OK</Button>
-			<Button on:click="{cancel}">Cancel</Button>
+			<Button on:click={cancel}>Cancel</Button>
 		</div>
 	</form>
 
 	<div class="presets">
 		{#each Object.entries($presets$) as [key, data]}
-			<Button on:click="{() => (preset = data)}">Set to {key}</Button>
+			<Button on:click={() => (preset = data)}>Set to {key}</Button>
 		{/each}
 	</div>
 </div>

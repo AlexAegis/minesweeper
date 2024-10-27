@@ -13,12 +13,12 @@
 
 <div
 	class="appearance-preview custom-scheme w2k"
-	style="{joinStyleMap(desktopColorSchemeToCssVariables(desktopColorScheme))}"
+	style={joinStyleMap(desktopColorSchemeToCssVariables(desktopColorScheme))}
 >
 	<Window
-		transient="{false}"
+		transient={false}
 		style="position: absolute;"
-		windowState="{{
+		windowState={{
 			active: false,
 			height: 69,
 			width: 213,
@@ -26,12 +26,12 @@
 			title: 'Inactive Window',
 			showMaximize: true,
 			showMinimize: true,
-		}}"
+		}}
 	></Window>
 	<Window
-		transient="{false}"
+		transient={false}
 		style="position: absolute;"
-		windowState="{{
+		windowState={{
 			active: true,
 			height: 133,
 			width: 335,
@@ -39,23 +39,23 @@
 			title: 'Active Window',
 			showMaximize: true,
 			showMinimize: true,
-		}}"
+		}}
 	>
 		<div class="menu-bar" slot="menu">
-			<Button look="{ButtonLook.TITLE_BAR_MENU_ITEM}">Normal</Button>
-			<Button look="{ButtonLook.TITLE_BAR_MENU_ITEM}" disabled appearDisabled="{true}"
+			<Button look={ButtonLook.TITLE_BAR_MENU_ITEM}>Normal</Button>
+			<Button look={ButtonLook.TITLE_BAR_MENU_ITEM} disabled appearDisabled={true}
 				>Disabled</Button
 			>
-			<Button look="{ButtonLook.TITLE_BAR_MENU_ITEM}" pressed="{true}">Selected</Button>
+			<Button look={ButtonLook.TITLE_BAR_MENU_ITEM} pressed={true}>Selected</Button>
 		</div>
 		<div class="example-active-window-content">
 			<textarea></textarea>
 		</div>
 	</Window>
 	<Window
-		transient="{false}"
+		transient={false}
 		style="position: absolute;"
-		windowState="{{
+		windowState={{
 			active: true,
 			height: 69,
 			width: 213,
@@ -63,7 +63,7 @@
 			title: 'Message Box',
 			showMaximize: false,
 			showMinimize: false,
-		}}"
+		}}
 	>
 		<div class="example-message-box-window-content">
 			<span>Message Box</span>
@@ -79,13 +79,6 @@
 		overflow: hidden;
 		top: 0;
 		left: 0;
-
-		> * {
-			grid-row: 1;
-			grid-column: 1;
-			pointer-events: all;
-		}
-
 		width: 355px;
 		height: 193px;
 		background-color: var(--win-desktop-color);
@@ -94,6 +87,12 @@
 			inset 1px 1px var(--win-3d-objects-color-darker-1),
 			inset -2px -2px var(--win-3d-objects-color),
 			inset 2px 2px var(--win-shadow-color);
+
+		> * {
+			grid-row: 1;
+			grid-column: 1;
+			pointer-events: all;
+		}
 	}
 
 	.example-message-box-window-content {
