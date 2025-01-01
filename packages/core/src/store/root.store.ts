@@ -10,7 +10,7 @@ import {
 	tap,
 	type Observable,
 } from 'rxjs';
-import packageJson from '../../../../package.json';
+import packageJson from '../../../../package.json' assert { type: 'json' };
 
 export const BROWSER_TAG = '[browser]';
 

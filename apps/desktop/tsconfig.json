@@ -3,7 +3,9 @@
 	"extends": ["./.svelte-kit/tsconfig.json", "@alexaegis/ts/svelte"],
 	"compilerOptions": {
 		"rootDir": "../../",
-		"outDir": ".cache/tsc"
+		"outDir": ".cache/tsc",
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
 	},
 	"files": ["package.json", "../../package.json"],
 	"include": [

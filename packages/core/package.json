@@ -59,15 +59,15 @@
 		"rxjs": "^7.8.1"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.11.6",
-		"@alexaegis/stylelint-config": "^0.11.6",
-		"@alexaegis/ts": "^0.11.6",
-		"@alexaegis/vite": "^0.11.6",
-		"@alexaegis/vitest": "^0.11.6",
-		"@pakk/cli": "^0.12.3",
-		"@types/node": "^22.8.1",
-		"stylelint": "^16.10.0",
-		"vite": "^5.4.10",
-		"vitest": "^2.1.3"
+		"@alexaegis/eslint-config-vitest": "^0.12.0",
+		"@alexaegis/stylelint-config": "^0.12.0",
+		"@alexaegis/ts": "^0.12.0",
+		"@alexaegis/vite": "^0.12.0",
+		"@alexaegis/vitest": "^0.12.0",
+		"@pakk/cli": "^0.13.1",
+		"@types/node": "^22.10.1",
+		"stylelint": "^16.11.0",
+		"vite": "^6.0.1",
+		"vitest": "^2.1.6"
 	}
 }
