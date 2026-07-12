@@ -3,7 +3,9 @@
 		Button,
 		ColorPicker,
 		Select,
+		cloneDesktopColorScheme,
 		w2kStandardColorScheme,
+		type ColorRgb,
 		type DesktopColorScheme,
 		type DesktopSlice,
 	} from '@w2k/ui';
@@ -22,10 +24,19 @@
 				data.key,
 				data.displayName,
 			]);
-			sortedEntries.push(['custom-scheme', '']);
 			return Object.fromEntries(sortedEntries);
 		}),
 	);
+
+	// The unsaved scheme forked off a built-in by editing it. Named after its
+	// origin, like 'Standard Scheme *'. When the dialog opens while a custom
+	// scheme is already active, its origin is unknown. Until a fork exists (the
+	// name is empty), the entry is left out of the selector entirely.
+	let customSchemeName =
+		desktopSlice.activeSchemeKind$.value === 'custom-scheme' ? 'Custom Scheme' : '';
+	$: schemeOptions = customSchemeName
+		? { ...$allSchemeNames$, 'custom-scheme': customSchemeName }
+		: $allSchemeNames$;
 
 	export let temporaryScheme: DesktopColorScheme = {
 		...defaultDesktopColorScheme,
@@ -38,25 +49,46 @@
 	}
 
 	let item: keyof DesktopColorScheme | undefined = undefined;
-	let scheme: string | undefined = undefined;
+	// Start on the scheme that is currently active; edits fork into the blank
+	// 'custom-scheme' entry so the built-in schemes are never modified.
+	let scheme: string | undefined = desktopSlice.activeSchemeKind$.value;
 
-	$: {
-		temporaryScheme = scheme
-			? (desktopSlice.schemes$.value[scheme]?.data ?? w2kStandardColorScheme)
-			: w2kStandardColorScheme;
-		console.log('temporaryScheme', temporaryScheme);
+	function selectScheme(): void {
+		// The custom entry holds the current (already cloned) edits, there is
+		// nothing to load for it.
+		if (scheme === 'custom-scheme') {
+			return;
+		}
+		// Clone so editing never writes back into the stored schemes (the built-in
+		// ones are immutable) or the shared scheme constants.
+		temporaryScheme = cloneDesktopColorScheme(
+			(scheme ? desktopSlice.schemes$.value[scheme]?.data : undefined) ??
+				w2kStandardColorScheme,
+		);
+	}
+
+	function editColor(colorKey: 'color1' | 'color2', color: ColorRgb): void {
+		if (item && temporaryScheme[item]?.[colorKey]) {
+			temporaryScheme[item][colorKey] = color;
+			// Editing any scheme turns the selection into the unsaved custom scheme,
+			// named after the scheme it forked off, leaving the original untouched.
+			if (scheme !== 'custom-scheme') {
+				customSchemeName = `${(scheme && $allSchemeNames$[scheme]) || 'Custom Scheme'} *`;
+				scheme = 'custom-scheme';
+			}
+		}
 	}
 </script>
 
-{JSON.stringify($allSchemeNames$)}
 <div>
 	<AppearancePreview desktopColorScheme={temporaryScheme}></AppearancePreview>
 	<div class="options">
 		<Select
 			name="schemeSelector"
-			options={$allSchemeNames$}
+			options={schemeOptions}
 			style="grid-row: 2; grid-column: 1;"
 			bind:value={scheme}
+			on:change={selectScheme}
 		></Select>
 		<label for="schemeSelector" style="grid-row: 1; grid-column: 1;">Scheme:</label>
 		<div class="scheme-operations">
@@ -80,9 +112,7 @@
 			disabled={item === undefined || temporaryScheme[item]?.color1 === undefined}
 			color={item && temporaryScheme[item]?.color1}
 			on:change={(event) => {
-				if (item && temporaryScheme[item]?.color1) {
-					temporaryScheme[item].color1 = event.detail;
-				}
+				editColor('color1', event.detail);
 			}}
 		></ColorPicker>
 		<label for="schemeItemColor1" style="grid-row: 3; grid-column: 3;">Color 1:</label>
@@ -92,9 +122,7 @@
 			disabled={item === undefined || temporaryScheme[item]?.color2 === undefined}
 			color={item && temporaryScheme[item]?.color2}
 			on:change={(event) => {
-				if (item && temporaryScheme[item]?.color2) {
-					temporaryScheme[item].color2 = event.detail;
-				}
+				editColor('color2', event.detail);
 			}}
 		></ColorPicker>
 		<label for="schemeItemColor2" style="grid-row: 3; grid-column: 4;">Color 2:</label>

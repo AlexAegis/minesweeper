@@ -11,9 +11,12 @@
 	export let desktopColorScheme: DesktopColorScheme;
 </script>
 
+<!-- inert: the preview shows real window components but is only a picture,
+	it must not react to pointer, focus or keyboard interactions -->
 <div
 	class="appearance-preview custom-scheme w2k"
 	style={joinStyleMap(desktopColorSchemeToCssVariables(desktopColorScheme))}
+	inert
 >
 	<Window
 		transient={false}
@@ -91,7 +94,6 @@
 		> * {
 			grid-row: 1;
 			grid-column: 1;
-			pointer-events: all;
 		}
 	}
 

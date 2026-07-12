@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { CoordinateLike } from '@w2k/common';
-	import { readGlobal } from '../helpers';
+	import { getSpawnRectangle } from '../helpers';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import ContextMenu from './context-menu.svelte';
@@ -11,19 +10,6 @@
 	export let active: string | undefined;
 	let justActivated = true;
 	let button: HTMLElement;
-
-	// getBoundingClientRect is in screen pixels; the context menu positions itself
-	// inside the zoomed `#desktop`, so convert to that local space by dividing by
-	// the zoom, matching how the pointer-driven context menus pass their position.
-	function getSpawnRectangle(element: HTMLElement): CoordinateLike & { height: number } {
-		const rectangle = element.getBoundingClientRect();
-		const zoom = readGlobal('w2kZoom') || 1;
-		return {
-			x: rectangle.x / zoom,
-			y: rectangle.y / zoom,
-			height: rectangle.height / zoom,
-		};
-	}
 
 	function pointerenter(event: PointerEvent): void {
 		if (event.pointerType === 'mouse' && active !== undefined && active !== title) {

@@ -10,7 +10,7 @@ import {
 	type ActionPacket,
 } from '@tinyslice/core';
 import { Coordinate, type CoordinateLike } from '@w2k/common';
-import { Observable, filter, map, merge, mergeMap, of, take, tap, timer } from 'rxjs';
+import { Observable, filter, map, merge, mergeMap, of, take, timer } from 'rxjs';
 
 import {
 	initialWindowState,
@@ -401,7 +401,19 @@ export const createDesktopSlice = <
 	const toggleActiveSchemeKindAction = desktop$.createAction('toggleKind');
 	const setSchemeAction = activeScheme$.createAction<DesktopColorScheme>('setScheme');
 	const activeSchemeData$ = activeScheme$.slice('data', {
-		reducers: [setSchemeAction.reduce((state, payload) => ({ ...state, ...payload }))],
+		reducers: [
+			setSchemeAction.reduce((state, payload) => ({ ...state, ...payload })),
+			// Keep the scheme colors in sync with the kind toggle. The desktop
+			// applies these colors as inline css variables, which override the
+			// class-based preset variables, so stale data would mask the toggle.
+			// Mirrors the kind reducer below: standard flips to classic, anything
+			// else (classic or custom) flips to standard.
+			toggleActiveSchemeKindAction.reduce((state) =>
+				areDesktopColorSchemesEqual(w2kStandardColorScheme, state)
+					? w2kClassicColorScheme
+					: w2kStandardColorScheme,
+			),
+		],
 	});
 	const activeSchemeKind$ = activeScheme$.slice('kind', {
 		reducers: [
@@ -750,21 +762,6 @@ export const createDesktopSlice = <
 		),
 	);
 
-	activeSchemeKind$.createEffect(
-		activeSchemeKind$.pipe(
-			tap((kind) => {
-				const desktopElement = document.querySelector('#desktop');
-				console.log('asd', desktopElement);
-				if (desktopElement) {
-					desktopElement.classList.remove('classic-scheme');
-					desktopElement.classList.remove('standard-scheme');
-					desktopElement.classList.remove('custom-scheme');
-					desktopElement.classList.add(kind);
-				}
-			}),
-		),
-	);
-
 	desktop$.createEffect(
 		programs$.pipe(
 			take(1),
@@ -795,6 +792,7 @@ export const createDesktopSlice = <
 		desktop$,
 		activeScheme$,
 		toggleActiveSchemeKindAction,
+		setSchemeAction,
 		activeSchemeKind$,
 		activeSchemeData$,
 		dicedShortcuts,

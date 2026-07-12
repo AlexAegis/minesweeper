@@ -9,6 +9,7 @@
 	{name}
 	id={name}
 	bind:value
+	on:change
 	{disabled}
 	class={$$props['class'] ?? ''}
 	style={$$props['style'] ?? ''}

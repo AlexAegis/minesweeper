@@ -116,11 +116,16 @@
 	});
 </script>
 
+<!-- The built-in schemes are styled entirely by their class; the inline css
+	variables are only for custom schemes. They must not be present otherwise,
+	as inline styles would override the class-based preset variables. -->
 <div
 	id="desktop"
 	class="desktop w2k {$activeSchemeKind$}"
 	bind:this={desktopElement}
-	style="{joinStyleMap(desktopColorSchemeToCssVariables($activeSchemeData$))};
+	style="{$activeSchemeKind$ === 'custom-scheme'
+		? joinStyleMap(desktopColorSchemeToCssVariables($activeSchemeData$))
+		: ''};
 	zoom: {100 * zoom}%;"
 >
 	<div

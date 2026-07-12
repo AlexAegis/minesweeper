@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { w2kDropdownArrowSmall } from '../../assets/misc';
+	import { getSpawnRectangle } from '../../helpers';
 	import Button from '../button.svelte';
 	import ContextMenu from '../context-menu.svelte';
 	import Image from '../image.svelte';
@@ -45,7 +46,7 @@
 {#if button && open}
 	<ContextMenu
 		class="color-picker"
-		position={button.getBoundingClientRect()}
+		position={getSpawnRectangle(button)}
 		spawnElement={button}
 		xAxisAnimated={false}
 		yAxisAnimated={false}

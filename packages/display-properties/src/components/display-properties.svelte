@@ -15,10 +15,8 @@
 	export let desktopSlice!: DesktopSlice;
 	export let windowState!: WindowState;
 
-	$: somethingChanged = !areDesktopColorSchemesEqual(
-		desktopSlice.activeSchemeData$.value,
-		temporaryScheme,
-	);
+	$: activeSchemeData$ = desktopSlice.activeSchemeData$;
+	$: somethingChanged = !areDesktopColorSchemesEqual($activeSchemeData$, temporaryScheme);
 
 	const tabs: TabSetTabs = {
 		background: { displayName: 'Background', disabled: true },
@@ -38,7 +36,11 @@
 	}
 
 	function applyScheme() {
-		desktopSlice.activeSchemeData$.setAction.next(cloneDesktopColorScheme(temporaryScheme));
+		// setSchemeAction updates both the scheme colors and the scheme kind, so
+		// applying a built-in scheme's colors also switches to its css class, and
+		// custom colors mark the scheme as custom (which is what enables the
+		// inline css variables on the desktop).
+		desktopSlice.setSchemeAction.next(cloneDesktopColorScheme(temporaryScheme));
 	}
 </script>
 
