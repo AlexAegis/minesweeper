@@ -11,10 +11,15 @@ packages:
 verifyDepsBeforeRun: false
 
 # pnpm 10+ requires explicit approval for build/lifecycle scripts of dependencies.
-# Map of package name -> boolean. `true` = run the package's install scripts.
+# Map of package name -> boolean. `true` = run the package's install scripts,
+# `false` = acknowledge the package but skip its scripts (without an entry pnpm
+# fails fresh installs with ERR_PNPM_IGNORED_BUILDS, breaking CI).
 allowBuilds:
   esbuild: true
   svelte-preprocess: true
+  # optional native file watcher pulled in by sass; it ships prebuilt binaries,
+  # so its build script does not need to run
+  '@parcel/watcher': false
 
 # pnpm 11+ defaults `minimumReleaseAge` to 1440 (24h): freshly published
 # packages are delayed before they can be installed, mitigating supply-chain
