@@ -246,7 +246,7 @@ export const createDesktopSlice = <
 					acc[shortcutId] = {
 						shortcutId: shortcutId,
 						name: next.initialWindowState.title ?? next.name,
-						position: { x: 0, y: shortcutId * 32 },
+						position: { x: 0, y: shortcutId * SHORTCUT_DISTANCE },
 						program: next.name,
 						icon: next.icon ?? next.titleBarIcon,
 						selected: false,

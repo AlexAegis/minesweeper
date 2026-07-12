@@ -1,9 +1,13 @@
-import { defaultCommonProgramWindowPreferences, type ProgramState } from '@w2k/ui';
+import {
+	defaultCommonProgramWindowPreferences,
+	w2kDisplaySettingsIconLarge,
+	type ProgramState,
+} from '@w2k/ui';
 
 export const displayPropertiesProgramInstallation: ProgramState = {
 	...defaultCommonProgramWindowPreferences,
 	name: 'displayProperties',
-	icon: '',
+	icon: w2kDisplaySettingsIconLarge,
 	initialWindowState: {
 		title: 'Display Properties',
 		resizable: false,
@@ -11,6 +15,6 @@ export const displayPropertiesProgramInstallation: ProgramState = {
 		showHelp: true,
 		showMaximize: false,
 		showMinimize: false,
-		titleBarIcon: '',
+		titleBarIcon: w2kDisplaySettingsIconLarge,
 	},
 };
