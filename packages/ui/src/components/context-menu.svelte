@@ -3,6 +3,7 @@
 	import { documentPointerDown$ } from '@w2k/core';
 	import { filter, tap } from 'rxjs';
 	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { readGlobal } from '../helpers';
 	import { getWorkspaceRectangle } from '../store/desktop.store';
 
 	const dispatcher = createEventDispatcher<{
@@ -58,12 +59,18 @@
 	$: {
 		if (position) {
 			if (contextMenuContainer) {
+				// getBoundingClientRect returns screen pixels, but `position` and the
+				// offsets are in the zoomed desktop's local space (the container's
+				// top/left are scaled by the desktop's `zoom`). The overflow checks
+				// compare screen px to screen px, but the flip offsets must be
+				// converted back to local space or they overshoot by the zoom factor.
+				const zoom = readGlobal('w2kZoom') || 1;
 				const contextMenuContainerRect = contextMenuContainer.getBoundingClientRect();
 				const workspaceElementRect = getWorkspaceRectangle();
 
 				if (workspaceElementRect) {
 					if (workspaceElementRect.right < contextMenuContainerRect.right) {
-						xOffset = 1 - contextMenuContainerRect.width;
+						xOffset = 1 - contextMenuContainerRect.width / zoom;
 						xDirection = 1;
 					} else {
 						xOffset = 0;
@@ -71,7 +78,7 @@
 					}
 
 					if (workspaceElementRect.bottom < contextMenuContainerRect.bottom) {
-						yOffset = 1 - contextMenuContainerRect.height;
+						yOffset = 1 - contextMenuContainerRect.height / zoom;
 						yDirection = 1;
 					} else {
 						yOffset = position.height ?? 0;

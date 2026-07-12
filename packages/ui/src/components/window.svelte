@@ -18,7 +18,7 @@
 	import { sleep } from '@alexaegis/common';
 	import { documentPointerDown$ } from '@w2k/core';
 	import { ContextMenu } from '../components';
-	import type { Handler } from '../helpers';
+	import { readGlobal, type Handler } from '../helpers';
 	import type { GrippyContainer } from '../helpers/grippy/grippy';
 	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
 	import type { Rectangle } from './rectangle.interface';
@@ -303,7 +303,10 @@
 		on:contextmenu={(event) => {
 			contextMenuPosition = contextMenuPosition
 				? undefined
-				: { x: event.pageX, y: event.pageY };
+				: {
+						x: event.pageX / readGlobal('w2kZoom'),
+						y: event.pageY / readGlobal('w2kZoom'),
+					};
 		}}
 	>
 		<ContextMenu bind:position={contextMenuPosition}>
