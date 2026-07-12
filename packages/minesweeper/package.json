@@ -67,7 +67,7 @@
 		"./package.json": "./package.json"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.15.5",
+		"@alexaegis/common": "^0.15.6",
 		"@tinyslice/core": "^0.9.0",
 		"@w2k/common": "workspace:^4.1.0",
 		"@w2k/core": "workspace:^",
@@ -76,12 +76,12 @@
 		"svelte-rxjs-observer": "^0.5.3"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-svelte": "^0.15.5",
-		"@alexaegis/eslint-config-vitest": "^0.15.5",
-		"@alexaegis/stylelint-config": "^0.15.5",
-		"@alexaegis/svelte-config": "^0.15.5",
-		"@alexaegis/ts": "^0.15.5",
-		"@alexaegis/vitest": "^0.15.5",
+		"@alexaegis/eslint-config-svelte": "^0.15.6",
+		"@alexaegis/eslint-config-vitest": "^0.15.6",
+		"@alexaegis/stylelint-config": "^0.15.6",
+		"@alexaegis/svelte-config": "^0.15.6",
+		"@alexaegis/ts": "^0.15.6",
+		"@alexaegis/vitest": "^0.15.6",
 		"@sveltejs/kit": "^2.69.2",
 		"@sveltejs/package": "^2.5.8",
 		"@types/node": "^26.1.1",
