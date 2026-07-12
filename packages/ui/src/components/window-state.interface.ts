@@ -11,19 +11,11 @@ export interface WindowComponents {
 }
 
 export type WindowMinimizationState =
-	| boolean
-	| 'start-minimizing'
-	| 'minimizing'
-	| 'start-unminimizing'
-	| 'unminimizing';
+	boolean | 'start-minimizing' | 'minimizing' | 'start-unminimizing' | 'unminimizing';
 
 // TODO: combine these two states as a generic animated boolean, boolean "start-forward" forward, start-backwards, backwards
 export type WindowMaximizationState =
-	| boolean
-	| 'start-maximizing'
-	| 'maximizing'
-	| 'start-restoring'
-	| 'restoring';
+	boolean | 'start-maximizing' | 'maximizing' | 'start-restoring' | 'restoring';
 
 export interface CommonProgramWindowPreferences {
 	maximized: WindowMaximizationState;

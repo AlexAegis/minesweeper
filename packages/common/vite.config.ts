@@ -1,13 +1,14 @@
 // managed-by-autotool
 
-import { pakk } from '@alexaegis/vite';
-import { defineConfig } from 'vite';
+import { DEFAULT_VITE_LIB_CONFIG } from '@alexaegis/vite';
+import { defineConfig, mergeConfig } from 'vite';
+import dts from 'vite-plugin-dts';
 
-// default config for node libraries
-export default defineConfig({
-	plugins: [
-		pakk({
-			dts: process.env['BUILD_REASON'] === 'publish',
-		}),
-	],
-});
+export default mergeConfig(
+	DEFAULT_VITE_LIB_CONFIG,
+	defineConfig({
+		plugins: [
+			...(process.env['BUILD_REASON'] === 'publish' ? [dts({ entryRoot: 'src' })] : []),
+		],
+	}),
+);

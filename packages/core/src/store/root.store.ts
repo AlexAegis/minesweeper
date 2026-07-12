@@ -10,11 +10,11 @@ import {
 	tap,
 	type Observable,
 } from 'rxjs';
-import packageJson from '../../../../package.json' assert { type: 'json' };
+import { packageMetadata } from './package-metadata.js';
 
 export const BROWSER_TAG = '[browser]';
 
-export const packageMetadata = packageJson;
+export { packageMetadata };
 
 export interface RootState {
 	debug: boolean;
@@ -37,7 +37,7 @@ export const documentContextMenu$ = documentPointerDownSubject$.asObservable();
 
 export const initializeStoreBrowserFeatures = <
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	S extends Slice<unknown, any, { debug$: Observable<boolean> }>,
+	S extends Slice<any, any, { debug$: Observable<boolean> }>,
 >(
 	slice: S,
 ) => {

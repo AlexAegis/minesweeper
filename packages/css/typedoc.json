@@ -1,5 +1,5 @@
 {
 	"$schema": "https://typedoc.org/schema.json?mark=managed-by-autotool",
 	"extends": ["../../.config/typedoc.base.json"],
-	"entryPoints": ["src/*"]
+	"entryPoints": ["src/index.ts"]
 }

@@ -31,7 +31,8 @@ body {
 	overscroll-behavior: none;
 	width: 100%;
 	-webkit-touch-callout: none !important;
-	font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
+	font-family:
+		'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important;
 
 	&:not(body) {
 		height: 100%;
@@ -159,8 +160,8 @@ body {
 		input,
 		button {
 			font-size: 16px;
-			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
-				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
+			font-family:
+				'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
 		}
 	}
 
@@ -200,8 +201,8 @@ body {
 		button {
 			// TODO: Remove tahoma-8px from here, but fix the sizes of MS Sans Serif
 			font-size: 16px;
-			font-family: 'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana,
-				sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
+			font-family:
+				'fs-tahoma-8px', 'Pixelated MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif !important; // It should stay as MS Sans Serif in the classic scheme 98.css
 		}
 	}
 
@@ -219,7 +220,6 @@ body {
 		border-bottom: 2px;
 		outline-width: 0;
 		background: var(--win-3d-objects-color);
-		background-color: var(--win-3d-objects-color);
 		padding: 1px;
 	}
 
@@ -287,12 +287,12 @@ body {
 
 		// Regular
 		&:not(
-				.type-title-bar-menu-item,
-				.type-start-menu-item,
-				.type-context-menu-item,
-				.type-high,
-				.custom
-			) {
+			.type-title-bar-menu-item,
+			.type-start-menu-item,
+			.type-context-menu-item,
+			.type-high,
+			.custom
+		) {
 			min-width: 75px;
 			height: 23px;
 			padding-left: 6px;
@@ -780,7 +780,6 @@ body {
 				display: flex;
 				place-items: center;
 				justify-content: center;
-				align-items: center;
 			}
 		}
 
@@ -930,7 +929,7 @@ body {
 				text-overflow: unset;
 				white-space: break-spaces;
 				overflow: visible;
-				word-wrap: break-word;
+				overflow-wrap: break-word;
 			}
 		}
 

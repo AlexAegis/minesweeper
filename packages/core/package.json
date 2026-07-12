@@ -12,7 +12,14 @@
 		"managed-by-autotool",
 		"w2k"
 	],
+	"repository": {
+		"url": "git+https://github.com/AlexAegis/minesweeper.git",
+		"type": "git"
+	},
 	"type": "module",
+	"engines": {
+		"node": ">=22.6.0"
+	},
 	"scripts": {
 		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 16 --filter @w2k/core",
 		"lint:depcheck_": "depcheck",
@@ -26,9 +33,9 @@
 		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --filter @w2k/core",
 		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input '**/*.css'",
 		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --filter @w2k/core",
-		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
+		"lint:style:html_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
 		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --filter @w2k/core",
-		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
+		"lint:style:scss_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
 		"lint:svelte": "turbo run lint:svelte_ --concurrency 16 --cache-dir .cache/turbo --filter @w2k/core",
 		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
 		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --filter @w2k/core",
@@ -52,22 +59,22 @@
 		"./package.json": "./package.json"
 	},
 	"dependencies": {
-		"@tinyslice/core": "^0.8.3",
-		"@tinyslice/devtools-plugin": "^0.8.3",
-		"@tinyslice/hydration-plugin": "^0.8.3",
-		"@tinyslice/logger-plugin": "^0.8.3",
-		"rxjs": "^7.8.1"
+		"@tinyslice/core": "^0.9.0",
+		"@tinyslice/devtools-plugin": "^0.9.0",
+		"@tinyslice/hydration-plugin": "^0.9.0",
+		"@tinyslice/logger-plugin": "^0.9.0",
+		"rxjs": "^7.8.2"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-vitest": "^0.12.0",
-		"@alexaegis/stylelint-config": "^0.12.0",
-		"@alexaegis/ts": "^0.12.0",
-		"@alexaegis/vite": "^0.12.0",
-		"@alexaegis/vitest": "^0.12.0",
-		"@pakk/cli": "^0.13.1",
-		"@types/node": "^22.10.1",
-		"stylelint": "^16.11.0",
-		"vite": "^6.0.1",
-		"vitest": "^2.1.6"
+		"@alexaegis/eslint-config-vitest": "^0.15.5",
+		"@alexaegis/stylelint-config": "^0.15.5",
+		"@alexaegis/ts": "^0.15.5",
+		"@alexaegis/vite": "^0.15.5",
+		"@alexaegis/vitest": "^0.15.5",
+		"@types/node": "^26.1.1",
+		"stylelint": "^17.14.0",
+		"vite": "^8.1.4",
+		"vite-plugin-dts": "^5.0.3",
+		"vitest": "^4.1.10"
 	}
 }

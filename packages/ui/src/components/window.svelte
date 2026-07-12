@@ -287,6 +287,8 @@
 	style:height={`${transientState.height.toString()}px`}
 	style:width={`${transientState.width.toString()}px`}
 	style:z-index={transientState.zIndex}
+	role="dialog"
+	tabindex="-1"
 	on:pointerdown={activate}
 >
 	<TitleBar

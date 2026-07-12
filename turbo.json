@@ -168,13 +168,11 @@
 		"lint:style:css_": {
 			"dependsOn": [],
 			"inputs": [".stylelint*", "{src,static,public}/**/*.css"],
-			"outputs": [".cache/stylelintcache-css"],
 			"outputLogs": "new-only"
 		},
 		"lint:style:html_": {
 			"dependsOn": [],
 			"inputs": [".stylelint*", "{src,static,public}/**/*.{html,svelte,vue,astro,xml,php}"],
-			"outputs": [".cache/stylelintcache-html"],
 			"outputLogs": "new-only"
 		},
 		"lint:style:scss_": {

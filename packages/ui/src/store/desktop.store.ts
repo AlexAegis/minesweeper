@@ -216,6 +216,7 @@ const getNextProcessId = (keys: ProcessId[]) =>
 	).toString();
 
 export const createDesktopSlice = <
+	P,
 	S,
 	T extends Record<
 		ProgramId,
@@ -224,12 +225,12 @@ export const createDesktopSlice = <
 				parentSlice: Slice<Record<string, WindowState>, BaseWindowState>,
 				key: string,
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			) => { programSlice: Slice<unknown, any> };
+			) => { programSlice: Slice<any, any> };
 			installEntry: ProgramState;
 		}
 	>,
 >(
-	parentSlice: Slice<unknown, S>,
+	parentSlice: Slice<P, S>,
 	programDefinitions: T,
 ) => {
 	const preInstalledPrograms = Object.fromEntries(

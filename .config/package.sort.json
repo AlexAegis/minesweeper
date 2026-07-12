@@ -20,7 +20,17 @@
 		"bugs",
 		"type",
 		"config",
-		"publishConfig",
+		{
+			"key": "publishConfig",
+			"order": [
+				"access",
+				{
+					"key": "exports",
+					"order": [{ "key": ".*", "order": ["types", ".*", "default"] }]
+				},
+				".*"
+			]
+		},
 		".*",
 		"engines",
 		"packageManager",

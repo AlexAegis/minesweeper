@@ -147,9 +147,10 @@
 			}
 		}
 
-		$tile-colors: var(--tile-0-color), var(--tile-1-color), var(--tile-2-color),
-			var(--tile-3-color), var(--tile-4-color), var(--tile-5-color), var(--tile-6-color),
-			var(--tile-7-color), var(--tile-8-color), var(--tile-9-color);
+		$tile-colors:
+			var(--tile-0-color), var(--tile-1-color), var(--tile-2-color), var(--tile-3-color),
+			var(--tile-4-color), var(--tile-5-color), var(--tile-6-color), var(--tile-7-color),
+			var(--tile-8-color), var(--tile-9-color);
 
 		@for $i from 2 through 10 {
 			&-#{$i - 1} {

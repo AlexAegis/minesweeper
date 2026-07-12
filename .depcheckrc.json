@@ -8,7 +8,6 @@
 		"@alexaegis/ts",
 		"@commitlint/config-conventional",
 		"@lcov-viewer/cli",
-		"@pakk/cli",
 		"@sveltejs/*",
 		"@types/eslint",
 		"@types/node",

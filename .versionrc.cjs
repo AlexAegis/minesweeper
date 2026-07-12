@@ -1,3 +1,4 @@
 // managed-by-autotool
 
-module.exports = require('@alexaegis/autotool-plugin-standard-version/config');
+const config = require('@alexaegis/autotool-plugin-standard-version/config');
+module.exports = config.default ?? config;

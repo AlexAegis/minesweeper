@@ -16,7 +16,14 @@
 		"svelte",
 		"w2k"
 	],
+	"repository": {
+		"url": "git+https://github.com/AlexAegis/minesweeper.git",
+		"type": "git"
+	},
 	"type": "module",
+	"engines": {
+		"node": ">=22.6.0"
+	},
 	"scripts": {
 		"lint:es": "turbo run lint:es_ --concurrency 16 --filter @w2k/display-properties",
 		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
@@ -28,9 +35,9 @@
 		"lint:style:css": "turbo run lint:style:css_ --concurrency 16 --filter @w2k/display-properties",
 		"lint:style:css_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-css --allow-empty-input '**/*.css'",
 		"lint:style:html": "turbo run lint:style:html_ --concurrency 16 --filter @w2k/display-properties",
-		"lint:style:html_": "stylelint --customSyntax=postcss-html --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
+		"lint:style:html_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-html --allow-empty-input '**/*.{html,svelte,vue,astro,xml,php}'",
 		"lint:style:scss": "turbo run lint:style:scss_ --concurrency 16 --filter @w2k/display-properties",
-		"lint:style:scss_": "stylelint --customSyntax=postcss-scss --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
+		"lint:style:scss_": "stylelint --cache true --cache-strategy content --cache-location .cache/stylelintcache-scss --allow-empty-input '**/*.scss'",
 		"lint:svelte": "turbo run lint:svelte_ --concurrency 16 --filter @w2k/display-properties",
 		"lint:svelte_": "svelte-check --tsconfig ./tsconfig.json",
 		"lint:tsc": "turbo run lint:tsc_ --concurrency 16 --filter @w2k/display-properties",
@@ -39,7 +46,7 @@
 		"test_": "vitest --passWithNoTests --coverage --run",
 		"test:watch": "vitest --passWithNoTests --coverage",
 		"all": "BUILD_REASON='publish' turbo run all_ --concurrency 16 --filter @w2k/display-properties",
-		"build-lib_": "pakk --svelte --target-package-json-kind development && svelte-package --input src && pakk --svelte --target-package-json-kind distribution",
+		"build-lib_": "svelte-package --input src",
 		"format": "turbo run format_ --concurrency 16 --filter @w2k/display-properties",
 		"format_": "prettier --cache-location .cache/prettier --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --write ."
 	},
@@ -59,29 +66,30 @@
 		"./package.json": "./package.json"
 	},
 	"dependencies": {
-		"@alexaegis/common": "^0.11.0",
-		"@tinyslice/core": "^0.8.3",
+		"@alexaegis/common": "^0.15.5",
+		"@tinyslice/core": "^0.9.0",
 		"@w2k/common": "workspace:^4.1.0",
 		"@w2k/core": "workspace:^",
 		"@w2k/ui": "workspace:^",
 		"colord": "^2.9.3",
-		"rxjs": "^7.8.1",
+		"rxjs": "^7.8.2",
 		"svelte-rxjs-observer": "^0.5.3"
 	},
 	"devDependencies": {
-		"@alexaegis/eslint-config-svelte": "^0.12.0",
-		"@alexaegis/eslint-config-vitest": "^0.12.0",
-		"@alexaegis/stylelint-config": "^0.12.0",
-		"@alexaegis/svelte-config": "^0.12.0",
-		"@alexaegis/ts": "^0.12.0",
-		"@alexaegis/vitest": "^0.12.0",
-		"@pakk/cli": "^0.13.1",
-		"@sveltejs/package": "^2.3.7",
-		"@types/node": "^22.10.1",
-		"stylelint": "^16.11.0",
-		"svelte": "^5.2.12",
-		"svelte-check": "^4.1.0",
-		"svelte-preprocess": "^6.0.3",
-		"vitest": "^2.1.6"
+		"@alexaegis/eslint-config-svelte": "^0.15.5",
+		"@alexaegis/eslint-config-vitest": "^0.15.5",
+		"@alexaegis/stylelint-config": "^0.15.5",
+		"@alexaegis/svelte-config": "^0.15.5",
+		"@alexaegis/ts": "^0.15.5",
+		"@alexaegis/vitest": "^0.15.5",
+		"@sveltejs/kit": "^2.69.2",
+		"@sveltejs/package": "^2.5.8",
+		"@types/node": "^26.1.1",
+		"stylelint": "^17.14.0",
+		"svelte": "^5.56.4",
+		"svelte-check": "^4.7.2",
+		"svelte-preprocess": "^6.0.5",
+		"vite": "^8.1.4",
+		"vitest": "^4.1.10"
 	}
 }

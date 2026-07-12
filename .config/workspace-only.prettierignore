@@ -39,6 +39,9 @@ target
 # python
 .pytest_cache
 
+# ai tooling
+**/.claude/settings.local.json
+
 # others
 .cache
 .benchmark

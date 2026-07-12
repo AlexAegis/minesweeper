@@ -1,5 +1,33 @@
+# managed-by-autotool
 packages:
-  - 'packages/*'
-  - 'apps/*'
-  - 'libs/*'
-link-workspace-packages: 'deep'
+  - apps/*
+  - examples/*
+  - fixtures/*
+  - libs/*
+  - packages/*
+
+# Prevent recursive `pnpm install` from being triggered by lifecycle/run scripts
+# (e.g. `vite build` inside `postinstall`), which would re-enter `postinstall`.
+verifyDepsBeforeRun: false
+
+# pnpm 10+ requires explicit approval for build/lifecycle scripts of dependencies.
+# Map of package name -> boolean. `true` = run the package's install scripts.
+allowBuilds:
+  esbuild: true
+  svelte-preprocess: true
+
+# pnpm 11+ defaults `minimumReleaseAge` to 1440 (24h): freshly published
+# packages are delayed before they can be installed, mitigating supply-chain
+# attacks that rely on a compromised version being pulled in immediately.
+# Keep the delay for third-party packages, but exclude the scopes and packages
+# we own and publish ourselves: they are trusted, so our just-published
+# packages can propagate across repos without waiting.
+minimumReleaseAge: 480
+minimumReleaseAgeExclude:
+  - '@aegis-auth/*'
+  - '@alexaegis/*'
+  - '@tinyslice/*'
+  - autotool
+  - autotool-plugin
+  - autotool-plugin-default
+  - svelte-rxjs-observer

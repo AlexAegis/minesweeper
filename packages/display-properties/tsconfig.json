@@ -3,9 +3,7 @@
 	"extends": ["@alexaegis/ts/svelte"],
 	"compilerOptions": {
 		"rootDir": "../../",
-		"outDir": ".cache/tsc",
-		"module": "nodenext",
-		"moduleResolution": "nodenext"
+		"outDir": ".cache/tsc"
 	},
 	"files": ["package.json", "../../package.json"],
 	"include": [
