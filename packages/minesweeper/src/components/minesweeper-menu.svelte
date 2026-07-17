@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Settings from './settings.form.svelte';
+	import Settings from './settings-form.svelte';
 
 	import { Button, ModalDialogWindow, formatPid, w2kCheckmark } from '@w2k/ui';
 	import Highscore from './highscore.svelte';
