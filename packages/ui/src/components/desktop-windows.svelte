@@ -3,73 +3,80 @@
 	import type { GrippyContainer } from '../helpers/grippy/grippy';
 	import { formatPid, type DesktopSlice, type ProgramId } from '../store';
 	import WindowContextItems from './window-context-items.svelte';
-	import type { WindowComponents } from './window-state.interface';
+	import type { WindowComponents, WindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
-	export let grippy: GrippyContainer;
-	export let desktopSlice: DesktopSlice;
-	// TODO: Move this somewhere else
-	export let windowComponents: Record<ProgramId, WindowComponents>;
+	interface Props {
+		grippy: GrippyContainer;
+		desktopSlice: DesktopSlice;
+		// TODO: Move this somewhere else
+		windowComponents: Record<ProgramId, WindowComponents>;
+	}
 
-	$: keys$ = desktopSlice.dicedWindows.keys$;
+	let { grippy, desktopSlice, windowComponents }: Props = $props();
+
+	let keys$ = $derived(desktopSlice.dicedWindows.keys$);
 </script>
 
 {#each $keys$ as processId (processId)}
 	{@const windowSlice = desktopSlice.dicedWindows.get(processId)}
 
 	{#if windowSlice.internals}
-		<Observer observable={windowSlice} let:next>
-			<Window
-				id={formatPid(next.processId, 'window')}
-				windowState={next}
-				{grippy}
-				on:activate={() => {
-					desktopSlice.desktop$.internals.actions.activateProgram.next(processId);
-				}}
-				on:maximize={() => {
-					windowSlice.internals.windowActions.maximize.next(undefined);
-				}}
-				on:minimize={() => {
-					windowSlice.internals.minimized$.set('start-minimizing');
-				}}
-				on:restore={() => {
-					windowSlice.internals.windowActions.restore.next(undefined);
-				}}
-				on:close={() => {
-					desktopSlice.dicedWindows.remove(processId);
-				}}
-				on:move={(event) => {
-					windowSlice.internals.windowActions.move.next(event.detail);
-				}}
-				on:resize={(event) => {
-					windowSlice.internals.windowActions.resize.next(event.detail);
-				}}
-			>
-				<svelte:fragment slot="title-bar-context-menu">
-					<WindowContextItems windowState={next} {windowSlice} {desktopSlice} />
-				</svelte:fragment>
-				<svelte:fragment slot="menu">
-					{#if next.program && windowComponents[next.program]?.menu}
-						<div class="menu-bar">
-							<svelte:component
-								this={windowComponents[next.program]?.menu}
-								internals={windowSlice.internals?.programLogic}
-								windowState={next}
-							/>
-						</div>
-					{/if}
-				</svelte:fragment>
+		<Observer observable={windowSlice}>
+			{#snippet children({ next }: { next: WindowState })}
+				<Window
+					id={formatPid(next.processId, 'window')}
+					windowState={next}
+					{grippy}
+					onActivate={() => {
+						desktopSlice.desktop$.internals.actions.activateProgram.next(processId);
+					}}
+					onMaximize={() => {
+						windowSlice.internals.windowActions.maximize.next(undefined);
+					}}
+					onMinimize={() => {
+						windowSlice.internals.minimized$.set('start-minimizing');
+					}}
+					onRestore={() => {
+						windowSlice.internals.windowActions.restore.next(undefined);
+					}}
+					onClose={() => {
+						desktopSlice.dicedWindows.remove(processId);
+					}}
+					onMove={(delta) => {
+						windowSlice.internals.windowActions.move.next(delta);
+					}}
+					onResize={(rectangle) => {
+						windowSlice.internals.windowActions.resize.next(rectangle);
+					}}
+				>
+					{#snippet titleBarContextMenu()}
+						<WindowContextItems windowState={next} {windowSlice} {desktopSlice} />
+					{/snippet}
 
-				{#if next.program && windowSlice.internals?.programLogic && windowComponents[next.program]}
-					<svelte:component
-						this={windowComponents[next.program]?.content}
-						windowState={next}
-						{windowSlice}
-						{desktopSlice}
-						internals={windowSlice.internals.programLogic}
-					/>
-				{/if}
-			</Window>
+					{#snippet menu()}
+						{#if next.program && windowComponents[next.program]?.menu}
+							{@const MenuComponent = windowComponents[next.program]?.menu}
+							<div class="menu-bar">
+								<MenuComponent
+									internals={windowSlice.internals?.programLogic}
+									windowState={next}
+								/>
+							</div>
+						{/if}
+					{/snippet}
+
+					{#if next.program && windowSlice.internals?.programLogic && windowComponents[next.program]}
+						{@const ContentComponent = windowComponents[next.program]?.content}
+						<ContentComponent
+							windowState={next}
+							{windowSlice}
+							{desktopSlice}
+							internals={windowSlice.internals.programLogic}
+						/>
+					{/if}
+				</Window>
+			{/snippet}
 		</Observer>
 	{/if}
 {/each}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import Clock from './clock.svelte';
 
 	import Image from './image.svelte';
@@ -8,22 +9,29 @@
 	import StartButton from './start-button.svelte';
 	import TaskbarSeparator from './taskbar-separator.svelte';
 
-	export let desktopSlice: DesktopSlice;
+	interface Props {
+		desktopSlice: DesktopSlice;
+		taskbar?: Snippet;
+		children?: Snippet;
+		quickbar?: Snippet;
+	}
 
-	$: debug$ = desktopSlice.desktop$.internals.debug$;
-	let startButton: HTMLElement;
+	let { desktopSlice, taskbar, children, quickbar }: Props = $props();
+
+	let debug$ = $derived(desktopSlice.desktop$.internals.debug$);
+	let startButton: HTMLElement = $state()!;
 </script>
 
 <div id="taskbar" class="taskbar panel">
 	<StartButton {desktopSlice} bind:startButton />
 	<TaskbarSeparator />
-	<slot name="taskbar" />
+	{@render taskbar?.()}
 	<div id="taskbar-programs" class="taskbar-programs">
-		<slot />
+		{@render children?.()}
 	</div>
 
 	<div id="quickbar" class="quickbar panel inset">
-		<slot name="quickbar" />
+		{@render quickbar?.()}
 		{#if $debug$}
 			<div class="quickbar-icon"><Image height={16} width={16} src={debugIcon} /></div>
 		{/if}

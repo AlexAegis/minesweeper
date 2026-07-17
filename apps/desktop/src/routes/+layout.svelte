@@ -1,8 +1,14 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { W2kGlobal } from '@w2k/css';
 	import { minesweeperIconLarge } from '@w2k/minesweeper';
 	import { Desktop } from '@w2k/ui';
 	import { desktopSlice, windowComponents } from '../root-store.js';
+	interface Props {
+		children?: Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -14,5 +20,5 @@
 <W2kGlobal />
 
 <Desktop {desktopSlice} {windowComponents} zoom={2}>
-	<slot />
+	{@render children?.()}
 </Desktop>

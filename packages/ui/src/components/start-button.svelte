@@ -8,11 +8,16 @@
 	import type { DesktopSlice } from '../store/desktop.store';
 	import StartMenu from './start-menu.svelte';
 
-	export let desktopSlice: DesktopSlice;
-	export let startButton: HTMLElement;
+	interface Props {
+		desktopSlice: DesktopSlice;
+		startButton: HTMLElement;
+	}
 
-	$: startMenuOpen$ = desktopSlice.startMenuOpen$;
+	let { desktopSlice, startButton = $bindable() }: Props = $props();
 
+	let startMenuOpen$ = $derived(desktopSlice.startMenuOpen$);
+
+	// svelte-ignore state_referenced_locally
 	const startIcon$ = desktopSlice.activeSchemeKind$.pipe(
 		map((kind) =>
 			kind === 'classic-scheme' ? w2kStandardStartMenuIcon : w2kClassicStartMenuIcon,
@@ -28,8 +33,8 @@
 	id="start"
 	class="start"
 	bind:button={startButton}
-	bind:active={$startMenuOpen$}
-	on:startFire={() => {
+	active={$startMenuOpen$}
+	onStartFire={() => {
 		startMenuOpen$.set(!startMenuOpen$.value);
 	}}
 >

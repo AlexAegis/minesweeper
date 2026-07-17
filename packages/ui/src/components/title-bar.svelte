@@ -1,33 +1,55 @@
 <script lang="ts">
 	import Image from './image.svelte';
 
-	import { createEventDispatcher } from 'svelte';
-	import type { TitleBarEvents } from './title-bar-events.interface';
+	import type { Snippet } from 'svelte';
 	import type { WindowState } from './window-state.interface';
 
-	const dispatch = createEventDispatcher<TitleBarEvents>();
+	interface Props {
+		windowState: WindowState;
+		error?: boolean | undefined;
+		class?: string | undefined;
+		style?: string | undefined;
+		onMinimize?: (() => void) | undefined;
+		onMaximize?: (() => void) | undefined;
+		onRestore?: (() => void) | undefined;
+		onHelp?: (() => void) | undefined;
+		onClose?: (() => void) | undefined;
+		oncontextmenu?: ((event: MouseEvent) => void) | undefined;
+		children?: Snippet;
+	}
 
-	export let windowState: WindowState;
-	export let error: boolean | undefined = false;
+	let {
+		windowState,
+		error = false,
+		class: className = '',
+		style = '',
+		onMinimize = undefined,
+		onMaximize = undefined,
+		onRestore = undefined,
+		onHelp = undefined,
+		onClose = undefined,
+		oncontextmenu = undefined,
+		children = undefined,
+	}: Props = $props();
 
 	function minimize() {
-		dispatch('minimize');
+		onMinimize?.();
 	}
 
 	function maximize() {
 		if (windowState.maximized) {
-			dispatch('restore');
+			onRestore?.();
 		} else {
-			dispatch('maximize');
+			onMaximize?.();
 		}
 	}
 
 	function help() {
-		dispatch('help');
+		onHelp?.();
 	}
 
 	function close() {
-		dispatch('close');
+		onClose?.();
 	}
 
 	let lastTap = 0;
@@ -39,16 +61,27 @@
 		}
 		lastTap = tap;
 	}
+
+	function withModifiers(handler: () => void): (event: Event) => void {
+		return (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			handler();
+		};
+	}
 </script>
 
 <div
-	class="title-bar {$$props['class'] ?? ''}"
-	style={$$props['style'] ?? ''}
+	class="title-bar {className}"
+	{style}
 	class:active={windowState.active && !error}
 	class:error
-	on:dblclick={maximize}
-	on:pointerdown={dbltap}
-	on:contextmenu|preventDefault
+	ondblclick={maximize}
+	onpointerdown={dbltap}
+	oncontextmenu={(event) => {
+		event.preventDefault();
+		oncontextmenu?.(event);
+	}}
 	role="presentation"
 >
 	{#if windowState.titleBarIcon}
@@ -59,7 +92,7 @@
 
 	<div aria-label="title" class="title-bar-text">
 		{windowState.title}
-		<slot />
+		{@render children?.()}
 	</div>
 
 	<div class="title-bar-controls">
@@ -67,14 +100,14 @@
 			<button
 				aria-label="Minimize"
 				disabled={!windowState.minimizeEnabled}
-				on:click|preventDefault|stopPropagation={minimize}
+				onclick={withModifiers(minimize)}
 			></button>
 		{/if}
 
 		{#if windowState.showMaximize}
 			<button
 				aria-label={windowState.maximized ? 'Restore' : 'Maximize'}
-				on:click|preventDefault|stopPropagation={maximize}
+				onclick={withModifiers(maximize)}
 				disabled={!windowState.maximizeEnabled || !windowState.resizable}
 			></button>
 		{/if}
@@ -82,7 +115,7 @@
 		{#if windowState.showHelp}
 			<button
 				aria-label="Help"
-				on:click|preventDefault|stopPropagation={help}
+				onclick={withModifiers(help)}
 				disabled={!windowState.helpEnabled}
 			></button>
 		{/if}
@@ -90,7 +123,7 @@
 		{#if windowState.showClose}
 			<button
 				aria-label="Close"
-				on:click|preventDefault|stopPropagation={close}
+				onclick={withModifiers(close)}
 				disabled={!windowState.closeEnabled}
 			></button>
 		{/if}

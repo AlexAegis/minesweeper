@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { Button } from '@w2k/ui';
 	import type { Observable } from 'rxjs';
-	import { createEventDispatcher } from 'svelte';
 	import type { HighscoreEntry } from '../store';
 
-	export let highscoreEntries$: Observable<HighscoreEntry[]>;
-	export let isClearingEnabled = false;
+	interface Props {
+		highscoreEntries$: Observable<HighscoreEntry[]>;
+		isClearingEnabled?: boolean;
+		onClear?: (() => void) | undefined;
+	}
 
-	const dispatch = createEventDispatcher<{
-		clear: undefined;
-	}>();
+	let { highscoreEntries$, isClearingEnabled = false, onClear = undefined }: Props = $props();
 </script>
 
 <div class="content">
@@ -20,7 +20,7 @@
 	</div>
 	<div class="highscore">
 		<div class="column-layout">
-			{#each $highscoreEntries$ as highscoreEntry}
+			{#each $highscoreEntries$ as highscoreEntry (highscoreEntry.timeStamp)}
 				<span class="title">{highscoreEntry.title}</span>
 				<span class="time">{highscoreEntry.timeStamp}</span>
 				<span class="description">({highscoreEntry.description})</span>
@@ -30,9 +30,7 @@
 		</div>
 	</div>
 	<div class="footer">
-		<Button disabled={!isClearingEnabled} on:fire={() => dispatch('clear')}
-			>Clear Highscrore</Button
-		>
+		<Button disabled={!isClearingEnabled} onFire={() => onClear?.()}>Clear Highscrore</Button>
 	</div>
 </div>
 

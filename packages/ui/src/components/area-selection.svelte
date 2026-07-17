@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { Rectangle } from './rectangle.interface';
 
-	export let area: Rectangle | undefined;
+	interface Props {
+		area: Rectangle | undefined;
+	}
+
+	let { area }: Props = $props();
 </script>
 
 {#if area}

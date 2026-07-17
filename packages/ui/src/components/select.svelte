@@ -1,20 +1,29 @@
 <script lang="ts">
-	export let name: string;
-	export let options: Record<string, string>;
-	export let value: string | undefined = undefined;
-	export let disabled = false;
+	import type { ChangeEventHandler } from 'svelte/elements';
+
+	interface Props {
+		name: string;
+		options: Record<string, string>;
+		value?: string | undefined;
+		disabled?: boolean;
+		class?: string | undefined;
+		style?: string | undefined;
+		onchange?: ChangeEventHandler<HTMLSelectElement> | undefined;
+	}
+
+	let {
+		name,
+		options,
+		value = $bindable(undefined),
+		disabled = false,
+		class: className = '',
+		style = '',
+		onchange = undefined,
+	}: Props = $props();
 </script>
 
-<select
-	{name}
-	id={name}
-	bind:value
-	on:change
-	{disabled}
-	class={$$props['class'] ?? ''}
-	style={$$props['style'] ?? ''}
->
-	{#each Object.keys(options) as optionKey}
+<select {name} id={name} bind:value {onchange} {disabled} class={className} {style}>
+	{#each Object.keys(options) as optionKey (optionKey)}
 		<option value={optionKey}>{options[optionKey]}</option>
 	{/each}
 </select>

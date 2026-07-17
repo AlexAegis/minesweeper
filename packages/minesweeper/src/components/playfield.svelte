@@ -1,15 +1,35 @@
 <script lang="ts">
+	import type { CoordinateLike } from '@w2k/common';
 	import type { Slice } from '@tinyslice/core';
 	import type { GameInstance, TileState } from '../store';
 	import Tile from './tile.svelte';
 
-	export let cheating: boolean;
-	export let tileSlice: Slice<GameInstance, Record<`${number},${number}`, TileState>>;
+	interface Props {
+		cheating: boolean;
+		tileSlice: Slice<GameInstance, Record<`${number},${number}`, TileState>>;
+		class?: string | undefined;
+		style?: string | undefined;
+		onStartFire?: ((coordinate: CoordinateLike) => void) | undefined;
+		onFire?: ((coordinate: CoordinateLike) => void) | undefined;
+		onAlternativeFire?: ((coordinate: CoordinateLike) => void) | undefined;
+		onCancelFire?: ((coordinate: CoordinateLike) => void) | undefined;
+	}
+
+	let {
+		cheating,
+		tileSlice,
+		class: className = '',
+		style = '',
+		onStartFire = undefined,
+		onFire = undefined,
+		onAlternativeFire = undefined,
+		onCancelFire = undefined,
+	}: Props = $props();
 </script>
 
-<div class="playfield {$$props['class'] ?? ''}" style={$$props['style'] ?? ''}>
-	{#each Object.values($tileSlice) as tile}
-		<Tile {cheating} {tile} on:startFire on:fire on:alternativeFire on:cancelFire />
+<div class="playfield {className}" {style}>
+	{#each Object.values($tileSlice) as tile (`${tile.x.toString()},${tile.y.toString()}`)}
+		<Tile {cheating} {tile} {onStartFire} {onFire} {onAlternativeFire} {onCancelFire} />
 	{/each}
 </div>
 

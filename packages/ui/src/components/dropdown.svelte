@@ -1,15 +1,20 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { getSpawnRectangle } from '../helpers';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import ContextMenu from './context-menu.svelte';
 
-	export let title: string;
-	export let hotkeyLetter: string | undefined = undefined;
+	interface Props {
+		title: string;
+		hotkeyLetter?: string | undefined;
+		active: string | undefined;
+		children?: Snippet;
+	}
 
-	export let active: string | undefined;
-	let justActivated = true;
-	let button: HTMLElement;
+	let { title, hotkeyLetter = undefined, active = $bindable(), children }: Props = $props();
+	let justActivated = $state(true);
+	let button: HTMLElement = $state()!;
 
 	function pointerenter(event: PointerEvent): void {
 		if (event.pointerType === 'mouse' && active !== undefined && active !== title) {
@@ -28,8 +33,8 @@
 	bind:button
 	look={ButtonLook.TITLE_BAR_MENU_ITEM}
 	active={active === title}
-	on:pointerenter={pointerenter}
-	on:click={click}
+	onpointerenter={pointerenter}
+	onclick={click}
 	{hotkeyLetter}
 >
 	{title}
@@ -40,11 +45,11 @@
 			xAxisAnimated={false}
 			yAxisAnimated={justActivated}
 			spawnElement={button}
-			on:dismiss={() => {
+			onDismiss={() => {
 				active = undefined;
 			}}
 		>
-			<slot />
+			{@render children?.()}
 		</ContextMenu>
 	{/if}
 </Button>

@@ -2,33 +2,63 @@
 	import { isNotNullish } from '@alexaegis/common';
 	import { documentPointerUp$ } from '@w2k/core';
 	import type { Subscription } from 'rxjs';
-	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonLook } from './button-look.enum';
 	import Image from './image.svelte';
 
-	const dispatch = createEventDispatcher<{
-		startFire: undefined;
-		fire: undefined;
-		alternativeFire: undefined;
-		cancelFire: undefined;
-		pointerdown: PointerEvent;
-	}>();
+	interface Props extends HTMLButtonAttributes {
+		disabled?: boolean;
+		appearDisabled?: boolean;
+		pressed?: boolean;
+		longpressTime?: number;
+		type?: 'button' | 'submit' | 'reset';
+		look?: ButtonLook | undefined;
+		icon?: string | undefined;
+		label?: string | undefined;
+		title?: string | undefined;
+		bold?: boolean;
+		id?: string | undefined;
+		selfPress?: boolean | undefined;
+		hotkeyLetter?: string | undefined;
+		active?: boolean | undefined;
+		button?: HTMLElement | undefined;
+		onStartFire?: (() => void) | undefined;
+		onFire?: (() => void) | undefined;
+		onAlternativeFire?: (() => void) | undefined;
+		onCancelFire?: (() => void) | undefined;
+		children?: Snippet;
+	}
 
-	export let disabled = false;
-	export let appearDisabled = false;
-	export let pressed = false;
-	export let longpressTime = 275;
-	export let type: 'button' | 'submit' | 'reset' = 'button';
-	export let look: ButtonLook | undefined = undefined;
-	export let icon: string | undefined = undefined;
-	export let label: string | undefined = undefined;
-	export let title: string | undefined = undefined;
-	export let bold = false;
-	export let id: string | undefined = undefined;
-
-	export let selfPress: boolean | undefined = true;
-	export let hotkeyLetter: string | undefined = undefined;
-	export let active: boolean | undefined = undefined;
+	let {
+		disabled = false,
+		appearDisabled = false,
+		pressed = $bindable(false),
+		longpressTime = 275,
+		type = 'button',
+		look = undefined,
+		icon = undefined,
+		label = undefined,
+		title = undefined,
+		bold = false,
+		id = undefined,
+		selfPress = true,
+		hotkeyLetter = undefined,
+		active = undefined,
+		button = $bindable(undefined),
+		onStartFire = undefined,
+		onFire = undefined,
+		onAlternativeFire = undefined,
+		onCancelFire = undefined,
+		children = undefined,
+		class: className = '',
+		style = '',
+		onpointerdown,
+		onpointerup,
+		onpointerleave,
+		oncontextmenu,
+		...rest
+	}: Props = $props();
 
 	let longpressHappened = false;
 	let cancelHappened = false;
@@ -36,8 +66,7 @@
 	let mouseUpListener: Subscription | undefined;
 	let firing = false;
 
-	export let button: HTMLElement | undefined = undefined;
-
+	// svelte-ignore state_referenced_locally
 	if (selfPress) {
 		mouseUpListener = documentPointerUp$.subscribe(() => {
 			pressed = false;
@@ -45,7 +74,7 @@
 		});
 	}
 
-	function pointerdown(event: PointerEvent): void {
+	function pointerdown(event: PointerEvent & { currentTarget: HTMLButtonElement }): void {
 		longpressHappened = false;
 		cancelHappened = false;
 		firing = true;
@@ -56,10 +85,10 @@
 				pressed = true;
 			}
 		}
-		dispatch('pointerdown', event);
+		onpointerdown?.(event);
 	}
 
-	function pointerup(e: PointerEvent): void {
+	function pointerup(e: PointerEvent & { currentTarget: HTMLButtonElement }): void {
 		if (firing && !longpressHappened && !cancelHappened) {
 			cancelLongpress();
 			if (e.button === 0 || e.button === 1) {
@@ -74,6 +103,7 @@
 				}
 			}
 		}
+		onpointerup?.(e);
 	}
 
 	function longpress(): void {
@@ -96,22 +126,29 @@
 		}
 	}
 
-	function pointerleave() {
+	function pointerleave(event: PointerEvent & { currentTarget: HTMLButtonElement }) {
 		if (firing) {
 			cancelFire();
 		}
+		onpointerleave?.(event);
+	}
+
+	function contextmenu(event: MouseEvent & { currentTarget: HTMLButtonElement }) {
+		event.preventDefault();
+		event.stopPropagation();
+		oncontextmenu?.(event);
 	}
 
 	function startFire() {
 		if (!disabled) {
-			dispatch('startFire');
+			onStartFire?.();
 		}
 	}
 
 	function fire() {
 		firing = false;
 		if (!disabled) {
-			dispatch('fire');
+			onFire?.();
 			cancelLongpress();
 		}
 	}
@@ -119,7 +156,7 @@
 	function alternativeFire() {
 		firing = false;
 		if (!disabled) {
-			dispatch('alternativeFire');
+			onAlternativeFire?.();
 			cancelLongpress();
 		}
 	}
@@ -129,7 +166,7 @@
 		if (!disabled && pressed && !cancelHappened) {
 			cancelHappened = true;
 			cancelLongpress();
-			dispatch('cancelFire');
+			onCancelFire?.();
 		}
 	}
 
@@ -146,11 +183,10 @@
 	{type}
 	{disabled}
 	{title}
-	aria-label={$$props['aria-label']}
-	class={$$props['class'] ?? ''}
+	class={className}
 	class:outset={!pressed}
 	class:inset={pressed}
-	style={$$props['style'] ?? ''}
+	{style}
 	class:disabled={disabled || appearDisabled}
 	class:hotkey-letter={!!hotkeyLetter}
 	class:active
@@ -166,22 +202,16 @@
 	class:type-title-bar-menu-item={look === ButtonLook.TITLE_BAR_MENU_ITEM}
 	class:type-context-menu-item={look === ButtonLook.CONTEXT_MENU_ITEM}
 	class:type-start-menu-item={look === ButtonLook.START_MENU_ITEM}
-	on:click
-	on:mouseup
-	on:mousedown
-	on:mouseenter
-	on:dblclick
-	on:contextmenu|preventDefault|stopPropagation
-	on:pointercancel
-	on:pointerenter
-	on:pointerup={pointerup}
-	on:pointerdown={pointerdown}
-	on:pointerleave={pointerleave}
+	oncontextmenu={contextmenu}
+	onpointerup={pointerup}
+	onpointerdown={pointerdown}
+	onpointerleave={pointerleave}
+	{...rest}
 >
 	{#if look === ButtonLook.CONTEXT_MENU_ITEM}
 		<Image height={16} width={16} src={icon}></Image>
 		<span>
-			<slot />
+			{@render children?.()}
 		</span>
 	{:else if look === ButtonLook.TASKBAR_ITEM}
 		<span class="taskbar-button-icon">
@@ -189,10 +219,10 @@
 		</span>
 
 		<span>
-			<slot />
+			{@render children?.()}
 		</span>
 	{:else}
-		<slot />
+		{@render children?.()}
 	{/if}
 </button>
 

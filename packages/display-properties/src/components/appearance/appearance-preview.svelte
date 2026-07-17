@@ -8,7 +8,11 @@
 		type DesktopColorScheme,
 	} from '@w2k/ui';
 
-	export let desktopColorScheme: DesktopColorScheme;
+	interface Props {
+		desktopColorScheme: DesktopColorScheme;
+	}
+
+	let { desktopColorScheme }: Props = $props();
 </script>
 
 <!-- inert: the preview shows real window components but is only a picture,
@@ -44,13 +48,15 @@
 			showMinimize: true,
 		}}
 	>
-		<div class="menu-bar" slot="menu">
-			<Button look={ButtonLook.TITLE_BAR_MENU_ITEM}>Normal</Button>
-			<Button look={ButtonLook.TITLE_BAR_MENU_ITEM} disabled appearDisabled={true}
-				>Disabled</Button
-			>
-			<Button look={ButtonLook.TITLE_BAR_MENU_ITEM} pressed={true}>Selected</Button>
-		</div>
+		{#snippet menu()}
+			<div class="menu-bar">
+				<Button look={ButtonLook.TITLE_BAR_MENU_ITEM}>Normal</Button>
+				<Button look={ButtonLook.TITLE_BAR_MENU_ITEM} disabled appearDisabled={true}
+					>Disabled</Button
+				>
+				<Button look={ButtonLook.TITLE_BAR_MENU_ITEM} pressed={true}>Selected</Button>
+			</div>
+		{/snippet}
 		<div class="example-active-window-content">
 			<textarea></textarea>
 		</div>

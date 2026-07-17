@@ -3,10 +3,12 @@
 
 	import './segment-display.scss';
 
-	export let value: number | undefined;
-	export let paddedLength = 3;
+	interface Props {
+		value: number | undefined;
+		paddedLength?: number;
+	}
 
-	let numbers: (number | string)[];
+	let { value, paddedLength = 3 }: Props = $props();
 
 	function padArray<T>(array: T[], until: number, padding: T): T[] {
 		while (array.length < until) {
@@ -15,20 +17,21 @@
 		return array;
 	}
 
-	$: {
-		numbers = padArray(
+	let numbers: (number | string)[] = $derived.by(() => {
+		const digits: (number | string)[] = padArray(
 			[...Math.abs(value ?? 0).toString()].map((s) => Number.parseInt(s, 10)),
 			paddedLength,
 			0,
 		);
 		if ((value ?? 0) < 0) {
-			numbers[0] = '-';
+			digits[0] = '-';
 		}
-	}
+		return digits;
+	});
 </script>
 
 <div class="segment-display panel inset">
-	{#each numbers as number}
+	{#each numbers as number, index (index)}
 		<SegmentDisplay value={number} />
 	{/each}
 </div>

@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let value: number | string;
+	interface Props {
+		value: number | string;
+	}
+
+	let { value }: Props = $props();
 
 	const topSegment = '02356789';
 	const topLeftSegment = '045689';
@@ -9,7 +13,7 @@
 	const bottomRightSegment = '013456789';
 	const bottomSegment = '0235689';
 
-	$: last = typeof value === 'number' ? value % 10 : (value.at(-1) ?? '0');
+	let last = $derived(typeof value === 'number' ? value % 10 : (value.at(-1) ?? '0'));
 </script>
 
 <div>

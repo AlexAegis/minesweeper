@@ -10,48 +10,40 @@
 		type DesktopSlice,
 	} from '@w2k/ui';
 	import { map } from 'rxjs';
-	import { createEventDispatcher } from 'svelte';
 	import AppearancePreview from './appearance-preview.svelte';
 	import {
 		defaultDesktopColorScheme,
 		desktopColorSchemeSelectOptions,
 	} from './color-scheme.interface';
-	export let desktopSlice!: DesktopSlice;
-	$: allSchemeNames$ = desktopSlice.dicedSchemes.items$.pipe(
-		map((items) => {
-			const sortedItems = items.sort((a, b) => a.displayName.localeCompare(b.displayName));
-			const sortedEntries: [string, string][] = sortedItems.map((data) => [
-				data.key,
-				data.displayName,
-			]);
-			return Object.fromEntries(sortedEntries);
+
+	interface Props {
+		desktopSlice: DesktopSlice;
+		temporaryScheme?: DesktopColorScheme;
+		onChange?: ((scheme: DesktopColorScheme) => void) | undefined;
+	}
+
+	let {
+		desktopSlice,
+		temporaryScheme = $bindable({
+			...defaultDesktopColorScheme,
 		}),
-	);
+		onChange = undefined,
+	}: Props = $props();
 
 	// The unsaved scheme forked off a built-in by editing it. Named after its
 	// origin, like 'Standard Scheme *'. When the dialog opens while a custom
 	// scheme is already active, its origin is unknown. Until a fork exists (the
 	// name is empty), the entry is left out of the selector entirely.
-	let customSchemeName =
-		desktopSlice.activeSchemeKind$.value === 'custom-scheme' ? 'Custom Scheme' : '';
-	$: schemeOptions = customSchemeName
-		? { ...$allSchemeNames$, 'custom-scheme': customSchemeName }
-		: $allSchemeNames$;
+	// svelte-ignore state_referenced_locally
+	let customSchemeName = $state(
+		desktopSlice.activeSchemeKind$.value === 'custom-scheme' ? 'Custom Scheme' : '',
+	);
 
-	export let temporaryScheme: DesktopColorScheme = {
-		...defaultDesktopColorScheme,
-	};
-
-	const dispatcher = createEventDispatcher<{ change: DesktopColorScheme }>();
-
-	$: {
-		dispatcher('change', temporaryScheme);
-	}
-
-	let item: keyof DesktopColorScheme | undefined = undefined;
+	let item: keyof DesktopColorScheme | undefined = $state(undefined);
 	// Start on the scheme that is currently active; edits fork into the blank
 	// 'custom-scheme' entry so the built-in schemes are never modified.
-	let scheme: string | undefined = desktopSlice.activeSchemeKind$.value;
+	// svelte-ignore state_referenced_locally
+	let scheme: string | undefined = $state(desktopSlice.activeSchemeKind$.value);
 
 	function selectScheme(): void {
 		// The custom entry holds the current (already cloned) edits, there is
@@ -78,6 +70,28 @@
 			}
 		}
 	}
+	let allSchemeNames$ = $derived(
+		desktopSlice.dicedSchemes.items$.pipe(
+			map((items) => {
+				const sortedItems = items.sort((a, b) =>
+					a.displayName.localeCompare(b.displayName),
+				);
+				const sortedEntries: [string, string][] = sortedItems.map((data) => [
+					data.key,
+					data.displayName,
+				]);
+				return Object.fromEntries(sortedEntries);
+			}),
+		),
+	);
+	let schemeOptions = $derived(
+		customSchemeName
+			? { ...$allSchemeNames$, 'custom-scheme': customSchemeName }
+			: $allSchemeNames$,
+	);
+	$effect(() => {
+		onChange?.(temporaryScheme);
+	});
 </script>
 
 <div>
@@ -88,7 +102,7 @@
 			options={schemeOptions}
 			style="grid-row: 2; grid-column: 1;"
 			bind:value={scheme}
-			on:change={selectScheme}
+			onchange={selectScheme}
 		></Select>
 		<label for="schemeSelector" style="grid-row: 1; grid-column: 1;">Scheme:</label>
 		<div class="scheme-operations">
@@ -111,8 +125,8 @@
 			style="grid-row: 4; grid-column: 3;"
 			disabled={item === undefined || temporaryScheme[item]?.color1 === undefined}
 			color={item && temporaryScheme[item]?.color1}
-			on:change={(event) => {
-				editColor('color1', event.detail);
+			onChange={(color) => {
+				editColor('color1', color);
 			}}
 		></ColorPicker>
 		<label for="schemeItemColor1" style="grid-row: 3; grid-column: 3;">Color 1:</label>
@@ -121,8 +135,8 @@
 			style="grid-row: 4; grid-column: 4;"
 			disabled={item === undefined || temporaryScheme[item]?.color2 === undefined}
 			color={item && temporaryScheme[item]?.color2}
-			on:change={(event) => {
-				editColor('color2', event.detail);
+			onChange={(color) => {
+				editColor('color2', color);
 			}}
 		></ColorPicker>
 		<label for="schemeItemColor2" style="grid-row: 3; grid-column: 4;">Color 2:</label>

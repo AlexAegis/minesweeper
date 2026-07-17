@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
 	import { packageMetadata } from '@w2k/core';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { desktopColorSchemeToCssVariables, joinStyleMap } from '..';
 	import { readGlobal, writeGlobal, type Handler } from '../helpers';
 	import { GrippyContainer } from '../helpers/grippy/grippy';
@@ -17,27 +17,26 @@
 	import Taskbar from './taskbar.svelte';
 	import type { WindowComponents } from './window-state.interface';
 
-	let contextMenuPosition: CoordinateLike | undefined = undefined;
-	export let windowComponents: Record<ProgramId, WindowComponents>;
-	let workspaceElement: HTMLDivElement;
-	let desktopElement: HTMLDivElement;
+	let contextMenuPosition: CoordinateLike | undefined = $state(undefined);
+	let workspaceElement: HTMLDivElement = $state()!;
+	let desktopElement: HTMLDivElement = $state()!;
 
-	export let desktopSlice: DesktopSlice;
-	$: activeSchemeData$ = desktopSlice.activeSchemeData$;
-	$: activeSchemeKind$ = desktopSlice.activeSchemeKind$;
-
-	let selectArea: Rectangle | undefined;
+	let selectArea: Rectangle | undefined = $state();
 	let selectAreaStart: Rectangle | undefined;
 
-	export let zoom = 1;
+	interface Props {
+		windowComponents: Record<ProgramId, WindowComponents>;
+		desktopSlice: DesktopSlice;
+		zoom?: number;
+		children?: Snippet;
+	}
 
+	let { windowComponents, desktopSlice, zoom = 1, children }: Props = $props();
+
+	// svelte-ignore state_referenced_locally
 	const grippy = new GrippyContainer({
 		zoom,
 	});
-
-	$: {
-		writeGlobal('w2kZoom', zoom);
-	}
 
 	let selectionDraggable: Handler | undefined;
 
@@ -114,6 +113,11 @@
 		selectionDraggable?.unsubscribe();
 		grippy.unsubscribe();
 	});
+	let activeSchemeData$ = $derived(desktopSlice.activeSchemeData$);
+	let activeSchemeKind$ = $derived(desktopSlice.activeSchemeKind$);
+	$effect(() => {
+		writeGlobal('w2kZoom', zoom);
+	});
 </script>
 
 <!-- The built-in schemes are styled entirely by their class; the inline css
@@ -134,7 +138,8 @@
 		class="workspace free-placement"
 		role="directory"
 		aria-roledescription="desktop workspace containing the icons"
-		on:contextmenu|preventDefault={(event) => {
+		oncontextmenu={(event) => {
+			event.preventDefault();
 			contextMenuPosition = contextMenuPosition
 				? undefined
 				: {
@@ -144,7 +149,7 @@
 		}}
 	>
 		<DesktopShortcuts {desktopSlice} {selectArea} {grippy} />
-		<slot />
+		{@render children?.()}
 		<div id="selection-plane" class="selection-plane">
 			<AreaSelection area={selectArea} />
 		</div>
@@ -155,20 +160,20 @@
 	</div>
 
 	<ContextMenu bind:position={contextMenuPosition}>
-		<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => console.log('Hello world')}>
+		<Button look={ButtonLook.CONTEXT_MENU_ITEM} onclick={() => console.log('Hello world')}>
 			Hello
 		</Button>
 
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() => window.open(packageMetadata.homepage, '_blank')}
+			onclick={() => window.open(packageMetadata.homepage, '_blank')}
 		>
 			Github
 		</Button>
 		<hr />
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
-			on:click={() =>
+			onclick={() =>
 				desktopSlice.desktop$.internals.actions.spawnProgram.next('displayProperties')}
 		>
 			Properties

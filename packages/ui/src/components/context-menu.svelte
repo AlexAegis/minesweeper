@@ -2,42 +2,54 @@
 	import type { CoordinateLike } from '@w2k/common';
 	import { documentPointerDown$ } from '@w2k/core';
 	import { filter, tap } from 'rxjs';
-	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 	import { readGlobal } from '../helpers';
 	import { getWorkspaceRectangle } from '../store/desktop.store';
 
-	const dispatcher = createEventDispatcher<{
-		dismiss: undefined;
-	}>();
+	interface Props {
+		/**
+		 * The position can optionally be a recatangle (A DOMRect coming from getBoundingClientRect fits here nicely)
+		 * Then the menu will try to spawn from the edge of the area
+		 */
+		position?: (CoordinateLike & { height?: number; width?: number }) | undefined;
+		// An additional element to ignore when detecting if the context menu should be dismissed
+		spawnElement?: HTMLElement | undefined;
+		xAxisAnimated?: boolean;
+		yAxisAnimated?: boolean;
+		class?: string | undefined;
+		style?: string | undefined;
+		onDismiss?: (() => void) | undefined;
+		children?: Snippet;
+	}
 
-	/**
-	 * The position can optionally be a recatangle (A DOMRect coming from getBoundingClientRect fits here nicely)
-	 * Then the menu will try to spawn from the edge of the area
-	 */
-	export let position: (CoordinateLike & { height?: number; width?: number }) | undefined =
-		undefined;
+	let {
+		position = $bindable(undefined),
+		spawnElement = undefined,
+		xAxisAnimated = true,
+		yAxisAnimated = true,
+		class: className = '',
+		style = '',
+		onDismiss = undefined,
+		children = undefined,
+	}: Props = $props();
 
-	// An additional element to ignore when detecting if the context menu should be dismissed
-	export let spawnElement: HTMLElement | undefined = undefined;
-
-	export let xAxisAnimated = true;
-	export let yAxisAnimated = true;
-
-	let xOffset = 0;
-	let yOffset = 0;
-	let xDirection = -1;
-	let yDirection = -1;
+	let xOffset = $state(0);
+	let yOffset = $state(0);
+	let xDirection = $state(-1);
+	let yDirection = $state(-1);
 
 	// Adding the direction is done to let the position effectively ignore the edge of the panel.
 	// This will always pushes the corner of the panel 1 px towards the spawn position.
-	$: effectivePosition = position
-		? {
-				x: position.x + xOffset + xDirection,
-				y: position.y + yOffset + yDirection,
-			}
-		: undefined;
+	let effectivePosition = $derived(
+		position
+			? {
+					x: position.x + xOffset + xDirection,
+					y: position.y + yOffset + yDirection,
+				}
+			: undefined,
+	);
 
-	let contextMenuContainer: HTMLElement | undefined;
+	let contextMenuContainer: HTMLElement | undefined = $state(undefined);
 
 	const subscription = documentPointerDown$
 		.pipe(
@@ -51,12 +63,12 @@
 			}),
 			tap(() => {
 				position = undefined;
-				dispatcher('dismiss');
+				onDismiss?.();
 			}),
 		)
 		.subscribe();
 
-	$: {
+	$effect(() => {
 		if (position) {
 			if (contextMenuContainer) {
 				// getBoundingClientRect returns screen pixels, but `position` and the
@@ -92,7 +104,7 @@
 				yDirection = -1;
 			}
 		}
-	}
+	});
 
 	onDestroy(() => {
 		subscription.unsubscribe();
@@ -109,13 +121,14 @@
 		style:--context-menu-appear-y-direction={yAxisAnimated ? yDirection : 0}
 		aria-roledescription="context menu containing contextual buttons"
 		role="presentation"
-		on:click|stopPropagation={() => {
-			dispatcher('dismiss');
+		onclick={(event) => {
+			event.stopPropagation();
+			onDismiss?.();
 			position = undefined;
 		}}
 	>
-		<div class="context-menu window {$$props['class'] ?? ''}" style={$$props['style'] ?? ''}>
-			<slot />
+		<div class="context-menu window {className}" {style}>
+			{@render children?.()}
 		</div>
 	</div>
 {/if}

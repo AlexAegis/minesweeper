@@ -1,40 +1,46 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
-	import { createEventDispatcher } from 'svelte';
 	import { isEmptyTileMark, isFlagTileMark, isQuestionTileMark } from '../interfaces';
 	import type { TileState } from '../store';
 
 	import { Button } from '@w2k/ui';
 
-	const dispatch = createEventDispatcher<{
-		startFire: CoordinateLike;
-		cancelFire: CoordinateLike;
-		fire: CoordinateLike;
-		alternativeFire: CoordinateLike;
-	}>();
+	interface Props {
+		tile: TileState;
+		cheating?: boolean;
+		onStartFire?: ((coordinate: CoordinateLike) => void) | undefined;
+		onFire?: ((coordinate: CoordinateLike) => void) | undefined;
+		onAlternativeFire?: ((coordinate: CoordinateLike) => void) | undefined;
+		onCancelFire?: ((coordinate: CoordinateLike) => void) | undefined;
+	}
 
-	export let tile: TileState;
-
-	export let cheating = false;
+	let {
+		tile,
+		cheating = false,
+		onStartFire = undefined,
+		onFire = undefined,
+		onAlternativeFire = undefined,
+		onCancelFire = undefined,
+	}: Props = $props();
 
 	function asCoordinate(tile: TileState): CoordinateLike {
 		return { x: tile.x, y: tile.y };
 	}
 
 	function startFire() {
-		dispatch('startFire', asCoordinate(tile));
+		onStartFire?.(asCoordinate(tile));
 	}
 
 	function cancelFire() {
-		dispatch('cancelFire', asCoordinate(tile));
+		onCancelFire?.(asCoordinate(tile));
 	}
 
 	function fire() {
-		dispatch('fire', asCoordinate(tile));
+		onFire?.(asCoordinate(tile));
 	}
 
 	function alternativeFire() {
-		dispatch('alternativeFire', asCoordinate(tile));
+		onAlternativeFire?.(asCoordinate(tile));
 	}
 
 	function getTileClassList(tile: TileState, cheating: boolean): string {
@@ -68,7 +74,7 @@
 		return classes.join(' ');
 	}
 
-	$: tileClass = getTileClassList(tile, cheating);
+	let tileClass = $derived(getTileClassList(tile, cheating));
 </script>
 
 <Button
@@ -77,9 +83,9 @@
 	disabled={tile.disabled}
 	appearDisabled={tile.revealed}
 	selfPress={false}
-	on:fire={fire}
-	on:startFire={startFire}
-	on:alternativeFire={alternativeFire}
-	on:cancelFire={cancelFire}
+	onFire={fire}
+	onStartFire={startFire}
+	onAlternativeFire={alternativeFire}
+	onCancelFire={cancelFire}
 	style="grid-row: {tile.y + 1}; grid-column: {tile.x + 1};"
 />

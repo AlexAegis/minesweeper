@@ -2,7 +2,7 @@
 	import type { CoordinateLike } from '@w2k/common';
 	import { PACKAGE_NAME_AND_VERSION, documentPointerUp$, packageMetadata } from '@w2k/core';
 	import { filter, map } from 'rxjs';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
 	import {
 		w2kDisplaySettingsIconLarge,
@@ -12,23 +12,29 @@
 	} from '../assets/icons';
 	import { githubIcon } from '../assets/misc';
 	import { readGlobal } from '../helpers/w2k-globals';
-	import type { DesktopSlice } from '../store';
+	import type { DesktopSlice, ProgramState } from '../store';
 	import { ButtonLook } from './button-look.enum';
 	import Button from './button.svelte';
 	import ContextMenu from './context-menu.svelte';
 	import Image from './image.svelte';
 
-	export let desktopSlice: DesktopSlice;
-	export let startButton: HTMLElement;
+	interface Props {
+		desktopSlice: DesktopSlice;
+		startButton: HTMLElement;
+		children?: Snippet;
+	}
 
-	let startMenu: HTMLElement;
+	let { desktopSlice, startButton, children }: Props = $props();
 
-	$: programKeys$ = desktopSlice.dicedPrograms.keys$;
-	$: activeSchemeKind$ = desktopSlice.activeSchemeKind$;
-	$: debug$ = desktopSlice.desktop$.internals.debug$;
+	let startMenu: HTMLElement = $state()!;
 
-	let contextMenuPosition: CoordinateLike | undefined = undefined;
+	let programKeys$ = $derived(desktopSlice.dicedPrograms.keys$);
+	let activeSchemeKind$ = $derived(desktopSlice.activeSchemeKind$);
+	let debug$ = $derived(desktopSlice.desktop$.internals.debug$);
 
+	let contextMenuPosition: CoordinateLike | undefined = $state(undefined);
+
+	// svelte-ignore state_referenced_locally
 	const closeEffect = desktopSlice.desktop$.createEffect(
 		documentPointerUp$.pipe(
 			filter((event) => {
@@ -61,52 +67,61 @@
 		</div>
 		<div class="content">
 			{#each $programKeys$ as programKey}
-				<Observer observable={desktopSlice.dicedPrograms.get(programKey)} let:next>
-					<Button
-						class="flat"
-						look={ButtonLook.START_MENU_ITEM}
-						on:click={() => {
-							desktopSlice.desktop$.internals.actions.spawnProgram.next(programKey);
-						}}
-						on:contextmenu={(event) => {
-							contextMenuPosition = contextMenuPosition
-								? undefined
-								: {
-										x: event.pageX / readGlobal('w2kZoom'),
-										y: event.pageY / readGlobal('w2kZoom'),
-									};
-						}}
-					>
-						<Image alt={next.name} src={next.icon} height={iconSize} width={iconSize} />
-						{next.initialWindowState.title}
-					</Button>
-
-					<ContextMenu bind:position={contextMenuPosition}>
+				<Observer observable={desktopSlice.dicedPrograms.get(programKey)}>
+					{#snippet children({ next }: { next: ProgramState })}
 						<Button
-							look={ButtonLook.CONTEXT_MENU_ITEM}
-							on:click={() => {
-								desktopSlice.shortcuts$.internals.shortcutsActions.spawnShortcut.next(
-									next,
+							class="flat"
+							look={ButtonLook.START_MENU_ITEM}
+							onclick={() => {
+								desktopSlice.desktop$.internals.actions.spawnProgram.next(
+									programKey,
 								);
 							}}
+							oncontextmenu={(event) => {
+								contextMenuPosition = contextMenuPosition
+									? undefined
+									: {
+											x: event.pageX / readGlobal('w2kZoom'),
+											y: event.pageY / readGlobal('w2kZoom'),
+										};
+							}}
 						>
-							Create Shortcut
+							<Image
+								alt={next.name}
+								src={next.icon}
+								height={iconSize}
+								width={iconSize}
+							/>
+							{next.initialWindowState.title}
 						</Button>
-					</ContextMenu>
+
+						<ContextMenu bind:position={contextMenuPosition}>
+							<Button
+								look={ButtonLook.CONTEXT_MENU_ITEM}
+								onclick={() => {
+									desktopSlice.shortcuts$.internals.shortcutsActions.spawnShortcut.next(
+										next,
+									);
+								}}
+							>
+								Create Shortcut
+							</Button>
+						</ContextMenu>
+					{/snippet}
 				</Observer>
 			{/each}
 
 			<hr />
 
-			<slot />
-			{#if $$slots.default}
+			{@render children?.()}
+			{#if children}
 				<hr />
 			{/if}
 
 			<Button
 				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire={() => {
+				onFire={() => {
 					alert('Under Construction');
 				}}
 			>
@@ -117,7 +132,7 @@
 			<Button
 				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire={() => {
+				onFire={() => {
 					desktopSlice.toggleActiveSchemeKindAction.next(undefined);
 				}}
 			>
@@ -134,7 +149,7 @@
 			<Button
 				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire={() => {
+				onFire={() => {
 					debug$.set(!debug$.value);
 				}}
 			>
@@ -150,7 +165,7 @@
 			<Button
 				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire={() => window.open(packageMetadata.homepage, '_blank')}
+				onFire={() => window.open(packageMetadata.homepage, '_blank')}
 			>
 				<Image height={iconSize} width={iconSize} src={githubIcon} />
 				Github
@@ -161,7 +176,7 @@
 			<Button
 				look={ButtonLook.START_MENU_ITEM}
 				class="flat"
-				on:fire={() => {
+				onFire={() => {
 					confirm('Sure?') && window.close();
 				}}
 			>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { ButtonLook, ContextMenu } from '../components';
 	import { readGlobal, type GrippyContainer, type Handler, type Vec2 } from '../helpers';
 	import type { ProgramId, ShortcutId, ShortcutState } from '../store';
@@ -7,32 +7,47 @@
 	import { firable } from './firable.action';
 	import Image from './image.svelte';
 
-	export let shortcutState: ShortcutState;
-	export let grippy: GrippyContainer;
+	let shortcutElement: HTMLElement | undefined = $state(undefined);
+	interface Props {
+		shortcutState: ShortcutState;
+		grippy: GrippyContainer;
+		shortcutIconElement?: HTMLElement | undefined;
+		onMove?: ((position: Vec2) => void) | undefined;
+		onDrop?: ((position: Vec2) => void) | undefined;
+		onSelect?: ((shortcutId: ShortcutId) => void) | undefined;
+		onSpawn?: ((program: ProgramId) => void) | undefined;
+		onDelete?: ((shortcutId: ShortcutId) => void) | undefined;
+		onBeginRename?: ((shortcutId: ShortcutId) => void) | undefined;
+		onRename?: ((rename: Pick<ShortcutState, 'shortcutId' | 'name'>) => void) | undefined;
+		ondblclick?: ((event: MouseEvent) => void) | undefined;
+		children?: Snippet;
+	}
 
-	const dispatch = createEventDispatcher<{
-		move: Vec2;
-		drop: Vec2;
-		select: ShortcutId;
-		spawn: ProgramId;
-		delete: ShortcutId;
-		beginRename: ShortcutId;
-		rename: Pick<ShortcutState, 'shortcutId' | 'name'>;
-	}>();
-
-	let shortcutElement: HTMLElement | undefined = undefined;
-	export let shortcutIconElement: HTMLElement | undefined = undefined;
+	let {
+		shortcutState,
+		grippy,
+		shortcutIconElement = $bindable(undefined),
+		onMove = undefined,
+		onDrop = undefined,
+		onSelect = undefined,
+		onSpawn = undefined,
+		onDelete = undefined,
+		onBeginRename = undefined,
+		onRename = undefined,
+		ondblclick = undefined,
+		children,
+	}: Props = $props();
 
 	let dragHandler: Handler | undefined;
 
-	$: transientPosition = { ...shortcutState.position };
+	let transientPosition = $derived({ ...shortcutState.position });
 
 	function move(position: Vec2) {
-		dispatch('move', position);
+		onMove?.(position);
 	}
 
 	function drop(position: Vec2) {
-		dispatch('drop', position);
+		onDrop?.(position);
 	}
 
 	onMount(() => {
@@ -56,24 +71,25 @@
 	});
 
 	function spawn(): void {
-		dispatch('spawn', shortcutState.program);
+		onSpawn?.(shortcutState.program);
 	}
 
 	function select(): void {
-		dispatch('select', shortcutState.shortcutId);
+		onSelect?.(shortcutState.shortcutId);
 	}
 
 	function deleteShortcut(): void {
-		dispatch('delete', shortcutState.shortcutId);
+		onDelete?.(shortcutState.shortcutId);
 	}
 
 	function beginRenameShortcut(): void {
-		dispatch('beginRename', shortcutState.shortcutId);
+		onBeginRename?.(shortcutState.shortcutId);
 	}
 
 	function rename(e: SubmitEvent): void {
+		e.preventDefault();
 		const formData = new FormData(e.target as HTMLFormElement);
-		dispatch('rename', {
+		onRename?.({
 			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 			name: formData.get('name')?.toString() || shortcutState.name,
 			shortcutId: shortcutState.shortcutId,
@@ -95,7 +111,7 @@
 				break;
 			}
 			case 'Escape': {
-				dispatch('rename', {
+				onRename?.({
 					name: shortcutState.name,
 					shortcutId: shortcutState.shortcutId,
 				});
@@ -106,22 +122,23 @@
 
 	function keydownRename(e: KeyboardEvent): void {
 		if (e.key === 'Escape') {
-			dispatch('rename', {
+			onRename?.({
 				name: shortcutState.name,
 				shortcutId: shortcutState.shortcutId,
 			});
 		}
 	}
-	let contextMenuPosition: Vec2 | undefined = undefined;
+	let contextMenuPosition: Vec2 | undefined = $state(undefined);
 
-	let pointerMovedDuringClick = false;
+	let pointerMovedDuringClick = $state(false);
 </script>
 
 <div
 	bind:this={shortcutElement}
 	id={'shortcut' + shortcutState.shortcutId.toString()}
 	use:firable={{ draggable: true }}
-	on:contextmenu|stopPropagation={(event) => {
+	oncontextmenu={(event) => {
+		event.stopPropagation();
 		contextMenuPosition = contextMenuPosition
 			? undefined
 			: { x: event.pageX / readGlobal('w2kZoom'), y: event.pageY / readGlobal('w2kZoom') };
@@ -129,19 +146,19 @@
 	aria-label="shortcut"
 	role="button"
 	tabindex="0"
-	on:keydown={keydown}
-	on:dblclick={() => {
+	onkeydown={keydown}
+	ondblclick={() => {
 		spawn();
 	}}
-	on:click={() => {
+	onclick={() => {
 		if (!pointerMovedDuringClick) {
 			select();
 		}
 	}}
-	on:pointermove={() => {
+	onpointermove={() => {
 		pointerMovedDuringClick = true;
 	}}
-	on:pointerdown={() => {
+	onpointerdown={() => {
 		pointerMovedDuringClick = false;
 	}}
 	class="shortcut"
@@ -154,16 +171,22 @@
 	</div>
 	<div class="shortcut-symbol"></div>
 	{#if shortcutState.renaming}
-		<form class="title" on:submit|preventDefault={rename}>
-			<!-- svelte-ignore a11y-autofocus -->
+		<form class="title" onsubmit={rename}>
+			<!-- svelte-ignore a11y_autofocus -->
 			<input
 				class="input"
 				type="text"
 				name="name"
 				autofocus
 				value={shortcutState.name}
-				on:keydown|stopPropagation={keydownRename}
-				on:dblclick|stopPropagation
+				onkeydown={(event) => {
+					event.stopPropagation();
+					keydownRename(event);
+				}}
+				ondblclick={(event) => {
+					event.stopPropagation();
+					ondblclick?.(event);
+				}}
 			/>
 		</form>
 	{:else}
@@ -174,14 +197,14 @@
 </div>
 
 <ContextMenu bind:position={contextMenuPosition} spawnElement={shortcutElement}>
-	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => spawn()} bold={true}>Open</Button>
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} onclick={() => spawn()} bold={true}>Open</Button>
 	<hr />
-	<slot />
-	{#if $$slots.default}
+	{@render children?.()}
+	{#if children}
 		<hr />
 	{/if}
-	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => deleteShortcut()}>Delete</Button>
-	<Button look={ButtonLook.CONTEXT_MENU_ITEM} on:click={() => beginRenameShortcut()}>
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} onclick={() => deleteShortcut()}>Delete</Button>
+	<Button look={ButtonLook.CONTEXT_MENU_ITEM} onclick={() => beginRenameShortcut()}>
 		Rename
 	</Button>
 </ContextMenu>

@@ -1,26 +1,22 @@
 <script lang="ts">
 	import { defer } from '@w2k/common';
-	import type { Subject } from 'rxjs';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 	import { nudgeAreaIntoArea } from '../helpers/nudge-area-into-area.function';
 	import { centerRectangleIntoRectancle, getWorkspaceRectangle } from '../store';
 	import Modal from './modal.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
 
-	export let windowState: Partial<BaseWindowState>;
+	interface Props {
+		windowState: Partial<BaseWindowState>;
+		isOpen?: boolean;
+		children?: Snippet;
+	}
 
-	$: effectiveWindowState = {
-		...initialWindowState,
-		...windowState,
-		showMinimize: false,
-		active: true,
-	};
+	let { windowState = $bindable(), isOpen = $bindable(false), children }: Props = $props();
 
-	export let isOpen = false;
-
-	let modalWindowElement: HTMLElement;
-	let errorNotification: Subject<void>;
+	let modalWindowElement: HTMLElement | undefined = $state();
+	let windowInstance: Window | undefined = $state();
 
 	export function open(centeringElement?: Element | undefined | null) {
 		windowState.invisible = true;
@@ -65,24 +61,34 @@
 
 	export function backdropClick(event: MouseEvent) {
 		if ((event.target as Element).className.includes('modal')) {
-			errorNotification.next();
+			windowInstance?.errorNotification.next();
 		}
 	}
 
 	onDestroy(() => {
-		errorNotification?.complete();
+		windowInstance?.errorNotification.complete();
+	});
+	let effectiveWindowState = $derived({
+		...initialWindowState,
+		...windowState,
+		showMinimize: false,
+		active: true,
 	});
 </script>
 
-<Modal bind:isOpen backdropCanClose={false} on:error={() => errorNotification?.next(undefined)}>
+<Modal
+	bind:isOpen
+	backdropCanClose={false}
+	onError={() => windowInstance?.errorNotification.next(undefined)}
+>
 	<Window
+		bind:this={windowInstance}
 		bind:windowElement={modalWindowElement}
 		windowState={effectiveWindowState}
 		transient={true}
 		canDeactivate={false}
-		on:close={close}
-		bind:errorNotification
+		onClose={close}
 	>
-		<slot />
+		{@render children?.()}
 	</Window>
 </Modal>

@@ -2,19 +2,23 @@
 	import { Panel } from '@w2k/ui';
 	import { onDestroy, onMount } from 'svelte';
 	import { Observer } from 'svelte-rxjs-observer';
-	import type { MinesweeperGame } from '../store';
+	import type { MinesweeperGame, SmileyState } from '../store';
 	import Playfield from './playfield.svelte';
 	import SegmentDisplayPanel from './segment-display-panel.svelte';
 	import Smiley from './smiley.svelte';
 
 	import '../../static/minesweeper.scss';
 
-	export let internals: MinesweeperGame;
-	$: unlockedScheme$ = internals.unlockedScheme$;
+	interface Props {
+		internals: MinesweeperGame;
+	}
 
-	$: cheating$ = internals.cheating$;
-	$: cheating = $cheating$;
-	$: tileSlice = internals.tilesSlice$;
+	let { internals }: Props = $props();
+	let unlockedScheme$ = $derived(internals.unlockedScheme$);
+
+	let cheating$ = $derived(internals.cheating$);
+	let cheating = $derived($cheating$);
+	let tileSlice = $derived(internals.tilesSlice$);
 
 	onMount(() => {
 		internals.game$.unpause();
@@ -26,19 +30,25 @@
 
 <div class="game w2k-scheme-classic" class:w2k-scheme-classic={!$unlockedScheme$}>
 	<Panel class="stats">
-		<Observer observable={internals.remainingMines$} let:next>
-			<SegmentDisplayPanel value={next} paddedLength={3} />
+		<Observer observable={internals.remainingMines$}>
+			{#snippet children({ next }: { next: number })}
+				<SegmentDisplayPanel value={next} paddedLength={3} />
+			{/snippet}
 		</Observer>
-		<Observer observable={internals.smileyState$} let:next>
-			<Smiley
-				on:click={() => {
-					internals.minesweeperActions.resetGame.next(undefined);
-				}}
-				smileyState={next}
-			/>
+		<Observer observable={internals.smileyState$}>
+			{#snippet children({ next }: { next: SmileyState })}
+				<Smiley
+					onclick={() => {
+						internals.minesweeperActions.resetGame.next(undefined);
+					}}
+					smileyState={next}
+				/>
+			{/snippet}
 		</Observer>
-		<Observer observable={internals.elapsedSeconds$} let:next>
-			<SegmentDisplayPanel value={next} paddedLength={3} />
+		<Observer observable={internals.elapsedSeconds$}>
+			{#snippet children({ next }: { next: number })}
+				<SegmentDisplayPanel value={next} paddedLength={3} />
+			{/snippet}
 		</Observer>
 	</Panel>
 
@@ -46,16 +56,16 @@
 		class="panel inset"
 		{tileSlice}
 		{cheating}
-		on:startFire={(event) =>
-			internals.minesweeperActions.clickActions.startFire.next(event.detail)}
-		on:fire={(event) => {
-			internals.minesweeperActions.clickActions.fire.next(event.detail);
+		onStartFire={(coordinate) =>
+			internals.minesweeperActions.clickActions.startFire.next(coordinate)}
+		onFire={(coordinate) => {
+			internals.minesweeperActions.clickActions.fire.next(coordinate);
 		}}
-		on:alternativeFire={(event) => {
-			internals.minesweeperActions.clickActions.alternativeFire.next(event.detail);
+		onAlternativeFire={(coordinate) => {
+			internals.minesweeperActions.clickActions.alternativeFire.next(coordinate);
 		}}
-		on:cancelFire={(event) => {
-			internals.minesweeperActions.clickActions.cancelFire.next(event.detail);
+		onCancelFire={(coordinate) => {
+			internals.minesweeperActions.clickActions.cancelFire.next(coordinate);
 		}}
 	/>
 </div>

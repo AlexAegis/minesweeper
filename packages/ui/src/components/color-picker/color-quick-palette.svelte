@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Button from '../button.svelte';
 	import { COMMON_COLORS, type ColorRgb } from './color-picker.interface';
 	import ColorSelectButton from './color-select-button.svelte';
 
-	// TODO: pass it in
-	export let customColor: ColorRgb | undefined = undefined;
-	const dispatch = createEventDispatcher<{
-		select: ColorRgb;
-	}>();
+	interface Props {
+		// TODO: pass it in
+		customColor?: ColorRgb | undefined;
+		onSelect?: ((color: ColorRgb) => void) | undefined;
+	}
+
+	let { customColor = undefined, onSelect = undefined }: Props = $props();
 </script>
 
 <div class="quick-color-palette">
-	{#each Object.values(COMMON_COLORS) as color}
-		<ColorSelectButton {color} on:select={(event) => dispatch('select', event.detail)}
-		></ColorSelectButton>
+	{#each Object.values(COMMON_COLORS) as color (color)}
+		<ColorSelectButton {color} {onSelect}></ColorSelectButton>
 	{/each}
 	<!-- And 4 more from current theme-->
 	<!-- <ColorSelectButton {3DObjectColor}></ColorSelectButton> -->
@@ -25,8 +25,7 @@
 <hr />
 <Button>Other...</Button>
 {#if customColor}
-	<ColorSelectButton color={customColor} on:select={(event) => dispatch('select', event.detail)}
-	></ColorSelectButton>
+	<ColorSelectButton color={customColor} {onSelect}></ColorSelectButton>
 {/if}
 
 <style>

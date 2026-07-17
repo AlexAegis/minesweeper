@@ -1,13 +1,26 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import type { Snippet } from 'svelte';
+	import type { KeyboardEventHandler } from 'svelte/elements';
 
-	export let backdropCanClose = true;
-	export let isOpen = false;
-	export let darkBackdrop = false;
+	interface Props {
+		backdropCanClose?: boolean;
+		isOpen?: boolean;
+		darkBackdrop?: boolean;
+		style?: string | undefined;
+		onError?: (() => void) | undefined;
+		onkeypress?: KeyboardEventHandler<HTMLDivElement> | undefined;
+		children?: Snippet;
+	}
 
-	const dispatcher = createEventDispatcher<{
-		error: undefined;
-	}>();
+	let {
+		backdropCanClose = true,
+		isOpen = $bindable(false),
+		darkBackdrop = false,
+		style = undefined,
+		onError = undefined,
+		onkeypress = undefined,
+		children = undefined,
+	}: Props = $props();
 
 	export function open() {
 		isOpen = true;
@@ -24,7 +37,7 @@
 		if (backdropCanClose) {
 			close();
 		} else if ((event.target as Element).className.includes('modal')) {
-			dispatcher('error');
+			onError?.();
 		}
 	}
 </script>
@@ -36,10 +49,10 @@
 		aria-roledescription="closes the modal"
 		tabindex="-1"
 		class:dark-backdrop={darkBackdrop}
-		style={$$props['style']}
-		on:keypress
-		on:click={backdropClick}
+		{style}
+		{onkeypress}
+		onclick={backdropClick}
 	>
-		<slot />
+		{@render children?.()}
 	</div>
 {/if}

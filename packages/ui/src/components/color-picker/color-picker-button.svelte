@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { w2kDropdownArrowSmall } from '../../assets/misc';
 	import { getSpawnRectangle } from '../../helpers';
 	import Button from '../button.svelte';
@@ -8,31 +7,41 @@
 	import { toCssRgb, type ColorRgb } from './color-picker.interface';
 	import ColorQuickPalette from './color-quick-palette.svelte';
 
-	export let disabled = false;
-	export let color: ColorRgb | undefined = undefined;
+	interface Props {
+		disabled?: boolean;
+		color?: ColorRgb | undefined;
+		/**
+		 * The button does **not** stay pressed when the quick palette is open
+		 */
+		open?: boolean;
+		class?: string | undefined;
+		style?: string | undefined;
+		onChange?: ((color: ColorRgb) => void) | undefined;
+	}
 
-	const dispatch = createEventDispatcher<{
-		change: ColorRgb;
-	}>();
+	let {
+		disabled = false,
+		color = $bindable(undefined),
+		open = $bindable(false),
+		class: className = '',
+		style = '',
+		onChange = undefined,
+	}: Props = $props();
 
-	$: colorRgb = toCssRgb(color);
-	/**
-	 * The button does **not** stay pressed when the quick palette is open
-	 */
-	export let open = false;
-	let button: HTMLElement | undefined;
+	let colorRgb = $derived(toCssRgb(color));
+	let button: HTMLElement | undefined = $state(undefined);
 </script>
 
 <Button
 	bind:button
-	class="custom type-high color-picker {$$props['class'] ?? ''}"
+	class="custom type-high color-picker {className}"
 	{disabled}
-	on:click={() => {
+	onclick={() => {
 		open = !open;
 	}}
 	style="
 
---selected-color: {colorRgb}; {$$props['style'] ?? ''}"
+--selected-color: {colorRgb}; {style}"
 >
 	<!--
 		For some reason this doesn't work here
@@ -50,14 +59,14 @@
 		spawnElement={button}
 		xAxisAnimated={false}
 		yAxisAnimated={false}
-		on:dismiss={() => {
+		onDismiss={() => {
 			open = false;
 		}}
 	>
 		<ColorQuickPalette
-			on:select={(event) => {
-				color = event.detail;
-				dispatch('change', color);
+			onSelect={(selected) => {
+				color = selected;
+				onChange?.(color);
 			}}
 		></ColorQuickPalette>
 	</ContextMenu>

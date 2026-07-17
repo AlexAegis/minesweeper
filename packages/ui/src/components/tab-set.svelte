@@ -1,8 +1,14 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import type { TabSetTabs } from './tab-set.interface';
 
-	export let tabs: TabSetTabs = {};
-	export let selected: string | undefined = Object.keys(tabs)[0];
+	interface Props {
+		tabs?: TabSetTabs;
+		selected?: string | undefined;
+		content?: Snippet<[any]>;
+	}
+
+	let { tabs = {}, selected = $bindable(Object.keys(tabs)[0]), content }: Props = $props();
 </script>
 
 <div>
@@ -10,7 +16,7 @@
 		{#each Object.entries(tabs) as [tabId, { displayName, disabled }]}
 			<button
 				class="custom tab use-disabled-shadow"
-				on:click={() => (selected = tabId)}
+				onclick={() => (selected = tabId)}
 				{disabled}
 				class:active={selected === tabId}
 			>
@@ -21,7 +27,7 @@
 
 	<div class="window" role="tabpanel">
 		<div class="window-body">
-			<slot name="content" tab={selected} />
+			{@render content?.({ tab: selected })}
 		</div>
 	</div>
 </div>

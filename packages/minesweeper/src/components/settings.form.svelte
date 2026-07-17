@@ -1,13 +1,22 @@
 <script lang="ts">
 	import type { Observable } from 'rxjs';
-	import { createEventDispatcher } from 'svelte';
 
 	import { Button } from '@w2k/ui';
 	import type { GamePreset } from '../interfaces';
-	const dispatch = createEventDispatcher();
 
-	export let presets$: Observable<Record<string, GamePreset>>;
-	export let preset: GamePreset;
+	interface Props {
+		presets$: Observable<Record<string, GamePreset>>;
+		preset: GamePreset;
+		onSubmit?: ((preset: GamePreset) => void) | undefined;
+		onCancel?: (() => void) | undefined;
+	}
+
+	let {
+		presets$,
+		preset = $bindable(),
+		onSubmit = undefined,
+		onCancel = undefined,
+	}: Props = $props();
 
 	const calculateMaxMines = (preset: Pick<GamePreset, 'height' | 'width'>): number => {
 		return preset.width * preset.height - 1;
@@ -40,22 +49,23 @@
 		}
 	}
 
-	function submit() {
+	function submit(event: SubmitEvent) {
+		event.preventDefault();
 		enforceValidPreset(preset);
-		dispatch('submit', preset);
+		onSubmit?.(preset);
 	}
 
 	function cancel() {
-		dispatch('cancel');
+		onCancel?.();
 	}
 
-	$: {
+	$effect(() => {
 		enforceValidPreset(preset);
-	}
+	});
 </script>
 
 <div class="custom-settings">
-	<form on:submit|preventDefault={submit}>
+	<form onsubmit={submit}>
 		<div class="inputs">
 			<div class="field-row">
 				<label for="height">Height:</label>
@@ -95,13 +105,13 @@
 		</div>
 		<div class="actions">
 			<Button type="submit">OK</Button>
-			<Button on:click={cancel}>Cancel</Button>
+			<Button onclick={cancel}>Cancel</Button>
 		</div>
 	</form>
 
 	<div class="presets">
-		{#each Object.entries($presets$) as [key, data]}
-			<Button on:click={() => (preset = data)}>Set to {key}</Button>
+		{#each Object.entries($presets$) as [key, data] (key)}
+			<Button onclick={() => (preset = data)}>Set to {key}</Button>
 		{/each}
 	</div>
 </div>

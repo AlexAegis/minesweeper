@@ -13,7 +13,7 @@
 		take,
 		tap,
 	} from 'rxjs';
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 
 	import { sleep } from '@alexaegis/common';
 	import { documentPointerDown$ } from '@w2k/core';
@@ -23,48 +23,74 @@
 	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
 	import type { Rectangle } from './rectangle.interface';
 	import { formatAnimationVariables, type TaskBarAnimationFrame } from './taskbar-animation';
-	import type { TitleBarEvents } from './title-bar-events.interface';
 	import TitleBar from './title-bar.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 
-	export let windowElement: HTMLElement | undefined = undefined;
-	export let grippy: GrippyContainer | undefined = undefined;
+	interface Props {
+		windowElement?: HTMLElement | undefined;
+		grippy?: GrippyContainer | undefined;
+		windowState?: Partial<BaseWindowState> | undefined;
+		transient?: boolean;
+		canDeactivate?: boolean;
+		id?: string | undefined;
+		class?: string | undefined;
+		style?: string | undefined;
+		onActivate?: (() => void) | undefined;
+		onResize?: ((next: Rectangle) => void) | undefined;
+		onMove?: ((delta: CoordinateLike) => void) | undefined;
+		onMinimize?: (() => void) | undefined;
+		onMaximize?: (() => void) | undefined;
+		onRestore?: (() => void) | undefined;
+		onClose?: (() => void) | undefined;
+		children?: Snippet;
+		menu?: Snippet;
+		statusBar?: Snippet;
+		titleBarContextMenu?: Snippet;
+	}
 
-	const dispatch = createEventDispatcher<
-		{
-			activate: undefined;
-			resize: Rectangle;
-			move: CoordinateLike;
-		} & TitleBarEvents
-	>();
+	let {
+		windowElement = $bindable(undefined),
+		grippy = undefined,
+		windowState = $bindable(undefined),
+		transient = false,
+		canDeactivate = true,
+		id = undefined,
+		class: className = '',
+		style = '',
+		onActivate = undefined,
+		onResize = undefined,
+		onMove = undefined,
+		onMinimize = undefined,
+		onMaximize = undefined,
+		onRestore = undefined,
+		onClose = undefined,
+		children = undefined,
+		menu = undefined,
+		statusBar = undefined,
+		titleBarContextMenu = undefined,
+	}: Props = $props();
 
-	export let windowState: Partial<BaseWindowState> | undefined = undefined;
-
-	export let transient = false;
-	export let canDeactivate = true;
-	export let id: string | undefined = undefined;
-
-	$: transientState = {
+	let transientState = $derived({
 		...initialWindowState,
 		...windowState,
-	};
+	});
 
-	$: effectiveResizable = transientState.resizable && !transientState.maximized;
-	$: effectiveMovable = !transientState.maximized;
+	let effectiveResizable = $derived(transientState.resizable && !transientState.maximized);
+	let effectiveMovable = $derived(!transientState.maximized);
 
-	$: {
+	$effect(() => {
 		resizeHandler?.setEnabled(effectiveResizable);
-	}
+	});
 
-	$: {
+	$effect(() => {
 		dragHandler?.setEnabled(effectiveMovable);
-	}
+	});
 
 	const sink = new Subscription();
 
 	function activate() {
 		if (!transientState.active) {
-			dispatch('activate');
+			onActivate?.();
 			if (transient) {
 				transientState = { ...transientState, active: true };
 			}
@@ -78,48 +104,55 @@
 	}
 
 	function resize(next: Rectangle) {
-		dispatch('resize', next);
+		onResize?.(next);
 		if (transient) {
 			transientState = resizeWindow(transientState, next);
 		}
 	}
 
 	function move(delta: CoordinateLike) {
-		dispatch('move', delta);
+		onMove?.(delta);
 		if (transient) {
-			transientState.position.x += delta.x;
-			transientState.position.y += delta.y;
+			transientState = {
+				...transientState,
+				position: {
+					...transientState.position,
+					x: transientState.position.x + delta.x,
+					y: transientState.position.y + delta.y,
+				},
+			};
 		}
 	}
 
 	function minimize() {
-		dispatch('minimize');
+		onMinimize?.();
 	}
 
 	function restore() {
 		if (transientState.resizable) {
-			dispatch('restore');
+			onRestore?.();
 			if (transient) {
-				transientState.maximized = false;
+				transientState = { ...transientState, maximized: false };
 			}
 		}
 	}
 
 	function maximize() {
 		if (transientState.resizable) {
-			dispatch('maximize');
+			onMaximize?.();
 			if (transient) {
-				transientState.maximized = true;
+				transientState = { ...transientState, maximized: true };
 			}
 		}
 	}
 
 	function close() {
-		dispatch('close');
+		onClose?.();
 	}
 
-	let contextMenuPosition: CoordinateLike | undefined = undefined;
+	let contextMenuPosition: CoordinateLike | undefined = $state(undefined);
 
+	// svelte-ignore state_referenced_locally
 	if (transient) {
 		// Transient means it's not managed by the store. So it has to deactivate itself.
 		// This is counteracted by the error flash that can activate it back after the
@@ -163,10 +196,10 @@
 		startWith(undefined),
 	);
 
-	$: errorFlash = $errorFlash$;
+	let errorFlash = $derived($errorFlash$);
 
-	let dragHandler: Handler | undefined;
-	let resizeHandler: Handler | undefined;
+	let dragHandler: Handler | undefined = $state(undefined);
+	let resizeHandler: Handler | undefined = $state(undefined);
 
 	onMount(async () => {
 		await sleep(0);
@@ -197,11 +230,10 @@
 			// Update size on render
 			if (windowState) {
 				if (transient) {
-					3;
 					windowState.width = windowElement.scrollWidth;
 					windowState.height = windowElement.scrollHeight;
 				} else {
-					dispatch('resize', {
+					onResize?.({
 						height: windowElement.scrollHeight,
 						width: windowElement.scrollWidth,
 					} as Rectangle);
@@ -267,10 +299,8 @@
 <div
 	bind:this={windowElement}
 	{id}
-	class="program-window window pid{transientState.processId} {transientState.program} {$$props[
-		'class'
-	] ?? ''}"
-	style={$$props['style'] ?? ''}
+	class="program-window window pid{transientState.processId} {transientState.program} {className}"
+	{style}
 	class:invisible={transientState.invisible}
 	class:immobile={!effectiveMovable}
 	class:non-resizable={!effectiveResizable}
@@ -289,18 +319,18 @@
 	style:z-index={transientState.zIndex}
 	role="dialog"
 	tabindex="-1"
-	on:pointerdown={activate}
+	onpointerdown={activate}
 >
 	<TitleBar
 		windowState={{
 			...transientState,
 			active: ((errorFlash === undefined && transientState.active) || errorFlash) ?? false,
 		}}
-		on:minimize={minimize}
-		on:restore={restore}
-		on:maximize={maximize}
-		on:close={close}
-		on:contextmenu={(event) => {
+		onMinimize={minimize}
+		onRestore={restore}
+		onMaximize={maximize}
+		onClose={close}
+		oncontextmenu={(event) => {
 			contextMenuPosition = contextMenuPosition
 				? undefined
 				: {
@@ -310,23 +340,23 @@
 		}}
 	>
 		<ContextMenu bind:position={contextMenuPosition}>
-			<slot name="title-bar-context-menu" />
+			{@render titleBarContextMenu?.()}
 		</ContextMenu>
 	</TitleBar>
 
-	{#if $$slots.menu}
+	{#if menu}
 		<div class="menu">
-			<slot name="menu" />
+			{@render menu()}
 		</div>
 	{/if}
 
 	<div class="window-body">
-		<slot />
+		{@render children?.()}
 	</div>
 
-	{#if $$slots.statusBar}
+	{#if statusBar}
 		<div class="status-bar">
-			<slot name="statusBar" />
+			{@render statusBar()}
 		</div>
 	{/if}
 </div>

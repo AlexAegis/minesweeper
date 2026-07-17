@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { Button } from '@w2k/ui';
+	import type { MouseEventHandler } from 'svelte/elements';
 	import type { SmileyState } from '../store';
 
-	export let smileyState: SmileyState;
+	interface Props {
+		smileyState: SmileyState;
+		onclick?: MouseEventHandler<HTMLButtonElement> | undefined;
+	}
+
+	let { smileyState, onclick = undefined }: Props = $props();
 </script>
 
 <div class="ms-smiley {smileyState}">
-	<Button on:click aria-label="Restart" class="custom" />
+	<Button {onclick} aria-label="Restart" class="custom" />
 </div>
 
 <style lang="scss">

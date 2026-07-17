@@ -11,12 +11,14 @@
 	} from '@w2k/ui';
 	import AppearanceSettings from './appearance/appearance-settings.svelte';
 	// export let internals!: DisplayPropertiesApp;
-	// export let windowSlice!: DicedWindow;
-	export let desktopSlice!: DesktopSlice;
-	export let windowState!: WindowState;
 
-	$: activeSchemeData$ = desktopSlice.activeSchemeData$;
-	$: somethingChanged = !areDesktopColorSchemesEqual($activeSchemeData$, temporaryScheme);
+	interface Props {
+		// export let windowSlice!: DicedWindow;
+		desktopSlice: DesktopSlice;
+		windowState: WindowState;
+	}
+
+	let { desktopSlice, windowState }: Props = $props();
 
 	const tabs: TabSetTabs = {
 		background: { displayName: 'Background', disabled: true },
@@ -27,8 +29,9 @@
 		settings: { displayName: 'Settings', disabled: true },
 	};
 
-	let temporaryScheme: DesktopColorScheme = cloneDesktopColorScheme(
-		desktopSlice.activeSchemeData$.value,
+	// svelte-ignore state_referenced_locally
+	let temporaryScheme: DesktopColorScheme = $state(
+		cloneDesktopColorScheme(desktopSlice.activeSchemeData$.value),
 	);
 
 	function close() {
@@ -42,26 +45,32 @@
 		// inline css variables on the desktop).
 		desktopSlice.setSchemeAction.next(cloneDesktopColorScheme(temporaryScheme));
 	}
+	let activeSchemeData$ = $derived(desktopSlice.activeSchemeData$);
+	let somethingChanged = $derived(
+		!areDesktopColorSchemesEqual($activeSchemeData$, temporaryScheme),
+	);
 </script>
 
 <div class="content">
 	<TabSet {tabs} selected="appearance">
-		<div slot="content" let:tab>
-			{#if tab === 'appearance'}
-				<AppearanceSettings bind:temporaryScheme {desktopSlice}></AppearanceSettings>
-			{/if}
-		</div>
+		{#snippet content({ tab })}
+			<div>
+				{#if tab === 'appearance'}
+					<AppearanceSettings bind:temporaryScheme {desktopSlice}></AppearanceSettings>
+				{/if}
+			</div>
+		{/snippet}
 	</TabSet>
 	<div class="prompt-control">
 		<Button
-			on:click={() => {
+			onclick={() => {
 				applyScheme();
 				close();
 			}}>OK</Button
 		>
-		<Button on:click={() => close()}>Cancel</Button>
+		<Button onclick={() => close()}>Cancel</Button>
 		<Button
-			on:click={() => {
+			onclick={() => {
 				applyScheme();
 			}}
 			disabled={!somethingChanged}>Apply</Button

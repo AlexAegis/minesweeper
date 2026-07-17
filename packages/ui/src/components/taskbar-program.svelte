@@ -10,16 +10,16 @@
 	import WindowContextItems from './window-context-items.svelte';
 	import type { WindowState } from './window-state.interface';
 
-	export let desktopSlice: DesktopSlice;
-
-	export let next: WindowState;
-	export let windowSlice: DicedWindow;
-	let forceAppearActive = false;
-	let contextMenuPosition: CoordinateLike | undefined = undefined;
-
-	$: {
-		forceAppearActive = !!contextMenuPosition;
+	interface Props {
+		desktopSlice: DesktopSlice;
+		next: WindowState;
+		windowSlice: DicedWindow;
 	}
+
+	let { desktopSlice, next, windowSlice }: Props = $props();
+	let contextMenuPosition: CoordinateLike | undefined = $state(undefined);
+
+	let forceAppearActive = $derived(!!contextMenuPosition);
 </script>
 
 <Button
@@ -28,14 +28,14 @@
 	look={ButtonLook.TASKBAR_ITEM}
 	active={forceAppearActive ? true : next.active}
 	icon={next.titleBarIcon}
-	on:click={() => {
+	onclick={() => {
 		if (next.active) {
 			windowSlice.internals.minimized$.set('start-minimizing');
 		} else {
 			desktopSlice.desktop$.internals.actions.activateProgram.next(next.processId);
 		}
 	}}
-	on:contextmenu={(event) => {
+	oncontextmenu={(event) => {
 		contextMenuPosition = contextMenuPosition
 			? undefined
 			: { x: event.pageX / readGlobal('w2kZoom'), y: event.pageY / readGlobal('w2kZoom') };
@@ -50,16 +50,14 @@
 
 {#if next.minimized === 'minimizing' || next.minimized === 'unminimizing'}
 	<TitleBar
-		windowState={next}
-		{desktopSlice}
-		{windowSlice}
+		windowState={{
+			...next,
+			showMaximize: false,
+			showMinimize: false,
+			showHelp: false,
+			showClose: false,
+		}}
 		class="animate"
 		style={getMinimizeAnimation(next, next.minimized)}
-		title={next.title}
-		icon={next.titleBarIcon}
-		showMaximize={false}
-		showMinimize={false}
-		showHelp={false}
-		showClose={false}
 	/>
 {/if}

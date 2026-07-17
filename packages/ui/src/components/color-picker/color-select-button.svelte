@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { ColorRgb } from './color-picker.interface';
 
-	export let color: ColorRgb;
+	interface Props {
+		color: ColorRgb;
+		onSelect?: ((color: ColorRgb) => void) | undefined;
+	}
 
-	const dispatch = createEventDispatcher<{
-		select: ColorRgb;
-	}>();
+	let { color, onSelect = undefined }: Props = $props();
 </script>
 
-<button class="custom" on:click={() => dispatch('select', color)} aria-label="Select Color">
+<button class="custom" onclick={() => onSelect?.(color)} aria-label="Select Color">
 	<div class="color" style="background-color: rgb({color.r} {color.g} {color.b});"></div>
 </button>
 

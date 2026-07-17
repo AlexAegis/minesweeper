@@ -1,16 +1,29 @@
 <script lang="ts">
-	export let alt: string | undefined = undefined;
-	export let src: string | undefined = undefined;
-	export let disabled = false;
+	interface Props {
+		alt?: string | undefined;
+		src?: string | undefined;
+		disabled?: boolean;
+		height?: number | undefined;
+		width?: number | undefined;
+		class?: string | undefined;
+		style?: string | undefined;
+	}
 
-	export let height: number | undefined = undefined;
-	export let width: number | undefined = undefined;
+	let {
+		alt = undefined,
+		src = undefined,
+		disabled = false,
+		height = undefined,
+		width = undefined,
+		class: className = '',
+		style = '',
+	}: Props = $props();
 </script>
 
 {#if src}
 	<img
-		class={$$props['class'] ?? ''}
-		style={$$props['style'] ?? ''}
+		class={className}
+		{style}
 		style:height={height ? `${height.toString()}px` : undefined}
 		style:width={width ? `${width.toString()}px` : undefined}
 		style:min-height={height ? `${height.toString()}px` : undefined}
