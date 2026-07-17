@@ -231,7 +231,9 @@
 		background-position-x: var(--background-image-position, 1px);
 		background-position-y: var(--background-image-position, 1px);
 
-		&.pressed:not(.fixmeselector) {
+		// class doubled so the shifted position out-ranks the three-class
+		// tile rules in minesweeper.scss (e.g. .minesweeper-tile.flag.wrong)
+		&.pressed.pressed {
 			background-position-x: calc(var(--background-image-position, 1px) + 1px);
 			background-position-y: calc(var(--background-image-position, 1px) + 1px);
 		}
