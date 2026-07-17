@@ -26,10 +26,6 @@ export const windowComponents: Record<ProgramId, WindowComponents> = {
 		menu: Empty,
 		content: Empty,
 	},
-	cheeseTerminator: {
-		menu: MinesweeperMenu as unknown as Component,
-		content: Minesweeper as unknown as Component,
-	},
 	displayProperties: {
 		content: DisplayProperties as unknown as Component,
 	},

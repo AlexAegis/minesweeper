@@ -160,10 +160,6 @@
 	</div>
 
 	<ContextMenu bind:position={contextMenuPosition}>
-		<Button look={ButtonLook.CONTEXT_MENU_ITEM} onclick={() => console.log('Hello world')}>
-			Hello
-		</Button>
-
 		<Button
 			look={ButtonLook.CONTEXT_MENU_ITEM}
 			onclick={() => window.open(packageMetadata.homepage, '_blank')}

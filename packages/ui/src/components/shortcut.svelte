@@ -4,7 +4,6 @@
 	import { readGlobal, type GrippyContainer, type Handler, type Vec2 } from '../helpers';
 	import type { ProgramId, ShortcutId, ShortcutState } from '../store';
 	import Button from './button.svelte';
-	import { firable } from './firable.action';
 	import Image from './image.svelte';
 
 	let shortcutElement: HTMLElement | undefined = $state(undefined);
@@ -136,8 +135,8 @@
 <div
 	bind:this={shortcutElement}
 	id={'shortcut' + shortcutState.shortcutId.toString()}
-	use:firable={{ draggable: true }}
 	oncontextmenu={(event) => {
+		event.preventDefault();
 		event.stopPropagation();
 		contextMenuPosition = contextMenuPosition
 			? undefined

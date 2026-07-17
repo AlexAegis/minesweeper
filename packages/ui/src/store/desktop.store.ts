@@ -195,7 +195,6 @@ export const resizeWindow = (
 };
 
 export const snapShortcutPosition = (position: CoordinateLike): CoordinateLike => {
-	getNextShortcutPosition;
 	return {
 		x: Math.floor(
 			position.x -
@@ -592,7 +591,6 @@ export const createDesktopSlice = <
 
 			const windowActions = {
 				maximize: windowSlice.createAction(`${WINDOW_ACTION} maximize`),
-				// minimize: windowSlice.createAction<boolean>(`${WINDOW_ACTION} minimize`),
 				restore: windowSlice.createAction(`${WINDOW_ACTION} restore`),
 				move: windowSlice.createAction<CoordinateLike>(`${WINDOW_ACTION} move`),
 				resize: windowSlice.createAction<Rectangle>(`${WINDOW_ACTION} resize`),
@@ -655,15 +653,6 @@ export const createDesktopSlice = <
 		},
 		reducers: [],
 	});
-
-	const isProgramSpawned$ = (program: ProgramId) =>
-		dicedWindows.some$((window) => window.program === program);
-
-	const isShortcutPresent$ = (program: ProgramId) =>
-		dicedShortcuts.some$((shortcut) => shortcut.program === program);
-
-	// TODO: This spawn-minesweeper-if-not-running should be specific to the app, not the library
-	const isMinesweeperSpawned$ = isProgramSpawned$('minesweeper');
 
 	const createTimedAction = <T>(options: {
 		states: T[];
@@ -804,9 +793,6 @@ export const createDesktopSlice = <
 		dicedPrograms,
 		windows$,
 		dicedWindows,
-		isProgramSpawned$,
-		isShortcutPresent$,
-		isMinesweeperSpawned$,
 	};
 };
 

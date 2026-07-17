@@ -40,9 +40,6 @@ export enum SmileyState {
 }
 
 export type MinesweeperGame = ReturnType<typeof createMineSweeperGame>;
-export type DicedTiles = MinesweeperGame['dicedTiles'];
-export type TileSlice = ReturnType<DicedTiles['get']>;
-export type TileSliceInternals = TileSlice['internals'];
 
 export interface TileState {
 	x: number;

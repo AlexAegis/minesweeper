@@ -234,25 +234,6 @@ export const createMineSweeperGame = (
 				...state,
 				[name]: preset,
 			})),
-			/*debug$.setAction.reduce((state, debug) => {
-				if (debug) {
-					return {
-						...state,
-						debug: {
-							width: 2,
-							height: 2,
-							mineCount: 2,
-						},
-					};
-				} else if ('debug' in state) {
-					const nextState = { ...state };
-					// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-					delete nextState.debug;
-					return nextState;
-				} else {
-					return state;
-				}
-			}),*/
 		],
 	});
 
@@ -322,13 +303,6 @@ export const createMineSweeperGame = (
 			([settings, presets]) =>
 				!Object.values(presets).some((preset) => isTheSamePreset(preset, settings)),
 		),
-	);
-
-	const gameWidthArray$ = gameSettings$.pipe(
-		map((settings) => [...Array.from({ length: settings.width }).keys()]),
-	);
-	const gameHeightArray$ = gameSettings$.pipe(
-		map((settings) => [...Array.from({ length: settings.height }).keys()]),
 	);
 
 	const winHistory$ = game$.slice('history', {
@@ -574,11 +548,6 @@ export const createMineSweeperGame = (
 		],
 	});
 
-	const dicedTiles = tilesSlice$.dice(initialTile, {
-		getAllKeys: (slice) => Object.keys(slice) as `${number},${number}`[],
-		getNextKey: (_keys) => '0,0',
-	});
-
 	const tiles$ = tilesSlice$.pipe(map((tiles) => Object.values(tiles)));
 	const tilesFlagged$ = tiles$.pipe(
 		map((tiles) => tiles.filter((tile) => isFlagTileMark(tile.mark)).length),
@@ -745,7 +714,6 @@ export const createMineSweeperGame = (
 	);
 
 	return {
-		dicedTiles,
 		tilesSlice$,
 		minesweeperActions,
 		game$,
@@ -759,9 +727,7 @@ export const createMineSweeperGame = (
 		winHistory$,
 		presets$,
 		isGameSettingsAPreset$,
-		gameWidthArray$,
 		isGameSettingsNotAPreset$,
-		gameHeightArray$,
 		gameSettings$,
 		elapsedSeconds$,
 		programSlice: game$,
