@@ -228,12 +228,12 @@
 
 <style lang="scss">
 	button {
-		background-position-x: var(--background-image-positon, 1px);
-		background-position-y: var(--background-image-positon, 1px);
+		background-position-x: var(--background-image-position, 1px);
+		background-position-y: var(--background-image-position, 1px);
 
 		&.pressed:not(.fixmeselector) {
-			background-position-x: calc(var(--background-image-positon, 1px) + 1px);
-			background-position-y: calc(var(--background-image-positon, 1px) + 1px);
+			background-position-x: calc(var(--background-image-position, 1px) + 1px);
+			background-position-y: calc(var(--background-image-position, 1px) + 1px);
 		}
 	}
 </style>

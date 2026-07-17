@@ -98,7 +98,7 @@ export const getWorkspaceRectangle = (): DOMRect | undefined => {
 	return document.querySelector('#workspace')?.getBoundingClientRect();
 };
 
-export const centerRectangleIntoRectancle = (
+export const centerRectangleIntoRectangle = (
 	toBeCentered: Pick<Rectangle, 'height' | 'width'>,
 	centerOn: Rectangle,
 ): CoordinateLike => {

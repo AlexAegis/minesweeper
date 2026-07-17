@@ -37,7 +37,7 @@
 		height: 25px;
 
 		:global(button) {
-			--background-image-positon: 4px;
+			--background-image-position: 4px;
 
 			width: 100%;
 			height: 100%;

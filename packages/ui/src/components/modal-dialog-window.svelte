@@ -2,7 +2,7 @@
 	import { defer } from '@w2k/common';
 	import { onDestroy, type Snippet } from 'svelte';
 	import { nudgeAreaIntoArea } from '../helpers/nudge-area-into-area.function';
-	import { centerRectangleIntoRectancle, getWorkspaceRectangle } from '../store';
+	import { centerRectangleIntoRectangle, getWorkspaceRectangle } from '../store';
 	import Modal from './modal.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
@@ -30,7 +30,7 @@
 		const workspaceRectangle = getWorkspaceRectangle();
 
 		defer(() => {
-			windowState.position = centerRectangleIntoRectancle(
+			windowState.position = centerRectangleIntoRectangle(
 				effectiveWindowState,
 				centerElementRect,
 			);

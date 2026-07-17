@@ -105,7 +105,7 @@ const initialTile: TileState = {
 	revealed: false,
 	value: 0,
 	isMine: false,
-	mark: TileMark.EMTPY,
+	mark: TileMark.EMPTY,
 	guessedWrong: false,
 	disabled: false,
 };

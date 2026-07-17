@@ -8,7 +8,7 @@
 
 	interface Props {
 		/**
-		 * The position can optionally be a recatangle (A DOMRect coming from getBoundingClientRect fits here nicely)
+		 * The position can optionally be a rectangle (A DOMRect coming from getBoundingClientRect fits here nicely)
 		 * Then the menu will try to spawn from the edge of the area
 		 */
 		position?: (CoordinateLike & { height?: number; width?: number }) | undefined;

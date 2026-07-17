@@ -1,10 +1,10 @@
 export enum TileMark {
-	EMTPY = '_',
+	EMPTY = '_',
 	FLAG = '!',
 	QUESTION = '?',
 }
 
-export const isEmptyTileMark = (mark?: TileMark): mark is TileMark.EMTPY => mark === TileMark.EMTPY;
+export const isEmptyTileMark = (mark?: TileMark): mark is TileMark.EMPTY => mark === TileMark.EMPTY;
 export const isFlagTileMark = (mark?: TileMark): mark is TileMark.FLAG => mark === TileMark.FLAG;
 export const isQuestionTileMark = (mark?: TileMark): mark is TileMark.QUESTION =>
 	mark === TileMark.QUESTION;
@@ -15,6 +15,6 @@ export const getNextTileMark = (mark?: TileMark): TileMark => {
 	} else if (mark && isFlagTileMark(mark)) {
 		return TileMark.QUESTION;
 	} else {
-		return TileMark.EMTPY;
+		return TileMark.EMPTY;
 	}
 };

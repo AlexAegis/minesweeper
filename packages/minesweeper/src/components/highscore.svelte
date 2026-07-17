@@ -30,7 +30,7 @@
 		</div>
 	</div>
 	<div class="footer">
-		<Button disabled={!isClearingEnabled} onFire={() => onClear?.()}>Clear Highscrore</Button>
+		<Button disabled={!isClearingEnabled} onFire={() => onClear?.()}>Clear Highscore</Button>
 	</div>
 </div>
 
