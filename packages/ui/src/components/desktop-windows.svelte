@@ -49,6 +49,9 @@
 					onResize={(rectangle) => {
 						windowSlice.internals.windowActions.resize.next(rectangle);
 					}}
+					onMaximizeAnimationEnd={(stage) => {
+						windowSlice.internals.maximized$.set(stage === 'maximizing');
+					}}
 				>
 					{#snippet titleBarContextMenu()}
 						<WindowContextItems windowState={next} {windowSlice} {desktopSlice} />

@@ -659,16 +659,20 @@ export const createDesktopSlice = <
 		time: number;
 		createStartActionPacket: (state: T) => ActionPacket;
 		createFinishActionPacket: (state: T) => ActionPacket;
+		isFinishStillRelevant: (state: T) => boolean;
 	}): Observable<ActionPacket>[] => {
-		const startPackets = options.states.map((state) => options.createStartActionPacket(state));
-		const finishPackets = options.states.map((state) =>
-			options.createFinishActionPacket(state),
-		);
-
 		return [
-			...startPackets.map((packet) => of(packet)),
-			...finishPackets.map((finishPacket) =>
-				timer(options.time).pipe(map(() => finishPacket)),
+			...options.states.map((state) => of(options.createStartActionPacket(state))),
+			// Fallback only: the animated title bar finishes the transition on
+			// its own animationend event; the timer completes it when that
+			// event never fires (throttled tabs, disabled animations). The
+			// relevance check drops stale timers so they cannot clobber a
+			// newer transition of the same window.
+			...options.states.map((state) =>
+				timer(options.time).pipe(
+					filter(() => options.isFinishStillRelevant(state)),
+					map(() => options.createFinishActionPacket(state)),
+				),
 			),
 		];
 	};
@@ -678,7 +682,10 @@ export const createDesktopSlice = <
 			mergeMap((windowRecord) => {
 				const windowStates = Object.values(windowRecord);
 
-				const animationTime = 150;
+				// Well past the css animation's delay + duration: under normal
+				// conditions animationend finishes the transition long before
+				// this fallback fires
+				const animationTime = 500;
 
 				const minimizationActions = createTimedAction<WindowState>({
 					states: windowStates.filter(
@@ -693,6 +700,8 @@ export const createDesktopSlice = <
 						dicedWindows
 							.get(state.processId)
 							.internals.minimized$.setAction.makePacket(true),
+					isFinishStillRelevant: (state) =>
+						windows$.value[state.processId]?.minimized === 'minimizing',
 				});
 
 				const unminimizationActions = createTimedAction<WindowState>({
@@ -708,6 +717,8 @@ export const createDesktopSlice = <
 						dicedWindows
 							.get(state.processId)
 							.internals.minimized$.setAction.makePacket(false),
+					isFinishStillRelevant: (state) =>
+						windows$.value[state.processId]?.minimized === 'unminimizing',
 				});
 
 				const maximiziationActions = createTimedAction<WindowState>({
@@ -723,6 +734,8 @@ export const createDesktopSlice = <
 						dicedWindows
 							.get(state.processId)
 							.internals.maximized$.setAction.makePacket(true),
+					isFinishStillRelevant: (state) =>
+						windows$.value[state.processId]?.maximized === 'maximizing',
 				});
 
 				const unmaximiziationActions = createTimedAction<WindowState>({
@@ -738,6 +751,8 @@ export const createDesktopSlice = <
 						dicedWindows
 							.get(state.processId)
 							.internals.maximized$.setAction.makePacket(false),
+					isFinishStillRelevant: (state) =>
+						windows$.value[state.processId]?.maximized === 'restoring',
 				});
 
 				return merge([

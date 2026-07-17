@@ -1,3 +1,4 @@
+import { readGlobal } from '../helpers/w2k-globals';
 import { formatPid } from '../store/desktop.store';
 import type { BaseWindowState } from './window-state.interface';
 
@@ -26,25 +27,27 @@ export const getMinimizeAnimation = (
 	const windowId = formatPid(process.processId, 'window');
 
 	const buttonElement = document.querySelector(`#${buttonId}`);
-	const windowElement = document.querySelector(`#${windowId}`);
-	const buttonParent = buttonElement?.parentElement;
+	const titleBarElement = document.querySelector(`#${windowId} .title-bar`);
 
-	if (!buttonElement || !windowElement || !buttonParent) {
+	if (!buttonElement || !titleBarElement) {
 		return undefined;
 	}
 
-	const windowRect = windowElement.getBoundingClientRect();
+	// Rects are in screen pixels, but the animated title bar is positioned
+	// inside the zoomed desktop where its fixed-position left/top are in
+	// local pixels relative to the viewport.
+	const zoom = readGlobal('w2kZoom') || 1;
+	const titleBarRect = titleBarElement.getBoundingClientRect();
 	const buttonRect = buttonElement.getBoundingClientRect();
-	const buttonParentRect = buttonParent.getBoundingClientRect();
 	const buttonOffset: TaskBarAnimationFrame = {
-		x: buttonRect.x - buttonParentRect.x,
-		y: buttonRect.y - buttonParentRect.y,
-		width: buttonElement.clientWidth,
+		x: buttonRect.x / zoom,
+		y: buttonRect.y / zoom,
+		width: buttonRect.width / zoom,
 	};
 	const windowOffset: TaskBarAnimationFrame = {
-		x: buttonOffset.x + windowRect.x - buttonRect.x,
-		y: buttonOffset.y + windowRect.y - buttonRect.y,
-		width: windowRect.width,
+		x: titleBarRect.x / zoom,
+		y: titleBarRect.y / zoom,
+		width: titleBarRect.width / zoom,
 	};
 
 	const fromOffset = stage === 'minimizing' ? windowOffset : buttonOffset;

@@ -1,3 +1,4 @@
+export * from './after-next-paint.function.js';
 export * from './get-spawn-rectangle.function.js';
 export * from './grippy/index.js';
 export * from './nudge-area-into-area.function.js';

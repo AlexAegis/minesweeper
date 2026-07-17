@@ -15,6 +15,7 @@
 		onHelp?: (() => void) | undefined;
 		onClose?: (() => void) | undefined;
 		oncontextmenu?: ((event: MouseEvent) => void) | undefined;
+		onanimationend?: ((event: AnimationEvent) => void) | undefined;
 		children?: Snippet;
 	}
 
@@ -29,6 +30,7 @@
 		onHelp = undefined,
 		onClose = undefined,
 		oncontextmenu = undefined,
+		onanimationend = undefined,
 		children = undefined,
 	}: Props = $props();
 
@@ -78,6 +80,7 @@
 	class:error
 	ondblclick={maximize}
 	onpointerdown={dbltap}
+	{onanimationend}
 	oncontextmenu={(event) => {
 		event.preventDefault();
 		oncontextmenu?.(event);

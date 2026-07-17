@@ -632,17 +632,33 @@ body {
 		&.animate {
 			z-index: 500000;
 			position: fixed;
-			animation: animate-titlebar 0.15s linear;
+
+			// The animated width matches the measured border-box width of the
+			// real title bar, so this box must size the same way
+			box-sizing: border-box;
+
+			// The short delay and the fill-mode holds pin the bar to its exact
+			// start and end geometry even when painting lags behind the
+			// store's unmount timer, so the flight visibly touches both
+			// endpoints instead of getting cut off mid-path
+			animation: animate-titlebar 0.2s ease-out 0.03s both;
 		}
 
+		// left/top instead of translate on purpose: Gecko animates translate
+		// on the compositor, which does not apply the ancestor css zoom, so
+		// the rendered flight only covered 1/zoom of the distance and snapped
+		// to the target at animationend. Layout properties animate on the
+		// main thread where the zoom is applied consistently.
 		@keyframes animate-titlebar {
 			from {
-				translate: var(--titlebar-from-x) var(--titlebar-from-y);
+				left: var(--titlebar-from-x);
+				top: var(--titlebar-from-y);
 				width: var(--titlebar-from-width);
 			}
 
 			to {
-				translate: var(--titlebar-to-x) var(--titlebar-to-y);
+				left: var(--titlebar-to-x);
+				top: var(--titlebar-to-y);
 				width: var(--titlebar-to-width);
 			}
 		}

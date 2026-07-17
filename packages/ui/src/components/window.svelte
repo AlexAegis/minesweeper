@@ -18,7 +18,7 @@
 	import { sleep } from '@alexaegis/common';
 	import { documentPointerDown$ } from '@w2k/core';
 	import { ContextMenu } from '../components';
-	import { readGlobal, type Handler } from '../helpers';
+	import { afterNextPaint, readGlobal, type Handler } from '../helpers';
 	import type { GrippyContainer } from '../helpers/grippy/grippy';
 	import { formatPid, getWorkspaceRectangle, resizeWindow } from '../store';
 	import type { Rectangle } from './rectangle.interface';
@@ -42,6 +42,7 @@
 		onMaximize?: (() => void) | undefined;
 		onRestore?: (() => void) | undefined;
 		onClose?: (() => void) | undefined;
+		onMaximizeAnimationEnd?: ((stage: 'maximizing' | 'restoring') => void) | undefined;
 		children?: Snippet;
 		menu?: Snippet;
 		statusBar?: Snippet;
@@ -64,6 +65,7 @@
 		onMaximize = undefined,
 		onRestore = undefined,
 		onClose = undefined,
+		onMaximizeAnimationEnd = undefined,
 		children = undefined,
 		menu = undefined,
 		statusBar = undefined,
@@ -248,6 +250,12 @@
 		resizeHandler?.unsubscribe();
 	});
 
+	// The windowed-mode title bar frame captured when maximizing starts. While
+	// restoring, the css still shows the window at full size, so this is the
+	// only exact source for where the restore animation has to land. The window
+	// cannot move or resize while maximized, so the cached frame stays valid.
+	let lastWindowedTitleBarFrame: TaskBarAnimationFrame | undefined;
+
 	const getMaximizeAnimation = (
 		windowState: BaseWindowState,
 		stage: 'maximizing' | 'restoring',
@@ -256,27 +264,44 @@
 
 		const workspaceRect = getWorkspaceRectangle();
 		const windowElement = document.querySelector(`#${windowId}`);
+		const titleBarElement = windowElement?.querySelector('.title-bar');
 
-		if (!workspaceRect || !windowElement) {
+		if (!workspaceRect || !windowElement || !titleBarElement) {
 			return undefined;
 		}
 
+		// Rects are in screen pixels, but the animated title bar's fixed
+		// left/top are in local pixels inside the zoomed desktop.
+		const zoom = readGlobal('w2kZoom') || 1;
 		const windowRect = windowElement.getBoundingClientRect();
+		const titleBarRect = titleBarElement.getBoundingClientRect();
 
-		const windowOffset: TaskBarAnimationFrame = {
-			x: windowRect.x - workspaceRect.x,
-			y: windowRect.y - workspaceRect.y,
-			width: windowRect.width,
+		// The window chrome between the window edge and its title bar
+		const insetX = (titleBarRect.x - windowRect.x) / zoom;
+		const insetY = (titleBarRect.y - windowRect.y) / zoom;
+
+		if (stage === 'maximizing') {
+			lastWindowedTitleBarFrame = {
+				x: titleBarRect.x / zoom,
+				y: titleBarRect.y / zoom,
+				width: titleBarRect.width / zoom,
+			};
+		}
+
+		const windowedOffset: TaskBarAnimationFrame = lastWindowedTitleBarFrame ?? {
+			x: workspaceRect.x / zoom + windowState.position.x + insetX,
+			y: workspaceRect.y / zoom + windowState.position.y + insetY,
+			width: windowState.width - 2 * insetX,
 		};
 
-		const workspaceOffset: TaskBarAnimationFrame = {
-			x: 3,
-			y: 3, // The distance from the edge of a window to the titlebar
-			width: workspaceRect.width,
+		const maximizedOffset: TaskBarAnimationFrame = {
+			x: workspaceRect.x / zoom + insetX,
+			y: workspaceRect.y / zoom + insetY,
+			width: workspaceRect.width / zoom - 2 * insetX,
 		};
 
-		const fromOffset = stage === 'restoring' ? workspaceOffset : windowOffset;
-		const toOffset = stage === 'maximizing' ? workspaceOffset : windowOffset;
+		const fromOffset = stage === 'restoring' ? maximizedOffset : windowedOffset;
+		const toOffset = stage === 'maximizing' ? maximizedOffset : windowedOffset;
 
 		return formatAnimationVariables(fromOffset, toOffset);
 	};
@@ -293,6 +318,20 @@
 			showClose: false,
 		}}
 		style={getMaximizeAnimation(transientState, transientState.maximized)}
+		onanimationend={(event) => {
+			// The flight itself completes the transition; the store timer is
+			// only a fallback for when this event never fires. The fill-mode
+			// hold gets to paint the exact end pose before the bar unmounts.
+			const stage = transientState.maximized;
+			if (
+				event.animationName.includes('animate-titlebar') &&
+				(stage === 'maximizing' || stage === 'restoring')
+			) {
+				afterNextPaint(() => {
+					onMaximizeAnimationEnd?.(stage);
+				});
+			}
+		}}
 	/>
 {/if}
 

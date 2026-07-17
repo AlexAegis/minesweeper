@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CoordinateLike } from '@w2k/common';
+	import { afterNextPaint } from '../helpers/after-next-paint.function';
 	import { readGlobal } from '../helpers/w2k-globals';
 	import { formatPid, type DesktopSlice, type DicedWindow } from '../store/desktop.store';
 	import { ButtonLook } from './button-look.enum';
@@ -59,5 +60,16 @@
 		}}
 		class="animate"
 		style={getMinimizeAnimation(next, next.minimized)}
+		onanimationend={(event) => {
+			// The flight itself completes the transition; the store timer is
+			// only a fallback for when this event never fires. The fill-mode
+			// hold gets to paint the exact end pose before the bar unmounts.
+			if (event.animationName.includes('animate-titlebar')) {
+				const stage = next.minimized;
+				afterNextPaint(() => {
+					windowSlice.internals.minimized$.set(stage === 'minimizing');
+				});
+			}
+		}}
 	/>
 {/if}
