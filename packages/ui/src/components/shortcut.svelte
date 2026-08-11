@@ -10,6 +10,11 @@
 	interface Props {
 		shortcutState: ShortcutState;
 		grippy: GrippyContainer;
+		/**
+		 * Comes from the program the shortcut points to, shortcuts don't store
+		 * an icon of their own
+		 */
+		icon?: string | undefined;
 		shortcutIconElement?: HTMLElement | undefined;
 		onMove?: ((position: Vec2) => void) | undefined;
 		onDrop?: ((position: Vec2) => void) | undefined;
@@ -25,6 +30,7 @@
 	let {
 		shortcutState,
 		grippy,
+		icon = undefined,
 		shortcutIconElement = $bindable(undefined),
 		onMove = undefined,
 		onDrop = undefined,
@@ -166,7 +172,7 @@
 	style:left={`${transientPosition.x.toString()}px`}
 >
 	<div class="icon" bind:this={shortcutIconElement}>
-		<Image class="icon" alt={shortcutState.name} src={shortcutState.icon} />
+		<Image class="icon" alt={shortcutState.name} src={icon} />
 	</div>
 	<div class="shortcut-symbol"></div>
 	{#if shortcutState.renaming}

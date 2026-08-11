@@ -10,7 +10,7 @@ import {
 	type ActionPacket,
 } from '@tinyslice/core';
 import { Coordinate, type CoordinateLike } from '@w2k/common';
-import { Observable, filter, map, merge, mergeMap, of, take, timer } from 'rxjs';
+import { Observable, filter, map, merge, mergeMap, of, timer } from 'rxjs';
 
 import {
 	initialWindowState,
@@ -37,20 +37,23 @@ export type ShortcutId = number;
 export interface ProgramState {
 	name: ProgramId;
 	/**
-	 * Should be 48*48
+	 * Shown on the desktop and in the start menu, should be 48*48. The 24*24
+	 * one the title bar and the taskbar use is
+	 * {@link BaseWindowState.titleBarIcon} on {@link initialWindowState}.
 	 */
 	icon?: string | undefined;
-	/**
-	 * Should be 24*24
-	 */
-	titleBarIcon?: string | undefined;
 	initialWindowState: Partial<BaseWindowState>;
 }
 
+/**
+ * Shortcuts deliberately hold no icon of their own, they are looked up from
+ * {@link DesktopState.programs} by {@link ShortcutState.program}. An icon copied
+ * in here would be persisted, and a persisted copy outlives every later change
+ * to the program it was copied from.
+ */
 export interface ShortcutState {
 	shortcutId: ShortcutId;
 	name: string;
-	icon?: string | undefined;
 	program: ProgramId;
 	position: CoordinateLike;
 	selected: boolean;
@@ -110,6 +113,29 @@ export const centerRectangleIntoRectangle = (
 
 export const SHORTCUT_DISTANCE = 75;
 export const TITLE_BAR_HEIGHT = 18;
+
+export const createShortcutState = (
+	shortcutId: ShortcutId,
+	program: ProgramState,
+	position: CoordinateLike,
+): ShortcutState => ({
+	shortcutId,
+	name: program.initialWindowState.title ?? program.name,
+	program: program.name,
+	position,
+	selected: false,
+	floating: false,
+	renaming: false,
+});
+
+/**
+ * Programs get a shortcut each, in a single column along the left edge, on the
+ * same grid a dropped shortcut snaps back to.
+ */
+export const getInstallationShortcutPosition = (shortcutId: ShortcutId): CoordinateLike => ({
+	x: 0,
+	y: shortcutId * SHORTCUT_DISTANCE,
+});
 
 export const getNextShortcutPosition = (
 	shortcuts: ShortcutState[],
@@ -214,6 +240,14 @@ const getNextProcessId = (keys: ProcessId[]) =>
 		keys.map((key) => Number.parseInt(key, 10)).reduce((a, b) => (a > b ? a : b), 0) + 1
 	).toString();
 
+export interface DesktopSliceOptions {
+	/**
+	 * Attaches the devtools and the action logger. Off by default: they are a
+	 * development aid that would otherwise ship to every visitor.
+	 */
+	debug?: boolean | undefined;
+}
+
 export const createDesktopSlice = <
 	P,
 	S,
@@ -231,6 +265,7 @@ export const createDesktopSlice = <
 >(
 	parentSlice: Slice<P, S>,
 	programDefinitions: T,
+	options: DesktopSliceOptions = {},
 ) => {
 	const preInstalledPrograms = Object.fromEntries(
 		Object.entries(programDefinitions).map(([key, logic]) => [key, logic.installEntry]),
@@ -242,16 +277,11 @@ export const createDesktopSlice = <
 			programs: preInstalledPrograms,
 			shortcuts: Object.values(preInstalledPrograms).reduce<Record<string, ShortcutState>>(
 				(acc, next, shortcutId) => {
-					acc[shortcutId] = {
-						shortcutId: shortcutId,
-						name: next.initialWindowState.title ?? next.name,
-						position: { x: 0, y: shortcutId * SHORTCUT_DISTANCE },
-						program: next.name,
-						icon: next.icon ?? next.titleBarIcon,
-						selected: false,
-						floating: false,
-						renaming: false,
-					};
+					acc[shortcutId] = createShortcutState(
+						shortcutId,
+						next,
+						getInstallationShortcutPosition(shortcutId),
+					);
 
 					return acc;
 				},
@@ -279,7 +309,7 @@ export const createDesktopSlice = <
 					data: w2kClassicColorScheme,
 				},
 			},
-			debug: true,
+			debug: options.debug ?? false,
 		} as DesktopState,
 		{
 			defineInternals: (slice) => {
@@ -325,14 +355,11 @@ export const createDesktopSlice = <
 					);
 					return {
 						...state,
-						[nextKey]: {
-							shortcutId: nextKey,
-							name: payload.initialWindowState.title,
-							position: getNextShortcutPosition(Object.values(state)),
-							program: payload.name,
-							selected: false,
-							icon: payload.icon,
-						},
+						[nextKey]: createShortcutState(
+							nextKey,
+							payload,
+							getNextShortcutPosition(Object.values(state)),
+						),
 					};
 				}),
 				shortcutsActions.deleteSelected.reduce((state, payload) => {
@@ -438,7 +465,6 @@ export const createDesktopSlice = <
 			selected: false,
 			renaming: false,
 			floating: false,
-			icon: undefined,
 		} as ShortcutState,
 		{
 			getAllKeys: getObjectKeysAsNumbers,
@@ -766,12 +792,15 @@ export const createDesktopSlice = <
 		),
 	);
 
-	desktop$.createEffect(
-		programs$.pipe(
-			take(1),
-			map(() => programs$.updateAction.makePacket(preInstalledPrograms)),
-		),
-	);
+	/**
+	 * The program registry is code, not user data, but it is part of the
+	 * persisted desktop state. Re-apply it once the persisted state has been
+	 * restored, otherwise a save from before a program gained an icon, a title
+	 * or different window defaults pins the desktop to the old definitions.
+	 */
+	const reinstallPrograms = (): void => {
+		programs$.update(preInstalledPrograms);
+	};
 
 	desktop$.createEffect(
 		documentPointerDown$.pipe(
@@ -794,6 +823,7 @@ export const createDesktopSlice = <
 
 	return {
 		desktop$,
+		reinstallPrograms,
 		activeScheme$,
 		toggleActiveSchemeKindAction,
 		setSchemeAction,

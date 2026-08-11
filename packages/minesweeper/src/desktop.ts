@@ -5,7 +5,6 @@ export const minesweeperProgramInstallation: ProgramState = {
 	...defaultCommonProgramWindowPreferences,
 	name: 'minesweeper',
 	icon: minesweeperIconLarge,
-	titleBarIcon: minesweeperIconSmall,
 	initialWindowState: {
 		title: 'Minesweeper',
 		resizable: false,

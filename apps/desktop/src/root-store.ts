@@ -34,14 +34,24 @@ export const windowComponents: Record<ProgramId, WindowComponents> = {
 export const scope = new Scope();
 export const rootSlice$ = scope.createRootSlice({});
 
-export const desktopSlice: DesktopSlice = createDesktopSlice(rootSlice$, {
-	minesweeper: { attach: createMineSweeperGame, installEntry: minesweeperProgramInstallation },
-	displayProperties: {
-		attach: createDesktopProperties,
-		installEntry: displayPropertiesProgramInstallation,
+export const desktopSlice: DesktopSlice = createDesktopSlice(
+	rootSlice$,
+	{
+		minesweeper: {
+			attach: createMineSweeperGame,
+			installEntry: minesweeperProgramInstallation,
+		},
+		displayProperties: {
+			attach: createDesktopProperties,
+			installEntry: displayPropertiesProgramInstallation,
+		},
 	},
-});
+	{ debug: import.meta.env.DEV },
+);
 
 if (browser) {
 	initializeStoreBrowserFeatures(desktopSlice.desktop$);
+	// Has to happen after the persisted state was restored, it re-applies the
+	// program definitions this build ships over the ones a save carries
+	desktopSlice.reinstallPrograms();
 }
