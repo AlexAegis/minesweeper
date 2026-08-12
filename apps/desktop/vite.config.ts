@@ -11,18 +11,17 @@ export default mergeConfig(
 			// before @alexaegis/vite dist files are built.
 			target: 'es2022',
 		},
+	},
+	{
+		plugins: [tailwindcss(), sveltekit()],
 		css: {
-			// 98.css@0.1.21 ships a malformed `@media (not(hover))` query. SvelteKit
-			// drives CSS minification through lightningcss (ignoring build.cssMinify),
-			// which hard-errors on it. errorRecovery downgrades that parse error to a
-			// warning so the build completes; drop this once 98.css fixes the query.
+			// rolldown-vite minifies css with lightningcss, which hard-errors on
+			// invalid css shipped by third-party dependencies. Apps bundle vendor css they
+			// do not control; report it as a warning instead of failing the build.
 			lightningcss: {
 				errorRecovery: true,
 			},
 		},
-	},
-	{
-		plugins: [tailwindcss(), sveltekit()],
 		test: {
 			include: ['src/**/*.{test,spec}.{js,ts}'],
 		},
