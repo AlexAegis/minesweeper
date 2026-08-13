@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { defer } from '@w2k/common';
+	import { defer, type CoordinateLike } from '@w2k/common';
 	import { onDestroy, type Snippet } from 'svelte';
+	import { getSpawnRectangle } from '../helpers';
 	import { nudgeAreaIntoArea } from '../helpers/nudge-area-into-area.function';
-	import { centerRectangleIntoRectangle, getWorkspaceRectangle } from '../store';
+	import { centerRectangleIntoRectangle } from '../store';
 	import Modal from './modal.svelte';
 	import { initialWindowState, type BaseWindowState } from './window-state.interface';
 	import Window from './window.svelte';
@@ -18,37 +19,44 @@
 	let modalWindowElement: HTMLElement | undefined = $state();
 	let windowInstance: Window | undefined = $state();
 
-	export function open(centeringElement?: Element | undefined | null) {
-		windowState.invisible = true;
+	/**
+	 * Where the dialog ended up, and whether it can be shown yet. This has to
+	 * be local reactive state: `windowState` is usually a plain object literal
+	 * passed in by the caller, and mutating it from the deferred measurement
+	 * would never reach the rendered window.
+	 */
+	let placement: { invisible: boolean; position: CoordinateLike | undefined } = $state({
+		invisible: false,
+		position: undefined,
+	});
+
+	export function open(centeringElement?: HTMLElement | undefined | null) {
+		placement.invisible = true;
 		isOpen = true;
 
 		const centerElement = centeringElement ?? document.body;
-		// Let the modal window mount before calculating center
 
-		const centerElementRect = centerElement.getBoundingClientRect();
-
-		const workspaceRectangle = getWorkspaceRectangle();
-
+		// Let the modal window mount, its own size is only measurable afterwards
 		defer(() => {
-			windowState.position = centerRectangleIntoRectangle(
-				effectiveWindowState,
-				centerElementRect,
-			);
+			if (modalWindowElement) {
+				const dialogArea = getSpawnRectangle(modalWindowElement);
 
-			if (workspaceRectangle && modalWindowElement) {
-				const windowRectangle = modalWindowElement.getBoundingClientRect();
-
-				windowState.position = nudgeAreaIntoArea(
-					{
-						...windowState.position,
-						height: windowRectangle.height,
-						width: windowRectangle.width,
-					},
-					workspaceRectangle,
+				const position = centerRectangleIntoRectangle(
+					dialogArea,
+					getSpawnRectangle(centerElement),
 				);
+
+				const workspaceElement = document.querySelector<HTMLElement>('#workspace');
+
+				placement.position = workspaceElement
+					? nudgeAreaIntoArea(
+							{ ...dialogArea, ...position },
+							getSpawnRectangle(workspaceElement),
+						)
+					: position;
 			}
 
-			windowState.invisible = false;
+			placement.invisible = false;
 		})();
 	}
 
@@ -71,6 +79,8 @@
 	let effectiveWindowState = $derived({
 		...initialWindowState,
 		...windowState,
+		...(placement.position ? { position: placement.position } : {}),
+		invisible: placement.invisible,
 		showMinimize: false,
 		active: true,
 	});

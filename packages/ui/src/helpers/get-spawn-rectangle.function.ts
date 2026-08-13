@@ -2,9 +2,10 @@ import type { CoordinateLike } from '@w2k/common';
 import { readGlobal } from './w2k-globals.js';
 
 /**
- * Measures an element to be used as a context menu anchor.
+ * Measures an element to be used as a spawn anchor, like a context menu
+ * anchor or the window a modal dialog centers itself on.
  *
- * getBoundingClientRect returns screen pixels, but context menus position
+ * getBoundingClientRect returns screen pixels, but spawned elements position
  * themselves inside the zoomed `#desktop`, whose css `zoom` scales fixed
  * descendants. Divide by the zoom to convert into that local coordinate
  * space, matching how the pointer-driven context menus pass their position.

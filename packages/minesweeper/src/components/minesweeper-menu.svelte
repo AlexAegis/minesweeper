@@ -39,7 +39,7 @@
 	}
 
 	function openModal(modal: ModalDialogWindow) {
-		const windowElement = document.querySelector(
+		const windowElement = document.querySelector<HTMLElement>(
 			'#' + formatPid(windowState.processId, 'window'),
 		);
 
