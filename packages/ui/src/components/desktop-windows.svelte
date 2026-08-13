@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Observer } from 'svelte-rxjs-observer';
 	import type { GrippyContainer } from '../helpers/grippy/grippy';
-	import { formatPid, type DesktopSlice, type ProgramId } from '../store';
+	import { formatPid, type DesktopSlice, type ProcessId, type ProgramId } from '../store';
 	import WindowContextItems from './window-context-items.svelte';
 	import type { WindowComponents, WindowState } from './window-state.interface';
 	import Window from './window.svelte';
@@ -16,6 +16,10 @@
 	let { grippy, desktopSlice, windowComponents }: Props = $props();
 
 	let keys$ = $derived(desktopSlice.dicedWindows.keys$);
+
+	const closeWindow = (processId: ProcessId): void => {
+		desktopSlice.dicedWindows.remove(processId);
+	};
 </script>
 
 {#each $keys$ as processId (processId)}
@@ -41,7 +45,7 @@
 						windowSlice.internals.windowActions.restore.next(undefined);
 					}}
 					onClose={() => {
-						desktopSlice.dicedWindows.remove(processId);
+						closeWindow(processId);
 					}}
 					onMove={(delta) => {
 						windowSlice.internals.windowActions.move.next(delta);
@@ -64,6 +68,9 @@
 								<MenuComponent
 									internals={windowSlice.internals?.programLogic}
 									windowState={next}
+									onClose={() => {
+										closeWindow(processId);
+									}}
 								/>
 							</div>
 						{/if}
