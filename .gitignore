@@ -156,9 +156,10 @@ vitest.config.ts.*
 **/.vitepress/cache
 
 # parcel
-dist*
-tmp*
 .parcel-cache
+
+# temporary folders
+tmp
 
 ## Platforms
 

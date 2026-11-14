@@ -1,6 +1,5 @@
 # managed-by-autotool
 
-core.autocrlf=false
 * text=auto eol=lf
 *.blend filter=lfs diff=lfs merge=lfs -text
 *.glb filter=lfs diff=lfs merge=lfs -text

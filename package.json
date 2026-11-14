@@ -91,7 +91,7 @@
 		"@alexaegis/autotool-plugin-depcheck": "^0.15.6",
 		"@alexaegis/autotool-plugin-editorconfig": "^0.15.6",
 		"@alexaegis/autotool-plugin-eslint": "^0.15.6",
-		"@alexaegis/autotool-plugin-git": "^0.15.6",
+		"@alexaegis/autotool-plugin-git": "^0.18.0",
 		"@alexaegis/autotool-plugin-github": "^0.15.6",
 		"@alexaegis/autotool-plugin-husky": "^0.15.6",
 		"@alexaegis/autotool-plugin-ncu": "^0.15.6",
